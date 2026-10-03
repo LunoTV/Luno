@@ -1,14 +1,22 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync
+} from "node:fs";
 import { resolve } from "node:path";
 
 const root = process.cwd();
-const staging = resolve(root, ".prisma-sync", "prisma.ws");
+const stagingRoot = resolve(root, ".prisma-sync");
+const staging = resolve(stagingRoot, "prisma.ws");
 const publicDir = resolve(root, "public");
 
-rmSync(resolve(root, ".prisma-sync"), { recursive: true, force: true });
+rmSync(stagingRoot, { recursive: true, force: true });
 rmSync(publicDir, { recursive: true, force: true });
-mkdirSync(resolve(root, ".prisma-sync"), { recursive: true });
+mkdirSync(stagingRoot, { recursive: true });
 
 try {
   execFileSync("wget", [
@@ -23,19 +31,62 @@ try {
     "http://prisma.ws/"
   ], { cwd: root, stdio: "inherit" });
 } catch (error) {
-  // wget exits with 8 when individual linked resources return HTTP errors.
-  // Keep the successfully materialized site and validate the actual entry point below.
   if (error?.status !== 8) throw error;
 }
 
-if (!existsSync(staging)) throw new Error("Prisma Web mirror was not created.");
+if (!existsSync(staging)) {
+  throw new Error("Prisma Web mirror was not created.");
+}
+
+// wget does not discover scripts whose URLs are constructed/loaded by inline JavaScript.
+// These are actual Prisma Web entry resources referenced by the original index.html.
+const explicitResources = [
+  ["http://prisma.ws/app.min.js", "app.min.js"],
+  ["http://prisma.ws/prismainit.js", "prismainit.js"],
+  ["http://prisma.ws/webos/webOSTV.js", "webos/webOSTV.js"],
+  ["http://prisma.ws/prisma-main/app.min.js", "prisma-main/app.min.js"],
+  ["http://prisma.ws/prisma-main/css/app.css", "prisma-main/css/app.css"],
+  ["http://prisma.ws/css/app.css", "css/app.css"]
+];
+
+for (const [url, relativePath] of explicitResources) {
+  const target = resolve(staging, relativePath);
+  mkdirSync(resolve(target, ".."), { recursive: true });
+  execFileSync("wget", ["--execute=robots=off", "--output-document", target, url], {
+    cwd: root,
+    stdio: "inherit"
+  });
+}
 
 execFileSync("cp", ["-R", staging, publicDir], { cwd: root, stdio: "inherit" });
 
-if (!existsSync(resolve(publicDir, "index.html"))) {
+const indexPath = resolve(publicDir, "index.html");
+if (!existsSync(indexPath)) {
   throw new Error("Prisma Web mirror does not contain public/index.html.");
 }
 
+// The packaged copy must use its local webOS shim; loading the original HTTP URL
+// from an HTTPS GitHub Pages origin would be blocked as mixed content.
+let index = readFileSync(indexPath, "utf8");
+index = index.replace(
+  "http://prisma.ws/webos/webOSTV.js",
+  "webos/webOSTV.js"
+);
+
+// The mirrored CSS filename contains the original cache query. Keep the actual
+// stylesheet local under a normal URL so GitHub Pages can serve it unambiguously.
+const queriedCss = resolve(publicDir, "css", "app.css?v=4347e7d76b.css");
+const normalCss = resolve(publicDir, "css", "app.css");
+if (existsSync(queriedCss)) {
+  if (existsSync(normalCss)) rmSync(normalCss);
+  renameSync(queriedCss, normalCss);
+}
+index = index.replace(
+  "css/app.css%3Fv=4347e7d76b.css",
+  "css/app.css"
+);
+
+writeFileSync(indexPath, index);
 writeFileSync(resolve(publicDir, ".luno-prisma-source"), [
   "source=https://prisma.ws/",
   "materialized-by=LUNO Stage 1",
@@ -43,4 +94,15 @@ writeFileSync(resolve(publicDir, ".luno-prisma-source"), [
   ""
 ].join("\n"));
 
-console.log("Prisma Web materialized into public/.");
+for (const relativePath of [
+  "app.min.js",
+  "prismainit.js",
+  "webos/webOSTV.js",
+  "css/app.css"
+]) {
+  if (!existsSync(resolve(publicDir, relativePath))) {
+    throw new Error("Required Prisma Web resource is missing: " + relativePath);
+  }
+}
+
+console.log("Prisma Web materialized into public/ with runtime entry resources.");
