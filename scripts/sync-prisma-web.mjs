@@ -3,6 +3,7 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
+  readdirSync,
   renameSync,
   rmSync,
   writeFileSync
@@ -40,19 +41,14 @@ if (!existsSync(staging)) {
 
 // app.min.js is constructed by the original Prisma index and is therefore not
 // discovered by wget's HTML crawler. It is the actual browser entry resource.
-const explicitResources = [
-  ["http://prisma.ws/app.min.js", "app.min.js"],
-  ["http://prisma.ws/css/app.css", "css/app.css"]
-];
-
-for (const [url, relativePath] of explicitResources) {
-  const target = resolve(staging, relativePath);
-  mkdirSync(resolve(target, ".."), { recursive: true });
-  execFileSync("wget", ["--execute=robots=off", "--output-document", target, url], {
-    cwd: root,
-    stdio: "inherit"
-  });
-}
+const appTarget = resolve(staging, "app.min.js");
+mkdirSync(resolve(appTarget, ".."), { recursive: true });
+execFileSync("wget", [
+  "--execute=robots=off",
+  "--output-document",
+  appTarget,
+  "http://prisma.ws/app.min.js"
+], { cwd: root, stdio: "inherit" });
 
 execFileSync("cp", ["-R", staging, publicDir], { cwd: root, stdio: "inherit" });
 
@@ -63,24 +59,27 @@ if (!existsSync(indexPath)) {
 
 let index = readFileSync(indexPath, "utf8");
 
-// Remove the original HTTP-only webOS helper. Prisma Web's normal browser path
-// does not require it, and retaining it would create mixed-content on HTTPS.
+// The original webOS helper is HTTP-only and unavailable from the HTTPS Pages
+// origin. Do not replace it with a shim; remove only its script tag.
 index = index.replace(
-  /s*<script src="http://prisma.ws/webos/webOSTV.js"></script>s*/,
-  "\n"
+  '<script src="http://prisma.ws/webos/webOSTV.js"></script>',
+  ""
 );
 
-// Normalize the mirrored stylesheet filename containing a query string.
-const queriedCss = resolve(publicDir, "css", "app.css?v=4347e7d76b.css");
-const normalCss = resolve(publicDir, "css", "app.css");
-if (existsSync(queriedCss)) {
-  if (existsSync(normalCss)) rmSync(normalCss);
-  renameSync(queriedCss, normalCss);
+// Normalize whichever mirrored app.css filename wget produced.
+const cssDir = resolve(publicDir, "css");
+const cssFiles = readdirSync(cssDir).filter((name) => name.startsWith("app.css"));
+if (cssFiles.length === 0) {
+  throw new Error("Prisma Web mirror does not contain app.css.");
 }
-index = index.replace(
-  "css/app.css%3Fv=4347e7d76b.css",
-  "css/app.css"
-);
+const cssSource = cssFiles.find((name) => name !== "app.css") ?? cssFiles[0];
+const normalCss = resolve(cssDir, "app.css");
+if (cssSource !== "app.css") {
+  if (existsSync(normalCss)) rmSync(normalCss);
+  renameSync(resolve(cssDir, cssSource), normalCss);
+}
+
+index = index.replace(/css\/app\.css%3F[^"'\s>]+/, "css/app.css");
 
 writeFileSync(indexPath, index);
 writeFileSync(resolve(publicDir, ".luno-prisma-source"), [
