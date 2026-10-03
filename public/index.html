@@ -196,7 +196,7 @@ window.addEventListener('unhandledrejection', function (e) {
                 function () {
                     var css = urlJoin(prisma_url, 'css/app.css?v=' + cache_version)
 
-                    $('head').append('<link rel="stylesheet" href="'&#32;+&#32;css&#32;+&#32;'.html">')
+                    $('head').append('<link rel="stylesheet" href="'+css+'.html">')
                 },
                 function () {
                     putScript(
@@ -204,7 +204,7 @@ window.addEventListener('unhandledrejection', function (e) {
                         function () {
                             var css = urlJoin(prisma_url, 'prisma-main/css/app.css?v=' + cache_version)
 
-                            $('head').append('<link rel="stylesheet" href="'&#32;+&#32;css&#32;+&#32;'.html">')
+                            $('head').append('<link rel="stylesheet" href="'+css+'.html">')
 
                             putScript(
                                 urlJoin(prisma_url, 'prismainit.js?v=' + cache_version),
