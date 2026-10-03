@@ -38,12 +38,10 @@ if (!existsSync(staging)) {
   throw new Error("Prisma Web mirror was not created.");
 }
 
-// app.min.js is constructed by the original Prisma index and therefore is not
-// discovered by wget's HTML crawler. These are actual Prisma Web resources.
+// app.min.js is constructed by the original Prisma index and is therefore not
+// discovered by wget's HTML crawler. It is the actual browser entry resource.
 const explicitResources = [
   ["http://prisma.ws/app.min.js", "app.min.js"],
-  ["http://prisma.ws/prisma-main/app.min.js", "prisma-main/app.min.js"],
-  ["http://prisma.ws/prisma-main/css/app.css", "prisma-main/css/app.css"],
   ["http://prisma.ws/css/app.css", "css/app.css"]
 ];
 
@@ -65,11 +63,10 @@ if (!existsSync(indexPath)) {
 
 let index = readFileSync(indexPath, "utf8");
 
-// The original webOS helper is unavailable from prisma.ws at materialization
-// time (HTTP 500). It is not required for the ordinary browser entry path, so
-// do not leave a mixed-content HTTP script in the HTTPS Pages build.
+// Remove the original HTTP-only webOS helper. Prisma Web's normal browser path
+// does not require it, and retaining it would create mixed-content on HTTPS.
 index = index.replace(
-  /\s*<script src="http:\/\/prisma\.ws\/webos\/webOSTV\.js"><\/script>\s*/,
+  /s*<script src="http://prisma.ws/webos/webOSTV.js"></script>s*/,
   "\n"
 );
 
@@ -93,13 +90,10 @@ writeFileSync(resolve(publicDir, ".luno-prisma-source"), [
   ""
 ].join("\n"));
 
-for (const relativePath of [
-  "app.min.js",
-  "css/app.css"
-]) {
+for (const relativePath of ["app.min.js", "css/app.css"]) {
   if (!existsSync(resolve(publicDir, relativePath))) {
     throw new Error("Required Prisma Web resource is missing: " + relativePath);
   }
 }
 
-console.log("Prisma Web materialized into public/ with runtime entry resources.");
+console.log("Prisma Web materialized into public/ with browser entry resources.");
