@@ -1,20 +1,14 @@
 (function(){
-  const moon='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8b6cff"/><stop offset="1" stop-color="#32c7ff"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#g)"/><path d="M40 12c-10 2-17 11-17 21 0 11 8 19 19 19 4 0 8-1 11-3-4 8-12 13-22 13C17 62 6 51 6 37 6 23 17 12 31 12c3 0 6 0 9 0 3 0 6 0 9 0z" fill="#fff"/></svg>');
-  function apply(){
-    if(!document.body)return;
-    const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
-    const nodes=[];
-    while(w.nextNode())nodes.push(w.currentNode);
-    nodes.forEach(n=>{if(n.nodeValue){const v=n.nodeValue.replace(/Prisma/g,'LUNO');if(v!==n.nodeValue)n.nodeValue=v}});
-    document.title=document.title.replace(/Prisma/g,'LUNO');
-    document.querySelectorAll('[title],[aria-label],[alt]').forEach(e=>['title','aria-label','alt'].forEach(a=>{const v=e.getAttribute(a);if(v)e.setAttribute(a,v.replace(/Prisma/g,'LUNO'))}));
-    document.querySelectorAll('img').forEach(i=>{if(/prisma/i.test(i.src)||/prisma/i.test(i.alt||'')){i.src=moon;i.removeAttribute('srcset');i.alt='LUNO'}});
-    document.querySelectorAll('*').forEach(e=>{
-      try{
-        const bg=getComputedStyle(e).backgroundImage;
-        if(/prisma/i.test(bg))e.style.backgroundImage='url("'+moon+'")';
-      }catch(_){}
-    });
+  function install(){
+    const w=document.querySelector('.welcome');
+    if(!w || w.dataset.lunoSplash==='1') return;
+    w.dataset.lunoSplash='1';
+    const css=document.createElement('style');
+    css.textContent='.welcome.luno-splash{background:#061522!important;background-image:none!important;display:flex!important;align-items:center!important;justify-content:center!important}.welcome.luno-splash:before,.welcome.luno-splash:after{display:none!important}.luno-splash__box{width:min(520px,78vw);text-align:center;color:#f5f7fb;font-family:Arial,sans-serif}.luno-splash__moon{width:96px;height:96px;margin:0 auto 24px;border-radius:28px;background:linear-gradient(135deg,#8b6cff,#32c7ff);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(50,199,255,.18)}.luno-splash__moon:before{content:"";width:58px;height:58px;border-radius:50%;background:#fff;transform:translate(6px,-1px);box-shadow:14px -4px 0 0 #061522}.luno-splash__name{font-size:42px;letter-spacing:.28em;margin-left:.28em;font-weight:300}.luno-splash__spinner{width:64px;height:64px;margin:34px auto 22px;border-radius:50%;border:7px solid #173247;border-top-color:#8b6cff;border-right-color:#32c7ff;animation:lunoSpin 1s linear infinite}@keyframes lunoSpin{to{transform:rotate(360deg)}}.luno-splash__text{font-size:20px;color:#c7d0dc}.luno-splash__bar{height:7px;background:#173247;border-radius:8px;margin:26px auto 0;overflow:hidden}.luno-splash__bar:before{content:"";display:block;width:42%;height:100%;background:linear-gradient(90deg,#32c7ff,#f5f7fb);border-radius:8px}';
+    document.head.appendChild(css);
+    w.classList.add('luno-splash');
+    w.innerHTML='<div class="luno-splash__box"><div class="luno-splash__moon"></div><div class="luno-splash__name">LUNO</div><div class="luno-splash__spinner"></div><div class="luno-splash__text">Загружаем LUNO...</div><div class="luno-splash__bar"></div></div>';
   }
-  [300,1000,2500,5000,8000,12000].forEach(ms=>setTimeout(apply,ms));
+  document.addEventListener('DOMContentLoaded',install,{once:true});
+  [300,1000].forEach(ms=>setTimeout(install,ms));
 })();
