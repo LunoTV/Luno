@@ -14,3 +14,5 @@ if (typeof window !== 'undefined') {
 }
 
 export default sourceManager;
+
+// Load the standalone runtime after source registration is complete.\nimport('./source-runtime.js');
