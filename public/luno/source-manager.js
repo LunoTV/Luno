@@ -54,6 +54,24 @@ export class SourceManager {
     };
   }
 
+  async navigate(sourceId, item, options = {}) {
+    const source = this.require(sourceId);
+
+    if (item?.kind !== 'link' && item?.method !== 'link') {
+      throw new Error('Source item is not navigation');
+    }
+
+    if (typeof source.navigate !== 'function') {
+      throw new Error(`Source ${sourceId} does not support navigation`);
+    }
+
+    const response = await source.navigate(item, options);
+    return {
+      source: source.id,
+      ...normalizeSourceResponse(response)
+    };
+  }
+
   async resolve(sourceId, item, options = {}) {
     const source = this.require(sourceId);
     const request = createPlayableRequest(item);
