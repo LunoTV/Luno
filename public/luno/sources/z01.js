@@ -139,6 +139,43 @@ function parseResponse(response) {
   return { type: 'empty', items: [] };
 }
 
+function lampaStorage(key, fallback = '') {
+  try {
+    return window.Lampa?.Storage?.get
+      ? window.Lampa.Storage.get(key, fallback)
+      : localStorage.getItem(key) || fallback;
+  } catch (_) {
+    return fallback;
+  }
+}
+
+function decorateAccount(url) {
+  const target = new URL(url, window.location.href);
+  const accountEmail = lampaStorage('account_email', '');
+  const uid = lampaStorage('lampac_unic_id', '');
+  const nwsId = lampaStorage('lampac_nws_id', '');
+
+  if (accountEmail && !target.searchParams.has('account_email')) {
+    target.searchParams.set('account_email', accountEmail);
+  }
+  if (uid && !target.searchParams.has('uid')) {
+    target.searchParams.set('uid', uid);
+  }
+  if (nwsId && !target.searchParams.has('nws_id')) {
+    target.searchParams.set('nws_id', nwsId);
+  }
+
+  return target.toString();
+}
+
+function sourceHeaders(extra = {}) {
+  return {
+    'X-Kit-AesGcm': lampaStorage('aesgcmkey', ''),
+    'X-Zprem-Key': lampaStorage('zpremkey', ''),
+    ...extra
+  };
+}
+
 function buildZ01Query(movie, options = {}) {
   const query = createMovieQuery(movie, options.query || {});
 
@@ -155,7 +192,13 @@ function buildZ01Query(movie, options = {}) {
     source: query.source,
     clarification: options.clarification || '',
     similar: options.similar || '',
-    rchtype: options.rchtype || ''
+    rchtype: options.rchtype || '',
+    cub_id: options.cub_id || (() => {
+      try {
+        const email = lampaStorage('account_email', '');
+        return email && window.Lampa?.Utils?.hash ? window.Lampa.Utils.hash(email) : '';
+      } catch (_) { return ''; }
+    })()
   };
 }
 
@@ -199,13 +242,13 @@ export function createZ01SourceAdapter(config = {}) {
 
     async search(movie, options = {}) {
       const query = buildZ01Query(movie, options);
-      const discoveryUrl = appendQuery(
+      const discoveryUrl = decorateAccount(appendQuery(
         new URL('lite/events?life=true', baseUrl).toString(),
         query
-      );
+      ));
 
       const discovery = await requestJson(discoveryUrl, {
-        headers: options.headers,
+        headers: sourceHeaders(options.headers || {}),
         signal: options.signal
       });
 
@@ -237,12 +280,12 @@ export function createZ01SourceAdapter(config = {}) {
         throw new Error('Z01 returned a source without URL');
       }
 
-      const sourceUrl = appendQuery(selected.url, query);
+      const sourceUrl = decorateAccount(appendQuery(selected.url, query));
       const response = await requestSource(sourceUrl, {
         headers: {
           ...(discovery.headers || {}),
           ...(selected.headers || {}),
-          ...(options.headers || {})
+          ...sourceHeaders(options.headers || {})
         },
         credentials: 'include',
         signal: options.signal
@@ -269,10 +312,10 @@ export function createZ01SourceAdapter(config = {}) {
       }
 
       const response = await requestSource(item.url, {
-        headers: {
+        headers: sourceHeaders({
           ...(item.headers || {}),
           ...(options.headers || {})
-        },
+        }),
         credentials: 'include',
         signal: options.signal
       });
