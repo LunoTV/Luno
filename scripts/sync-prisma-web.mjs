@@ -10,17 +10,23 @@ rmSync(resolve(root, ".prisma-sync"), { recursive: true, force: true });
 rmSync(publicDir, { recursive: true, force: true });
 mkdirSync(resolve(root, ".prisma-sync"), { recursive: true });
 
-execFileSync("wget", [
-  "--mirror",
-  "--page-requisites",
-  "--convert-links",
-  "--adjust-extension",
-  "--no-parent",
-  "--execute=robots=off",
-  "--domains=prisma.ws",
-  "--directory-prefix=.prisma-sync",
-  "http://prisma.ws/"
-], { cwd: root, stdio: "inherit" });
+try {
+  execFileSync("wget", [
+    "--mirror",
+    "--page-requisites",
+    "--convert-links",
+    "--adjust-extension",
+    "--no-parent",
+    "--execute=robots=off",
+    "--domains=prisma.ws",
+    "--directory-prefix=.prisma-sync",
+    "http://prisma.ws/"
+  ], { cwd: root, stdio: "inherit" });
+} catch (error) {
+  // wget exits with 8 when individual linked resources return HTTP errors.
+  // Keep the successfully materialized site and validate the actual entry point below.
+  if (error?.status !== 8) throw error;
+}
 
 if (!existsSync(staging)) throw new Error("Prisma Web mirror was not created.");
 
