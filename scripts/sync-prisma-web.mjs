@@ -38,11 +38,10 @@ if (!existsSync(staging)) {
   throw new Error("Prisma Web mirror was not created.");
 }
 
-// wget does not discover scripts whose URLs are constructed/loaded by inline JavaScript.
-// These are actual Prisma Web entry resources referenced by the original index.html.
+// app.min.js is constructed by the original Prisma index and therefore is not
+// discovered by wget's HTML crawler.
 const explicitResources = [
   ["http://prisma.ws/app.min.js", "app.min.js"],
-  ["http://prisma.ws/prismainit.js", "prismainit.js"],
   ["http://prisma.ws/webos/webOSTV.js", "webos/webOSTV.js"],
   ["http://prisma.ws/prisma-main/app.min.js", "prisma-main/app.min.js"],
   ["http://prisma.ws/prisma-main/css/app.css", "prisma-main/css/app.css"],
@@ -65,16 +64,16 @@ if (!existsSync(indexPath)) {
   throw new Error("Prisma Web mirror does not contain public/index.html.");
 }
 
-// The packaged copy must use its local webOS shim; loading the original HTTP URL
-// from an HTTPS GitHub Pages origin would be blocked as mixed content.
 let index = readFileSync(indexPath, "utf8");
+
+// Prevent mixed-content blocking on GitHub Pages. The Android/webOS shim is
+// packaged locally; no browser replacement is introduced.
 index = index.replace(
   "http://prisma.ws/webos/webOSTV.js",
   "webos/webOSTV.js"
 );
 
-// The mirrored CSS filename contains the original cache query. Keep the actual
-// stylesheet local under a normal URL so GitHub Pages can serve it unambiguously.
+// Normalize the mirrored stylesheet filename containing a query string.
 const queriedCss = resolve(publicDir, "css", "app.css?v=4347e7d76b.css");
 const normalCss = resolve(publicDir, "css", "app.css");
 if (existsSync(queriedCss)) {
@@ -96,7 +95,6 @@ writeFileSync(resolve(publicDir, ".luno-prisma-source"), [
 
 for (const relativePath of [
   "app.min.js",
-  "prismainit.js",
   "webos/webOSTV.js",
   "css/app.css"
 ]) {
