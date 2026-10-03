@@ -10,6 +10,34 @@ import {
 } from "node:fs";
 import { resolve } from "node:path";
 
+const runtimeErrorScript = `
+<script>
+window.addEventListener('error', function (e) {
+  var msg = (e && e.message) || 'Unknown JavaScript error';
+  var box = document.getElementById('__luno_runtime_error');
+  if (!box) {
+    box = document.createElement('pre');
+    box.id = '__luno_runtime_error';
+    box.style.cssText = 'position:fixed;z-index:999999;left:12px;right:12px;top:12px;max-height:90vh;overflow:auto;padding:16px;background:#111;color:#f66;font:13px/1.45 monospace;white-space:pre-wrap;border-radius:10px;';
+    document.documentElement.appendChild(box);
+  }
+  box.textContent = 'LUNO / Prisma runtime error\\n\\n' + msg;
+});
+window.addEventListener('unhandledrejection', function (e) {
+  var reason = e && e.reason;
+  var msg = reason && (reason.stack || reason.message) || String(reason);
+  var box = document.getElementById('__luno_runtime_error');
+  if (!box) {
+    box = document.createElement('pre');
+    box.id = '__luno_runtime_error';
+    box.style.cssText = 'position:fixed;z-index:999999;left:12px;right:12px;top:12px;max-height:90vh;overflow:auto;padding:16px;background:#111;color:#f66;font:13px/1.45 monospace;white-space:pre-wrap;border-radius:10px;';
+    document.documentElement.appendChild(box);
+  }
+  box.textContent = 'LUNO / Prisma runtime error\\n\\n' + msg;
+});
+</script>
+`;
+
 const root = process.cwd();
 const stagingRoot = resolve(root, ".prisma-sync");
 const staging = resolve(stagingRoot, "prisma.ws");
@@ -58,6 +86,7 @@ if (!existsSync(indexPath)) {
 }
 
 let index = readFileSync(indexPath, "utf8");
+index = index.replace("</head>", runtimeErrorScript + "</head>");
 
 // The original webOS helper is HTTP-only and unavailable from the HTTPS Pages
 // origin. Do not replace it with a shim; remove only its script tag.
