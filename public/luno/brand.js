@@ -5,11 +5,16 @@
     const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
     const nodes=[];
     while(w.nextNode())nodes.push(w.currentNode);
-    nodes.forEach(n=>{if(n.nodeValue)n.nodeValue=n.nodeValue.replace(/Prisma/g,'LUNO')});
+    nodes.forEach(n=>{if(n.nodeValue){const v=n.nodeValue.replace(/Prisma/g,'LUNO');if(v!==n.nodeValue)n.nodeValue=v}});
     document.title=document.title.replace(/Prisma/g,'LUNO');
-    document.querySelectorAll('img').forEach(i=>{
-      if(/prisma/i.test(i.src)||/prisma/i.test(i.alt||'')){i.src=moon;i.removeAttribute('srcset');i.alt='LUNO'}
+    document.querySelectorAll('[title],[aria-label],[alt]').forEach(e=>['title','aria-label','alt'].forEach(a=>{const v=e.getAttribute(a);if(v)e.setAttribute(a,v.replace(/Prisma/g,'LUNO'))}));
+    document.querySelectorAll('img').forEach(i=>{if(/prisma/i.test(i.src)||/prisma/i.test(i.alt||'')){i.src=moon;i.removeAttribute('srcset');i.alt='LUNO'}});
+    document.querySelectorAll('*').forEach(e=>{
+      try{
+        const bg=getComputedStyle(e).backgroundImage;
+        if(/prisma/i.test(bg))e.style.backgroundImage='url("'+moon+'")';
+      }catch(_){}
     });
   }
-  [300,1000,2500,5000].forEach(ms=>setTimeout(apply,ms));
+  [300,1000,2500,5000,8000,12000].forEach(ms=>setTimeout(apply,ms));
 })();
