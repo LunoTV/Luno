@@ -12,6 +12,13 @@ export async function searchSource(movie, options = {}) {
   return sourceManager.search(options.sourceId || 'z01', movie, options);
 }
 
+export async function navigateSourceItem(item, options = {}) {
+  if (!item || typeof item !== 'object') {
+    throw new TypeError('LUNO source runtime requires a navigation item');
+  }
+  return sourceManager.navigate(options.sourceId || 'z01', item, options);
+}
+
 export async function resolveSourceItem(item, options = {}) {
   if (!item || typeof item !== 'object') {
     throw new TypeError('LUNO source runtime requires a source item');
@@ -39,6 +46,7 @@ if (typeof window !== 'undefined') {
   window.LUNO.sourceRuntime = Object.freeze({
     search: searchSource,
     resolveItem: resolveSourceItem,
+    navigateItem: navigateSourceItem,
     resolveMovie
   });
 }
