@@ -19,7 +19,7 @@ execFileSync("wget", [
   "--execute=robots=off",
   "--domains=prisma.ws",
   "--directory-prefix=.prisma-sync",
-  "https://prisma.ws/"
+  "http://prisma.ws/"
 ], { cwd: root, stdio: "inherit" });
 
 if (!existsSync(staging)) throw new Error("Prisma Web mirror was not created.");
