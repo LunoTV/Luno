@@ -91,6 +91,14 @@ function parseSourceHtml(html) {
 
 function parseResponse(response) {
   if (typeof response === 'string') {
+    const text = response.trim();
+
+    if (text.startsWith('{') || text.startsWith('[')) {
+      try {
+        return parseResponse(JSON.parse(text));
+      } catch (_) {}
+    }
+
     return {
       type: 'items',
       items: parseSourceHtml(response),
