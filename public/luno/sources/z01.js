@@ -263,6 +263,23 @@ export function createZ01SourceAdapter(config = {}) {
       };
     },
 
+    async navigate(item, options = {}) {
+      if (!item?.url) {
+        throw new Error('Z01 navigation item has no URL');
+      }
+
+      const response = await requestSource(item.url, {
+        headers: {
+          ...(item.headers || {}),
+          ...(options.headers || {})
+        },
+        credentials: 'include',
+        signal: options.signal
+      });
+
+      return parseResponse(response);
+    },
+
     async resolve(item, options = {}) {
       if (!item?.url) {
         throw new Error('Z01 resolver item has no URL');
