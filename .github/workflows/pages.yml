@@ -1,4 +1,4 @@
-name: Deploy Prisma Web to GitHub Pages
+name: Deploy LUNO to GitHub Pages
 
 on:
   workflow_dispatch:
