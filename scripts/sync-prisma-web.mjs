@@ -112,7 +112,7 @@ index = index.replace(/css\/app\.css%3F[^"'\s>]+/, "css/app.css");
 
 // Wget can HTML-encode the plus signs in this inline fallback branch.
 // Decode that source corruption so Safari parses the original JavaScript.
-index = index.replace(/&#32;\\+&#32;/g, "+");
+index = index.replace(/&#32;\+&#32;/g, "+");
 
 writeFileSync(indexPath, index);
 writeFileSync(resolve(publicDir, ".luno-prisma-source"), [
