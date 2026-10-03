@@ -40,7 +40,7 @@ window.addEventListener('error', function (e) {
     box.style.cssText = 'position:fixed;z-index:999999;left:12px;right:12px;top:12px;max-height:90vh;overflow:auto;padding:16px;background:#111;color:#f66;font:13px/1.45 monospace;white-space:pre-wrap;border-radius:10px;';
     document.documentElement.appendChild(box);
   }
-  box.textContent = 'LUNO / Prisma runtime error\n\n' + msg;
+  box.textContent = 'LUNO runtime error\n\n' + msg;
 });
 window.addEventListener('unhandledrejection', function (e) {
   var reason = e && e.reason;
