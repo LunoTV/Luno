@@ -39,10 +39,9 @@ if (!existsSync(staging)) {
 }
 
 // app.min.js is constructed by the original Prisma index and therefore is not
-// discovered by wget's HTML crawler.
+// discovered by wget's HTML crawler. These are actual Prisma Web resources.
 const explicitResources = [
   ["http://prisma.ws/app.min.js", "app.min.js"],
-  ["http://prisma.ws/webos/webOSTV.js", "webos/webOSTV.js"],
   ["http://prisma.ws/prisma-main/app.min.js", "prisma-main/app.min.js"],
   ["http://prisma.ws/prisma-main/css/app.css", "prisma-main/css/app.css"],
   ["http://prisma.ws/css/app.css", "css/app.css"]
@@ -66,11 +65,12 @@ if (!existsSync(indexPath)) {
 
 let index = readFileSync(indexPath, "utf8");
 
-// Prevent mixed-content blocking on GitHub Pages. The Android/webOS shim is
-// packaged locally; no browser replacement is introduced.
+// The original webOS helper is unavailable from prisma.ws at materialization
+// time (HTTP 500). It is not required for the ordinary browser entry path, so
+// do not leave a mixed-content HTTP script in the HTTPS Pages build.
 index = index.replace(
-  "http://prisma.ws/webos/webOSTV.js",
-  "webos/webOSTV.js"
+  /\s*<script src="http:\/\/prisma\.ws\/webos\/webOSTV\.js"><\/script>\s*/,
+  "\n"
 );
 
 // Normalize the mirrored stylesheet filename containing a query string.
@@ -95,7 +95,6 @@ writeFileSync(resolve(publicDir, ".luno-prisma-source"), [
 
 for (const relativePath of [
   "app.min.js",
-  "webos/webOSTV.js",
   "css/app.css"
 ]) {
   if (!existsSync(resolve(publicDir, relativePath))) {
