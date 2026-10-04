@@ -66,7 +66,7 @@
         clearInterval(poll);
         observer.disconnect();
         removeSplash();
-      } else if(checks >= 20){
+      } else if(checks >= 10){
         clearInterval(poll);
         observer.disconnect();
         removeSplash();
