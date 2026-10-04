@@ -102,7 +102,7 @@ function setHero(el,item){
 function renderRow(el,id,items,type){
   const row=el.querySelector('[data-row="'+id+'"]');
   if(!row)return;
-  row.innerHTML=items.length?items.slice(0,16).map(item=>cardMarkup(item,type)).join(''):'<div class="row-empty">Пока здесь ничего нет. Откройте фильм или сериал — LUNO добавит его в историю.</div>';
+  row.innerHTML=items.length?items.slice(0,16).map(item=>cardMarkup(item,item.__type||type)).join(''):'<div class="row-empty">Пока здесь ничего нет. Откройте фильм или сериал — LUNO добавит его в историю.</div>';
 }
 function readHistory(){
   try{return JSON.parse(localStorage.getItem('luno_history_v1')||'[]').filter(Boolean)}catch{return[]}
@@ -173,7 +173,7 @@ function bindHome(el){
   });
   window.addEventListener('scroll',()=>{el.querySelector('.topbar')?.classList.toggle('is-scrolled',window.scrollY>28)},{passive:true});
   el.querySelectorAll('.media-row').forEach(row=>row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false}));
-  const navObserver=new IntersectionObserver(entries=>{const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;const key=visible.target.id==='movies'?'movie':visible.target.id==='series'?'series':visible.target.id==='anime'?'anime':'home';el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===key))},{rootMargin:'-20% 0px -55% 0px',threshold:[0,.25,.5]});
+  const navObserver=new IntersectionObserver(entries=>{const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;const key=visible.target.id==='movies'?'movie':visible.target.id==='series'?'series':visible.target.id==='anime'?'anime':visible.target.id==='history'?'history':'home';el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===key))},{rootMargin:'-20% 0px -55% 0px',threshold:[0,.25,.5]});
   el.querySelectorAll('.content-section').forEach(section=>navObserver.observe(section));
   el.addEventListener('keydown',event=>{
     if(document.documentElement.dataset.device!=='tv')return;
