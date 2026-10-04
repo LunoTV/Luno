@@ -12,9 +12,12 @@
 <circle cx="110" cy="120" r="2"/><circle cx="210" cy="240" r="1.5"/><circle cx="340" cy="90" r="2"/><circle cx="490" cy="190" r="1.4"/><circle cx="640" cy="105" r="2"/><circle cx="770" cy="230" r="1.5"/><circle cx="900" cy="72" r="1.8"/><circle cx="1050" cy="170" r="1.5"/><circle cx="1190" cy="92" r="2"/><circle cx="1330" cy="210" r="1.5"/><circle cx="1480" cy="115" r="2"/><circle cx="1640" cy="250" r="1.5"/><circle cx="1790" cy="100" r="2"/><circle cx="80" cy="410" r="1.4"/><circle cx="260" cy="350" r="1.8"/><circle cx="1530" cy="360" r="1.5"/><circle cx="1730" cy="420" r="1.8"/>
 </g>
 <circle cx="960" cy="440" r="430" fill="url(#glow)" filter="url(#blur)"/>
-<circle cx="960" cy="400" r="300" fill="url(#moon)"/>
-<g fill="#65727f" opacity=".25">
+<circle cx="960" cy="400" r="335" fill="url(#moon)"/>
+<g fill="#4e5d6b" opacity=".22">
 <ellipse cx="820" cy="300" rx="55" ry="25"/><ellipse cx="1060" cy="330" rx="70" ry="32"/><ellipse cx="900" cy="490" rx="75" ry="34"/><ellipse cx="1110" cy="500" rx="52" ry="24"/><ellipse cx="760" cy="430" rx="38" ry="20"/>
+</g>
+<g fill="none" stroke="#aebdca" stroke-opacity=".08">
+<path d="M700 250 Q760 220 820 245 T940 230" stroke-width="9"/><path d="M1030 270 Q1110 240 1190 280 T1300 250" stroke-width="7"/><path d="M780 390 Q850 360 920 395" stroke-width="6"/>
 </g>
 <path d="M0 790 230 610 390 735 590 535 790 760 980 570 1170 735 1390 545 1570 720 1770 610 1920 735V1080H0Z" fill="url(#mountain)"/>
 <path d="M0 860 260 720 470 835 700 680 920 850 1130 700 1320 835 1540 675 1740 820 1920 720V1080H0Z" fill="#05080d" opacity=".9"/>
