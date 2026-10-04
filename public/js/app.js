@@ -27,6 +27,9 @@ async function loadCatalog(type){
 function poster(item){
   return item?.poster||item?.images?.jpg?.large_image_url||item?.images?.jpg?.image_url||'';
 }
+function backdrop(item){
+  return item?.backdrop||item?.images?.jpg?.large_image_url||poster(item)||'';
+}
 function cardMarkup(item,type){
   const title=item?.name||item?.title||'Без названия';
   const image=poster(item);
@@ -43,7 +46,7 @@ function cardMarkup(item,type){
   '</button>';
 }
 function sectionMarkup(title,sub,id){
-  return '<section class="content-section" id="'+id+'"><div class="section__head"><div><h2>'+title+'</h2><p>'+sub+'</p></div><button class="section-link" data-scroll="'+id+'">Все</button></div><div class="media-row" data-row="'+id+'"><div class="row-loading" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div></div></section>';
+  return '<section class="content-section" id="'+id+'"><div class="section__head"><div><h2>'+title+'</h2><p>'+sub+'</p></div><div class="section-tools"><button class="row-control" data-row-scroll="'+id+'" data-dir="-1" aria-label="Назад">‹</button><button class="row-control" data-row-scroll="'+id+'" data-dir="1" aria-label="Вперёд">›</button><button class="section-link" data-scroll="'+id+'">Все</button></div></div><div class="media-row" data-row="'+id+'"><div class="row-loading" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div></div></section>';
 }
 function homeShell(){
   const el=document.createElement('main');
@@ -64,7 +67,7 @@ function homeShell(){
 function setHero(el,item){
   const hero=el.querySelector('[data-hero]');
   if(!hero||!item)return;
-  const image=poster(item), title=item?.name||item?.title||'LUNO', score=item?.imdbRating||item?.rating, year=yearOf(item)||item?.year||'';
+  const image=backdrop(item), title=item?.name||item?.title||'LUNO', score=item?.imdbRating||item?.rating, year=yearOf(item)||item?.year||'';
   hero.querySelector('.hero__backdrop').style.backgroundImage=image?'url("'+image.replace(/"/g,'\\\"')+'")':'';
   hero.querySelector('.hero__content').innerHTML='<div class="eyebrow">LUNO / '+esc(item?.type==='series'?'SERIES':'CINEMA')+'</div><h1>'+esc(title)+'</h1><div class="hero__meta">'+esc([year,score?'★ '+scoreOf(score):''].filter(Boolean).join(' · '))+'</div><p>Реальная карточка из подключённого каталога. LUNO показывает данные источника без выдуманного контента.</p><div class="actions"><button class="primary" data-open="'+esc(item?.imdb_id||'')+'">Подробнее</button><button class="secondary" data-nav="'+esc(item?.type==='series'?'series':'movie')+'">Каталог</button></div>';
 }
@@ -89,10 +92,12 @@ function bindHome(el){
     const link=event.target.closest('[data-scroll]');
     if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:'smooth',block:'start'});return}
     if(event.target.closest('[data-search]')){openSearch(el);return}
+    const rowControl=event.target.closest('[data-row-scroll]');
+    if(rowControl){const row=el.querySelector('[data-row="'+rowControl.dataset.rowScroll+'"]');if(row)row.scrollBy({left:Number(rowControl.dataset.dir)*Math.max(420,row.clientWidth*.72),behavior:'smooth'});return}
     const card=event.target.closest('.media-card');
     if(card){openDetails(el,card.dataset.type,card.dataset.id);return}
     const open=event.target.closest('[data-open]');
-    if(open){openDetails(el,'movie',open.dataset.open)}
+    if(open){openDetails(el,open.dataset.openType||'movie',open.dataset.open)}
   });
   el.querySelectorAll('.media-row').forEach(row=>row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false}));
   const navObserver=new IntersectionObserver(entries=>{const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;const key=visible.target.id==='movies'?'movie':visible.target.id==='series'?'series':visible.target.id==='anime'?'anime':'home';el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===key))},{rootMargin:'-20% 0px -55% 0px',threshold:[0,.25,.5]});
