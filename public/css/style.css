@@ -246,3 +246,4 @@ html[data-device="tv"] .topbar{
 html[data-device="tv"] .catalog{margin-top:-90px}
 html[data-device="tv"] .content-section{padding-top:28px}
 html[data-device="tv"] .media-card{flex-basis:238px}
+.startup-loader__brand{margin-bottom:10px;font-size:clamp(28px,4vw,46px);font-weight:600;letter-spacing:.28em;padding-left:.28em;color:rgba(248,252,255,.96);text-shadow:0 0 24px rgba(120,191,255,.32)}html[data-device="tv"] .startup-loader__brand{font-size:clamp(40px,4vw,64px);margin-bottom:14px}@media(max-width:620px){.startup-loader__brand{font-size:28px;margin-bottom:8px}}
