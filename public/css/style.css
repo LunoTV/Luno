@@ -92,3 +92,157 @@ html[data-device="tv"] .row-loading i{flex-basis:230px}
 
 /* Mobile startup: keep the authored portrait artwork fully visible. */
 @media(max-width:620px){.splash{background-image:url("../assets/luno-start-mobile.jpg?v=20261004-1");background-size:cover;background-position:center center;background-repeat:no-repeat;background-color:#02050a}.splash__veil{background:linear-gradient(180deg,rgba(1,4,8,.02),rgba(1,4,8,0) 55%,rgba(1,4,8,.16))}.startup-loader{width:min(320px,72vw)}}
+
+
+/* LUNO Moonlight interface — visible, airy night palette */
+:root{
+  --luno-bg:#07101a;
+  --luno-bg2:#0a1725;
+  --luno-panel:rgba(13,27,42,.72);
+  --luno-line:rgba(191,220,246,.14);
+  --luno-text:#f5f9fd;
+  --luno-muted:#9caec0;
+  --luno-blue:#78bfff;
+  --luno-blue-soft:rgba(92,168,255,.22);
+}
+html,body{background:
+  radial-gradient(circle at 76% 8%,rgba(83,159,235,.15),transparent 27%),
+  radial-gradient(circle at 12% 38%,rgba(180,207,230,.06),transparent 25%),
+  linear-gradient(180deg,#081421 0%,#06101b 46%,#040a11 100%);
+}
+body{font-family:"Space Grotesk",Inter,ui-sans-serif,system-ui,sans-serif}
+.home{background:
+  radial-gradient(circle at 82% 18%,rgba(111,184,255,.13),transparent 25%),
+  linear-gradient(180deg,#081522 0%,#06101a 48%,#040a11 100%);
+}
+.topbar{
+  height:82px;
+  padding:0 clamp(24px,5vw,78px);
+  background:linear-gradient(180deg,rgba(4,12,21,.94),rgba(4,12,21,.66) 65%,transparent);
+  border-bottom:1px solid rgba(174,210,240,.06);
+}
+.topbar .brand{
+  font-size:26px;
+  letter-spacing:.2em;
+  color:#f7fbff;
+  text-shadow:0 0 24px rgba(133,197,255,.2);
+}
+.nav{gap:30px}
+.nav button,.search{color:#91a5b8}
+.nav button:hover,.nav button.active{color:#fff;text-shadow:0 0 16px rgba(120,191,255,.22)}
+.nav button.active{position:relative}
+.nav button.active:after{content:"";position:absolute;left:50%;bottom:-14px;width:18px;height:2px;transform:translateX(-50%);border-radius:99px;background:#8ac7ff;box-shadow:0 0 12px #65b2ff}
+.search{border-color:rgba(154,205,246,.18);background:rgba(120,184,235,.07)}
+.search:hover{background:rgba(120,184,235,.14);border-color:rgba(154,205,246,.35)}
+.hero{
+  min-height:690px;
+  height:78vh;
+  padding:0 clamp(24px,7vw,110px) 86px;
+}
+.hero:after{
+  content:"";
+  position:absolute;
+  width:min(560px,55vw);
+  aspect-ratio:1;
+  right:4vw;
+  top:8%;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(123,190,255,.12),transparent 63%);
+  filter:blur(16px);
+  z-index:-4;
+  pointer-events:none;
+}
+.hero__backdrop{opacity:.42;filter:blur(2px) saturate(.75);mix-blend-mode:screen}
+.hero__shade{
+  background:
+    linear-gradient(90deg,#07111b 0%,rgba(7,17,27,.9) 31%,rgba(7,17,27,.42) 62%,rgba(7,17,27,.72) 100%),
+    linear-gradient(0deg,#06101a 0%,transparent 48%,rgba(6,16,26,.35) 100%);
+}
+.hero__content{max-width:720px}
+.eyebrow{color:#86b7dc;letter-spacing:.28em}
+.hero h1{
+  text-shadow:0 8px 35px rgba(0,0,0,.42);
+  color:#f8fbff;
+}
+.hero p{color:#afbfce;max-width:600px}
+.hero__meta{color:#d2dfeb}
+.primary{
+  background:linear-gradient(135deg,#f5f9fd,#cfe6f8);
+  box-shadow:0 8px 28px rgba(91,170,239,.18);
+}
+.secondary{
+  background:rgba(104,168,220,.11);
+  border-color:rgba(151,205,244,.2);
+}
+.catalog{
+  margin-top:-74px;
+  padding:0 clamp(24px,5vw,82px) 100px;
+}
+.content-section{
+  padding:24px 0 30px;
+  margin-bottom:18px;
+  border-top:1px solid rgba(176,211,237,.07);
+}
+.section__head{margin-bottom:20px}
+.section__head h2{font-size:23px;color:#f2f7fb}
+.section__head p{color:#8195a8}
+.section-link{color:#89afd0}
+.media-row{gap:18px;padding:4px 4px 18px}
+.media-card{flex-basis:clamp(156px,14vw,220px)}
+.media-card__poster{
+  border-radius:14px;
+  background:#0b1723;
+  border-color:rgba(160,205,239,.11);
+  box-shadow:0 16px 34px rgba(0,0,0,.28),0 0 0 1px rgba(112,180,231,.02);
+}
+.media-card__poster:after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(118,193,255,.08),transparent 35%);
+  pointer-events:none;
+}
+.media-card__score{
+  background:rgba(5,15,25,.82);
+  border:1px solid rgba(173,218,250,.14);
+  color:#dff1ff;
+}
+.media-card__title{color:#eef5fa}
+.media-card__meta{color:#7f97ab}
+.media-card:hover .media-card__poster,.media-card:focus-visible .media-card__poster{
+  border-color:rgba(137,202,249,.55);
+  box-shadow:0 22px 46px rgba(0,0,0,.42),0 0 28px rgba(78,165,232,.12);
+}
+.row-empty,.search-status{
+  background:rgba(104,168,220,.035);
+  border-color:rgba(160,205,239,.11);
+}
+.details-modal,.search-modal{background:rgba(1,7,13,.62)}
+.details-modal__panel,.search-modal__panel{
+  background:linear-gradient(145deg,#0c1a29,#08111b);
+  border-color:rgba(164,211,244,.16);
+  box-shadow:0 35px 100px rgba(0,0,0,.62),0 0 60px rgba(60,143,208,.08);
+}
+.search-modal input{background:#0d1b29;border-color:rgba(155,205,240,.16)}
+.mobile-nav{
+  background:rgba(7,18,29,.88);
+  border-color:rgba(157,207,242,.14);
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
+.mobile-nav button.active{color:#eaf6ff}
+@media(max-width:620px){
+  .topbar{height:68px;padding:0 18px}
+  .topbar .brand{font-size:22px}
+  .hero{min-height:600px;height:76vh;padding:0 20px 54px}
+  .hero__content{max-width:100%}
+  .hero h1{font-size:46px}
+  .catalog{margin-top:-48px;padding:0 16px 100px}
+  .content-section{padding-top:20px}
+  .media-row{gap:12px}
+  .media-card{flex-basis:148px}
+}
+html[data-device="tv"] .topbar{
+  background:linear-gradient(180deg,rgba(4,12,21,.96),rgba(4,12,21,.68) 70%,transparent);
+}
+html[data-device="tv"] .catalog{margin-top:-90px}
+html[data-device="tv"] .content-section{padding-top:28px}
+html[data-device="tv"] .media-card{flex-basis:238px}
