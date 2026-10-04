@@ -47,9 +47,11 @@ function cardMarkup(item,type){
       (image?'<img src="'+esc(image)+'" alt="" loading="lazy" decoding="async">':'<span class="media-card__poster-fallback">LUNO</span>')+
       '<span class="media-card__shade"></span>'+
       '<span class="media-card__type">'+esc(label)+'</span>'+
-      (score?'<span class="media-card__score"><span class="media-card__star">★</span> '+esc(scoreOf(score))+'</span>':'')+
+      '<span class="media-card__bottom">'+
+        '<span class="media-card__title">'+esc(title)+'</span>'+
+        (score?'<span class="media-card__score"><span class="media-card__star">★</span> '+esc(scoreOf(score))+'</span>':'')+
+      '</span>'+
     '</span>'+
-    '<span class="media-card__title">'+esc(title)+'</span>'+
     '<span class="media-card__meta">'+esc(year)+'</span>'+
   '</button>';
 }
