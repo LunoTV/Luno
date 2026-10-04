@@ -79,4 +79,69 @@
   } else {
     install();
   }
+  function brandRuntime(){
+    document.title='LUNO - Фильмы и сериалы';
+
+    function replaceText(root){
+      var walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT);
+      var n;
+      while(n=walker.nextNode()){
+        if(!n.nodeValue || !n.nodeValue.trim()) continue;
+        if(/PRISMA/i.test(n.nodeValue)){
+          n.nodeValue=n.nodeValue.replace(/PRISMA/gi,'LUNO');
+        }
+      }
+    }
+
+    function replaceAttrs(root){
+      var els=(root||document.body).querySelectorAll ? (root||document.body).querySelectorAll('*') : [];
+      for(var i=0;i<els.length;i++){
+        var e=els[i];
+        ['alt','title','aria-label'].forEach(function(a){
+          var v=e.getAttribute(a);
+          if(v && /PRISMA/i.test(v)) e.setAttribute(a,v.replace(/PRISMA/gi,'LUNO'));
+        });
+        if(e.tagName==='IMG'){
+          var src=e.getAttribute('src')||'';
+          if(/prisma/i.test(src)) e.setAttribute('src','icons/luno.svg');
+        }
+      }
+    }
+
+    replaceText(document.body);
+    replaceAttrs(document.body);
+
+    var obs=new MutationObserver(function(list){
+      for(var i=0;i<list.length;i++){
+        var m=list[i];
+        if(m.type==='characterData'){
+          if(/PRISMA/i.test(m.target.nodeValue||'')){
+            m.target.nodeValue=m.target.nodeValue.replace(/PRISMA/gi,'LUNO');
+          }
+        }else{
+          for(var j=0;j<m.addedNodes.length;j++){
+            var n=m.addedNodes[j];
+            if(n.nodeType===1){
+              replaceText(n);
+              replaceAttrs(n);
+            }else if(n.nodeType===3 && /PRISMA/i.test(n.nodeValue||'')){
+              n.nodeValue=n.nodeValue.replace(/PRISMA/gi,'LUNO');
+            }
+          }
+        }
+      }
+    });
+    obs.observe(document.body,{subtree:true,childList:true,characterData:true});
+
+    var link=document.querySelector('link[rel="apple-touch-icon"]');
+    if(link) link.href='icons/luno.svg';
+    var icon=document.querySelector('link[rel="icon"]');
+    if(icon) icon.href='icons/luno.svg';
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',brandRuntime,{once:true});
+  }else{
+    brandRuntime();
+  }
 })();
