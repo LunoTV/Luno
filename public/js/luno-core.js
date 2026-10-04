@@ -123,7 +123,8 @@ function screenMove(active,k){
 function keydown(e){
   if(document.documentElement.dataset.device!=='tv')return;
   const k=e.key,a=document.activeElement;
-  if(k==='Home'){e.preventDefault();const b=document.querySelector('.home .topbar .brand');if(b){focus(b);document.querySelector('.home')?.scrollTo({top:0,behavior:'auto'});}return}\n  if(k==='Escape'||k==='Backspace'){
+  if(k==='Home'){e.preventDefault();const b=document.querySelector('.home .topbar .brand');if(b){focus(b);document.querySelector('.home')?.scrollTo({top:0,behavior:'auto'});}return}
+  if(k==='Escape'||k==='Backspace'){
     if(closeOverlay()||back()){e.preventDefault();return}
   }
   if(!a)return;
