@@ -68,7 +68,7 @@ function homeShell(){
     '</header>'+
     '<section class="hero" data-hero><div class="hero__backdrop"></div><div class="hero__shade"></div><div class="hero__content"><div class="eyebrow">LUNO / REAL CATALOG</div><div class="hero__loading">Загружаем каталог…</div></div></section>'+
     '<div class="catalog">'+
-      sectionMarkup('История просмотров','Ваши последние открытые фильмы и сериалы','history')+
+      sectionMarkup('История','Недавно открытые фильмы и сериалы','history')+
       sectionMarkup('Рекомендуем посмотреть','Подборка на основе ваших просмотров','recommendations')+
       sectionMarkup('Популярное','Что сейчас чаще выбирают в каталоге','popular')+
       sectionMarkup('Новинки','Самые свежие позиции из подключённых каталогов','new')+
@@ -179,12 +179,12 @@ function bindHome(el){
     if(document.documentElement.dataset.device!=='tv')return;
     const keys=['ArrowRight','ArrowLeft','ArrowDown','ArrowUp','Enter','Escape'];
     if(!keys.includes(event.key))return;
-    const modal=el.querySelector('.details-modal,.search-modal');
+    const modal=el.querySelector('.details-modal,.search-modal,.settings-modal');
     if(event.key==='Escape'&&modal){modal.remove();return}
     const active=document.activeElement;
     if(event.key==='Enter'&&active?.matches('button,input')){active.click();return}
     if(!active||!active.matches('button,.media-card'))return;
-    const buttons=[...el.querySelectorAll('.topbar button,.media-card,.section-link,.primary,.secondary,.search')].filter(x=>x.offsetParent!==null);
+    const buttons=[...el.querySelectorAll('.topbar button,.media-card,.section-link,.primary,.secondary,.search,.settings-tile')].filter(x=>x.offsetParent!==null);
     const index=buttons.indexOf(active);
     if(index<0)return;
     let next=index;
@@ -274,10 +274,7 @@ function settingsAction(key){
     document.documentElement.classList.toggle('luno-reduced-motion',enabled);
     return;
   }
-  if(key==='other'){
-    localStorage.removeItem('luno_history_v1');
-    location.reload();
-  }
+  if(key==='other'){return;}
 }
 const splash=document.createElement('main');
 splash.className='splash';
