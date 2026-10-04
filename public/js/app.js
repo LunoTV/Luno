@@ -2,12 +2,12 @@ const app=document.getElementById('app');
 
 const CINEMETA_ENDPOINTS={
   movie:[
-    'https://v3-cinemeta.strem.io/catalog/movie/top.json',
-    'https://cinemeta-catalogs.strem.io/top/catalog/movie/top.json'
+    'https://cinemeta-catalogs.strem.io/top/catalog/movie/top.json',
+    'https://v3-cinemeta.strem.io/catalog/movie/top.json'
   ],
   series:[
-    'https://v3-cinemeta.strem.io/catalog/series/top.json',
-    'https://cinemeta-catalogs.strem.io/top/catalog/series/top.json'
+    'https://cinemeta-catalogs.strem.io/top/catalog/series/top.json',
+    'https://v3-cinemeta.strem.io/catalog/series/top.json'
   ]
 };
 const JIKAN_TOP='https://api.jikan.moe/v4/top/anime?limit=12';
@@ -142,7 +142,7 @@ async function openDetails(el,type,id){
   modal.querySelector('.details-modal__close').focus();
   modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('.details-modal__close'))modal.remove()});
   try{
-    const data=await fetchJson([type==='anime'?'https://api.jikan.moe/v4/anime/'+encodeURIComponent(id):'https://v3-cinemeta.strem.io/meta/'+(type==='series'?'series':'movie')+'/'+encodeURIComponent(id)+'.json']);
+    const data=await fetchJson([type==='anime'?'https://api.jikan.moe/v4/anime/'+encodeURIComponent(id):'https://cinemeta-catalogs.strem.io/top/meta/'+(type==='series'?'series':'movie')+'/'+encodeURIComponent(id)+'.json']);
     const item=type==='anime'?data?.data:data?.meta;
     if(!item)throw new Error('no data');
     const image=poster(item), score=item?.imdbRating||item?.score;
@@ -160,7 +160,7 @@ function openSearch(el){
     const q=input.value.trim();if(q.length<2)return;
     modal.querySelector('.search-results').innerHTML='<div class="search-status">Ищем в реальном каталоге…</div>';
     try{
-      const [movies,series]=await Promise.all([fetchJson(['https://v3-cinemeta.strem.io/catalog/movie/top/search='+encodeURIComponent(q)+'.json']),fetchJson(['https://v3-cinemeta.strem.io/catalog/series/top/search='+encodeURIComponent(q)+'.json'])]);
+      const [movies,series]=await Promise.all([fetchJson(['https://cinemeta-catalogs.strem.io/top/catalog/movie/top/search='+encodeURIComponent(q)+'.json']),fetchJson(['https://cinemeta-catalogs.strem.io/top/catalog/series/top/search='+encodeURIComponent(q)+'.json'])]);
       const items=[...(movies?.metas||[]).slice(0,6).map(x=>({...x,__type:'movie'})),...(series?.metas||[]).slice(0,6).map(x=>({...x,__type:'series'}))];
       modal.querySelector('.search-results').innerHTML=items.length?items.map(x=>'<button class="search-result" data-id="'+esc(x.imdb_id)+'" data-type="'+esc(x.__type)+'">'+(poster(x)?'<img src="'+esc(poster(x))+'" alt="">':'')+'<span>'+esc(x.name||'Без названия')+'</span></button>').join(''):'<div class="search-status">Ничего не найдено.</div>';
     }catch{modal.querySelector('.search-results').innerHTML='<div class="search-status">Источник поиска временно недоступен.</div>'}
