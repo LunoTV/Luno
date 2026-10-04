@@ -168,6 +168,7 @@ async function loadHome(){
 const splash=document.createElement('main');
 splash.className='splash';
 splash.innerHTML='<div class="splash__veil" aria-hidden="true"></div><div class="startup-loader" aria-label="Загрузка LUNO"><div class="startup-loader__track"><div class="startup-loader__bar"></div></div><div class="startup-loader__text">Загрузка приложения…</div></div>';
+if(window.matchMedia('(max-width:620px)').matches){splash.style.backgroundImage='url("./assets/luno-start-mobile.jpg?v=20261004-1")';splash.style.backgroundSize='cover';splash.style.backgroundPosition='center center';splash.style.backgroundRepeat='no-repeat';}
 app.replaceChildren(splash);
 setTimeout(loadHome,5600);
 
