@@ -232,6 +232,21 @@ function bindHome(el){
       return true;
     };
 
+    // TV: ArrowDown from the top navigation opens the feed.
+    if(active.closest('.topbar')){
+      if(event.key==='ArrowDown'){
+        const firstCard=el.querySelector('.content-section .media-row .media-card');
+        if(firstCard){
+          focusElement(firstCard);
+          firstCard.closest('.content-section')?.scrollIntoView({behavior:'auto',block:'start'});
+          return;
+        }
+        const heroAction=el.querySelector('.hero .primary,.hero .secondary');
+        if(heroAction){focusElement(heroAction);return;}
+      }
+      if(event.key==='ArrowUp')return;
+    }
+
     if(active.matches('.media-card')){
       if(event.key==='ArrowRight'&&moveWithinRow('right'))return;
       if(event.key==='ArrowLeft'&&moveWithinRow('left'))return;
