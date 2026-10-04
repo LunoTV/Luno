@@ -91,4 +91,4 @@ html[data-device="tv"] .row-loading{gap:22px}
 html[data-device="tv"] .row-loading i{flex-basis:230px}
 
 /* Mobile startup: keep the authored portrait artwork fully visible. */
-@media(max-width:620px){.splash{background-size:contain;background-position:center center;background-repeat:no-repeat;background-color:#02050a}.splash__veil{background:linear-gradient(180deg,rgba(1,4,8,.02),rgba(1,4,8,0) 55%,rgba(1,4,8,.16))}.startup-loader{width:min(320px,72vw)}}
+@media(max-width:620px){.splash{background-image:url("../assets/luno-start-mobile.jpg?v=20261004-1");background-size:cover;background-position:center center;background-repeat:no-repeat;background-color:#02050a}.splash__veil{background:linear-gradient(180deg,rgba(1,4,8,.02),rgba(1,4,8,0) 55%,rgba(1,4,8,.16))}.startup-loader{width:min(320px,72vw)}}
