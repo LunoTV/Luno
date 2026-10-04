@@ -306,3 +306,104 @@ body{overflow-x:hidden}
   .row-control{width:30px;height:30px;font-size:19px}
   .section-link{margin-left:2px}
 }
+
+/* Card labels and fast TV performance */
+.media-card__type{
+  position:absolute;
+  top:10px;
+  left:10px;
+  z-index:3;
+  padding:5px 8px;
+  border-radius:7px;
+  background:rgba(5,14,24,.84);
+  border:1px solid rgba(173,218,250,.16);
+  color:#e8f5ff;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.02em;
+  line-height:1;
+  box-shadow:0 5px 14px rgba(0,0,0,.2);
+}
+.media-card__score{
+  z-index:3;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  min-width:42px;
+  justify-content:center;
+  font-weight:600;
+  font-variant-numeric:tabular-nums;
+}
+.media-card__star{color:#ffd86b;font-size:11px}
+@media(min-width:621px){
+  .media-card__poster{will-change:transform}
+  .media-card:hover .media-card__poster,.media-card:focus-visible .media-card__poster{
+    animation:cardLift .18s ease-out both;
+  }
+}
+@keyframes cardLift{
+  from{transform:translateY(0) scale(1)}
+  to{transform:translateY(-5px) scale(1.015)}
+}
+html[data-device="tv"] .media-row{
+  scroll-behavior:auto !important;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:auto;
+}
+html[data-device="tv"] .media-card__poster{
+  transition:none !important;
+  will-change:auto;
+  box-shadow:0 10px 22px rgba(0,0,0,.24);
+}
+html[data-device="tv"] .media-card:hover .media-card__poster,
+html[data-device="tv"] .media-card:focus-visible .media-card__poster{
+  animation:none !important;
+  transform:none;
+}
+html[data-device="tv"] .media-card__poster:after{display:none}
+html[data-device="tv"] .media-card__score,
+html[data-device="tv"] .media-card__type{
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  box-shadow:none;
+}
+html[data-device="tv"] .hero__backdrop{
+  filter:none;
+  transform:none;
+  transition:none;
+}
+html[data-device="tv"] .details-modal,
+html[data-device="tv"] .search-modal{
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+html[data-device="tv"] .topbar,
+html[data-device="tv"] .mobile-nav{
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+html[data-device="tv"] .nav button,
+html[data-device="tv"] .search,
+html[data-device="tv"] .primary,
+html[data-device="tv"] .secondary,
+html[data-device="tv"] .row-control{
+  transition:none !important;
+}
+html[data-device="tv"] .media-card{
+  contain:layout paint;
+}
+html[data-device="tv"] .media-card img{
+  transform:translateZ(0);
+}
+html[data-device="tv"] .media-card__type{
+  font-size:13px;
+  padding:7px 10px;
+  top:12px;
+  left:12px;
+}
+html[data-device="tv"] .media-card__score{
+  font-size:13px;
+  padding:7px 10px;
+  top:12px;
+  right:12px;
+}
