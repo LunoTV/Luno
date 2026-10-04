@@ -51,9 +51,6 @@
       '</div>';
     document.body.appendChild(splash);
 
-    var w = document.querySelector('.welcome');
-    if(w) w.style.visibility = 'hidden';
-
     var observer = new MutationObserver(function(){
       if(isWelcomeHidden()){
         observer.disconnect();
