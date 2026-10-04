@@ -1,0 +1,2 @@
+const app=document.getElementById('app');
+app.innerHTML='<main style="min-height:100vh;display:grid;place-items:center;padding:24px"><section style="text-align:center"><div style="font-size:52px;font-weight:700;letter-spacing:.12em">LUNO</div><p style="color:#9aa8b8;margin-top:12px">Новый сайт LUNO</p></section></main>';
