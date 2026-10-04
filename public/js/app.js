@@ -70,6 +70,7 @@ function homeShell(){
     '</header>'+
     '<section class="hero" data-hero><div class="hero__backdrop"></div><div class="hero__shade"></div><div class="hero__content"><div class="eyebrow">LUNO / REAL CATALOG</div><div class="hero__loading">Загружаем каталог…</div></div></section>'+
     '<div class="catalog">'+
+      sectionMarkup('Продолжить просмотр','Фильмы и сериалы, которые вы недавно открывали','continue')+
       sectionMarkup('История','Недавно открытые фильмы и сериалы','history')+
       sectionMarkup('Рекомендуем посмотреть','Подборка на основе ваших просмотров','recommendations')+
       sectionMarkup('Популярное','Что сейчас чаще выбирают в каталоге','popular')+
@@ -120,6 +121,17 @@ function saveHistory(item,type){
 function historyItems(){
   return readHistory().map(x=>({...x,__type:x.__type||'movie'}));
 }
+function continueItems(){
+  return historyItems().filter(x=>x.__historyAt).sort((a,b)=>Number(b.__historyAt)-Number(a.__historyAt)).slice(0,10);
+}
+function recommendationScore(item,history,genreText){
+  const genres=Array.isArray(item?.genres)?item.genres:[].concat(item?.genre?String(item.genre).split(/[,|]/):[]).map(x=>String(x).trim()).filter(Boolean);
+  const text=genres.join(' ').toLowerCase();
+  const genreHits=genreText?genreText.split(/\s+/).reduce((n,g)=>n+(g.length>3&&text.includes(g)?1:0),0):0;
+  const rating=Number(item?.imdbRating||item?.rating||item?.score||0);
+  const year=Number(yearOf(item)||item?.year||0);
+  return genreHits*25+rating*3+(year?Math.max(0,year-2015)*.15:0);
+}
 function allCatalogItems(){
   return [
     ...catalogStore.movie.map(x=>({...x,__type:'movie'})),
@@ -133,14 +145,7 @@ function recommendationItems(){
   if(!history.length)return all.slice().sort((a,b)=>Number(b.imdbRating||b.rating||b.score||0)-Number(a.imdbRating||a.rating||a.score||0)).slice(0,16);
   const watchedTitles=new Set(history.map(x=>String(x.name||x.title||'').toLowerCase()));
   const genreText=history.map(x=>Array.isArray(x.genres)?x.genres.join(' '):String(x.genre||'')).join(' ').toLowerCase();
-  return all.filter(x=>!watchedTitles.has(String(x.name||x.title||'').toLowerCase())).sort((a,b)=>{
-    const ga=String(Array.isArray(a.genres)?a.genres.join(' '):a.genre||'').toLowerCase();
-    const gb=String(Array.isArray(b.genres)?b.genres.join(' '):b.genre||'').toLowerCase();
-    const ma=genreText?genreText.split(/\\s+/).reduce((n,g)=>n+(g.length>3&&ga.includes(g)?1:0),0):0;
-    const mb=genreText?genreText.split(/\\s+/).reduce((n,g)=>n+(g.length>3&&gb.includes(g)?1:0),0):0;
-    return (mb-ma)*10+(Number(b.imdbRating||b.rating||b.score||0)-Number(a.imdbRating||a.rating||a.score||0));
-  }).slice(0,16);
-}
+  return all.filter(x=>!watchedTitles.has(String(x.name||x.title||'').toLowerCase())).sort((a,b)=>recommendationScore(b,history,genreText)-recommendationScore(a,history,genreText)).slice(0,16);
 function popularItems(){
   return allCatalogItems().sort((a,b)=>Number(b.imdbRating||b.rating||b.score||0)-Number(a.imdbRating||a.rating||a.score||0)).slice(0,16);
 }
@@ -236,6 +241,7 @@ async function loadHome(){
   const [movies,series,anime]=results.map(r=>r.status==='fulfilled'?r.value:[]);
   setHero(el,movies[0]||series[0]);
   const history=historyItems();
+  renderRow(el,'continue',continueItems(),'movie');
   renderRow(el,'history',history,'movie');
   renderRow(el,'recommendations',recommendationItems(),'movie');
   renderRow(el,'popular',popularItems(),'movie');

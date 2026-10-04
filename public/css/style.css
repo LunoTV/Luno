@@ -789,3 +789,6 @@ html[data-device="tv"] .content-section{scroll-margin-top:72px;}
 html[data-device="tv"] .detail-tags span{font-size:15px}.detail-similar .media-card{flex:0 0 190px}
 
 .history-tools{display:flex;justify-content:flex-end;margin:18px 0}.history-tools button{min-height:44px}.settings-tile small{line-height:1.45}
+
+/* LUNO Home hierarchy */
+#continue .media-row .media-card{flex-basis:220px}#continue .media-card__poster{aspect-ratio:16/9}#continue .media-card__title{font-size:16px}
