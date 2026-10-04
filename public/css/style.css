@@ -261,3 +261,48 @@ html[data-device="tv"] .media-card{flex-basis:238px}
   .hero{height:72vh;min-height:620px}
   .catalog{margin-top:-58px}
 }
+
+/* LUNO usability pass */
+html{scroll-behavior:smooth}
+body{overflow-x:hidden}
+.topbar .search{transition:transform .2s ease,background .2s ease,border-color .2s ease}
+.hero__backdrop{transition:opacity .5s ease,transform .7s ease}
+.section-tools{display:flex;align-items:center;gap:8px}
+.row-control{
+  width:34px;height:34px;border-radius:10px;
+  display:grid;place-items:center;
+  background:rgba(104,168,220,.08);
+  border:1px solid rgba(157,207,242,.14);
+  color:#a9c8e1;font-size:22px;line-height:1;
+  cursor:pointer;
+  transition:transform .18s ease,background .18s ease,border-color .18s ease,color .18s ease;
+}
+.row-control:hover{transform:translateY(-1px);background:rgba(104,168,220,.17);border-color:rgba(157,207,242,.32);color:#fff}
+.row-control:focus-visible,.section-link:focus-visible,.search:focus-visible,.brand:focus-visible,.nav button:focus-visible,.primary:focus-visible,.secondary:focus-visible{
+  outline:2px solid rgba(120,191,255,.85);outline-offset:3px;
+}
+.section-link{margin-left:4px}
+@media(min-width:901px){
+  .hero{height:62vh;min-height:520px;padding-bottom:68px}
+  .hero__content{padding-top:70px}
+  .hero h1{font-size:clamp(42px,4.7vw,70px);max-width:680px;margin:12px 0 14px}
+  .hero p{font-size:14px;line-height:1.55;margin-bottom:22px}
+  .catalog{margin-top:-34px;padding-bottom:82px}
+  .content-section{padding:22px 0 24px;margin-bottom:10px}
+  .media-row{gap:16px;padding-bottom:14px}
+  .media-card{flex-basis:clamp(155px,11vw,200px)}
+  .media-card__title{font-size:13px}
+}
+@media(min-width:1500px){
+  .media-card{flex-basis:190px}
+  .catalog{padding-left:64px;padding-right:64px}
+}
+@media(max-width:900px) and (min-width:621px){
+  .hero{height:64vh;min-height:540px}
+  .catalog{margin-top:-42px}
+}
+@media(max-width:620px){
+  .section-tools{gap:5px}
+  .row-control{width:30px;height:30px;font-size:19px}
+  .section-link{margin-left:2px}
+}
