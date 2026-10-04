@@ -1,0 +1,1 @@
+$(cat /tmp/luno-core.js)
