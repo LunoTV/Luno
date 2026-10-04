@@ -18,16 +18,103 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch live catalogs for same-origin TV access
+      - name: Fetch Russian catalogs from TMDB
+        env:
+          TMDB_TOKEN: ${{ secrets.TMDB_API_READ_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          test -n "${TMDB_TOKEN}" || { echo "TMDB_API_READ_TOKEN GitHub secret is missing"; exit 1; }
           mkdir -p public/data
-          curl -fL --retry 3 --retry-delay 2 "https://v3-cinemeta.strem.io/catalog/movie/top.json" -o public/data/movies.json
-          curl -fL --retry 3 --retry-delay 2 "https://v3-cinemeta.strem.io/catalog/series/top.json" -o public/data/series.json
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.parse
+          import urllib.request
+
+          token = os.environ["TMDB_TOKEN"]
+          base = "https://api.themoviedb.org/3"
+
+          def get(path, params):
+              query = urllib.parse.urlencode(params)
+              req = urllib.request.Request(
+                  f"{base}{path}?{query}",
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "accept": "application/json",
+                      "User-Agent": "LUNO-Pages-Catalog/1.0",
+                  },
+              )
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  return json.load(response)
+
+          def normalize_movies(payload):
+              out = []
+              for item in payload.get("results", []):
+                  if not item.get("poster_path"):
+                      continue
+                  out.append({
+                      "id": item.get("id"),
+                      "name": item.get("title") or item.get("original_title") or "Без названия",
+                      "poster": "https://image.tmdb.org/t/p/w500" + item["poster_path"],
+                      "backdrop": ("https://image.tmdb.org/t/p/w1280" + item["backdrop_path"]) if item.get("backdrop_path") else "",
+                      "description": item.get("overview") or "",
+                      "year": (item.get("release_date") or "")[:4],
+                      "rating": item.get("vote_average"),
+                      "tmdb_id": item.get("id"),
+                      "type": "movie",
+                  })
+              return out
+
+          def normalize_series(payload):
+              out = []
+              for item in payload.get("results", []):
+                  if not item.get("poster_path"):
+                      continue
+                  out.append({
+                      "id": item.get("id"),
+                      "name": item.get("name") or item.get("original_name") or "Без названия",
+                      "poster": "https://image.tmdb.org/t/p/w500" + item["poster_path"],
+                      "backdrop": ("https://image.tmdb.org/t/p/w1280" + item["backdrop_path"]) if item.get("backdrop_path") else "",
+                      "description": item.get("overview") or "",
+                      "year": (item.get("first_air_date") or "")[:4],
+                      "rating": item.get("vote_average"),
+                      "tmdb_id": item.get("id"),
+                      "type": "series",
+                  })
+              return out
+
+          movies = get("/discover/movie", {
+              "language": "ru-RU",
+              "region": "RU",
+              "include_adult": "false",
+              "include_video": "false",
+              "page": 1,
+              "sort_by": "popularity.desc",
+          })
+          series = get("/discover/tv", {
+              "language": "ru-RU",
+              "region": "RU",
+              "include_adult": "false",
+              "include_null_first_air_dates": "false",
+              "page": 1,
+              "sort_by": "popularity.desc",
+          })
+
+          with open("public/data/movies.json", "w", encoding="utf-8") as f:
+              json.dump({"metas": normalize_movies(movies)}, f, ensure_ascii=False, separators=(",", ":"))
+          with open("public/data/series.json", "w", encoding="utf-8") as f:
+              json.dump({"metas": normalize_series(series)}, f, ensure_ascii=False, separators=(",", ":"))
+          PY
+
+      - name: Fetch anime catalog
+        shell: bash
+        run: |
+          set -euo pipefail
           if ! curl -fL --retry 3 --retry-delay 2 "https://api.jikan.moe/v4/top/anime?limit=12" -o public/data/anime.json; then
             printf '{"data":[],"error":"source_unavailable"}\n' > public/data/anime.json
           fi
+
       - name: Cache catalog posters into Pages assets
         shell: bash
         run: |
