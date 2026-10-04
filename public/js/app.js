@@ -156,7 +156,15 @@ function renderRouteScreen(el,route){
  else if(route==='settings')screen=settingsScreen(el);
  else if(route.startsWith('details:')){const [,type,id]=route.split(':');screen=detailsScreen(el,type,decodeURIComponent(id))}
  else {const title=route==='movie'?'Фильмы':route==='series'?'Сериалы':route==='anime'?'Аниме':'История',sub=route==='movie'?'Полный каталог фильмов':route==='series'?'Полный каталог сериалов':route==='anime'?'Полный каталог аниме':'Недавно открытые',type=route==='movie'?'movie':route==='series'?'series':route==='anime'?'anime':'history',items=type==='history'?historyItems():catalogStore[type]||[];screen=document.createElement('main');screen.className='luno-screen';screen.dataset.route=route;screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / CATALOG</div><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div></header><div class="screen-grid">'+(items.length?items.map(x=>cardMarkup(x,x.__type||type)).join(''):'<div class="row-empty">Каталог пока пуст.</div>')+'</div>';el.appendChild(screen)}
- if(screen){const first=screen.querySelector('.media-card')||screen.querySelector('[data-screen-search]')||screen.querySelector('[data-setting]')||screen.querySelector('[data-route-back]');first?.focus()}
+ if(screen){
+  const remembered=window.LunoCore?.router?.focusFor?.(route)||'';
+  let first=null;
+  if(remembered){
+    first=screen.querySelector('[data-id="'+remembered+'"]')||screen.querySelector('[data-nav="'+remembered+'"]');
+  }
+  first=first||screen.querySelector('.media-card')||screen.querySelector('[data-screen-search]')||screen.querySelector('[data-setting]')||screen.querySelector('[data-route-back]');
+  first?.focus();
+}
 }
 function bindHome(el){
   el.addEventListener('click',event=>{
@@ -171,6 +179,7 @@ function bindHome(el){
     if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});return}
     if(event.target.closest('[data-search]')){routeTo('search');return}
     if(event.target.closest('[data-settings]')){routeTo('settings');return}
+    const setting=event.target.closest('[data-setting]');if(setting){settingsAction(setting.dataset.setting);return}
     const rowControl=event.target.closest('[data-row-scroll]');
     if(rowControl){const row=el.querySelector('[data-row="'+rowControl.dataset.rowScroll+'"]');if(row)row.scrollBy({left:Number(rowControl.dataset.dir)*Math.max(420,row.clientWidth*.72),behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth'});return}
     const card=event.target.closest('.media-card');
@@ -321,7 +330,7 @@ async function loadHome(){
   renderRow(el,'anime',anime,'anime');
   const failed=results.some(r=>r.status==='rejected');
   if(failed){error.hidden=false;error.textContent='Один из источников временно недоступен. LUNO продолжает показывать доступные реальные каталоги.'}
-  requestAnimationFrame(()=>{el.style.opacity='1';el.querySelector('.media-card')?.focus()});
+  requestAnimationFrame(()=>{el.style.opacity='1';const route=window.LunoCore?.router?.current?.()||'home';if(route!=='home')renderRouteScreen(el,route);else el.querySelector('.media-card')?.focus()});
 }
 function openSettings(el){
   const modal=document.createElement('div');
@@ -346,7 +355,7 @@ function settingsAction(key){
   if(key==='interface'){
     const enabled=localStorage.getItem('luno_motion')!=='off';
     localStorage.setItem('luno_motion',enabled?'off':'on');
-    document.documentElement.classList.toggle('luno-reduced-motion',enabled);
+    document.documentElement.classList.toggle('luno-reduced-motion',!enabled);
     return;
   }
   if(key==='other'){return;}
