@@ -173,7 +173,7 @@ function bindHome(el){
   });
   const scrollHost=document.documentElement.dataset.device==='tv'?app:window;scrollHost.addEventListener('scroll',()=>{const y=document.documentElement.dataset.device==='tv'?app.scrollTop:window.scrollY;el.querySelector('.topbar')?.classList.toggle('is-scrolled',y>28)},{passive:true});
   el.querySelectorAll('.media-row').forEach(row=>row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false}));
-  const navObserver=new IntersectionObserver(entries=>{const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;const key=visible.target.id==='movies'?'movie':visible.target.id==='series'?'series':visible.target.id==='anime'?'anime':visible.target.id==='history'?'history':'home';el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===key))},{rootMargin:'-20% 0px -55% 0px',threshold:[0,.25,.5]});
+  const navObserver=new IntersectionObserver(entries=>{const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;const key=visible.target.id==='movies'?'movie':visible.target.id==='series'?'series':visible.target.id==='anime'?'anime':visible.target.id==='history'?'history':'home';el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===key))},{root:document.documentElement.dataset.device==='tv'?app:null,rootMargin:'-20% 0px -55% 0px',threshold:[0,.25,.5]});
   el.querySelectorAll('.content-section').forEach(section=>navObserver.observe(section));
   el.addEventListener('keydown',event=>{
     if(document.documentElement.dataset.device!=='tv')return;
@@ -183,8 +183,61 @@ function bindHome(el){
     if(event.key==='Escape'&&modal){modal.remove();return}
     const active=document.activeElement;
     if(event.key==='Enter'&&active?.matches('button,input')){active.click();return}
-    if(!active||!active.matches('button,.media-card'))return;
-    const buttons=[...el.querySelectorAll('.topbar button,.media-card,.section-link,.primary,.secondary,.search,.settings-tile')].filter(x=>x.offsetParent!==null);
+    if(!active?.matches('button,.media-card'))return;
+
+    const focusElement=(target)=>{
+      if(!target||target===active)return;
+      event.preventDefault();
+      target.focus({preventScroll:true});
+      target.scrollIntoView({behavior:'auto',block:'nearest',inline:'nearest'});
+    };
+
+    const moveWithinRow=(direction)=>{
+      const row=active.closest('.media-row');
+      if(!row)return false;
+      const cards=[...row.querySelectorAll('.media-card')].filter(x=>x.offsetParent!==null);
+      const index=cards.indexOf(active);
+      if(index<0)return false;
+      const next=index+(direction==='right'?1:-1);
+      if(cards[next])focusElement(cards[next]);
+      return true;
+    };
+
+    const moveBetweenRows=(direction)=>{
+      const currentRow=active.closest('.media-row');
+      if(!currentRow)return false;
+      const sections=[...el.querySelectorAll('.content-section')].filter(section=>{
+        const row=section.querySelector('.media-row');
+        return row&&row.querySelector('.media-card')&&row.offsetParent!==null;
+      });
+      const currentSection=active.closest('.content-section');
+      const sectionIndex=sections.indexOf(currentSection);
+      if(sectionIndex<0)return false;
+      const targetSection=sections[sectionIndex+(direction==='down'?1:-1)];
+      if(!targetSection)return false;
+      const cards=[...targetSection.querySelectorAll('.media-card')].filter(x=>x.offsetParent!==null);
+      if(!cards.length)return false;
+      const activeRect=active.getBoundingClientRect();
+      const activeCenter=activeRect.left+activeRect.width/2;
+      const target=cards.reduce((best,card)=>{
+        if(!best)return card;
+        const bestRect=best.getBoundingClientRect();
+        const cardRect=card.getBoundingClientRect();
+        return Math.abs(cardRect.left+cardRect.width/2-activeCenter)<Math.abs(bestRect.left+bestRect.width/2-activeCenter)?card:best;
+      },null);
+      focusElement(target);
+      target?.closest('.content-section')?.scrollIntoView({behavior:'auto',block:'start'});
+      return true;
+    };
+
+    if(active.matches('.media-card')){
+      if(event.key==='ArrowRight'&&moveWithinRow('right'))return;
+      if(event.key==='ArrowLeft'&&moveWithinRow('left'))return;
+      if(event.key==='ArrowDown'&&moveBetweenRows('down'))return;
+      if(event.key==='ArrowUp'&&moveBetweenRows('up'))return;
+    }
+
+    const buttons=[...el.querySelectorAll('.topbar button,.media-card,.section-link,.primary,.secondary,.search,.settings-tile,.row-control')].filter(x=>x.offsetParent!==null);
     const index=buttons.indexOf(active);
     if(index<0)return;
     let next=index;
@@ -192,7 +245,7 @@ function bindHome(el){
     if(event.key==='ArrowLeft')next=Math.max(0,index-1);
     if(event.key==='ArrowDown')next=Math.min(buttons.length-1,index+1);
     if(event.key==='ArrowUp')next=Math.max(0,index-1);
-    if(next!==index){event.preventDefault();buttons[next].focus({preventScroll:false});buttons[next].scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'nearest'})}
+    if(next!==index)focusElement(buttons[next]);
   });
 }
 async function openDetails(el,type,id){
