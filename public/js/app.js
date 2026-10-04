@@ -30,19 +30,27 @@ function poster(item){
 function backdrop(item){
   return item?.backdrop||item?.images?.jpg?.large_image_url||poster(item)||'';
 }
+function cardTypeLabel(item,type){
+  if(type==='anime')return 'Аниме';
+  if(type==='series')return 'Сериал';
+  const genres=Array.isArray(item?.genres)?item.genres.join(' ').toLowerCase():String(item?.genre||'').toLowerCase();
+  return /animation|анимац|мультфильм|мультик/.test(genres)?'Мультфильм':'Фильм';
+}
 function cardMarkup(item,type){
   const title=item?.name||item?.title||'Без названия';
   const image=poster(item);
   const score=item?.imdbRating||item?.rating||item?.score;
   const year=yearOf(item)||item?.year||'';
-  return '<button class="media-card" tabindex="0" data-type="'+esc(type)+'" data-id="'+esc(item?.imdb_id||item?.mal_id||'')+'">'+
+  const label=cardTypeLabel(item,type);
+  return '<button class="media-card" tabindex="0" data-type="'+esc(type)+'" data-id="'+esc(item?.imdb_id||item?.tmdb_id||item?.mal_id||item?.id||'')+'">'+
     '<span class="media-card__poster">'+
       (image?'<img src="'+esc(image)+'" alt="" loading="lazy" decoding="async">':'<span class="media-card__poster-fallback">LUNO</span>')+
       '<span class="media-card__shade"></span>'+
-      (score?'<span class="media-card__score">★ '+esc(scoreOf(score))+'</span>':'')+
+      '<span class="media-card__type">'+esc(label)+'</span>'+
+      (score?'<span class="media-card__score"><span class="media-card__star">★</span> '+esc(scoreOf(score))+'</span>':'')+
     '</span>'+
     '<span class="media-card__title">'+esc(title)+'</span>'+
-    '<span class="media-card__meta">'+esc([year,type==='anime'?'Аниме':type==='series'?'Сериал':'Фильм'].filter(Boolean).join(' · '))+'</span>'+
+    '<span class="media-card__meta">'+esc(year)+'</span>'+
   '</button>';
 }
 function sectionMarkup(title,sub,id){
@@ -77,9 +85,9 @@ function renderRow(el,id,items,type){
   row.innerHTML=items.length?items.slice(0,12).map(item=>cardMarkup(item,type)).join(''):'<div class="row-empty">Источник не вернул данные.</div>';
 }
 function scrollToSection(el,target){
-  if(target==='home'){window.scrollTo({top:0,behavior:'smooth'});return}
+  if(target==='home'){window.scrollTo({top:0,behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth'});return}
   const id=target==='movie'?'movies':target==='series'?'series':'anime';
-  el.querySelector('#'+id)?.scrollIntoView({behavior:'smooth',block:'start'});
+  el.querySelector('#'+id)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});
 }
 function bindHome(el){
   el.addEventListener('click',event=>{
@@ -90,10 +98,10 @@ function bindHome(el){
       return;
     }
     const link=event.target.closest('[data-scroll]');
-    if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:'smooth',block:'start'});return}
+    if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});return}
     if(event.target.closest('[data-search]')){openSearch(el);return}
     const rowControl=event.target.closest('[data-row-scroll]');
-    if(rowControl){const row=el.querySelector('[data-row="'+rowControl.dataset.rowScroll+'"]');if(row)row.scrollBy({left:Number(rowControl.dataset.dir)*Math.max(420,row.clientWidth*.72),behavior:'smooth'});return}
+    if(rowControl){const row=el.querySelector('[data-row="'+rowControl.dataset.rowScroll+'"]');if(row)row.scrollBy({left:Number(rowControl.dataset.dir)*Math.max(420,row.clientWidth*.72),behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth'});return}
     const card=event.target.closest('.media-card');
     if(card){openDetails(el,card.dataset.type,card.dataset.id);return}
     const open=event.target.closest('[data-open]');
@@ -119,7 +127,7 @@ function bindHome(el){
     if(event.key==='ArrowLeft')next=Math.max(0,index-1);
     if(event.key==='ArrowDown')next=Math.min(buttons.length-1,index+1);
     if(event.key==='ArrowUp')next=Math.max(0,index-1);
-    if(next!==index){event.preventDefault();buttons[next].focus({preventScroll:false});buttons[next].scrollIntoView({behavior:'smooth',block:'nearest'})}
+    if(next!==index){event.preventDefault();buttons[next].focus({preventScroll:false});buttons[next].scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'nearest'})}
   });
 }
 async function openDetails(el,type,id){
