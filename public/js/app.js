@@ -147,21 +147,16 @@ function popularItems(){
 function newItems(){
   return allCatalogItems().sort((a,b)=>Number(yearOf(b)||b.year||0)-Number(yearOf(a)||a.year||0)).slice(0,16);
 }
-function routeTo(target){
-  if(window.LunoCore?.router?.go){window.LunoCore.router.go(target);return;}
-  scrollToSection(document.querySelector('.home'),target);
-}
+function routeTo(target){if(window.LunoCore?.router?.go){window.LunoCore.router.go(target);return}scrollToSection(document.querySelector('.home'),target)}
 function renderRouteScreen(el,route){
-  if(route==='home'){el.querySelector('.luno-screen')?.remove();el.querySelector('.home')?.classList.remove('route-hidden');return;}
-  el.querySelector('.home')?.classList.add('route-hidden');
-  el.querySelector('.luno-screen')?.remove();
-  const screen=document.createElement('main');screen.className='luno-screen';
-  const title=route==='movie'?'Фильмы':route==='series'?'Сериалы':route==='anime'?'Аниме':route==='history'?'История':'LUNO';
-  const sub=route==='movie'?'Полный каталог фильмов':route==='series'?'Полный каталог сериалов':route==='anime'?'Полный каталог аниме':'Недавно открытые';
-  const type=route==='movie'?'movie':route==='series'?'series':route==='anime'?'anime':'history';
-  const items=type==='history'?historyItems():catalogStore[type]||[];
-  screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / CATALOG</div><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div></header><div class="screen-grid">'+(items.length?items.map(x=>cardMarkup(x,x.__type||type)).join(''):'<div class="row-empty">Каталог пока пуст.</div>')+'</div>';
-  el.appendChild(screen);const firstCard=screen.querySelector('.media-card');(firstCard||screen.querySelector('[data-route-back]'))?.focus();
+ if(route==='home'){el.querySelector('.luno-screen')?.remove();el.querySelector('.home')?.classList.remove('route-hidden');return}
+ el.querySelector('.home')?.classList.add('route-hidden');el.querySelector('.luno-screen')?.remove();
+ let screen=null;
+ if(route==='search')screen=searchScreen(el);
+ else if(route==='settings')screen=settingsScreen(el);
+ else if(route.startsWith('details:')){const [,type,id]=route.split(':');screen=detailsScreen(el,type,decodeURIComponent(id))}
+ else {const title=route==='movie'?'Фильмы':route==='series'?'Сериалы':route==='anime'?'Аниме':'История',sub=route==='movie'?'Полный каталог фильмов':route==='series'?'Полный каталог сериалов':route==='anime'?'Полный каталог аниме':'Недавно открытые',type=route==='movie'?'movie':route==='series'?'series':route==='anime'?'anime':'history',items=type==='history'?historyItems():catalogStore[type]||[];screen=document.createElement('main');screen.className='luno-screen';screen.dataset.route=route;screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / CATALOG</div><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div></header><div class="screen-grid">'+(items.length?items.map(x=>cardMarkup(x,x.__type||type)).join(''):'<div class="row-empty">Каталог пока пуст.</div>')+'</div>';el.appendChild(screen)}
+ if(screen){const first=screen.querySelector('.media-card')||screen.querySelector('[data-screen-search]')||screen.querySelector('[data-setting]')||screen.querySelector('[data-route-back]');first?.focus()}
 }
 function bindHome(el){
   el.addEventListener('click',event=>{
@@ -174,14 +169,14 @@ function bindHome(el){
     const routeBack=event.target.closest('[data-route-back]');if(routeBack){window.LunoCore?.router?.back?.()||routeTo('home');return}
     const link=event.target.closest('[data-scroll]');
     if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});return}
-    if(event.target.closest('[data-search]')){openSearch(el);return}
-    if(event.target.closest('[data-settings]')){openSettings(el);return}
+    if(event.target.closest('[data-search]')){routeTo('search');return}
+    if(event.target.closest('[data-settings]')){routeTo('settings');return}
     const rowControl=event.target.closest('[data-row-scroll]');
     if(rowControl){const row=el.querySelector('[data-row="'+rowControl.dataset.rowScroll+'"]');if(row)row.scrollBy({left:Number(rowControl.dataset.dir)*Math.max(420,row.clientWidth*.72),behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth'});return}
     const card=event.target.closest('.media-card');
-    if(card){openDetails(el,card.dataset.type,card.dataset.id);return}
+    if(card){routeTo('details:'+card.dataset.type+':'+encodeURIComponent(card.dataset.id));return}
     const open=event.target.closest('[data-open]');
-    if(open){openDetails(el,open.dataset.openType||'movie',open.dataset.open)}
+    if(open){routeTo('details:'+(open.dataset.openType||'movie')+':'+encodeURIComponent(open.dataset.open))}
   });
   const scrollHost=document.documentElement.dataset.device==='tv'?app:window;scrollHost.addEventListener('scroll',()=>{const y=document.documentElement.dataset.device==='tv'?app.scrollTop:window.scrollY;el.querySelector('.topbar')?.classList.toggle('is-scrolled',y>28)},{passive:true});
   el.querySelectorAll('.media-row').forEach(row=>row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false}));
@@ -375,4 +370,4 @@ loadHome();
   };
   updateTvScale();window.addEventListener('resize',updateTvScale,{passive:true});window.addEventListener('orientationchange',updateTvScale,{passive:true});
 })();
-window.addEventListener('luno:navigate',event=>{const route=event.detail?.route||'home';const home=document.querySelector('.home');if(!home)return;renderRouteScreen(home,route);home.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===route));});
+window.addEventListener('luno:navigate',event=>{const route=event.detail?.route||'home',home=document.querySelector('.home');if(!home)return;renderRouteScreen(home,route);home.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===route));});
