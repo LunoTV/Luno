@@ -155,7 +155,7 @@ function renderRouteScreen(el,route){
  if(route==='search')screen=searchScreen(el);
  else if(route==='settings')screen=settingsScreen(el);
  else if(route.startsWith('details:')){const [,type,id]=route.split(':');screen=detailsScreen(el,type,decodeURIComponent(id))}
- else {const title=route==='movie'?'Фильмы':route==='series'?'Сериалы':route==='anime'?'Аниме':'История',sub=route==='movie'?'Полный каталог фильмов':route==='series'?'Полный каталог сериалов':route==='anime'?'Полный каталог аниме':'Недавно открытые',type=route==='movie'?'movie':route==='series'?'series':route==='anime'?'anime':'history',items=type==='history'?historyItems():catalogStore[type]||[];screen=document.createElement('main');screen.className='luno-screen';screen.dataset.route=route;screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / CATALOG</div><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div></header><div class="screen-grid">'+(items.length?items.map(x=>cardMarkup(x,x.__type||type)).join(''):'<div class="row-empty">Каталог пока пуст.</div>')+'</div>';el.appendChild(screen)}
+ else {const title=route==='movie'?'Фильмы':route==='series'?'Сериалы':route==='anime'?'Аниме':'История',sub=route==='movie'?'Полный каталог фильмов':route==='series'?'Полный каталог сериалов':route==='anime'?'Полный каталог аниме':'Недавно открытые',type=route==='movie'?'movie':route==='series'?'series':route==='anime'?'anime':'history',items=type==='history'?historyItems():catalogStore[type]||[];screen=document.createElement('main');screen.className='luno-screen';screen.dataset.route=route;screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / CATALOG</div><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div>'+(type==='history'?'<div class="history-tools"><button class="secondary" data-setting="clear-history">Очистить историю</button></div>':'')+'</header><div class="screen-grid">'+(items.length?items.map(x=>cardMarkup(x,x.__type||type)).join(''):'<div class="row-empty">История пока пуста.</div>')+'</div>';el.appendChild(screen)}
  if(screen){
   const remembered=window.LunoCore?.router?.focusFor?.(route)||'';
   let first=null;
@@ -271,6 +271,16 @@ function settingsAction(key){
     const enabled=localStorage.getItem('luno_motion')!=='off';
     localStorage.setItem('luno_motion',enabled?'off':'on');
     document.documentElement.classList.toggle('luno-reduced-motion',!enabled);
+    const screen=document.querySelector('.luno-settings-screen');
+    if(screen) renderRouteScreen(document.querySelector('.home'), 'settings');
+    return;
+  }
+  if(key==='clear-history'){
+    try{localStorage.removeItem('luno_history_v1')}catch{}
+    document.querySelector('.luno-settings-screen')?.remove();
+    const route=window.LunoCore?.router?.current?.();
+    if(route==='history'){window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:'history',stack:[]}}))}
+    else {routeTo('settings')}
     return;
   }
   if(key==='other'){return;}

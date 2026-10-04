@@ -787,3 +787,5 @@ html[data-device="tv"] .content-section{scroll-margin-top:72px;}
 
 .detail-tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.detail-tags span{padding:7px 11px;border:1px solid rgba(157,207,242,.14);border-radius:999px;color:#a9bac9;background:#081521}.detail-similar{margin-top:44px}.detail-similar .media-row{padding-bottom:12px}
 html[data-device="tv"] .detail-tags span{font-size:15px}.detail-similar .media-card{flex:0 0 190px}
+
+.history-tools{display:flex;justify-content:flex-end;margin:18px 0}.history-tools button{min-height:44px}.settings-tile small{line-height:1.45}
