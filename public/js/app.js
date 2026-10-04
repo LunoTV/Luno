@@ -14,7 +14,7 @@ setTimeout(()=>{const next=home();next.style.opacity='0';app.replaceChildren(nex
     const isTv=tvUA||tvViewport;
     const physicalW=Math.max(w,screen.width||w)*(window.devicePixelRatio||1);
     const physicalH=Math.max(h,screen.height||h)*(window.devicePixelRatio||1);
-    const scale=isTv?Math.min(physicalW/1920,physicalH/1080):1;
+    const scale=isTv?Math.min(1920/Math.max(w,1),1080/Math.max(h,1)):1;
     const safe=Math.max(1,Math.min(2.5,scale));
     document.documentElement.style.setProperty('--tv-scale',safe.toFixed(3));
     document.documentElement.dataset.device=isTv?'tv':'other';
