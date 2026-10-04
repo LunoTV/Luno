@@ -70,7 +70,7 @@ function homeShell(){
     '</header>'+
     '<section class="hero" data-hero><div class="hero__backdrop"></div><div class="hero__shade"></div><div class="hero__content"><div class="eyebrow">LUNO / REAL CATALOG</div><div class="hero__loading">Загружаем каталог…</div></div></section>'+
     '<div class="catalog">'+
-      sectionMarkup('Продолжить просмотр','Фильмы и сериалы, которые вы недавно открывали','continue')+
+      sectionMarkup('Продолжить просмотр','Вернитесь к тому, что смотрели последним','continue')+
       sectionMarkup('История','Недавно открытые фильмы и сериалы','history')+
       sectionMarkup('Рекомендуем посмотреть','Подборка на основе ваших просмотров','recommendations')+
       sectionMarkup('Популярное','Что сейчас чаще выбирают в каталоге','popular')+
@@ -113,7 +113,7 @@ function readHistory(){
 function saveHistory(item,type){
   const id=item?.imdb_id||item?.tmdb_id||item?.mal_id||item?.id;
   if(!id)return;
-  const entry={...item,__type:type,__historyId:String(id),__historyAt:Date.now()};
+  const entry={...item,__type:type,__historyId:String(id),__historyAt:Date.now(),__progress:0};
   const list=readHistory().filter(x=>String(x.__historyId)!==String(id));
   list.unshift(entry);
   try{localStorage.setItem('luno_history_v1',JSON.stringify(list.slice(0,24)))}catch{}
@@ -281,6 +281,7 @@ function settingsAction(key){
     if(screen) renderRouteScreen(document.querySelector('.home'), 'settings');
     return;
   }
+  if(key==='profile'){return;}
   if(key==='clear-history'){
     try{localStorage.removeItem('luno_history_v1')}catch{}
     document.querySelector('.luno-settings-screen')?.remove();

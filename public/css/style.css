@@ -792,3 +792,6 @@ html[data-device="tv"] .detail-tags span{font-size:15px}.detail-similar .media-c
 
 /* LUNO Home hierarchy */
 #continue .media-row .media-card{flex-basis:220px}#continue .media-card__poster{aspect-ratio:16/9}#continue .media-card__title{font-size:16px}
+
+/* LUNO final content polish */
+.detail-status{margin-top:18px;padding:11px 14px;border:1px solid rgba(132,205,255,.14);border-radius:12px;color:#91b8d3;background:#071522}.detail-similar{scroll-margin-top:80px}#continue .media-card__bottom{display:none}
