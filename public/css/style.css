@@ -784,3 +784,6 @@ html[data-device="tv"] .screen-searchbar input{transition:none}.settings-grid--s
 html[data-device="tv"] .home .media-row{scroll-behavior:auto;}
 html[data-device="tv"] .media-card:focus,html[data-device="tv"] .topbar button:focus,html[data-device="tv"] .hero button:focus,html[data-device="tv"] .screen-back:focus,html[data-device="tv"] .settings-tile:focus,html[data-device="tv"] .screen-searchbar input:focus{outline:3px solid rgba(132,205,255,.9);outline-offset:4px;}
 html[data-device="tv"] .content-section{scroll-margin-top:72px;}
+
+.detail-tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.detail-tags span{padding:7px 11px;border:1px solid rgba(157,207,242,.14);border-radius:999px;color:#a9bac9;background:#081521}.detail-similar{margin-top:44px}.detail-similar .media-row{padding-bottom:12px}
+html[data-device="tv"] .detail-tags span{font-size:15px}.detail-similar .media-card{flex:0 0 190px}
