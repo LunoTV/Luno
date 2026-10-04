@@ -146,6 +146,7 @@ function recommendationItems(){
   const watchedTitles=new Set(history.map(x=>String(x.name||x.title||'').toLowerCase()));
   const genreText=history.map(x=>Array.isArray(x.genres)?x.genres.join(' '):String(x.genre||'')).join(' ').toLowerCase();
   return all.filter(x=>!watchedTitles.has(String(x.name||x.title||'').toLowerCase())).sort((a,b)=>recommendationScore(b,history,genreText)-recommendationScore(a,history,genreText)).slice(0,16);
+}
 function popularItems(){
   return allCatalogItems().sort((a,b)=>Number(b.imdbRating||b.rating||b.score||0)-Number(a.imdbRating||a.rating||a.score||0)).slice(0,16);
 }
