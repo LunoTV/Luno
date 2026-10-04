@@ -56,7 +56,7 @@ function homeShell(){
       '</nav><button class="search" data-search aria-label="Поиск">⌕</button>'+
     '</header>'+
     '<section class="hero" data-hero><div class="hero__backdrop"></div><div class="hero__shade"></div><div class="hero__content"><div class="eyebrow">LUNO / REAL CATALOG</div><div class="hero__loading">Загружаем каталог…</div></div></section>'+
-    '<div class="catalog">'+sectionMarkup('Фильмы','Реальные данные Cinemeta','movies')+sectionMarkup('Сериалы','Реальные данные Cinemeta','series')+sectionMarkup('Аниме','Реальные данные MyAnimeList через Jikan','anime')+'</div>'+
+    '<div class="catalog">'+sectionMarkup('Фильмы','Реальные данные TMDB','movies')+sectionMarkup('Сериалы','Реальные данные TMDB','series')+sectionMarkup('Аниме','Реальные данные MyAnimeList через Jikan','anime')+'</div>'+
     '<div class="catalog-error" data-error hidden></div>'+
     '<nav class="mobile-nav"><button class="active" data-nav="home">⌂<br>Главная</button><button data-nav="movie">◌<br>Фильмы</button><button data-nav="series">◯<br>Сериалы</button><button data-search>⌕<br>Поиск</button></nav>';
   return el;
