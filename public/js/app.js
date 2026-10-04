@@ -122,31 +122,30 @@ async function openDetails(el,type,id){
   el.appendChild(modal);
   modal.querySelector('.details-modal__close').focus();
   modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('.details-modal__close'))modal.remove()});
-  try{
-    const data=await fetchJson([type==='anime'?'https://api.jikan.moe/v4/anime/'+encodeURIComponent(id):'https://cinemeta-catalogs.strem.io/top/meta/'+(type==='series'?'series':'movie')+'/'+encodeURIComponent(id)+'.json']);
-    const item=type==='anime'?data?.data:data?.meta;
-    if(!item)throw new Error('no data');
-    const image=poster(item), score=item?.imdbRating||item?.score;
-    modal.querySelector('.details-modal__body').innerHTML=(image?'<img class="details-modal__poster" src="'+esc(image)+'" alt="">':'')+
-      '<div class="details-modal__info"><div class="eyebrow">LUNO / '+esc(type==='anime'?'ANIME':type.toUpperCase())+'</div><h2>'+esc(item.name||item.title||'Без названия')+'</h2><div class="details-modal__meta">'+esc([yearOf(item)||item.year,score?'★ '+scoreOf(score):''].filter(Boolean).join(' · '))+'</div><p>'+esc(item.description||item.synopsis||'Описание отсутствует в источнике.')+'</p><button class="primary" disabled>Смотреть — подключим плеер следующим этапом</button></div>';
-  }catch{modal.querySelector('.details-modal__body').textContent='Не удалось получить данные источника.'}
+  const list=catalogStore[type]||[];
+  const item=list.find(x=>String(x?.imdb_id||x?.mal_id||x?.id)===String(id));
+  if(!item){
+    modal.querySelector('.details-modal__body').textContent='Карточка больше недоступна в текущем каталоге.';
+    return;
+  }
+  const image=poster(item), score=item?.imdbRating||item?.rating||item?.score;
+  modal.querySelector('.details-modal__body').innerHTML=(image?'<img class="details-modal__poster" src="'+esc(image)+'" alt="">':'')+
+    '<div class="details-modal__info"><div class="eyebrow">LUNO / '+esc(type==='anime'?'ANIME':type.toUpperCase())+'</div><h2>'+esc(item.name||item.title||'Без названия')+'</h2><div class="details-modal__meta">'+esc([yearOf(item)||item.year,score?'★ '+scoreOf(score):''].filter(Boolean).join(' · '))+'</div><p>'+esc(item.description||item.synopsis||'Описание отсутствует в источнике.')+'</p><button class="primary" disabled>Смотреть — подключим плеер следующим этапом</button></div>';
 }
 function openSearch(el){
   const modal=document.createElement('div');
   modal.className='search-modal';
-  modal.innerHTML='<div class="search-modal__panel"><button class="details-modal__close" aria-label="Закрыть">×</button><input autofocus placeholder="Название фильма или сериала"><div class="search-results"></div></div>';
+  modal.innerHTML='<div class="search-modal__panel"><button class="details-modal__close" aria-label="Закрыть">×</button><input autofocus placeholder="Поиск по фильмам и сериалам"><div class="search-results"></div></div>';
   el.appendChild(modal);
-  const input=modal.querySelector('input');let timer;
-  const run=async()=>{
-    const q=input.value.trim();if(q.length<2)return;
-    modal.querySelector('.search-results').innerHTML='<div class="search-status">Ищем в реальном каталоге…</div>';
-    try{
-      const [movies,series]=await Promise.all([fetchJson(['https://cinemeta-catalogs.strem.io/top/catalog/movie/top/search='+encodeURIComponent(q)+'.json']),fetchJson(['https://cinemeta-catalogs.strem.io/top/catalog/series/top/search='+encodeURIComponent(q)+'.json'])]);
-      const items=[...(movies?.metas||[]).slice(0,6).map(x=>({...x,__type:'movie'})),...(series?.metas||[]).slice(0,6).map(x=>({...x,__type:'series'}))];
-      modal.querySelector('.search-results').innerHTML=items.length?items.map(x=>'<button class="search-result" data-id="'+esc(x.imdb_id)+'" data-type="'+esc(x.__type)+'">'+(poster(x)?'<img src="'+esc(poster(x))+'" alt="">':'')+'<span>'+esc(x.name||'Без названия')+'</span></button>').join(''):'<div class="search-status">Ничего не найдено.</div>';
-    }catch{modal.querySelector('.search-results').innerHTML='<div class="search-status">Источник поиска временно недоступен.</div>'}
+  const input=modal.querySelector('input');
+  const run=()=>{
+    const q=input.value.trim().toLowerCase();
+    if(q.length<2){modal.querySelector('.search-results').innerHTML='';return}
+    const items=[...catalogStore.movie.map(x=>({...x,__type:'movie'})),...catalogStore.series.map(x=>({...x,__type:'series'}))]
+      .filter(x=>String(x.name||x.title||'').toLowerCase().includes(q)).slice(0,12);
+    modal.querySelector('.search-results').innerHTML=items.length?items.map(x=>'<button class="search-result" data-id="'+esc(x.imdb_id||x.id)+'" data-type="'+esc(x.__type)+'">'+(poster(x)?'<img src="'+esc(poster(x))+'" alt="">':'')+'<span>'+esc(x.name||'Без названия')+'</span></button>').join(''):'<div class="search-status">Ничего не найдено.</div>';
   };
-  input.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(run,350)});
+  input.addEventListener('input',run);
   modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('.details-modal__close'))modal.remove();const result=e.target.closest('.search-result');if(result){modal.remove();openDetails(el,result.dataset.type,result.dataset.id)}});
 }
 async function loadHome(){
