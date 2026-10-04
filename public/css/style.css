@@ -779,3 +779,8 @@ html[data-device="tv"] .detail-layout{grid-template-columns:320px minmax(0,850px
 @media(max-width:800px){.detail-layout{grid-template-columns:1fr;gap:22px}.detail-poster{max-width:300px}.detail-copy{padding:0}.screen-searchbar input{height:54px;font-size:17px}}
 html[data-device="tv"] .detail-poster{box-shadow:0 14px 30px rgba(0,0,0,.3)}
 html[data-device="tv"] .screen-searchbar input{transition:none}.settings-grid--screen{padding-top:0}
+
+/* LUNO TV focus engine */
+html[data-device="tv"] .home .media-row{scroll-behavior:auto;}
+html[data-device="tv"] .media-card:focus,html[data-device="tv"] .topbar button:focus,html[data-device="tv"] .hero button:focus,html[data-device="tv"] .screen-back:focus,html[data-device="tv"] .settings-tile:focus,html[data-device="tv"] .screen-searchbar input:focus{outline:3px solid rgba(132,205,255,.9);outline-offset:4px;}
+html[data-device="tv"] .content-section{scroll-margin-top:72px;}
