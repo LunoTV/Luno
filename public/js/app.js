@@ -151,7 +151,7 @@ function openSearch(el){
 async function loadHome(){
   const el=homeShell();app.replaceChildren(el);bindHome(el);
   const error=el.querySelector('[data-error]');
-  const results=await Promise.allSettled([loadCatalog('movie'),loadCatalog('series'),loadAnime()]);
+  const results=await Promise.allSettled([loadCatalog('movie'),loadCatalog('series'),loadCatalog('anime')]);
   const [movies,series,anime]=results.map(r=>r.status==='fulfilled'?r.value:[]);
   setHero(el,movies[0]||series[0]);
   renderRow(el,'movies',movies,'movie');
