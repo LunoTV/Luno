@@ -4,4 +4,22 @@ const splash=document.createElement('main');splash.className='splash';splash.inn
 app.replaceChildren(splash);
 setTimeout(()=>{const next=home();next.style.opacity='0';app.replaceChildren(next);requestAnimationFrame(()=>{next.style.transition='opacity .7s ease';next.style.opacity='1'})},5600);
 
-(function(){const updateTvScale=()=>{const w=window.innerWidth,h=window.innerHeight;const isTv=w>=1000&&h>=600&&(window.matchMedia('(hover: none)').matches||w>=1600);const scale=isTv?Math.min(w/1920,h/1080):1;document.documentElement.style.setProperty('--tv-scale',Math.max(.75,Math.min(2,scale)).toFixed(3));document.documentElement.dataset.device=isTv?'tv':'other'};updateTvScale();window.addEventListener('resize',updateTvScale,{passive:true});window.addEventListener('orientationchange',updateTvScale,{passive:true})})();
+(function(){
+  const updateTvScale=()=>{
+    const w=window.innerWidth||document.documentElement.clientWidth;
+    const h=window.innerHeight||document.documentElement.clientHeight;
+    const ua=navigator.userAgent||'';
+    const tvUA=/(smart-tv|smarttv|hbbtv|web0s|webos|tizen|netcast|viera|bravia|googletv|aftb|aftm|android tv|androidtv|tv;)/i.test(ua);
+    const tvViewport=w>=800&&h>=450&&w/h>=1.45;
+    const isTv=tvUA||tvViewport;
+    const physicalW=Math.max(w,screen.width||w)*(window.devicePixelRatio||1);
+    const physicalH=Math.max(h,screen.height||h)*(window.devicePixelRatio||1);
+    const scale=isTv?Math.min(physicalW/1920,physicalH/1080):1;
+    const safe=Math.max(1,Math.min(2.5,scale));
+    document.documentElement.style.setProperty('--tv-scale',safe.toFixed(3));
+    document.documentElement.dataset.device=isTv?'tv':'other';
+  };
+  updateTvScale();
+  window.addEventListener('resize',updateTvScale,{passive:true});
+  window.addEventListener('orientationchange',updateTvScale,{passive:true});
+})();
