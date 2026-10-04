@@ -683,3 +683,74 @@ html[data-device="tv"] .hero__shade{
     overflow:hidden;
   }
 }
+
+/* LUNO cards — bottom title/rating strip */
+.media-card__poster{
+  overflow:hidden;
+}
+.media-card__bottom{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:4;
+  min-height:52px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  padding:24px 10px 10px;
+  background:linear-gradient(180deg,transparent 0%,rgba(2,8,14,.58) 35%,rgba(2,8,14,.94) 100%);
+}
+.media-card__bottom .media-card__title{
+  min-width:0;
+  margin:0;
+  color:#f4f9fd;
+  font-size:13px;
+  font-weight:600;
+  line-height:1.2;
+  text-align:left;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+  text-shadow:0 2px 8px rgba(0,0,0,.65);
+}
+.media-card__bottom .media-card__score{
+  flex:0 0 auto;
+  position:static;
+  min-width:42px;
+  padding:5px 7px;
+  border-radius:7px;
+  background:rgba(4,12,20,.78);
+  border:1px solid rgba(190,222,244,.2);
+  color:#eaf6ff;
+  font-size:11px;
+  box-shadow:none;
+}
+.media-card__meta{
+  display:block;
+  margin-top:7px;
+}
+@media(max-width:620px){
+  .media-card__bottom{
+    min-height:48px;
+    padding:22px 8px 8px;
+  }
+  .media-card__bottom .media-card__title{font-size:12px}
+  .media-card__bottom .media-card__score{font-size:10px;padding:4px 6px}
+}
+html[data-device="tv"] .media-card__bottom{
+  min-height:60px;
+  padding:28px 12px 11px;
+  background:linear-gradient(180deg,transparent 0%,rgba(2,8,14,.62) 30%,rgba(2,8,14,.96) 100%);
+}
+html[data-device="tv"] .media-card__bottom .media-card__title{
+  font-size:15px;
+}
+html[data-device="tv"] .media-card__bottom .media-card__score{
+  font-size:12px;
+  padding:6px 8px;
+  border-color:rgba(190,222,244,.2);
+  background:rgba(4,12,20,.86);
+}
