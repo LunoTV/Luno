@@ -18,6 +18,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch live catalogs for same-origin TV access
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/data
+          curl -fL --retry 3 --retry-delay 2 "https://v3-cinemeta.strem.io/catalog/movie/top.json" -o public/data/movies.json
+          curl -fL --retry 3 --retry-delay 2 "https://v3-cinemeta.strem.io/catalog/series/top.json" -o public/data/series.json
+          if ! curl -fL --retry 3 --retry-delay 2 "https://api.jikan.moe/v4/top/anime?limit=12" -o public/data/anime.json; then
+            printf '{"data":[],"error":"source_unavailable"}\n' > public/data/anime.json
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
