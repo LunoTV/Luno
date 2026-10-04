@@ -247,3 +247,17 @@ html[data-device="tv"] .catalog{margin-top:-90px}
 html[data-device="tv"] .content-section{padding-top:28px}
 html[data-device="tv"] .media-card{flex-basis:238px}
 .startup-loader__brand{margin-bottom:10px;font-size:clamp(28px,4vw,46px);font-weight:600;letter-spacing:.28em;padding-left:.28em;color:rgba(248,252,255,.96);text-shadow:0 0 24px rgba(120,191,255,.32)}html[data-device="tv"] .startup-loader__brand{font-size:clamp(40px,4vw,64px);margin-bottom:14px}@media(max-width:620px){.startup-loader__brand{font-size:28px;margin-bottom:8px}}
+/* Desktop mouse navigation */
+@media(min-width:621px){
+  .home{overflow-x:hidden}
+  .topbar .nav button,.topbar .search,.brand,.primary,.secondary,.section-link,.media-card{cursor:pointer}
+  .nav button{padding:10px 2px}
+  .nav button:hover{transform:translateY(-1px)}
+  .search:hover,.primary:hover,.secondary:hover{transform:translateY(-1px)}
+  .media-row{overflow-x:auto;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:rgba(120,191,255,.35) transparent}
+  .media-row::-webkit-scrollbar{height:5px}
+  .media-row::-webkit-scrollbar-track{background:transparent}
+  .media-row::-webkit-scrollbar-thumb{background:rgba(120,191,255,.28);border-radius:99px}
+  .hero{height:72vh;min-height:620px}
+  .catalog{margin-top:-58px}
+}
