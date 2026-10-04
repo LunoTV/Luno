@@ -114,7 +114,7 @@ function bindHome(el){
     if(open){openDetails(el,'movie',open.dataset.open)}
   });
   el.addEventListener('keydown',event=>{
-    if(!document.documentElement.dataset.device==='tv')return;
+    if(document.documentElement.dataset.device!=='tv')return;
     const keys=['ArrowRight','ArrowLeft','ArrowDown','ArrowUp','Enter','Escape'];
     if(!keys.includes(event.key))return;
     const modal=el.querySelector('.details-modal,.search-modal');
