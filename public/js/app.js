@@ -14,7 +14,7 @@ const scoreOf=value=>{
   return Number.isFinite(n)?n.toFixed(1):String(value||'');
 };
 async function fetchJson(url){
-  const res=await fetch(url,{cache:'no-store',headers:{accept:'application/json'}});
+  const res=await fetch(url,{cache:'force-cache',headers:{accept:'application/json'}});
   if(!res.ok)throw new Error(String(res.status));
   return res.json();
 }
@@ -34,7 +34,7 @@ function cardMarkup(item,type){
   const year=yearOf(item)||item?.year||'';
   return '<button class="media-card" tabindex="0" data-type="'+esc(type)+'" data-id="'+esc(item?.imdb_id||item?.mal_id||'')+'">'+
     '<span class="media-card__poster">'+
-      (image?'<img src="'+esc(image)+'" alt="" loading="lazy">':'<span class="media-card__poster-fallback">LUNO</span>')+
+      (image?'<img src="'+esc(image)+'" alt="" loading="lazy" decoding="async">':'<span class="media-card__poster-fallback">LUNO</span>')+
       '<span class="media-card__shade"></span>'+
       (score?'<span class="media-card__score">★ '+esc(scoreOf(score))+'</span>':'')+
     '</span>'+
