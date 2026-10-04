@@ -48,11 +48,11 @@ function cardMarkup(item,type){
       '<span class="media-card__shade"></span>'+
       '<span class="media-card__type">'+esc(label)+'</span>'+
       '<span class="media-card__bottom">'+
-        '<span class="media-card__title">'+esc(title)+'</span>'+
+        '<span class="media-card__meta">'+esc(year)+'</span>'+
         (score?'<span class="media-card__score"><span class="media-card__star">★</span> '+esc(scoreOf(score))+'</span>':'')+
       '</span>'+
     '</span>'+
-    '<span class="media-card__meta">'+esc(year)+'</span>'+
+    '<span class="media-card__title">'+esc(title)+'</span>'+
   '</button>';
 }
 function sectionMarkup(title,sub,id){
