@@ -1,47 +1,28 @@
 const app=document.getElementById('app');
 
-const CINEMETA_ENDPOINTS={
-  movie:[
-    'https://cinemeta-catalogs.strem.io/top/catalog/movie/top.json',
-    'https://v3-cinemeta.strem.io/catalog/movie/top.json'
-  ],
-  series:[
-    'https://cinemeta-catalogs.strem.io/top/catalog/series/top.json',
-    'https://v3-cinemeta.strem.io/catalog/series/top.json'
-  ]
-};
-const JIKAN_TOP='https://api.jikan.moe/v4/top/anime?limit=12';
+const LOCAL_CATALOGS={movie:'./data/movies.json',series:'./data/series.json',anime:'./data/anime.json'};
+const catalogStore={movie:[],series:[],anime:[]};
 
 const esc=(value='')=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const yearOf=item=>{
   const y=item?.releaseInfo||item?.year;
-  const match=String(y||'').match(/\d{4}/);
+  const match=String(y||'').match(/\\d{4}/);
   return match?match[0]:'';
 };
 const scoreOf=value=>{
   const n=Number(value);
   return Number.isFinite(n)?n.toFixed(1):String(value||'');
 };
-
-async function fetchJson(urls){
-  let lastError;
-  for(const url of urls){
-    try{
-      const res=await fetch(url,{headers:{accept:'application/json'}});
-      if(!res.ok) throw new Error(String(res.status));
-      return await res.json();
-    }catch(error){lastError=error}
-  }
-  throw lastError||new Error('request failed');
+async function fetchJson(url){
+  const res=await fetch(url,{cache:'no-store',headers:{accept:'application/json'}});
+  if(!res.ok)throw new Error(String(res.status));
+  return res.json();
 }
-
 async function loadCatalog(type){
-  const data=await fetchJson(CINEMETA_ENDPOINTS[type]);
-  return Array.isArray(data?.metas)?data.metas:[];
-}
-async function loadAnime(){
-  const data=await fetchJson([JIKAN_TOP]);
-  return Array.isArray(data?.data)?data.data:[];
+  const data=await fetchJson(LOCAL_CATALOGS[type]);
+  const items=type==='anime'?(Array.isArray(data?.data)?data.data:[]):(Array.isArray(data?.metas)?data.metas:[]);
+  catalogStore[type]=items;
+  return items;
 }
 function poster(item){
   return item?.poster||item?.images?.jpg?.large_image_url||item?.images?.jpg?.image_url||'';
