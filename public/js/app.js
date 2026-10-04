@@ -69,7 +69,7 @@ function setHero(el,item){
   if(!hero||!item)return;
   const image=backdrop(item), title=item?.name||item?.title||'LUNO', score=item?.imdbRating||item?.rating, year=yearOf(item)||item?.year||'';
   hero.querySelector('.hero__backdrop').style.backgroundImage=image?'url("'+image.replace(/"/g,'\\\"')+'")':'';
-  hero.querySelector('.hero__content').innerHTML='<div class="eyebrow">LUNO / '+esc(item?.type==='series'?'SERIES':'CINEMA')+'</div><h1>'+esc(title)+'</h1><div class="hero__meta">'+esc([year,score?'★ '+scoreOf(score):''].filter(Boolean).join(' · '))+'</div><p>Реальная карточка из подключённого каталога. LUNO показывает данные источника без выдуманного контента.</p><div class="actions"><button class="primary" data-open="'+esc(item?.imdb_id||'')+'">Подробнее</button><button class="secondary" data-nav="'+esc(item?.type==='series'?'series':'movie')+'">Каталог</button></div>';
+  hero.querySelector('.hero__content').innerHTML='<div class="eyebrow">LUNO / '+esc(item?.type==='series'?'SERIES':'CINEMA')+'</div><h1>'+esc(title)+'</h1><div class="hero__meta">'+esc([year,score?'★ '+scoreOf(score):''].filter(Boolean).join(' · '))+'</div><p>Реальная карточка из подключённого каталога. LUNO показывает данные источника без выдуманного контента.</p><div class="actions"><button class="primary" data-open="'+esc(item?.imdb_id||item?.tmdb_id||item?.id||'')+'" data-open-type="'+esc(item?.type==='series'?'series':'movie')+'">Подробнее</button><button class="secondary" data-nav="'+esc(item?.type==='series'?'series':'movie')+'">Каталог</button></div>';
 }
 function renderRow(el,id,items,type){
   const row=el.querySelector('[data-row="'+id+'"]');
