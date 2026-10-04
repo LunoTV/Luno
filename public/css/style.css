@@ -617,3 +617,14 @@ html.luno-reduced-motion *,html.luno-reduced-motion *::before,html.luno-reduced-
   transition-duration:.001ms!important;
   scroll-behavior:auto!important;
 }
+
+/* TV: allow fast vertical browsing through the LUNO home feed */
+html[data-device="tv"] #app{
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:auto;
+  scroll-behavior:auto;
+}
+html[data-device="tv"] body{
+  overflow:hidden;
+}
