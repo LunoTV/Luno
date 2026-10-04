@@ -170,6 +170,7 @@ function bindHome(el){
   el.addEventListener('click',event=>{
     const nav=event.target.closest('[data-nav]');
     if(nav){
+      window.LunoCore?.focus?.(nav);
       routeTo(nav.dataset.nav);
       el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===nav.dataset.nav));
       return;
@@ -244,7 +245,7 @@ async function loadHome(){
   renderRow(el,'anime',anime,'anime');
   const failed=results.some(r=>r.status==='rejected');
   if(failed){error.hidden=false;error.textContent='Один из источников временно недоступен. LUNO продолжает показывать доступные реальные каталоги.'}
-  requestAnimationFrame(()=>{el.style.opacity='1';const route=window.LunoCore?.router?.current?.()||'home';if(route!=='home')renderRouteScreen(el,route);else el.querySelector('.media-card')?.focus()});
+  requestAnimationFrame(()=>{el.style.opacity='1';const route=window.LunoCore?.router?.current?.()||'home';if(route!=='home'){renderRouteScreen(el,route);return}const remembered=window.LunoCore?.router?.focusFor?.('home:hero')||window.LunoCore?.router?.focusFor?.('home:history')||window.LunoCore?.router?.focusFor?.('home:recommendations')||window.LunoCore?.router?.focusFor?.('home:popular')||window.LunoCore?.router?.focusFor?.('home:new')||window.LunoCore?.router?.focusFor?.('home:movies')||window.LunoCore?.router?.focusFor?.('home:series')||window.LunoCore?.router?.focusFor?.('home:anime');const target=remembered?el.querySelector('[data-id="'+remembered+'"]'):null;(target||el.querySelector('.hero .primary')||el.querySelector('.media-card'))?.focus()});
 }
 function openSettings(el){
   const modal=document.createElement('div');

@@ -70,7 +70,19 @@ function spatial(container,active,dir){
   }).filter(Boolean).sort((a,b)=>a.score-b.score);
   return candidates[0]?.x||null;
 }
+function homeNavMove(active,k){
+  const nav=[...document.querySelectorAll('.home .topbar button')].filter(visible);
+  if(!nav.includes(active))return null;
+  if(k==='ArrowRight'||k==='ArrowLeft'){
+    const i=nav.indexOf(active),n=i+(k==='ArrowRight'?1:-1);
+    return nav[n]||active;
+  }
+  return null;
+}
 function homeMove(active,k){
+  const navTarget=homeNavMove(active,k);
+  if(navTarget&&navTarget!==active)return navTarget;
+
   if(active.closest('.topbar')){
     if(k==='ArrowDown') return document.querySelector('.hero .primary,.hero .secondary,.content-section .media-card');
     return null;
@@ -111,7 +123,7 @@ function screenMove(active,k){
 function keydown(e){
   if(document.documentElement.dataset.device!=='tv')return;
   const k=e.key,a=document.activeElement;
-  if(k==='Escape'||k==='Backspace'){
+  if(k==='Home'){e.preventDefault();const b=document.querySelector('.home .topbar .brand');if(b){focus(b);document.querySelector('.home')?.scrollTo({top:0,behavior:'auto'});}return}\n  if(k==='Escape'||k==='Backspace'){
     if(closeOverlay()||back()){e.preventDefault();return}
   }
   if(!a)return;
