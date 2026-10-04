@@ -161,7 +161,7 @@ function renderRouteScreen(el,route){
   const type=route==='movie'?'movie':route==='series'?'series':route==='anime'?'anime':'history';
   const items=type==='history'?historyItems():catalogStore[type]||[];
   screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / CATALOG</div><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div></header><div class="screen-grid">'+(items.length?items.map(x=>cardMarkup(x,x.__type||type)).join(''):'<div class="row-empty">Каталог пока пуст.</div>')+'</div>';
-  el.appendChild(screen);screen.querySelector('[data-route-back]').focus();
+  el.appendChild(screen);const firstCard=screen.querySelector('.media-card');(firstCard||screen.querySelector('[data-route-back]'))?.focus();
 }
 function bindHome(el){
   el.addEventListener('click',event=>{
@@ -171,7 +171,7 @@ function bindHome(el){
       el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===nav.dataset.nav));
       return;
     }
-    const routeBack=event.target.closest('[data-route-back]');if(routeBack){routeTo('home');return}
+    const routeBack=event.target.closest('[data-route-back]');if(routeBack){window.LunoCore?.router?.back?.()||routeTo('home');return}
     const link=event.target.closest('[data-scroll]');
     if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});return}
     if(event.target.closest('[data-search]')){openSearch(el);return}
@@ -361,7 +361,7 @@ splash.className='splash';
 splash.innerHTML='<div class="splash__veil" aria-hidden="true"></div><div class="startup-loader" aria-label="Загрузка LUNO"><div class="startup-loader__brand">LUNO</div><div class="startup-loader__track"><div class="startup-loader__bar"></div></div><div class="startup-loader__text">Загрузка…</div></div>';
 if(window.matchMedia('(max-width:620px)').matches){splash.style.backgroundImage='url("./assets/luno-start-mobile.png?v=20261004-3")';splash.style.backgroundSize='cover';splash.style.backgroundPosition='center center';splash.style.backgroundRepeat='no-repeat';}
 app.replaceChildren(splash);
-setTimeout(loadHome,5600);
+loadHome();
 
 (function(){
   const updateTvScale=()=>{
