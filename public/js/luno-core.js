@@ -1,44 +1,19 @@
 (function(){
 'use strict';
-const KEY='luno_core_state_v1';
-const state=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}};
-const save=p=>{try{localStorage.setItem(KEY,JSON.stringify({...state(),...p}))}catch{}};
-const tv=()=>document.documentElement.dataset.device==='tv';
+const KEY='luno_core_state_v2',read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}},save=p=>{try{localStorage.setItem(KEY,JSON.stringify({...read(),...p}))}catch{}};
+let current=read().route||'home',stack=Array.isArray(read().stack)?read().stack:[];
 const visible=e=>!!e&&e.offsetParent!==null;
-const focus=e=>{if(!e)return;e.focus({preventScroll:true});e.scrollIntoView({behavior:'auto',block:'nearest',inline:'nearest'});save({focusSelector:e.dataset.nav?'[data-nav="'+e.dataset.nav+'"]':e.classList.contains('media-card')?'.media-card[data-id="'+CSS.escape(e.dataset.id||'')+'"]':''})};
-const cards=r=>[...r.querySelectorAll('.media-card')].filter(visible);
-const rows=()=>[...document.querySelectorAll('.content-section .media-row')].filter(r=>cards(r).length&&visible(r));
-const close=()=>{const o=document.querySelector('.details-modal,.search-modal,.settings-modal');if(!o)return false;o.remove();focus(document.querySelector('.topbar .brand')||document.querySelector('.topbar button'));return true};
-function handle(e){
- if(!tv())return;
- const k=e.key;
- if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter','Escape','Backspace'].includes(k))return;
- if((k==='Escape'||k==='Backspace')&&close()){e.preventDefault();e.stopImmediatePropagation();return}
- const a=document.activeElement;if(!a)return;
- if(k==='Enter'&&a.matches('button')){e.preventDefault();e.stopImmediatePropagation();a.click();return}
- let done=false;
- if(a.closest('.topbar')&&(k==='ArrowLeft'||k==='ArrowRight')){
-   const b=[...document.querySelectorAll('.topbar button')].filter(visible),i=b.indexOf(a),n=b[i+(k==='ArrowRight'?1:-1)];if(n){focus(n);done=true}
- }else if(a.closest('.media-row')&&(k==='ArrowLeft'||k==='ArrowRight')){
-   const c=cards(a.closest('.media-row')),i=c.indexOf(a),n=c[i+(k==='ArrowRight'?1:-1)];if(n){focus(n);done=true}
- }else if(a.closest('.media-row')&&(k==='ArrowUp'||k==='ArrowDown')){
-   const r=a.closest('.media-row'),rs=rows(),ri=rs.indexOf(r),tr=rs[ri+(k==='ArrowDown'?1:-1)];
-   if(tr){const c=cards(tr),x=a.getBoundingClientRect(),cx=x.left+x.width/2,n=c.reduce((best,z)=>{if(!best)return z;const br=best.getBoundingClientRect(),zr=z.getBoundingClientRect();return Math.abs(zr.left+zr.width/2-cx)<Math.abs(br.left+br.width/2-cx)?z:best},null);tr.closest('.content-section')?.scrollIntoView({behavior:'auto',block:'start'});focus(n);done=true}
- }else if(k==='ArrowDown'&&(a.closest('.topbar')||a.closest('.hero'))){
-   const n=a.closest('.topbar')?document.querySelector('.hero .primary,.hero .secondary'):document.querySelector('.content-section .media-card');if(n){focus(n);done=true}
- }else if(k==='ArrowUp'&&a.closest('.hero')){
-   focus(document.querySelector('.topbar .brand')||document.querySelector('.topbar button'));done=true
- }
- if(!done){
-   const b=[...document.querySelectorAll('.topbar button,.hero button,.content-section .media-card,.section-link,.row-control,.search,.settings-tile')].filter(visible),i=b.indexOf(a);
-   const step=k==='ArrowDown'||k==='ArrowRight'?1:k==='ArrowUp'||k==='ArrowLeft'?-1:0,n=b[i+step];if(n){focus(n);done=true}
- }
- if(done){e.preventDefault();e.stopImmediatePropagation();save({screen:document.querySelector('.home')?'home':'overlay'})}
+const focus=e=>{if(!e)return;e.focus({preventScroll:true});e.scrollIntoView({behavior:'auto',block:'nearest',inline:'nearest'});save({focus:e.dataset.id||e.dataset.nav||e.className})};
+function go(route,replace=false){if(route===current&&!replace)return;if(!replace)stack=[...stack.filter(x=>x!==route),current].filter(Boolean).slice(-20);current=route;save({route,stack});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route,stack:[...stack]}}))}
+function back(){if(!stack.length)return false;current=stack.pop()||'home';save({route:current,stack});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:current,stack:[...stack]}}));return true}
+function closeOverlay(){const o=document.querySelector('.details-modal,.search-modal,.settings-modal');if(!o)return false;o.remove();return true}
+function keydown(e){if(document.documentElement.dataset.device!=='tv')return;const k=e.key;if(k==='Escape'||k==='Backspace'){if(closeOverlay()||back()){e.preventDefault();return}}if(k==='Enter'&&document.activeElement?.matches('button')){e.preventDefault();document.activeElement.click();return}const a=document.activeElement;if(!a)return;let target=null;
+if(a.closest('.media-row')&&(k==='ArrowLeft'||k==='ArrowRight')){const c=[...a.closest('.media-row').querySelectorAll('.media-card')].filter(visible),i=c.indexOf(a);target=c[i+(k==='ArrowRight'?1:-1)]}
+if(a.closest('.screen-grid')&&(k==='ArrowLeft'||k==='ArrowRight')){const c=[...a.closest('.screen-grid').querySelectorAll('.media-card')].filter(visible),i=c.indexOf(a);target=c[i+(k==='ArrowRight'?1:-1)]}
+if(target){focus(target);e.preventDefault();return}
+if(a.closest('.media-row')&&(k==='ArrowUp'||k==='ArrowDown')){const rs=[...document.querySelectorAll('.content-section .media-row')].filter(r=>r.querySelector('.media-card')&&visible(r)),r=a.closest('.media-row'),i=rs.indexOf(r),tr=rs[i+(k==='ArrowDown'?1:-1)];if(tr){const c=[...tr.querySelectorAll('.media-card')].filter(visible),x=a.getBoundingClientRect(),cx=x.left+x.width/2;target=c.reduce((b,z)=>!b?z:Math.abs(z.getBoundingClientRect().left+z.offsetWidth/2-cx)<Math.abs(b.getBoundingClientRect().left+b.offsetWidth/2-cx)?z:b,null);if(target){focus(target);e.preventDefault();return}}}
+if(k==='ArrowDown'&&a.closest('.topbar')){target=document.querySelector('.hero .primary,.hero .secondary,.content-section .media-card');if(target){focus(target);e.preventDefault();return}}
+if(k==='ArrowUp'&&a.closest('.hero')){target=document.querySelector('.topbar .brand');if(target){focus(target);e.preventDefault();return}}
 }
-window.LunoCore={state,focus,controller:{handle},router:{go(id){document.querySelector('#'+id)?.scrollIntoView({behavior:'auto',block:'start'});save({screen:id})},back:close}};
-window.addEventListener('keydown',handle,true);
-const nativeSetTimeout=window.setTimeout.bind(window);
-window.setTimeout=function(fn,delay,...args){return nativeSetTimeout(fn,delay===5600?700:delay,...args)};
-function boot(){const home=document.querySelector('#app .home');if(!home){nativeSetTimeout(boot,100);return}const s=state();let t=s.focusSelector?document.querySelector(s.focusSelector):null;if(!visible(t))t=document.querySelector('.topbar .brand')||document.querySelector('.topbar button');requestAnimationFrame(()=>focus(t))}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+window.LunoCore={state:read,focus,router:{go,back,current:()=>current},controller:{keydown}};window.addEventListener('keydown',keydown,true);
 })();

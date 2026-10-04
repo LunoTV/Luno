@@ -147,21 +147,31 @@ function popularItems(){
 function newItems(){
   return allCatalogItems().sort((a,b)=>Number(yearOf(b)||b.year||0)-Number(yearOf(a)||a.year||0)).slice(0,16);
 }
-function scrollToSection(el,target){
-  if(target==='home'){window.scrollTo({top:0,behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth'});return}
-  if(target==='history'||target==='movie'||target==='series'){
-    const id=target==='movie'?'movies':target==='series'?'series':'history';
-    el.querySelector('#'+id)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});
-  }
+function routeTo(target){
+  if(window.LunoCore?.router?.go){window.LunoCore.router.go(target);return;}
+  scrollToSection(document.querySelector('.home'),target);
+}
+function renderRouteScreen(el,route){
+  if(route==='home'){el.querySelector('.luno-screen')?.remove();el.querySelector('.home')?.classList.remove('route-hidden');return;}
+  el.querySelector('.home')?.classList.add('route-hidden');
+  el.querySelector('.luno-screen')?.remove();
+  const screen=document.createElement('main');screen.className='luno-screen';
+  const title=route==='movie'?'Фильмы':route==='series'?'Сериалы':route==='anime'?'Аниме':route==='history'?'История':'LUNO';
+  const sub=route==='movie'?'Полный каталог фильмов':route==='series'?'Полный каталог сериалов':route==='anime'?'Полный каталог аниме':'Недавно открытые';
+  const type=route==='movie'?'movie':route==='series'?'series':route==='anime'?'anime':'history';
+  const items=type==='history'?historyItems():catalogStore[type]||[];
+  screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / CATALOG</div><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div></header><div class="screen-grid">'+(items.length?items.map(x=>cardMarkup(x,x.__type||type)).join(''):'<div class="row-empty">Каталог пока пуст.</div>')+'</div>';
+  el.appendChild(screen);screen.querySelector('[data-route-back]').focus();
 }
 function bindHome(el){
   el.addEventListener('click',event=>{
     const nav=event.target.closest('[data-nav]');
     if(nav){
-      scrollToSection(el,nav.dataset.nav);
+      routeTo(nav.dataset.nav);
       el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===nav.dataset.nav));
       return;
     }
+    const routeBack=event.target.closest('[data-route-back]');if(routeBack){routeTo('home');return}
     const link=event.target.closest('[data-scroll]');
     if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});return}
     if(event.target.closest('[data-search]')){openSearch(el);return}
@@ -365,3 +375,4 @@ setTimeout(loadHome,5600);
   };
   updateTvScale();window.addEventListener('resize',updateTvScale,{passive:true});window.addEventListener('orientationchange',updateTvScale,{passive:true});
 })();
+window.addEventListener('luno:navigate',event=>{const route=event.detail?.route||'home';const home=document.querySelector('.home');if(!home)return;renderRouteScreen(home,route);home.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===route));});

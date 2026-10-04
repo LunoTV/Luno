@@ -754,3 +754,17 @@ html[data-device="tv"] .media-card__bottom .media-card__score{
   border-color:rgba(190,222,244,.2);
   background:rgba(4,12,20,.86);
 }
+
+/* LUNO Core screens */
+.route-hidden{display:none!important}
+.luno-screen{min-height:100vh;padding:118px clamp(28px,5vw,82px) 80px;background:#06101a}
+.screen-head{display:flex;align-items:center;gap:22px;margin-bottom:34px}
+.screen-head h1{margin:4px 0;font-size:clamp(34px,4vw,58px);color:#f5f9fd}
+.screen-head p{margin:0;color:#8195a8}
+.screen-back{width:52px;height:52px;border-radius:15px;border:1px solid rgba(157,207,242,.18);background:rgba(104,168,220,.08);color:#dceeff;font-size:34px;cursor:pointer}
+.screen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:26px 18px}
+.screen-grid .media-card{width:100%;min-width:0}
+@media(max-width:620px){.luno-screen{padding:92px 16px 90px}.screen-head{gap:14px}.screen-back{width:44px;height:44px}.screen-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 10px}}
+html[data-device="tv"] .luno-screen{padding:120px 70px 80px}
+html[data-device="tv"] .screen-grid{grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:28px 18px}
+html[data-device="tv"] .screen-back{transition:none}
