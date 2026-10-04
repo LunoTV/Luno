@@ -32,8 +32,8 @@
       '#luno-native-splash .luno-spinner{width:58px;height:58px;margin:38px auto 22px;border-radius:50%;border:6px solid #173247;border-top-color:#32c7ff;border-right-color:#8b6cff;animation:lunoSpin 1s linear infinite}' +
       '#luno-native-splash .luno-text{font-size:20px;color:#c7d0dc}' +
       '#luno-native-splash .luno-bar{height:7px;background:#173247;border-radius:8px;margin:26px auto 0;overflow:hidden}' +
-      '#luno-native-splash .luno-bar:before{content:"";display:block;width:42%;height:100%;background:linear-gradient(90deg,#32c7ff,#f5f7fb);border-radius:8px}' +
-      '@keyframes lunoSpin{to{transform:rotate(360deg)}}';
+      '#luno-native-splash .luno-bar:before{content:"";display:block;width:42%;height:100%;background:linear-gradient(90deg,#32c7ff,#f5f7fb);animation:lunoProgress 2.2s ease-in-out infinite alternate;border-radius:8px}' +
+      '@keyframes lunoSpin{to{transform:rotate(360deg)}}@keyframes lunoProgress{from{width:18%}to{width:72%}}';
     document.head.appendChild(css);
 
     document.documentElement.classList.add('luno-loading');
@@ -66,12 +66,12 @@
         clearInterval(poll);
         observer.disconnect();
         removeSplash();
-      } else if(checks >= 60){
+      } else if(checks >= 20){
         clearInterval(poll);
         observer.disconnect();
         removeSplash();
       }
-    },500);
+    },250);
   }
 
   if(document.readyState === 'loading'){
