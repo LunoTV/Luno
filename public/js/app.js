@@ -29,7 +29,7 @@
     id:'tmdb-'+type+'-'+x.id, tmdbId:x.id, type,
     title:type==='movie'?(x.title||x.original_title||'Без названия'):(x.name||x.original_name||'Без названия'),
     year:String((type==='movie'?x.release_date:x.first_air_date)||'').slice(0,4)||'—',
-    rating:Number(x.vote_average||0), tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
+    rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0), tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
     description:x.overview||'Описание отсутствует.',
     poster:x.poster_path?tmdbImage+'w500'+x.poster_path:'',
     backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:''
@@ -39,7 +39,7 @@
       const res=await fetch(tmdbDataPath,{cache:'no-store'});
       if(!res.ok) return false;
       const data=await res.json();
-      const next=[...(data.movies||[]).slice(0,12).map(x=>tmdbItem(x,'movie')),...(data.series||[]).slice(0,12).map(x=>tmdbItem(x,'series'))];
+      const next=[...(data.movies||[]).map(x=>tmdbItem(x,'movie')),...(data.series||[]).map(x=>tmdbItem(x,'series'))];
       if(next.length){ catalog=next; return true; }
     } catch (_) {}
     return false;
@@ -104,26 +104,35 @@
   const navButton = (route,label,sub) =>
     '<button class="nav-button" data-route="'+route+'">'+(sub?'<span>'+label+'</span><small>'+sub+'</small>':label)+'</button>';
 
+  const ranked = (items, limit=12) => items.slice().sort((a,b)=>(b.popularity||0)-(a.popularity||0) || (b.rating||0)-(a.rating||0)).slice(0,limit);
+  const topRated = (items, limit=12) => items.slice().sort((a,b)=>(b.rating||0)-(a.rating||0) || (b.votes||0)-(a.votes||0)).slice(0,limit);
+  const newest = (items, limit=12) => items.slice().sort((a,b)=>(Number(b.year)||0)-(Number(a.year)||0) || (b.popularity||0)-(a.popularity||0)).slice(0,limit);
+
   const home = () => {
     const el = document.createElement('section');
     el.className = 'screen screen-home';
     const history = readHistory().map(x => byId(x.id)).filter(Boolean);
-    const featured = catalog[0] || fallbackCatalog[0];
+    const featured = ranked(catalog,1)[0] || fallbackCatalog[0];
     const backdrop = featured.backdrop || featured.poster || '';
+    const movies=catalog.filter(x=>x.type==='movie'), series=catalog.filter(x=>x.type==='series');
     el.innerHTML =
       '<section class="hero" data-focus-container="hero"'+(backdrop?' style="--hero-image:url('+esc(backdrop)+')"':'')+'>'+
         '<div class="hero-backdrop"></div><div class="hero-vignette"></div>'+
         '<div class="hero-copy">'+
-          '<span class="eyebrow">LUNO · РЕКОМЕНДУЕМ</span><div class="hero-meta"><span>'+esc(featured.tag)+'</span><i>•</i><span>'+esc(featured.year)+'</span><i>•</i><span>★ '+esc(featured.rating.toFixed(1))+'</span></div>'+
+          '<span class="eyebrow">LUNO · В ЦЕНТРЕ ВНИМАНИЯ</span><div class="hero-meta"><span>'+esc(featured.tag)+'</span><i>•</i><span>'+esc(featured.year)+'</span><i>•</i><span>★ '+esc(featured.rating.toFixed(1))+'</span></div>'+
           '<h1>'+esc(featured.title)+'</h1>'+
           '<p>'+esc(featured.description)+'</p>'+
-          '<div class="hero-actions"><button class="primary" data-route="details:'+esc(featured.type)+':'+esc(featured.id)+'">Подробнее</button><button class="secondary" data-action="scroll">Смотреть каталог</button></div>'+
+          '<div class="hero-actions"><button class="primary" data-route="details:'+esc(featured.type)+':'+esc(featured.id)+'">Подробнее</button><button class="secondary" data-action="scroll">Открыть каталог</button></div>'+
         '</div>'+
       '</section>'+
-      section('continue','Продолжить','Ваши последние открытия',history.length?history:catalog.slice(0,6))+
-      section('popular','Популярное','То, что сейчас смотрят',catalog.slice(0,10))+
-      section('series','Сериалы','Истории на несколько вечеров',catalog.filter(x=>x.type==='series').slice(0,10))+
-      section('anime','Аниме','Яркие миры и персонажи',catalog.filter(x=>x.type==='anime').slice(0,10));
+      '<div class="home-quick" data-focus-container="quick"><button data-route="movie">Фильмы</button><button data-route="series">Сериалы</button><button data-route="stream">Поток</button><button data-action="search">Поиск</button></div>'+
+      section('continue','Продолжить','Ваши последние открытия',history.length?history:ranked(catalog,8))+
+      section('top10','Топ 10','Самые заметные фильмы и сериалы',topRated(catalog,10))+
+      section('new','Новинки','Свежие релизы и новые открытия',newest(catalog,12))+
+      section('trending','Сейчас в тренде','Популярное прямо сейчас',ranked(catalog,12))+
+      section('movies','Фильмы','Большое кино на любой вечер',ranked(movies,12))+
+      section('series','Сериалы','Истории на несколько вечеров',ranked(series,12))+
+      section('for-you','Для вас','LUNO собирает подборку из того, что вы открывали',history.length?ranked(history.concat(catalog),12):ranked(catalog,12));
     return el;
   };
 
