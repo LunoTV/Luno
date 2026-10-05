@@ -212,7 +212,6 @@
   });
 
   Core.on('navigate',event=>render(event.route));
-  Core.on('ready',()=>render(Core.router.current()));
   Core.controller.bind('Home',()=>{Core.router.go('home');return true;});
 
   global.LunoUI={catalog,render};
