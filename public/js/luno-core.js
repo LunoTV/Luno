@@ -110,9 +110,10 @@
       if (!validRoute(route)) return false;
       if (route === state.route && !options.force) return false;
 
+      const previous = state.route;
       const nextStack = state.stack.slice();
       if (!options.replace) {
-        if (state.route && state.route !== route) nextStack.push(state.route);
+        if (previous && previous !== route) nextStack.push(previous);
       }
 
       while (nextStack.length > 50) nextStack.shift();
@@ -123,7 +124,7 @@
 
       emit('navigate', {
         route,
-        previous: state.stack.length ? state.stack[state.stack.length - 1] : null,
+        previous,
         stack: state.stack.slice(),
         replace: !!options.replace
       });
