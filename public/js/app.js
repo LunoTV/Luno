@@ -166,6 +166,41 @@ function detailsScreen(el,type,id){
   screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / '+esc(type==='anime'?'ANIME':type.toUpperCase())+'</div><h1>'+esc(title)+'</h1><p>'+esc([year,genres].filter(Boolean).join(' · '))+'</p></div></header><div class="detail-layout"><div class="detail-poster">'+(image?'<img src="'+esc(image)+'" alt="">':'<div class="detail-poster-fallback">LUNO</div>')+'</div><div class="detail-copy"><div class="detail-rating">'+(score?'<span>★</span> '+esc(scoreOf(score)):'Без оценки')+'</div><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p><div class="detail-actions"><button class="primary" disabled>Смотреть</button><button class="secondary" data-route-back>Назад</button></div></div></div>';
   el.appendChild(screen);return screen
 }
+function searchScreen(el){
+  const screen=document.createElement('main');
+  screen.className='luno-screen luno-search-screen';
+  screen.dataset.route='search';
+  screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back aria-label="Назад">‹</button><div><div class="eyebrow">LUNO / SEARCH</div><h1>Поиск</h1><p>Фильмы, сериалы и аниме из локальных каталогов</p></div></header><div class="screen-searchbar"><input data-screen-search type="search" autocomplete="off" placeholder="Название фильма, сериала или аниме" aria-label="Поиск"><button class="screen-search-clear" type="button" data-search-clear aria-label="Очистить">×</button></div><div class="screen-grid" data-search-results><div class="search-status">Введите минимум 2 символа.</div></div>';
+  el.appendChild(screen);
+  const input=screen.querySelector('[data-screen-search]');
+  const results=screen.querySelector('[data-search-results]');
+  const run=()=>{
+    const q=input.value.trim().toLowerCase();
+    if(q.length<2){results.innerHTML='<div class="search-status">Введите минимум 2 символа.</div>';return}
+    const items=allCatalogItems().filter(x=>String(x.name||x.title||'').toLowerCase().includes(q)).slice(0,24);
+    results.innerHTML=items.length?items.map(x=>cardMarkup(x,x.__type)).join(''):'<div class="search-status">Ничего не найдено.</div>';
+  };
+  input.addEventListener('input',run);
+  screen.querySelector('[data-search-clear]').addEventListener('click',()=>{input.value='';run();input.focus()});
+  input.focus();
+  return screen;
+}
+function settingsScreen(el){
+  const screen=document.createElement('main');
+  screen.className='luno-screen luno-settings-screen';
+  screen.dataset.route='settings';
+  const motion=localStorage.getItem('luno_motion')!=='off';
+  screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back aria-label="Назад">‹</button><div><div class="eyebrow">LUNO / SETTINGS</div><h1>Настройки</h1><p>Настройте интерфейс LUNO под себя</p></div></header><div class="settings-grid">'+
+    '<button class="settings-tile" data-setting="profile"><span>◉</span><strong>Профиль</strong><small>Локальный профиль</small></button>'+
+    '<button class="settings-tile" data-setting="interface"><span>◌</span><strong>Интерфейс</strong><small>Анимации: '+(motion?'включены':'выключены')+'</small></button>'+
+    '<button class="settings-tile" data-setting="catalog"><span>▤</span><strong>Каталог</strong><small>Фильмы, сериалы, аниме</small></button>'+
+    '<button class="settings-tile" data-setting="player"><span>▶</span><strong>Плеер</strong><small>Будет подключён следующим этапом</small></button>'+
+    '<button class="settings-tile settings-tile--wide" data-setting="clear-history"><span>⌫</span><strong>Очистить историю</strong><small>Удалить локальную историю просмотров</small></button>'+
+    '<button class="settings-tile settings-tile--wide" data-setting="other"><span>◒</span><strong>Остальное</strong><small>Дополнительные параметры LUNO</small></button>'+
+    '</div>';
+  el.appendChild(screen);
+  return screen;
+}
 function renderRouteScreen(el,route){
  if(route==='home'){el.querySelector('.luno-screen')?.remove();el.classList.remove('route-hidden');return}
  el.querySelector('.home')?.classList.add('route-hidden');el.querySelector('.luno-screen')?.remove();
