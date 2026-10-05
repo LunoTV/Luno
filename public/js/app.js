@@ -192,7 +192,7 @@ function bindHome(el){
     const rowControl=event.target.closest('[data-row-scroll]');
     if(rowControl){const row=el.querySelector('[data-row="'+rowControl.dataset.rowScroll+'"]');if(row)row.scrollBy({left:Number(rowControl.dataset.dir)*Math.max(420,row.clientWidth*.72),behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth'});return}
     const card=event.target.closest('.media-card');
-    if(card){routeTo('details:'+card.dataset.type+':'+encodeURIComponent(card.dataset.id));return}
+    if(card){window.LunoCore?.focus?.(card);routeTo('details:'+card.dataset.type+':'+encodeURIComponent(card.dataset.id));return}
     const open=event.target.closest('[data-open]');
     if(open){window.LunoCore?.focus?.(open);routeTo('details:'+(open.dataset.openType||'movie')+':'+encodeURIComponent(open.dataset.open))}
   });
@@ -284,7 +284,7 @@ function removeHistory(id){
   try{localStorage.setItem('luno_history_v1',JSON.stringify(readHistory().filter(x=>String(x.__historyId)!==String(id))))}catch{}
 }
 function clearHistory(){
-  clearHistory()
+  try{localStorage.removeItem('luno_history_v1')}catch{}
 }
 function settingsAction(key){
   if(key==='interface'){
@@ -299,7 +299,7 @@ function settingsAction(key){
   if(key==='version'){return;}
   if(key==='profile'){return;}
   if(key==='clear-history'){
-    try{localStorage.removeItem('luno_history_v1')}catch{}
+    clearHistory();
     document.querySelector('.luno-settings-screen')?.remove();
     const route=window.LunoCore?.router?.current?.();
     if(route==='history'){window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:'history',stack:[]}}))}
