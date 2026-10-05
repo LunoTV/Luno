@@ -32,8 +32,8 @@
     year:String((type==='movie'?x.release_date:x.first_air_date)||'').slice(0,4)||'—',
     rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0), tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
     description:x.overview||'Описание отсутствует.',
-    poster:x.poster_path?tmdbImage+'w500'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:''),
-    posterFallback:x.poster_path?tmdbImageAlt+'w500'+x.poster_path:(x.backdrop_path?tmdbImageAlt+'w780'+x.backdrop_path:''),
+    poster:x.poster_path?tmdbImage+'w342'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:''),
+    posterFallback:x.poster_path?tmdbImage+'w500'+x.poster_path:(x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:''),
     backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'',
     backdropFallback:x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''
   });
@@ -69,7 +69,7 @@
   const card = item => {
     const letter = item.title.slice(0,1);
     const media = item.poster
-      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="lazy" decoding="async" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc=\'\';}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
+      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc=\'\';}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
       : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></span>'+
