@@ -8,7 +8,7 @@
   const motionKey = 'luno_motion';
   const applyMotion = () => root.querySelector('.luno-app')?.classList.toggle('motion-off', localStorage.getItem(motionKey)==='off');
 
-  const catalog = [
+  const fallbackCatalog = [
     {id:'movie-1',type:'movie',title:'Дюна: Часть вторая',year:'2024',rating:8.7,tag:'Фильм',description:'Пол Атрейдес объединяется с Чани и фременами, вступая на путь войны против заговорщиков.'},
     {id:'movie-2',type:'movie',title:'Оппенгеймер',year:'2023',rating:8.6,tag:'Фильм',description:'История физика, который возглавил проект по созданию первой атомной бомбы.'},
     {id:'movie-3',type:'movie',title:'Интерстеллар',year:'2014',rating:8.7,tag:'Фильм',description:'Команда исследователей отправляется через червоточину в поисках нового дома для человечества.'},
@@ -22,6 +22,43 @@
     {id:'anime-1',type:'anime',title:'Атака титанов',year:'2013',rating:9.1,tag:'Аниме',description:'Человечество пытается выжить за стенами, защищающими его от гигантских титанов.'},
     {id:'anime-2',type:'anime',title:'Монолог фармацевта',year:'2023',rating:8.9,tag:'Аниме',description:'Мэймэй расследует загадочные происшествия во дворце, используя знания о лекарствах.'}
   ];
+  let catalog = fallbackCatalog.slice();
+  const tmdbKey = 'luno_tmdb_token';
+  const tmdbBase = 'https://api.themoviedb.org/3';
+  const tmdbImage = 'https://image.tmdb.org/t/p/';
+  const tmdbToken = () => { try { return localStorage.getItem(tmdbKey) || ''; } catch (_) { return ''; } };
+  const tmdbUrl = (path, params={}) => {
+    const qs = new URLSearchParams({language:'ru-RU',...params});
+    return tmdbBase+path+'?'+qs;
+  };
+  const tmdbFetch = async (path, params={}) => {
+    const token = tmdbToken();
+    if(!token) throw new Error('TMDB_TOKEN_MISSING');
+    const res = await fetch(tmdbUrl(path,params),{headers:{accept:'application/json',Authorization:'Bearer '+token}});
+    if(!res.ok) throw new Error('TMDB_HTTP_'+res.status);
+    return res.json();
+  };
+  const tmdbItem = (x,type) => ({
+    id:'tmdb-'+type+'-'+x.id, tmdbId:x.id, type,
+    title:type==='movie'?(x.title||x.original_title||'Без названия'):(x.name||x.original_name||'Без названия'),
+    year:String((type==='movie'?x.release_date:x.first_air_date)||'').slice(0,4)||'—',
+    rating:Number(x.vote_average||0), tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
+    description:x.overview||'Описание отсутствует.',
+    poster:x.poster_path?tmdbImage+'w500'+x.poster_path:'',
+    backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:''
+  });
+  const loadTMDB = async () => {
+    if(!tmdbToken()) return false;
+    try {
+      const [movies,series] = await Promise.all([
+        tmdbFetch('/trending/movie/week',{page:1}),
+        tmdbFetch('/trending/tv/week',{page:1})
+      ]);
+      const next=[...(movies.results||[]).slice(0,12).map(x=>tmdbItem(x,'movie')),...(series.results||[]).slice(0,12).map(x=>tmdbItem(x,'series'))];
+      if(next.length){ catalog=next; return true; }
+    } catch (_) {}
+    return false;
+  };
 
   const byId = id => catalog.find(item => item.id === String(id));
   const historyKey = 'luno_history_v2';
@@ -44,7 +81,7 @@
   const card = item => {
     const letter = item.title.slice(0,1);
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
-      '<span class="poster poster--'+esc(item.type)+'"><span class="poster__glow"></span><strong>'+esc(letter)+'</strong><small>'+esc(item.tag)+'</small></span>'+
+      '<span class="poster poster--'+esc(item.type)+'"'+(item.poster?' style="background-image:url(&quot;'+esc(item.poster)+'&quot;)"':'')+'><span class="poster__glow"></span>'+(!item.poster?'<strong>'+esc(letter)+'</strong>':'')+'<small>'+esc(item.tag)+'</small></span>'+
       '<span class="media-card__title">'+esc(item.title)+'</span>'+
       '<span class="media-card__meta">'+esc(item.year)+' · ★ '+esc(item.rating.toFixed(1))+'</span>'+
     '</button>';
@@ -127,11 +164,12 @@
   const settingsScreen = () => {
     const el = baseScreen('SETTINGS','Настройки','Только то, что относится к оболочке LUNO');
     const reduced = localStorage.getItem('luno_motion')==='off';
+    const hasTmdb = !!tmdbToken();
     el.querySelector('.screen-body').innerHTML =
       '<div class="settings-grid" data-focus-container="settings">'+
         setting('interface','◌','Интерфейс',reduced?'Анимации выключены':'Анимации включены')+
         setting('history','⌫','История','Очистить локальную историю')+
-        setting('about','L','О LUNO','Core '+esc(Core.version))+
+        setting('tmdb','✦','TMDB',hasTmdb?'Подключён — реальные каталоги':'Добавьте API Read Access Token')+setting('about','L','О LUNO','Core '+esc(Core.version))+
       '</div><div class="settings-note" data-settings-note></div>';
     return el;
   };
@@ -152,7 +190,7 @@
     remember(item);
     el.querySelector('.screen-body').innerHTML=
       '<div class="detail" data-focus-container="details">'+
-        '<div class="detail-poster poster poster--'+esc(item.type)+'"><span class="poster__glow"></span><strong>'+esc(item.title.slice(0,1))+'</strong><small>'+esc(item.tag)+'</small></div>'+
+        '<div class="detail-poster poster poster--'+esc(item.type)+'"'+(item.poster?' style="background-image:url(&quot;'+esc(item.poster)+'&quot;)"':'')+'><span class="poster__glow"></span>'+(!item.poster?'<strong>'+esc(item.title.slice(0,1))+'</strong>':'')+'<small>'+esc(item.tag)+'</small></div>'+
         '<div class="detail-copy"><span class="rating">★ '+esc(item.rating.toFixed(1))+'</span><h2>'+esc(item.title)+'</h2><p>'+esc(item.description)+'</p><div class="detail-actions"><button class="primary" disabled>Смотреть</button><button class="secondary" data-action="back">Назад</button></div></div>'+
       '</div>';
     return el;
@@ -207,7 +245,11 @@
     const settingEl=event.target.closest('[data-setting]');
     if(settingEl){
       const note=root.querySelector('.settings-note');
-      if(settingEl.dataset.setting==='interface'){
+      if(settingEl.dataset.setting==='tmdb'){
+        const current=tmdbToken();
+        const token=prompt('Вставьте TMDB API Read Access Token:',current);
+        if(token!==null){ if(token.trim()) localStorage.setItem(tmdbKey,token.trim()); else localStorage.removeItem(tmdbKey); render('settings'); }
+      } else if(settingEl.dataset.setting==='interface'){
         const off=localStorage.getItem('luno_motion')==='off';
         localStorage.setItem(motionKey,off?'on':'off');
         render('settings');
@@ -223,7 +265,8 @@
   Core.on('navigate',event=>render(event.route));
   Core.controller.bind('Home',()=>{Core.router.go('home');return true;});
 
-  const boot = () => {
+  const boot = async () => {
+    await loadTMDB();
     render(Core.router.current() || 'home');
     if(splash) {
       splash.classList.add('is-hidden');
