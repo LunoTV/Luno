@@ -88,3 +88,10 @@
 @keyframes splash-progress{to{width:100%}}
 @media(prefers-reduced-motion:reduce){#luno-splash{transition:none}.splash-line span{animation:none;width:100%}}
 @media(max-width:760px){.splash-mark{font-size:34px}.splash-line{margin-top:20px;width:180px}}
+
+/* Modern streaming home */
+.home-quick{display:flex;gap:12px;padding:18px clamp(18px,4vw,56px) 4px;overflow-x:auto}
+.home-quick button{border:1px solid rgba(190,215,240,.14);background:rgba(16,27,42,.72);color:#eef5ff;border-radius:14px;padding:12px 20px;font-weight:700;backdrop-filter:blur(12px)}
+.home-quick button:focus,.home-quick button:hover{border-color:rgba(220,238,255,.55);transform:translateY(-1px);background:rgba(28,45,66,.9)}
+.screen-home .catalog-section{scroll-margin-top:90px}
+@media (min-width:1600px){.home-quick{padding-left:5vw;padding-right:5vw}.home-quick button{padding:14px 24px}}
