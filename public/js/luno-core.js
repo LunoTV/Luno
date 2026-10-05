@@ -268,6 +268,28 @@
     };
   })();
 
+  const bindDefaultTvNavigation = () => {
+    ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].forEach(key => {
+      controller.bind(key, event => {
+        if (!platform.tv()) return false;
+        const active = document.activeElement;
+        const scope = active?.closest?.('[data-focus-container]');
+        if (!active || !scope) return false;
+        const direction = key.slice(5).toLowerCase();
+        const target = focus.move(scope, active, direction);
+        if (!target) return false;
+        focus.set(target, {
+          scope: scope.dataset.focusContainer || scope.id || 'screen',
+          preventScroll: false
+        });
+        return true;
+      });
+    });
+
+    controller.bind('Escape', () => router.back());
+    controller.bind('Backspace', () => router.back());
+  };
+
   const platform = {
     width: () => global.innerWidth || document.documentElement.clientWidth || 0,
     height: () => global.innerHeight || document.documentElement.clientHeight || 0,
@@ -304,6 +326,7 @@
   };
 
   global.LunoCore = api;
+  bindDefaultTvNavigation();
   lifecycle.start();
 
 })(window);
