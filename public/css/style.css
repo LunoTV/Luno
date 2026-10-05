@@ -95,3 +95,5 @@
 .home-quick button:focus,.home-quick button:hover{border-color:rgba(220,238,255,.55);transform:translateY(-1px);background:rgba(28,45,66,.9)}
 .screen-home .catalog-section{scroll-margin-top:90px}
 @media (min-width:1600px){.home-quick{padding-left:5vw;padding-right:5vw}.home-quick button{padding:14px 24px}}
+
+.catalog-toolbar{display:flex;align-items:center;justify-content:space-between;padding:0 0 18px;color:#93a5b7}.catalog-toolbar strong{color:#eef5ff;font-size:18px}.catalog-toolbar span{font-size:13px}.stream-sentinel{height:2px;width:100%;pointer-events:none}
