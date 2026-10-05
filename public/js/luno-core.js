@@ -1,0 +1,285 @@
+(function(global){
+  'use strict';
+
+  /*
+   * LUNO CORE
+   * ----------
+   * UI-free application runtime.
+   *
+   * This layer owns state, storage, events, routing, focus and remote/keyboard
+   * input. It deliberately does not create LUNO screens, cards, styles or
+   * player UI. Lampa core sources are imported separately by the Pages build
+   * and will be adapted behind this API.
+   */
+
+  const VERSION = '1.0.0-core-rebuild';
+  const STORAGE_KEY = 'luno_core_v4';
+
+  const safeRead = () => {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {};
+    } catch (_) {
+      return {};
+    }
+  };
+
+  const safeWrite = (state) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (_) {}
+  };
+
+  const clone = value => {
+    if (value === undefined) return undefined;
+    try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
+  };
+
+  const state = {
+    version: VERSION,
+    route: 'home',
+    stack: [],
+    focus: {},
+    settings: {},
+    data: {},
+    ...safeRead()
+  };
+
+  const listeners = new Map();
+
+  const emit = (name, payload) => {
+    const list = listeners.get(name);
+    if (list) list.slice().forEach(fn => {
+      try { fn(payload); } catch (error) { setTimeout(() => { throw error; }); }
+    });
+    try {
+      global.dispatchEvent(new CustomEvent('luno:' + name, { detail: payload }));
+    } catch (_) {}
+  };
+
+  const on = (name, fn) => {
+    if (typeof fn !== 'function') return () => {};
+    const list = listeners.get(name) || [];
+    list.push(fn);
+    listeners.set(name, list);
+    return () => {
+      const current = listeners.get(name) || [];
+      listeners.set(name, current.filter(item => item !== fn));
+    };
+  };
+
+  const setState = (patch) => {
+    Object.assign(state, clone(patch) || {});
+    safeWrite(state);
+    emit('state', clone(state));
+    return state;
+  };
+
+  const storage = {
+    get(key, fallback = null) {
+      const value = state.data[key];
+      return value === undefined ? fallback : clone(value);
+    },
+    set(key, value) {
+      state.data[key] = clone(value);
+      safeWrite(state);
+      emit('storage', { key, value: clone(value) });
+      return value;
+    },
+    remove(key) {
+      delete state.data[key];
+      safeWrite(state);
+      emit('storage', { key, removed: true });
+    },
+    clear() {
+      state.data = {};
+      safeWrite(state);
+      emit('storage', { clear: true });
+    }
+  };
+
+  const validRoute = route =>
+    typeof route === 'string' &&
+    route.length > 0 &&
+    route.length <= 512 &&
+    !/[\u0000-\u001f]/.test(route);
+
+  const router = {
+    current: () => state.route,
+    stack: () => state.stack.slice(),
+    go(route, options = {}) {
+      if (!validRoute(route)) return false;
+      if (route === state.route && !options.force) return false;
+
+      const nextStack = state.stack.slice();
+      if (!options.replace) {
+        if (state.route && state.route !== route) nextStack.push(state.route);
+      }
+
+      while (nextStack.length > 50) nextStack.shift();
+
+      state.route = route;
+      state.stack = nextStack;
+      safeWrite(state);
+
+      emit('navigate', {
+        route,
+        previous: state.stack.length ? state.stack[state.stack.length - 1] : null,
+        stack: state.stack.slice(),
+        replace: !!options.replace
+      });
+      return true;
+    },
+    replace(route) {
+      return this.go(route, { replace: true, force: true });
+    },
+    back() {
+      if (!state.stack.length) {
+        if (state.route === 'home') return false;
+        return this.replace('home');
+      }
+
+      const route = state.stack.pop() || 'home';
+      const previous = state.route;
+      state.route = route;
+      safeWrite(state);
+
+      emit('navigate', {
+        route,
+        previous,
+        stack: state.stack.slice(),
+        back: true
+      });
+      return true;
+    },
+    reset(route = 'home') {
+      state.route = validRoute(route) ? route : 'home';
+      state.stack = [];
+      safeWrite(state);
+      emit('navigate', { route: state.route, previous: null, stack: [] });
+    }
+  };
+
+  const focus = {
+    key(element) {
+      if (!element) return '';
+      return element.dataset?.focusKey ||
+        element.dataset?.id ||
+        element.dataset?.route ||
+        element.dataset?.nav ||
+        element.id ||
+        '';
+    },
+    remember(scope, key) {
+      if (!scope || !key) return;
+      state.focus[scope] = String(key);
+      safeWrite(state);
+      emit('focus', { scope, key: String(key) });
+    },
+    remembered(scope) {
+      return state.focus[scope] || '';
+    },
+    set(element, options = {}) {
+      if (!element || typeof element.focus !== 'function') return false;
+      const key = this.key(element);
+      if (options.scope && key) this.remember(options.scope, key);
+      try { element.focus({ preventScroll: !!options.preventScroll }); }
+      catch (_) { element.focus(); }
+      if (options.scroll !== false && element.scrollIntoView) {
+        try {
+          element.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
+        } catch (_) {}
+      }
+      emit('focus', { element, key, scope: options.scope || null });
+      return true;
+    }
+  };
+
+  const controller = (() => {
+    const bindings = new Map();
+    let enabled = true;
+
+    const normalize = key => ({
+      Esc: 'Escape',
+      Back: 'Backspace',
+      OK: 'Enter',
+      Return: 'Enter'
+    }[key] || key);
+
+    const bind = (key, handler) => {
+      const normalized = normalize(key);
+      if (!bindings.has(normalized)) bindings.set(normalized, []);
+      bindings.get(normalized).push(handler);
+      return () => {
+        const list = bindings.get(normalized) || [];
+        bindings.set(normalized, list.filter(fn => fn !== handler));
+      };
+    };
+
+    const dispatch = event => {
+      if (!enabled) return false;
+      const key = normalize(event?.key || '');
+      const list = bindings.get(key) || [];
+      let handled = false;
+      list.slice().forEach(handler => {
+        try {
+          if (handler(event) === true) handled = true;
+        } catch (error) {
+          setTimeout(() => { throw error; });
+        }
+      });
+      if (handled) {
+        try { event.preventDefault(); } catch (_) {}
+      }
+      return handled;
+    };
+
+    global.addEventListener('keydown', dispatch, true);
+
+    return {
+      bind,
+      dispatch,
+      enable() { enabled = true; },
+      disable() { enabled = false; },
+      enabled: () => enabled
+    };
+  })();
+
+  const platform = {
+    width: () => global.innerWidth || document.documentElement.clientWidth || 0,
+    height: () => global.innerHeight || document.documentElement.clientHeight || 0,
+    touch: () => ('ontouchstart' in global) || navigator.maxTouchPoints > 0,
+    tv() {
+      const ua = navigator.userAgent || '';
+      return /(smart-tv|smarttv|hbbtv|webos|tizen|netcast|viera|bravia|googletv|android tv|androidtv|tv;)/i.test(ua) ||
+        (this.width() >= 800 && this.height() >= 450 && this.width() / Math.max(this.height(), 1) >= 1.45);
+    }
+  };
+
+  const lifecycle = {
+    start() {
+      emit('ready', { version: VERSION });
+      return api;
+    },
+    destroy() {
+      emit('destroy');
+    }
+  };
+
+  const api = {
+    version: VERSION,
+    state,
+    setState,
+    on,
+    emit,
+    storage,
+    router,
+    focus,
+    controller,
+    platform,
+    lifecycle
+  };
+
+  global.LunoCore = api;
+  lifecycle.start();
+
+})(window);
