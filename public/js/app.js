@@ -155,7 +155,7 @@ function newItems(){
 }
 function routeTo(target){if(window.LunoCore?.router?.go){window.LunoCore.router.go(target);return}scrollToSection(document.querySelector('.home'),target)}
 function renderRouteScreen(el,route){
- if(route==='home'){el.querySelector('.luno-screen')?.remove();el.querySelector('.home')?.classList.remove('route-hidden');return}
+ if(route==='home'){el.querySelector('.luno-screen')?.remove();el.classList.remove('route-hidden');return}
  el.querySelector('.home')?.classList.add('route-hidden');el.querySelector('.luno-screen')?.remove();
  let screen=null;
  if(route==='search')screen=searchScreen(el);
@@ -186,7 +186,9 @@ function bindHome(el){
     if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});return}
     if(event.target.closest('[data-search]')){routeTo('search');return}
     if(event.target.closest('[data-settings]')){routeTo('settings');return}
+    if(event.target.closest('[data-retry]')){loadHome();return}
     const setting=event.target.closest('[data-setting]');if(setting){settingsAction(setting.dataset.setting);return}
+    const historyRemove=event.target.closest('[data-history-remove]');if(historyRemove){removeHistory(historyRemove.dataset.historyRemove);renderRouteScreen(el,'history');return}
     const rowControl=event.target.closest('[data-row-scroll]');
     if(rowControl){const row=el.querySelector('[data-row="'+rowControl.dataset.rowScroll+'"]');if(row)row.scrollBy({left:Number(rowControl.dataset.dir)*Math.max(420,row.clientWidth*.72),behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth'});return}
     const card=event.target.closest('.media-card');
@@ -195,7 +197,12 @@ function bindHome(el){
     if(open){window.LunoCore?.focus?.(open);routeTo('details:'+(open.dataset.openType||'movie')+':'+encodeURIComponent(open.dataset.open))}
   });
   const scrollHost=document.documentElement.dataset.device==='tv'?app:window;scrollHost.addEventListener('scroll',()=>{const y=document.documentElement.dataset.device==='tv'?app.scrollTop:window.scrollY;el.querySelector('.topbar')?.classList.toggle('is-scrolled',y>28)},{passive:true});
-  el.querySelectorAll('.media-row').forEach(row=>row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false}));
+  el.querySelectorAll('.media-row').forEach(row=>{
+    let sx=0,sy=0;
+    row.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY},{passive:true});
+    row.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientX-sx)>Math.abs(e.touches[0].clientY-sy))e.stopPropagation()},{passive:true});
+    row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false}));
+  });
   const navObserver=new IntersectionObserver(entries=>{const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;const key=visible.target.id==='movies'?'movie':visible.target.id==='series'?'series':visible.target.id==='anime'?'anime':visible.target.id==='history'?'history':'home';el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===key))},{root:document.documentElement.dataset.device==='tv'?app:null,rootMargin:'-20% 0px -55% 0px',threshold:[0,.25,.5]});
   el.querySelectorAll('.content-section').forEach(section=>navObserver.observe(section));
 
@@ -236,8 +243,7 @@ function openSearch(el){
   modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('.details-modal__close'))modal.remove();const result=e.target.closest('.search-result');if(result){modal.remove();openDetails(el,result.dataset.type,result.dataset.id)}});
 }
 async function loadHome(){
-  const el=homeShell();app.replaceChildren(el);bindHome(el);
-  const error=el.querySelector('[data-error]');
+  const el=homeShell();
   const results=await Promise.allSettled([loadCatalog('movie'),loadCatalog('series'),loadCatalog('anime')]);
   const [movies,series,anime]=results.map(r=>r.status==='fulfilled'?r.value:[]);
   setHero(el,movies[0]||series[0]);
@@ -250,8 +256,9 @@ async function loadHome(){
   renderRow(el,'movies',movies,'movie');
   renderRow(el,'series',series,'series');
   renderRow(el,'anime',anime,'anime');
-  const failed=results.some(r=>r.status==='rejected');
-  if(failed){error.hidden=false;error.textContent='Один из источников временно недоступен. LUNO продолжает показывать доступные реальные каталоги.'}
+  const failed=results.some(r=>r.status==='rejected'),allFailed=results.every(r=>r.status==='rejected');
+  if(failed){const error=el.querySelector('[data-error]');error.hidden=false;error.innerHTML='Один из каталогов временно недоступен.'+(allFailed?' <button class="retry-load" data-retry>Повторить</button>':'')}
+  app.replaceChildren(el);bindHome(el);
   requestAnimationFrame(()=>{el.style.opacity='1';const route=window.LunoCore?.router?.current?.()||'home';if(route!=='home'){renderRouteScreen(el,route);return}const remembered=window.LunoCore?.router?.focusFor?.('home:hero')||window.LunoCore?.router?.focusFor?.('home:history')||window.LunoCore?.router?.focusFor?.('home:recommendations')||window.LunoCore?.router?.focusFor?.('home:popular')||window.LunoCore?.router?.focusFor?.('home:new')||window.LunoCore?.router?.focusFor?.('home:movies')||window.LunoCore?.router?.focusFor?.('home:series')||window.LunoCore?.router?.focusFor?.('home:anime');const target=remembered?el.querySelector('[data-id="'+remembered+'"]'):null;(target||el.querySelector('.hero .primary')||el.querySelector('.media-card'))?.focus()});
 }
 function openSettings(el){
@@ -273,6 +280,12 @@ function openSettings(el){
     if(tile) settingsAction(tile.dataset.setting);
   });
 }
+function removeHistory(id){
+  try{localStorage.setItem('luno_history_v1',JSON.stringify(readHistory().filter(x=>String(x.__historyId)!==String(id))))}catch{}
+}
+function clearHistory(){
+  clearHistory()
+}
 function settingsAction(key){
   if(key==='interface'){
     const enabled=localStorage.getItem('luno_motion')!=='off';
@@ -282,6 +295,8 @@ function settingsAction(key){
     if(screen) renderRouteScreen(document.querySelector('.home'), 'settings');
     return;
   }
+  if(key==='reset'){try{localStorage.removeItem('luno_motion');localStorage.removeItem('luno_core_state_v3');}catch{};document.documentElement.classList.remove('luno-reduced-motion');window.location.reload();return;}
+  if(key==='version'){return;}
   if(key==='profile'){return;}
   if(key==='clear-history'){
     try{localStorage.removeItem('luno_history_v1')}catch{}

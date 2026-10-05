@@ -1,11 +1,14 @@
 (function(){
 'use strict';
 const KEY='luno_core_state_v3',read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}},save=p=>{try{localStorage.setItem(KEY,JSON.stringify({...read(),...p}))}catch{}};
-let state=read(),current=state.route||'home',stack=Array.isArray(state.stack)?state.stack:[],focusMap=state.focusMap&&typeof state.focusMap==='object'?state.focusMap:{};
+let state=read(),current=state.route||'home',stack=Array.isArray(state.stack)?state.stack.filter(Boolean).slice(-20):[],focusMap=state.focusMap&&typeof state.focusMap==='object'?state.focusMap:{};
+const validRoute=r=>r==='home'||r==='search'||r==='settings'||r==='movie'||r==='series'||r==='anime'||r==='history'||/^details:(movie|series|anime):.+/.test(String(r));
+if(!validRoute(current))current='home';
+stack=stack.filter(validRoute);
 const visible=e=>!!e&&e.offsetParent!==null;
 const focus=e=>{if(!e)return;e.focus({preventScroll:true});e.scrollIntoView({behavior:'auto',block:'nearest',inline:'nearest'});const key=e.closest('.luno-screen')?.dataset.route||e.dataset.nav||'home';focusMap[key]=e.dataset.id||e.dataset.nav||e.className;save({focusMap})};
-function go(route,replace=false){if(route===current&&!replace)return;if(!replace)stack=[...stack.filter(x=>x!==route),current].filter(Boolean).slice(-20);current=route;save({route,stack});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route,stack:[...stack]}}))}
-function back(){if(!stack.length)return false;current=stack.pop()||'home';save({route:current,stack});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:current,stack:[...stack]}}));return true}
+function go(route,replace=false){if(!validRoute(route))route='home';if(route===current&&!replace)return;if(!replace)stack=[...stack.filter(x=>x!==route),current].filter(Boolean).slice(-20);current=route;save({route,stack});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route,stack:[...stack]}}))}
+function back(){while(stack.length&&!validRoute(stack[stack.length-1]))stack.pop();if(!stack.length){if(current!=='home'){current='home';save({route:'home',stack:[]});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:'home',stack:[]}}));return true}return false;}current=stack.pop()||'home';save({route:current,stack});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:current,stack:[...stack]}}));return true}
 function closeOverlay(){const o=document.querySelector('.details-modal,.search-modal,.settings-modal);if(!o)return false;o.remove();return true}
 function screenBack(el){if(window.LunoCore?.router?.back?.())return;routeTo('home')}
 function detailsScreen(el,type,id){
