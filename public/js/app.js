@@ -29,6 +29,7 @@
   const tmdbItem = (x,type) => ({
     id:'tmdb-'+type+'-'+x.id, tmdbId:x.id, type,
     title:type==='movie'?(x.title||x.original_title||'Без названия'):(x.name||x.original_name||'Без названия'),
+    displayTitle:'',
     originalTitle:type==='movie'?(x.original_title||''):(x.original_name||''),
     year:String((type==='movie'?x.release_date:x.first_air_date)||'').slice(0,4)||'—',
     rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0),
@@ -102,6 +103,10 @@
     return false;
   };
 
+  const isRussianTitle = value => /[А-Яа-яЁё]/.test(String(value||''));
+  const uiTitle = item => isRussianTitle(item.title) ? item.title : (isRussianTitle(item.originalTitle) ? item.originalTitle : '');
+  const displayable = items => items.filter(item => uiTitle(item));
+
   const byId = id => catalog.find(item => item.id === String(id));
   const historyKey = 'luno_history_v2';
 
@@ -121,14 +126,16 @@
   };
 
   const card = item => {
-    const letter = item.title.slice(0,1);
+    const title=uiTitle(item);
+    const letter=(title||item.title||'L').slice(0,1);
     const media = item.poster
-      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc=\'\';}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
+      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc='';}else{this.style.display='none';this.nextElementSibling.style.display='flex';}"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
       : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
-      '<span class="poster poster--'+esc(item.type)+'">'+media+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></span>'+
-      '<span class="media-card__title">'+esc(item.title)+'</span>'+
-      '<span class="media-card__meta">'+esc(item.year)+' · ★ '+esc(item.rating.toFixed(1))+'</span>'+
+      '<span class="poster poster--'+esc(item.type)+'">'+media+
+      '<span class="poster__glow"></span><span class="poster__tag">'+esc(item.tag)+'</span>'+
+      '<span class="poster__meta">'+esc(item.year)+' · ★ '+esc(Number(item.rating||0).toFixed(1))+'</span></span>'+
+      (title?'<span class="media-card__title">'+esc(title)+'</span>':'')+
     '</button>';
   };
 
@@ -169,7 +176,7 @@
     const el = document.createElement('section');
     el.className = 'screen screen-home';
     const history = readHistory().map(x => byId(x.id)).filter(Boolean);
-    const featured = ranked(catalog,1)[0] || fallbackCatalog[0];
+    const featured = ranked(displayable(catalog),1)[0] || fallbackCatalog[0];
     const backdrop = featured.backdrop || featured.poster || '';
     const movies=catalog.filter(x=>x.type==='movie'), series=catalog.filter(x=>x.type==='series');
     el.innerHTML =
@@ -183,13 +190,13 @@
         '</div>'+
       '</section>'+
       '<div class="home-quick" data-focus-container="quick"><button data-route="movie">Фильмы</button><button data-route="series">Сериалы</button><button data-route="stream">Поток</button><button data-action="search">Поиск</button></div>'+
-      section('continue','Продолжить','Ваши последние открытия',history.length?history:ranked(catalog,8))+
-      section('top10','Топ 10','Самые заметные фильмы и сериалы',topRated(catalog,10))+
-      section('new','Новинки','Свежие релизы и новые открытия',newest(catalog,12))+
-      section('trending','Сейчас в тренде','Популярное прямо сейчас',ranked(catalog,12))+
-      section('movies','Фильмы','Большое кино на любой вечер',ranked(movies,12))+
-      section('series','Сериалы','Истории на несколько вечеров',ranked(series,12))+
-      section('for-you','Для вас','LUNO собирает подборку из того, что вы открывали',history.length?ranked(history.concat(catalog),12):ranked(catalog,12));
+      section('continue','Продолжить','Ваши последние открытия',history.length?displayable(history):ranked(displayable(catalog),8))+
+      section('top10','Топ 10','Самые заметные фильмы и сериалы',topRated(displayable(catalog),10))+
+      section('new','Новинки','Свежие релизы и новые открытия',newest(displayable(catalog),12))+
+      section('trending','Сейчас в тренде','Популярное прямо сейчас',ranked(displayable(catalog),12))+
+      section('movies','Фильмы','Большое кино на любой вечер',ranked(displayable(movies),12))+
+      section('series','Сериалы','Истории на несколько вечеров',ranked(displayable(series),12))+
+      section('for-you','Для вас','LUNO собирает подборку из того, что вы открывали',history.length?ranked(displayable(history.concat(catalog)),12):ranked(displayable(catalog),12));
     return el;
   };
 
