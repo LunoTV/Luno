@@ -44,7 +44,7 @@
     ...safeRead()
   };
 
-  // Normalize persisted state so older LUNO sessions can never break startup.\n  if (!state || typeof state !== 'object' || Array.isArray(state)) {\n    state.route = 'home';\n  }\n  if (!validRouteSafe(state.route)) state.route = 'home';\n  if (!Array.isArray(state.stack)) state.stack = [];\n  if (!state.focus || typeof state.focus !== 'object' || Array.isArray(state.focus)) state.focus = {};\n  if (!state.settings || typeof state.settings !== 'object' || Array.isArray(state.settings)) state.settings = {};\n  if (!state.data || typeof state.data !== 'object' || Array.isArray(state.data)) state.data = {};\n\n  const listeners = new Map();
+  // Normalize persisted state so older LUNO sessions can never break startup.\n  if (!state || typeof state !== 'object' || Array.isArray(state)) {\n    state.route = 'home';\n  }\n  if (typeof state.route !== 'string' || !state.route || state.route.length > 512 || /[\u0000-\u001f]/.test(state.route)) state.route = 'home';\n  if (!Array.isArray(state.stack)) state.stack = [];\n  if (!state.focus || typeof state.focus !== 'object' || Array.isArray(state.focus)) state.focus = {};\n  if (!state.settings || typeof state.settings !== 'object' || Array.isArray(state.settings)) state.settings = {};\n  if (!state.data || typeof state.data !== 'object' || Array.isArray(state.data)) state.data = {};\n\n  const listeners = new Map();
 
   const emit = (name, payload) => {
     const list = listeners.get(name);
