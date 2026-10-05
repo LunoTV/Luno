@@ -201,6 +201,18 @@ jobs:
 
           print(f"Cached {cached} real catalog posters into same-origin Pages assets")
           PY
+      - name: Import Lampa core sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/lampa-source public/core/lampa
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/yumata/lampa-source.git /tmp/lampa-source
+          git -C /tmp/lampa-source sparse-checkout set src/core src/utils
+          mkdir -p public/core/lampa
+          cp -R /tmp/lampa-source/src/core public/core/lampa/core
+          cp -R /tmp/lampa-source/src/utils public/core/lampa/utils
+          printf '%s\n' 'Lampa core sources imported for the LUNO core rebuild. LUNO UI is not imported.' > public/core/lampa/README.txt
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
