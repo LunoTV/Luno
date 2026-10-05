@@ -67,7 +67,7 @@
   const card = item => {
     const letter = item.title.slice(0,1);
     const media = item.poster
-      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="eager" decoding="async" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc=\'\';}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
+      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="lazy" decoding="async" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc=\'\';}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
       : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></span>'+
