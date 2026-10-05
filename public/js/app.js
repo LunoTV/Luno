@@ -259,7 +259,7 @@ async function loadHome(){
   renderRow(el,'anime',anime,'anime');
   const failed=results.some(r=>r.status==='rejected'),allFailed=results.every(r=>r.status==='rejected');
   if(failed){const error=el.querySelector('[data-error]');error.hidden=false;error.innerHTML='Один из каталогов временно недоступен.'+(allFailed?' <button class="retry-load" data-retry>Повторить</button>':'')}
-  const splashMinTime=900;
+  const splashMinTime=2500;
   const splashWait=Math.max(0,splashMinTime-(performance.now()-splashStarted));
   if(splashWait)await new Promise(resolve=>setTimeout(resolve,splashWait));
   app.replaceChildren(el);bindHome(el);
