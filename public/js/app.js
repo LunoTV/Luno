@@ -398,6 +398,7 @@
     if(target) Core.focus.set(target,{scope:route,preventScroll:true});
   };
 
+  var bootstrap=root.querySelector('.luno-bootstrap'); if(bootstrap) bootstrap.remove();
   root.appendChild(shell());
 
   root.addEventListener('click',event=>{
