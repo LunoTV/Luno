@@ -243,6 +243,7 @@ function openSearch(el){
   modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('.details-modal__close'))modal.remove();const result=e.target.closest('.search-result');if(result){modal.remove();openDetails(el,result.dataset.type,result.dataset.id)}});
 }
 async function loadHome(){
+  const splashStarted=performance.now();
   const el=homeShell();
   const results=await Promise.allSettled([loadCatalog('movie'),loadCatalog('series'),loadCatalog('anime')]);
   const [movies,series,anime]=results.map(r=>r.status==='fulfilled'?r.value:[]);
@@ -258,6 +259,9 @@ async function loadHome(){
   renderRow(el,'anime',anime,'anime');
   const failed=results.some(r=>r.status==='rejected'),allFailed=results.every(r=>r.status==='rejected');
   if(failed){const error=el.querySelector('[data-error]');error.hidden=false;error.innerHTML='Один из каталогов временно недоступен.'+(allFailed?' <button class="retry-load" data-retry>Повторить</button>':'')}
+  const splashMinTime=900;
+  const splashWait=Math.max(0,splashMinTime-(performance.now()-splashStarted));
+  if(splashWait)await new Promise(resolve=>setTimeout(resolve,splashWait));
   app.replaceChildren(el);bindHome(el);
   requestAnimationFrame(()=>{el.style.opacity='1';const route=window.LunoCore?.router?.current?.()||'home';if(route!=='home'){renderRouteScreen(el,route);return}const remembered=window.LunoCore?.router?.focusFor?.('home:hero')||window.LunoCore?.router?.focusFor?.('home:history')||window.LunoCore?.router?.focusFor?.('home:recommendations')||window.LunoCore?.router?.focusFor?.('home:popular')||window.LunoCore?.router?.focusFor?.('home:new')||window.LunoCore?.router?.focusFor?.('home:movies')||window.LunoCore?.router?.focusFor?.('home:series')||window.LunoCore?.router?.focusFor?.('home:anime');const target=remembered?el.querySelector('[data-id="'+remembered+'"]'):null;(target||el.querySelector('.hero .primary')||el.querySelector('.media-card'))?.focus()});
 }
