@@ -236,7 +236,7 @@
     remember(item);
     el.querySelector('.screen-body').innerHTML=
       '<div class="detail" data-focus-container="details">'+
-        '<div class="detail-poster poster poster--'+esc(item.type)+'">'+(item.poster?'<img class="poster__image" src="'+esc(item.poster)+'" alt="" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">':'<span class="poster__fallback"><strong>'+esc(item.title.slice(0,1))+'</strong></span>')+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></div>'+
+        '<div class="detail-poster poster poster--'+esc(item.type)+'">'+(item.poster?'<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc=\'\';}else{this.style.display=\'none\';}">':'<span class="poster__fallback"><strong>'+esc(item.title.slice(0,1))+'</strong></span>')+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></div>'+
         '<div class="detail-copy"><span class="rating">★ '+esc(item.rating.toFixed(1))+'</span><h2>'+esc(item.title)+'</h2><p>'+esc(item.description)+'</p><div class="detail-actions"><button class="primary" disabled>Смотреть</button><button class="secondary" data-action="back">Назад</button></div></div>'+
       '</div>';
     return el;
