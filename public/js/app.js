@@ -25,6 +25,7 @@
   let catalog = fallbackCatalog.slice();
   const tmdbDataPath = './data/tmdb.json';
   const tmdbImage = 'https://image.tmdb.org/t/p/';
+  const tmdbImageAlt = 'https://media.themoviedb.org/t/p/';
   const tmdbItem = (x,type) => ({
     id:'tmdb-'+type+'-'+x.id, tmdbId:x.id, type,
     title:type==='movie'?(x.title||x.original_title||'Без названия'):(x.name||x.original_name||'Без названия'),
@@ -66,7 +67,7 @@
   const card = item => {
     const letter = item.title.slice(0,1);
     const media = item.poster
-      ? '<img class="poster__image" src="'+esc(item.poster)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
+      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="eager" decoding="async" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc=\'\';}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';}"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
       : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></span>'+
@@ -139,8 +140,26 @@
   const catalogScreen = route => {
     const items = route==='movie'?catalog.filter(x=>x.type==='movie'):route==='series'?catalog.filter(x=>x.type==='series'):readHistory().map(x=>byId(x.id)).filter(Boolean);
     const title = route==='movie'?'Фильмы':route==='series'?'Сериалы':'История';
-    const el = baseScreen('CATALOG',title,route==='history'?'Недавно открытые позиции':'Выберите карточку');
-    el.querySelector('.screen-body').innerHTML = '<div class="screen-grid" data-focus-container="catalog">'+(items.length?items.map(card).join(''):'<div class="empty-state">Здесь пока пусто.</div>')+'</div>';
+    const el = baseScreen('CATALOG',title,route==='history'?'Недавно открытые позиции':'Большая библиотека LUNO');
+    const body=el.querySelector('.screen-body');
+    if(!items.length){body.innerHTML='<div class="empty-state">Здесь пока пусто.</div>';return el;}
+    let shown=0, batch=30;
+    body.innerHTML='<div class="catalog-toolbar"><strong>'+esc(title)+'</strong><span data-count>'+items.length+' материалов</span></div><div class="screen-grid" data-catalog-grid data-focus-container="catalog"></div>';
+    const append=()=>{
+      const next=items.slice(shown,shown+batch);
+      if(!next.length)return;
+      body.querySelector('[data-catalog-grid]').insertAdjacentHTML('beforeend',next.map(card).join(''));
+      shown+=next.length;
+      if(shown<items.length) sentinel();
+      else body.querySelector('[data-catalog-sentinel]')?.remove();
+    };
+    const sentinel=()=>{
+      body.querySelector('[data-catalog-sentinel]')?.remove();
+      const s=document.createElement('div');s.dataset.catalogSentinel='';s.className='stream-sentinel';body.appendChild(s);
+      const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){io.disconnect();s.remove();append();}},{rootMargin:'900px'});
+      io.observe(s);
+    };
+    append();
     return el;
   };
 
