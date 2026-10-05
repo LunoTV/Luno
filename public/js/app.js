@@ -23,21 +23,8 @@
     {id:'anime-2',type:'anime',title:'Монолог фармацевта',year:'2023',rating:8.9,tag:'Аниме',description:'Мэймэй расследует загадочные происшествия во дворце, используя знания о лекарствах.'}
   ];
   let catalog = fallbackCatalog.slice();
-  const tmdbKey = 'luno_tmdb_token';
-  const tmdbBase = 'https://api.themoviedb.org/3';
+  const tmdbDataPath = './data/tmdb.json';
   const tmdbImage = 'https://image.tmdb.org/t/p/';
-  const tmdbToken = () => { try { return localStorage.getItem(tmdbKey) || ''; } catch (_) { return ''; } };
-  const tmdbUrl = (path, params={}) => {
-    const qs = new URLSearchParams({language:'ru-RU',...params});
-    return tmdbBase+path+'?'+qs;
-  };
-  const tmdbFetch = async (path, params={}) => {
-    const token = tmdbToken();
-    if(!token) throw new Error('TMDB_TOKEN_MISSING');
-    const res = await fetch(tmdbUrl(path,params),{headers:{accept:'application/json',Authorization:'Bearer '+token}});
-    if(!res.ok) throw new Error('TMDB_HTTP_'+res.status);
-    return res.json();
-  };
   const tmdbItem = (x,type) => ({
     id:'tmdb-'+type+'-'+x.id, tmdbId:x.id, type,
     title:type==='movie'?(x.title||x.original_title||'Без названия'):(x.name||x.original_name||'Без названия'),
@@ -48,13 +35,11 @@
     backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:''
   });
   const loadTMDB = async () => {
-    if(!tmdbToken()) return false;
     try {
-      const [movies,series] = await Promise.all([
-        tmdbFetch('/trending/movie/week',{page:1}),
-        tmdbFetch('/trending/tv/week',{page:1})
-      ]);
-      const next=[...(movies.results||[]).slice(0,12).map(x=>tmdbItem(x,'movie')),...(series.results||[]).slice(0,12).map(x=>tmdbItem(x,'series'))];
+      const res=await fetch(tmdbDataPath,{cache:'no-store'});
+      if(!res.ok) return false;
+      const data=await res.json();
+      const next=[...(data.movies||[]).slice(0,12).map(x=>tmdbItem(x,'movie')),...(data.series||[]).slice(0,12).map(x=>tmdbItem(x,'series'))];
       if(next.length){ catalog=next; return true; }
     } catch (_) {}
     return false;
@@ -164,12 +149,12 @@
   const settingsScreen = () => {
     const el = baseScreen('SETTINGS','Настройки','Только то, что относится к оболочке LUNO');
     const reduced = localStorage.getItem('luno_motion')==='off';
-    const hasTmdb = !!tmdbToken();
+    const hasTmdb = true;
     el.querySelector('.screen-body').innerHTML =
       '<div class="settings-grid" data-focus-container="settings">'+
         setting('interface','◌','Интерфейс',reduced?'Анимации выключены':'Анимации включены')+
         setting('history','⌫','История','Очистить локальную историю')+
-        setting('tmdb','✦','TMDB',hasTmdb?'Подключён — реальные каталоги':'Добавьте API Read Access Token')+setting('about','L','О LUNO','Core '+esc(Core.version))+
+        setting('tmdb','✦','TMDB','Каталог обновляется при деплое')+setting('about','L','О LUNO','Core '+esc(Core.version))+
       '</div><div class="settings-note" data-settings-note></div>';
     return el;
   };
@@ -246,9 +231,8 @@
     if(settingEl){
       const note=root.querySelector('.settings-note');
       if(settingEl.dataset.setting==='tmdb'){
-        const current=tmdbToken();
-        const token=prompt('Вставьте TMDB API Read Access Token:',current);
-        if(token!==null){ if(token.trim()) localStorage.setItem(tmdbKey,token.trim()); else localStorage.removeItem(tmdbKey); render('settings'); }
+        const note=root.querySelector('.settings-note');
+        if(note) note.textContent='TMDB подключён через GitHub Actions. Токен хранится только в GitHub Secret.';
       } else if(settingEl.dataset.setting==='interface'){
         const off=localStorage.getItem('luno_motion')==='off';
         localStorage.setItem(motionKey,off?'on':'off');
