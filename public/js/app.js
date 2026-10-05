@@ -371,8 +371,7 @@
     else if(route==='settings') screen=settingsScreen();
     else if(route==='catalog'||route==='movie'||route==='series'||route==='history') screen=catalogScreen(route);
     else if(route==='stream') screen=streamScreen();
-    else if(route==='catalog') active='catalog';
-    if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
+    else if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
     else screen=home();
     host.appendChild(screen);
     applyMotion();
@@ -431,20 +430,31 @@
   Core.on('navigate',event=>render(event.route));
   Core.controller.bind('Home',()=>{Core.router.go('home');return true;});
 
-  const boot = async () => {
-    const route = Core.router.current() || 'home';
-
-    // Never block the UI on remote catalog data. Render the local shell first,
-    // then replace the catalog with the fresh TMDB snapshot when it arrives.
-    render(route);
+  const hideSplash = () => {
     if(splash) {
       splash.classList.add('is-hidden');
       setTimeout(()=>splash.remove(),520);
     }
-
-    const loaded = await loadTMDB();
-    if(loaded) render(Core.router.current() || 'home');
   };
+
+  const boot = async () => {
+    try {
+      const route = Core.router.current() || 'home';
+      render(route);
+      hideSplash();
+
+      // TMDB must never block the initial LUNO UI.
+      const loaded = await loadTMDB();
+      if(loaded) render(Core.router.current() || 'home');
+    } catch (error) {
+      console.error('[LUNO] boot failed', error);
+      hideSplash();
+      if(!root.querySelector('.luno-app')) {
+        root.innerHTML='<main class="luno-app"><section class="screen"><div class="empty-state">LUNO запускается. Попробуйте обновить страницу.</div></section></main>';
+      }
+    }
+  };
+
   boot();
 
   global.LunoUI={catalog,render};
