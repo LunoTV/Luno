@@ -29,14 +29,68 @@
   const tmdbItem = (x,type) => ({
     id:'tmdb-'+type+'-'+x.id, tmdbId:x.id, type,
     title:type==='movie'?(x.title||x.original_title||'Без названия'):(x.name||x.original_name||'Без названия'),
+    originalTitle:type==='movie'?(x.original_title||''):(x.original_name||''),
     year:String((type==='movie'?x.release_date:x.first_air_date)||'').slice(0,4)||'—',
-    rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0), tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
+    rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0),
+    genreIds:Array.isArray(x.genre_ids)?x.genre_ids:[], tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
     description:x.overview||'Описание отсутствует.',
     poster:x.poster_local_url||x.poster_url|| (x.poster_path?tmdbImage+'w342'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:'')),
     posterFallback:x.poster_url||x.poster_fallback_url|| (x.poster_path?tmdbImage+'w500'+x.poster_path:(x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'')),
     backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'',
     backdropFallback:x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''
   });
+
+  const translit = value => String(value||'')
+    .toLowerCase()
+    .replace(/ё/g,'е')
+    .replace(/щ/g,'shh').replace(/ж/g,'zh').replace(/х/g,'kh').replace(/ц/g,'ts')
+    .replace(/ч/g,'ch').replace(/ш/g,'sh').replace(/ю/g,'yu').replace(/я/g,'ya')
+    .replace(/й/g,'y').replace(/ъ|ь/g,'').replace(/э/g,'e')
+    .replace(/а/g,'a').replace(/б/g,'b').replace(/в/g,'v').replace(/г/g,'g')
+    .replace(/д/g,'d').replace(/е/g,'e').replace(/з/g,'z').replace(/и/g,'i')
+    .replace(/к/g,'k').replace(/л/g,'l').replace(/м/g,'m').replace(/н/g,'n')
+    .replace(/о/g,'o').replace(/п/g,'p').replace(/р/g,'r').replace(/с/g,'s')
+    .replace(/т/g,'t').replace(/у/g,'u').replace(/ф/g,'f').replace(/ы/g,'y')
+    .replace(/в/g,'v').replace(/ /g,'').replace(/[^a-z0-9]+/g,'');
+
+  const normalizeSearch = value => String(value||'')
+    .toLowerCase()
+    .replace(/ё/g,'е')
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^\p{L}\p{N}]+/gu,' ')
+    .trim();
+
+  const searchKey = value => normalizeSearch(value).replace(/\s+/g,'');
+  const catalogIndex = item => {
+    const fields = [item.title,item.originalTitle,item.description||''];
+    const plain = fields.map(normalizeSearch).join(' ');
+    const transliterated = fields.map(translit).join(' ');
+    return {plain,compact:searchKey(plain),transliterated};
+  };
+  const searchCatalog = (query, source=catalog) => {
+    const q=normalizeSearch(query);
+    if(q.length<2) return [];
+    const qc=searchKey(q);
+    const qt=translit(q);
+    return source.map(item=>{
+      const index=catalogIndex(item);
+      let score=0;
+      const title=normalizeSearch(item.title);
+      const original=normalizeSearch(item.originalTitle);
+      const titleCompact=searchKey(title);
+      const originalCompact=searchKey(original);
+      if(title===q) score+=1000;
+      else if(original===q) score+=900;
+      else if(titleCompact.includes(qc)) score+=700;
+      else if(originalCompact.includes(qc)) score+=650;
+      if(index.transliterated.includes(qt)) score+=600;
+      if(index.plain.includes(q)) score+=250;
+      if(normalizeSearch(item.description).includes(q)) score+=40;
+      score += Math.min(60, Math.round((item.popularity||0)/10));
+      score += Math.min(40, Math.round((item.rating||0)*3));
+      return score?{item,score}:null;
+    }).filter(Boolean).sort((a,b)=>b.score-a.score).map(x=>x.item);
+  };
   const loadTMDB = async () => {
     try {
       const res=await fetch(tmdbDataPath,{cache:'no-store'});
@@ -199,9 +253,11 @@
     const input = el.querySelector('[data-search-input]');
     const results = el.querySelector('[data-focus-container="search-results"]');
     const render = () => {
-      const q = input.value.trim().toLowerCase();
-      const items = q.length<2 ? [] : catalog.filter(x=>x.title.toLowerCase().includes(q));
-      results.innerHTML = q.length<2 ? '<div class="empty-state">Введите минимум 2 символа.</div>' : items.length?items.map(card).join(''):'<div class="empty-state">Ничего не найдено.</div>';
+      const q = input.value.trim();
+      const items = searchCatalog(q);
+      results.innerHTML = normalizeSearch(q).length<2
+        ? '<div class="empty-state">Введите минимум 2 символа.</div>'
+        : items.length?items.map(card).join(''):'<div class="empty-state">Ничего не найдено.</div>';
     };
     input.addEventListener('input',render);
     el.querySelector('[data-action="clear-search"]').addEventListener('click',()=>{input.value='';render();input.focus();});
