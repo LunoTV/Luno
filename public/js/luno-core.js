@@ -276,10 +276,36 @@
         const scope = active?.closest?.('[data-focus-container]');
         if (!active || !scope) return false;
         const direction = key.slice(5).toLowerCase();
-        const target = focus.move(scope, active, direction);
+        let target = focus.move(scope, active, direction);
+        if (!target) {
+          const globalScope = document.querySelector('.screen-host');
+          if (globalScope) target = focus.move(globalScope, active, direction);
+        }
+        if (!target) {
+          const globalItems = [...document.querySelectorAll('.luno-app button,input,[tabindex="0"]')]
+            .filter(item => item !== active && item.offsetParent !== null && !item.disabled);
+          const a = active.getBoundingClientRect();
+          const ax = a.left + a.width / 2;
+          const ay = a.top + a.height / 2;
+          const candidates = globalItems.map(item => {
+            const b = item.getBoundingClientRect();
+            const bx = b.left + b.width / 2;
+            const by = b.top + b.height / 2;
+            const dx = bx - ax;
+            const dy = by - ay;
+            if (direction === 'left' && dx >= -1) return null;
+            if (direction === 'right' && dx <= 1) return null;
+            if (direction === 'up' && dy >= -1) return null;
+            if (direction === 'down' && dy <= 1) return null;
+            const primary = direction === 'left' || direction === 'right' ? Math.abs(dx) : Math.abs(dy);
+            const secondary = direction === 'left' || direction === 'right' ? Math.abs(dy) : Math.abs(dx);
+            return { item, score: primary * 10 + secondary };
+          }).filter(Boolean).sort((a,b)=>a.score-b.score);
+          target = candidates[0]?.item || null;
+        }
         if (!target) return false;
         focus.set(target, {
-          scope: scope.dataset.focusContainer || scope.id || 'screen',
+          scope: target.closest('[data-focus-container]')?.dataset.focusContainer || 'screen',
           preventScroll: false
         });
         return true;
@@ -287,7 +313,15 @@
     });
 
     controller.bind('Escape', () => router.back());
-    controller.bind('Backspace', () => router.back());
+    controller.bind('Backspace', event => {
+      const el = document.activeElement;
+      if (el && (el.matches('input,textarea') || el.isContentEditable)) {
+        const value = typeof el.value === 'string' ? el.value : el.textContent || '';
+        const atStart = typeof el.selectionStart === 'number' ? el.selectionStart === 0 && el.selectionEnd === 0 : false;
+        if (value.length && !atStart) return false;
+      }
+      return router.back();
+    });
   };
 
   const platform = {
