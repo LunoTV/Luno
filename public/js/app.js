@@ -65,8 +65,11 @@
 
   const card = item => {
     const letter = item.title.slice(0,1);
+    const media = item.poster
+      ? '<img class="poster__image" src="'+esc(item.poster)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><span class="poster__fallback" style="display:none"><strong>'+esc(letter)+'</strong></span>'
+      : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
-      '<span class="poster poster--'+esc(item.type)+'"'+(item.poster?' style="background-image:url('+esc(item.poster)+')"':'')+'><span class="poster__glow"></span>'+(!item.poster?'<strong>'+esc(letter)+'</strong>':'')+'<small>'+esc(item.tag)+'</small></span>'+
+      '<span class="poster poster--'+esc(item.type)+'">'+media+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></span>'+
       '<span class="media-card__title">'+esc(item.title)+'</span>'+
       '<span class="media-card__meta">'+esc(item.year)+' · ★ '+esc(item.rating.toFixed(1))+'</span>'+
     '</button>';
@@ -179,7 +182,7 @@
     remember(item);
     el.querySelector('.screen-body').innerHTML=
       '<div class="detail" data-focus-container="details">'+
-        '<div class="detail-poster poster poster--'+esc(item.type)+'"'+(item.poster?' style="background-image:url('+esc(item.poster)+')"':'')+'><span class="poster__glow"></span>'+(!item.poster?'<strong>'+esc(item.title.slice(0,1))+'</strong>':'')+'<small>'+esc(item.tag)+'</small></div>'+
+        '<div class="detail-poster poster poster--'+esc(item.type)+'">'+(item.poster?'<img class="poster__image" src="'+esc(item.poster)+'" alt="" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">':'<span class="poster__fallback"><strong>'+esc(item.title.slice(0,1))+'</strong></span>')+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></div>'+
         '<div class="detail-copy"><span class="rating">★ '+esc(item.rating.toFixed(1))+'</span><h2>'+esc(item.title)+'</h2><p>'+esc(item.description)+'</p><div class="detail-actions"><button class="primary" disabled>Смотреть</button><button class="secondary" data-action="back">Назад</button></div></div>'+
       '</div>';
     return el;
