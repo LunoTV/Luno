@@ -105,18 +105,22 @@
     const el = document.createElement('section');
     el.className = 'screen screen-home';
     const history = readHistory().map(x => byId(x.id)).filter(Boolean);
+    const featured = catalog[0] || fallbackCatalog[0];
+    const backdrop = featured.backdrop || featured.poster || '';
     el.innerHTML =
-      '<section class="hero" data-focus-container="hero">'+
-        '<div class="hero-orbit"></div><div class="hero-copy">'+
-          '<span class="eyebrow">LUNO · MOONLIGHT</span><h1>Тишина экрана.<br><em>Сила истории.</em></h1>'+
-          '<p>Единая оболочка для фильмов, сериалов и аниме. Быстрая навигация и управление с пульта без лишних экранов.</p>'+
-          '<div class="hero-actions"><button class="primary" data-route="details:movie:movie-1">Подробнее</button><button class="secondary" data-action="scroll">Каталог</button></div>'+
-        '</div><div class="hero-art"><div class="moon"></div><div class="planet"></div></div>'+
+      '<section class="hero" data-focus-container="hero"'+(backdrop?' style="--hero-image:url('+esc(backdrop)+')"':'')+'>'+
+        '<div class="hero-backdrop"></div><div class="hero-vignette"></div>'+
+        '<div class="hero-copy">'+
+          '<span class="eyebrow">LUNO · РЕКОМЕНДУЕМ</span><div class="hero-meta"><span>'+esc(featured.tag)+'</span><i>•</i><span>'+esc(featured.year)+'</span><i>•</i><span>★ '+esc(featured.rating.toFixed(1))+'</span></div>'+
+          '<h1>'+esc(featured.title)+'</h1>'+
+          '<p>'+esc(featured.description)+'</p>'+
+          '<div class="hero-actions"><button class="primary" data-route="details:'+esc(featured.type)+':'+esc(featured.id)+'">Подробнее</button><button class="secondary" data-action="scroll">Смотреть каталог</button></div>'+
+        '</div>'+
       '</section>'+
-      section('continue','Продолжить','Ваши последние открытия',history.length?history:catalog.slice(0,5))+
-      section('popular','Популярное','Подборка LUNO',catalog.slice(0,6))+
-      section('series','Сериалы','Истории на несколько вечеров',catalog.filter(x=>x.type==='series'))+
-      section('anime','Аниме','Яркие миры и персонажи',catalog.filter(x=>x.type==='anime'));
+      section('continue','Продолжить','Ваши последние открытия',history.length?history:catalog.slice(0,6))+
+      section('popular','Популярное','То, что сейчас смотрят',catalog.slice(0,10))+
+      section('series','Сериалы','Истории на несколько вечеров',catalog.filter(x=>x.type==='series').slice(0,10))+
+      section('anime','Аниме','Яркие миры и персонажи',catalog.filter(x=>x.type==='anime').slice(0,10));
     return el;
   };
 
