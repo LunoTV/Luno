@@ -874,7 +874,7 @@ button,input{font-family:inherit}
   .home>.topbar>.nav{display:none!important}
   .home>.topbar{justify-content:space-between}
   .home>.topbar .search{margin-left:auto}
-  .home>.mobile-nav{display:flex}
+   .mobile-nav{display:flex!important}
 }
 
 .splash--boot{position:fixed!important;inset:0;z-index:99999;display:grid!important;place-items:center;min-height:100dvh;background:#02070d;opacity:1;visibility:visible}

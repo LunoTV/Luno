@@ -154,6 +154,18 @@ function newItems(){
   return allCatalogItems().sort((a,b)=>Number(yearOf(b)||b.year||0)-Number(yearOf(a)||a.year||0)).slice(0,16);
 }
 function routeTo(target){if(window.LunoCore?.router?.go){window.LunoCore.router.go(target);return}scrollToSection(document.querySelector('.home'),target)}
+function detailsScreen(el,type,id){
+  const screen=document.createElement('main');
+  screen.className='luno-screen luno-details-screen';
+  screen.dataset.route='details:'+type+':'+id;
+  const list=catalogStore[type]||[];
+  const item=list.find(x=>String(x?.imdb_id||x?.tmdb_id||x?.mal_id||x?.id)===String(id))||historyItems().find(x=>String(x?.__historyId)===String(id));
+  if(!item){screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / DETAILS</div><h1>Карточка недоступна</h1><p>Этот фильм сейчас отсутствует в каталоге.</p></div></header>';el.appendChild(screen);return screen}
+  saveHistory(item,type);
+  const title=item?.name||item?.title||'Без названия',image=poster(item),score=item?.imdbRating||item?.rating||item?.score,year=yearOf(item)||item?.year||'',genres=Array.isArray(item?.genres)?item.genres.join(' · '):String(item?.genre||''),description=item?.description||item?.overview||item?.synopsis||'Описание отсутствует в источнике.';
+  screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / '+esc(type==='anime'?'ANIME':type.toUpperCase())+'</div><h1>'+esc(title)+'</h1><p>'+esc([year,genres].filter(Boolean).join(' · '))+'</p></div></header><div class="detail-layout"><div class="detail-poster">'+(image?'<img src="'+esc(image)+'" alt="">':'<div class="detail-poster-fallback">LUNO</div>')+'</div><div class="detail-copy"><div class="detail-rating">'+(score?'<span>★</span> '+esc(scoreOf(score)):'Без оценки')+'</div><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p><div class="detail-actions"><button class="primary" disabled>Смотреть</button><button class="secondary" data-route-back>Назад</button></div></div></div>';
+  el.appendChild(screen);return screen
+}
 function renderRouteScreen(el,route){
  if(route==='home'){el.querySelector('.luno-screen')?.remove();el.classList.remove('route-hidden');return}
  el.querySelector('.home')?.classList.add('route-hidden');el.querySelector('.luno-screen')?.remove();
@@ -262,7 +274,18 @@ async function loadHome(){
   const splashMinTime=2500;
   const splashWait=Math.max(0,splashMinTime-(performance.now()-splashStarted));
   if(splashWait)await new Promise(resolve=>setTimeout(resolve,splashWait));
-  app.replaceChildren(el);bindHome(el);
+  app.replaceChildren(el);
+  const mobileNav=el.querySelector('.mobile-nav');
+  if(mobileNav){
+    app.appendChild(mobileNav);
+    mobileNav.addEventListener('click',event=>{
+      const nav=event.target.closest('[data-nav]');
+      if(nav){routeTo(nav.dataset.nav);mobileNav.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b===nav));}
+      const settings=event.target.closest('[data-settings]');
+      if(settings){routeTo('settings');mobileNav.querySelectorAll('[data-nav]').forEach(b=>b.classList.remove('active'));}
+    });
+  }
+  bindHome(el);
   requestAnimationFrame(()=>{el.style.opacity='1';const route=window.LunoCore?.router?.current?.()||'home';if(route!=='home'){renderRouteScreen(el,route);return}const remembered=window.LunoCore?.router?.focusFor?.('home:hero')||window.LunoCore?.router?.focusFor?.('home:history')||window.LunoCore?.router?.focusFor?.('home:recommendations')||window.LunoCore?.router?.focusFor?.('home:popular')||window.LunoCore?.router?.focusFor?.('home:new')||window.LunoCore?.router?.focusFor?.('home:movies')||window.LunoCore?.router?.focusFor?.('home:series')||window.LunoCore?.router?.focusFor?.('home:anime');const target=remembered?el.querySelector('[data-id="'+remembered+'"]'):null;(target||el.querySelector('.hero .primary')||el.querySelector('.media-card'))?.focus()});
 }
 function openSettings(el){
