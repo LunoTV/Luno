@@ -116,7 +116,6 @@
       results.innerHTML = q.length<2 ? '<div class="empty-state">Введите минимум 2 символа.</div>' : items.length?items.map(card).join(''):'<div class="empty-state">Ничего не найдено.</div>';
     };
     input.addEventListener('input',render);
-    input.addEventListener('keydown',event=>{ if(event.key==='Escape'){Core.router.back();} });
     el.querySelector('[data-action="clear-search"]').addEventListener('click',()=>{input.value='';render();input.focus();});
     setTimeout(()=>input.focus(),0);
     return el;
@@ -181,7 +180,7 @@
 
   const focusInitial = (screen,route) => {
     const remembered=Core.focus.remembered(route);
-    let target=remembered && screen.querySelector('[data-id="'+CSS.escape(remembered)+'"]');
+    let target=remembered ? [...screen.querySelectorAll('[data-id]')].find(item=>item.dataset.id===remembered) : null;
     target=target||screen.querySelector('[data-search-input]')||screen.querySelector('.media-card')||screen.querySelector('.setting')||screen.querySelector('.primary')||screen.querySelector('.back');
     if(target) Core.focus.set(target,{scope:route,preventScroll:true});
   };
