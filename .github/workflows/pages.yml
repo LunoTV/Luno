@@ -34,6 +34,26 @@ jobs:
           cp -R /tmp/lampa-source/src/utils public/core/lampa/utils
           printf '%s\n' 'Lampa core sources imported for the LUNO core rebuild. Lampa UI is intentionally excluded.' > public/core/lampa/README.txt
 
+      - name: Build TMDB catalog
+        env:
+          TMDB_API_READ_TOKEN: ${{ secrets.TMDB_API_READ_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/data
+          if [ -z "${TMDB_API_READ_TOKEN:-}" ]; then
+            printf '%s\n' '{"movies":[],"series":[],"generatedAt":null}' > public/data/tmdb.json
+            exit 0
+          fi
+          curl -fsSL -H "Authorization: Bearer $TMDB_API_READ_TOKEN" -H "accept: application/json" "https://api.themoviedb.org/3/trending/movie/week?language=ru-RU&page=1" -o /tmp/tmdb-movies.json
+          curl -fsSL -H "Authorization: Bearer $TMDB_API_READ_TOKEN" -H "accept: application/json" "https://api.themoviedb.org/3/trending/tv/week?language=ru-RU&page=1" -o /tmp/tmdb-series.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const movies = JSON.parse(fs.readFileSync('/tmp/tmdb-movies.json','utf8')).results || [];
+          const series = JSON.parse(fs.readFileSync('/tmp/tmdb-series.json','utf8')).results || [];
+          fs.writeFileSync('public/data/tmdb.json', JSON.stringify({movies,series,generatedAt:new Date().toISOString()}));
+          NODE
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
