@@ -888,3 +888,38 @@ button,input{font-family:inherit}
 .history-card-wrap{position:relative;min-width:0}.history-card-wrap .media-card{width:100%}.history-remove{margin-top:8px;width:100%;min-height:36px;border:1px solid rgba(157,207,242,.12);border-radius:10px;background:#091522;color:#9fb4c5;cursor:pointer}.history-remove:hover,.history-remove:focus{color:#eef7ff;border-color:rgba(132,205,255,.5)}
 .retry-load{margin-left:8px;padding:8px 14px;border-radius:10px;border:1px solid rgba(132,205,255,.3);background:#0a1825;color:#eef7ff}
 @media(max-width:700px){.mobile-nav{padding-bottom:calc(10px + var(--luno-safe-bottom));}.catalog{padding-bottom:calc(120px + var(--luno-safe-bottom))}.luno-screen{padding-bottom:calc(100px + var(--luno-safe-bottom))}.screen-search-clear{right:50px}.history-card-wrap .media-card{width:100%}}
+
+
+/* LUNO Moonlight palette */
+:root{
+  --luno-night:#020810;--luno-deep:#04111d;--luno-navy:#071827;--luno-blue:#0b2438;
+  --luno-moon:#e6f2f8;--luno-silver:#b9cbd7;--luno-muted:#718697;--luno-glow:#8fc7ea;
+  --luno-glow-soft:rgba(143,199,234,.18);--luno-border:rgba(174,214,235,.16);
+}
+html,body{background:var(--luno-night);color:var(--luno-moon)}
+body{background:radial-gradient(circle at 18% 8%,rgba(73,133,176,.12),transparent 28%),radial-gradient(circle at 82% 24%,rgba(122,181,220,.08),transparent 30%),linear-gradient(180deg,#020810 0%,#030d18 52%,#020810 100%)}
+.home{background:transparent}
+.topbar{background:linear-gradient(180deg,rgba(2,8,16,.97),rgba(3,13,24,.82),transparent)!important}
+.topbar .nav button,.topbar .search,.brand{color:#c9dce7!important}
+.topbar .nav button.active,.topbar .nav button:hover,.topbar .search:hover,.brand:hover{color:#f1f8fc!important}
+.hero__shade{background:linear-gradient(90deg,rgba(2,8,16,.96),rgba(2,8,16,.56) 45%,rgba(2,8,16,.12) 78%),linear-gradient(0deg,rgba(2,8,16,.78),transparent 48%)!important}
+.hero h1,.hero__quote,.hero__meta{color:#eaf4f8}
+.eyebrow{color:#8fb9d1!important}
+.primary{background:linear-gradient(135deg,#dcecf4,#9fc8df)!important;color:#06121c!important;box-shadow:0 8px 30px rgba(103,170,208,.22)!important}
+.secondary,.screen-back,.section-link,.row-control{background:rgba(120,173,204,.08)!important;border-color:rgba(170,211,232,.18)!important;color:#c8dce7!important}
+.secondary:hover,.screen-back:hover,.section-link:hover,.row-control:hover{background:rgba(130,190,222,.15)!important;border-color:rgba(180,220,240,.3)!important}
+.content-section h2,.screen-head h1,.detail-copy h2{color:#e7f2f7}
+.content-section p,.screen-head p,.detail-copy p{color:#71899a}
+.media-row{scrollbar-color:rgba(132,190,222,.38) transparent}
+.media-row::-webkit-scrollbar-thumb{background:rgba(132,190,222,.32)}
+.media-card{border-color:rgba(170,210,230,.09)!important;background:#06131f!important;box-shadow:0 10px 30px rgba(0,0,0,.24)}
+.media-card:hover,.media-card:focus-visible{border-color:rgba(151,207,235,.42)!important;box-shadow:0 0 0 1px rgba(151,207,235,.18),0 14px 38px rgba(37,106,145,.22)!important}
+.media-card__type{background:rgba(3,13,22,.78)!important;color:#c6dbe5!important}
+.media-card__bottom{background:linear-gradient(180deg,transparent,rgba(2,8,14,.94))!important}
+.media-card__score{color:#dcecf4!important}.media-card__star{color:#a9d3e8!important}.media-card__title{color:#dce8ee!important}
+.luno-screen{background:radial-gradient(circle at 75% 0%,rgba(64,121,159,.08),transparent 32%),#04101a!important}
+.screen-back:focus-visible,.media-card:focus-visible,.topbar button:focus-visible,.mobile-nav button:focus-visible{outline:2px solid rgba(159,211,235,.72)!important;outline-offset:3px}
+.mobile-nav{background:rgba(3,12,20,.94)!important;border-color:rgba(164,208,230,.18)!important;box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 28px rgba(73,142,180,.08)!important}
+.mobile-nav button{color:#718896!important}.mobile-nav button.active{color:#e8f5fa!important}
+.search-bar,.screen-searchbar input,.settings-tile{background:rgba(8,25,38,.72)!important;border-color:rgba(157,203,224,.14)!important;color:#e4f0f5!important}
+.settings-tile:hover,.settings-tile:focus-visible{border-color:rgba(151,207,235,.34)!important;background:rgba(12,34,50,.82)!important}
