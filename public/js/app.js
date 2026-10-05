@@ -193,21 +193,68 @@
     return el;
   };
 
+  const genreNames = {
+    28:'Боевик',12:'Приключения',16:'Мультфильм',35:'Комедия',80:'Криминал',99:'Документальный',
+    18:'Драма',10751:'Семейный',14:'Фэнтези',36:'История',27:'Ужасы',10402:'Музыка',
+    9648:'Детектив',10749:'Мелодрама',878:'Фантастика',10770:'Телефильм',53:'Триллер',10752:'Военный',
+    37:'Вестерн',10759:'Боевик',10762:'Детский',10763:'Новости',10764:'Реалити',10765:'Фантастика и фэнтези',
+    10766:'Мыльная опера',10767:'Ток-шоу',10768:'Война и политика'
+  };
+  const catalogSorters = {
+    popular:(a,b)=>(b.popularity||0)-(a.popularity||0) || (b.rating||0)-(a.rating||0),
+    rating:(a,b)=>(b.rating||0)-(a.rating||0) || (b.votes||0)-(a.votes||0),
+    newest:(a,b)=>(Number(b.year)||0)-(Number(a.year)||0) || (b.popularity||0)-(a.popularity||0),
+    oldest:(a,b)=>(Number(a.year)||9999)-(Number(b.year)||9999) || (b.rating||0)-(a.rating||0),
+    title:(a,b)=>String(a.title||'').localeCompare(String(b.title||''),'ru')
+  };
   const catalogScreen = route => {
-    const items = route==='movie'?catalog.filter(x=>x.type==='movie'):route==='series'?catalog.filter(x=>x.type==='series'):readHistory().map(x=>byId(x.id)).filter(Boolean);
+    const baseItems = route==='movie'?catalog.filter(x=>x.type==='movie'):route==='series'?catalog.filter(x=>x.type==='series'):readHistory().map(x=>byId(x.id)).filter(Boolean);
     const title = route==='movie'?'Фильмы':route==='series'?'Сериалы':'История';
     const el = baseScreen('CATALOG',title,route==='history'?'Недавно открытые позиции':'Большая библиотека LUNO');
     const body=el.querySelector('.screen-body');
-    if(!items.length){body.innerHTML='<div class="empty-state">Здесь пока пусто.</div>';return el;}
-    let shown=0, batch=30;
-    body.innerHTML='<div class="catalog-toolbar"><strong>'+esc(title)+'</strong><span data-count>'+items.length+' материалов</span></div><div class="screen-grid" data-catalog-grid data-focus-container="catalog"></div>';
+    if(!baseItems.length){body.innerHTML='<div class="empty-state">Здесь пока пусто.</div>';return el;}
+
+    const years=[...new Set(baseItems.map(x=>Number(x.year)).filter(y=>y>1900))].sort((a,b)=>b-a);
+    const genres=[...new Set(baseItems.flatMap(x=>x.genreIds||[]).map(Number).filter(Boolean))]
+      .sort((a,b)=>String(genreNames[a]||a).localeCompare(String(genreNames[b]||b),'ru'));
+
+    body.innerHTML=
+      '<div class="catalog-toolbar catalog-toolbar--filters">'+
+        '<div class="catalog-title"><strong>'+esc(title)+'</strong><span data-count></span></div>'+
+        '<div class="catalog-filters" data-focus-container="catalog-filters">'+
+          (route==='history'?'':'<label><span>Тип</span><select data-filter="type"><option value="all">Все</option><option value="movie">Фильмы</option><option value="series">Сериалы</option></select></label>')+
+          '<label><span>Жанр</span><select data-filter="genre"><option value="all">Все жанры</option>'+genres.map(id=>'<option value="'+id+'">'+esc(genreNames[id]||('Жанр '+id))+'</option>').join('')+'</select></label>'+
+          '<label><span>Год</span><select data-filter="year"><option value="all">Все годы</option>'+years.map(y=>'<option value="'+y+'">'+y+'</option>').join('')+'</select></label>'+
+          '<label><span>Рейтинг</span><select data-filter="rating"><option value="0">Любой</option><option value="7">7+</option><option value="8">8+</option><option value="9">9+</option></select></label>'+
+          '<label><span>Сортировка</span><select data-filter="sort"><option value="popular">Популярные</option><option value="rating">По рейтингу</option><option value="newest">Сначала новые</option><option value="oldest">Сначала старые</option><option value="title">По названию</option></select></label>'+
+        '</div>'+
+      '</div>'+
+      '<div class="screen-grid" data-catalog-grid data-focus-container="catalog"></div>';
+
+    const grid=body.querySelector('[data-catalog-grid]');
+    const count=body.querySelector('[data-count]');
+    const filters=[...body.querySelectorAll('[data-filter]')];
+    let shown=0,batch=30,filtered=[];
+
+    const apply=()=>{
+      const values=Object.fromEntries(filters.map(x=>[x.dataset.filter,x.value]));
+      filtered=baseItems.filter(item=>{
+        if(values.type && values.type!=='all' && item.type!==values.type) return false;
+        if(values.genre!=='all' && !(item.genreIds||[]).map(Number).includes(Number(values.genre))) return false;
+        if(values.year!=='all' && String(item.year)!==values.year) return false;
+        if(Number(values.rating)>0 && Number(item.rating||0)<Number(values.rating)) return false;
+        return true;
+      }).slice().sort(catalogSorters[values.sort]||catalogSorters.popular);
+      shown=0; grid.innerHTML=''; body.querySelector('[data-catalog-sentinel]')?.remove();
+      count.textContent=filtered.length+' '+(filtered.length===1?'материал':'материалов');
+      append();
+    };
     const append=()=>{
-      const next=items.slice(shown,shown+batch);
-      if(!next.length)return;
-      body.querySelector('[data-catalog-grid]').insertAdjacentHTML('beforeend',next.map(card).join(''));
+      const next=filtered.slice(shown,shown+batch);
+      if(!next.length){body.querySelector('[data-catalog-sentinel]')?.remove();return;}
+      grid.insertAdjacentHTML('beforeend',next.map(card).join(''));
       shown+=next.length;
-      if(shown<items.length) sentinel();
-      else body.querySelector('[data-catalog-sentinel]')?.remove();
+      if(shown<filtered.length) sentinel();
     };
     const sentinel=()=>{
       body.querySelector('[data-catalog-sentinel]')?.remove();
@@ -215,7 +262,8 @@
       const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){io.disconnect();s.remove();append();}},{rootMargin:'900px'});
       io.observe(s);
     };
-    append();
+    filters.forEach(filter=>filter.addEventListener('change',apply));
+    apply();
     return el;
   };
 
