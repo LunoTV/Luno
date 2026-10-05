@@ -1,1 +1,332 @@
-(function(){'use strict';const KEY='luno_core_state_v3';const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}};const save=patch=>{try{localStorage.setItem(KEY,JSON.stringify({...read(),...patch}))}catch{}};let state=read(),current=state.route||'home',stack=Array.isArray(state.stack)?state.stack.filter(Boolean).slice(-20):[],focusMap=state.focusMap&&typeof state.focusMap==='object'?state.focusMap:{};const validRoute=r=>r==='home'||r==='search'||r==='settings'||r==='movie'||r==='series'||r==='anime'||r==='history'||/^details:(movie|series|anime):.+/.test(String(r));if(!validRoute(current))current='home';stack=stack.filter(validRoute);const visible=e=>!!e&&e.offsetParent!==null;const focusKey=e=>{if(!e)return'';const screen=e.closest('.luno-screen');if(screen)return screen.dataset.route||'screen';const section=e.closest('.content-section');if(section)return'home:'+section.id;if(e.closest('.hero'))return'home:hero';if(e.closest('.topbar'))return'home:topbar';return'home'};const focus=e=>{if(!e)return;e.focus({preventScroll:true});e.scrollIntoView({behavior:'auto',block:'nearest',inline:'nearest'});const key=focusKey(e),id=e.dataset.id||e.dataset.nav||e.dataset.setting||e.className;focusMap[key]=id;save({focusMap})};const focusIn=el=>{if(!el)return null;const id=focusMap[focusKey(el)];if(id){const exact=[...el.querySelectorAll('[data-id],[data-nav],[data-setting]')].find(x=>x.dataset.id===id||x.dataset.nav===id||x.dataset.setting===id);if(exact&&visible(exact))return exact}return el.querySelector('.media-card,button,input,[tabindex="0"]')};const go=(route,replace=false)=>{if(!validRoute(route))route='home';if(route===current&&!replace)return;if(!replace)stack=[...stack.filter(x=>x!==route),current].filter(Boolean).slice(-20);current=route;save({route,stack});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route,stack:[...stack]}}))};const back=()=>{while(stack.length&&!validRoute(stack[stack.length-1]))stack.pop();if(!stack.length){if(current!=='home'){current='home';save({route:'home',stack:[]});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:'home',stack:[]}}));return true}return false}current=stack.pop()||'home';save({route:current,stack});window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:current,stack:[...stack]}}));return true};const spatial=(container,active,dir)=>{const items=[...container.querySelectorAll('button,input,[tabindex="0"]')].filter(visible);const r=active.getBoundingClientRect(),ax=r.left+r.width/2,ay=r.top+r.height/2;return items.filter(x=>x!==active).map(x=>{const b=x.getBoundingClientRect(),bx=b.left+b.width/2,by=b.top+b.height/2,dx=bx-ax,dy=by-ay;if(dir==='up'&&dy>=-1)return null;if(dir==='down'&&dy<=1)return null;if(dir==='left'&&dx>=-1)return null;if(dir==='right'&&dx<=1)return null;const primary=(dir==='left'||dir==='right')?Math.abs(dx):Math.abs(dy),secondary=(dir==='left'||dir==='right')?Math.abs(dy):Math.abs(dx);return{x,score:primary*10+secondary}}).filter(Boolean).sort((a,b)=>a.score-b.score)[0]?.x||null};const homeNavMove=(active,key)=>{const nav=[...document.querySelectorAll('.home .topbar button')].filter(visible);if(!nav.includes(active))return null;if(key==='ArrowRight'||key==='ArrowLeft'){const i=nav.indexOf(active),n=i+(key==='ArrowRight'?1:-1);return nav[n]||active}return null};const homeMove=(active,key)=>{const nav=homeNavMove(active,key);if(nav&&nav!==active)return nav;if(active.closest('.topbar')){if(key==='ArrowDown')return document.querySelector('.home .hero .primary,.home .hero .secondary,.home .content-section .media-card');return null}if(active.closest('.hero')){if(key==='ArrowUp')return document.querySelector('.home .topbar .brand');if(key==='ArrowDown')return focusIn(document.querySelector('.home .content-section'));return spatial(active.closest('.hero'),active,key.slice(5).toLowerCase())}const section=active.closest('.content-section');if(section){const row=active.closest('.media-row');if(row&&(key==='ArrowLeft'||key==='ArrowRight')){const cards=[...row.querySelectorAll('.media-card')].filter(visible),i=cards.indexOf(active),n=i+(key==='ArrowRight'?1:-1);return cards[n]||active}if(key==='ArrowUp'||key==='ArrowDown'){const sections=[...document.querySelectorAll('.home .content-section')].filter(s=>visible(s)&&s.querySelector('.media-card')),i=sections.indexOf(section),target=sections[i+(key==='ArrowDown'?1:-1)];if(target)return focusIn(target);if(key==='ArrowUp')return document.querySelector('.home .hero .primary,.home .hero .secondary')}}return null};const screenMove=(active,key)=>{const screen=active.closest('.luno-screen');if(!screen)return null;if(key==='ArrowUp'&&active.matches('input[data-screen-search]'))return screen.querySelector('.screen-back');if(key==='ArrowDown'&&active.matches('input[data-screen-search]'))return screen.querySelector('.media-card');if(key==='ArrowDown'&&active.matches('.screen-back'))return screen.querySelector('.media-card,[data-screen-search],[data-setting]');const grid=active.closest('.screen-grid,.settings-grid');if(grid)return spatial(grid,active,key.slice(5).toLowerCase());return null};const closeOverlay=()=>{const o=document.querySelector('.details-modal,.search-modal,.settings-modal');if(!o)return false;o.remove();return true};const keydown=e=>{if(document.documentElement.dataset.device!=='tv')return;const key=e.key,active=document.activeElement;if(key==='Home'){e.preventDefault();const brand=document.querySelector('.home .topbar .brand');if(brand){focus(brand);document.querySelector('.home')?.scrollTo({top:0,behavior:'auto'})}return}if(key==='Escape'||key==='Backspace'){if(closeOverlay()||back()){e.preventDefault();return}}if(key==='Enter'&&active?.matches('button')){e.preventDefault();active.click();return}if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(key))return;let target=null;if(active?.closest('.luno-screen'))target=screenMove(active,key);else if(active?.closest('.home'))target=homeMove(active,key);if(target&&visible(target)){focus(target);e.preventDefault()}};window.LunoCore={state:read,focus,router:{go,back,current:()=>current,focusFor:route=>focusMap[route]||''},controller:{keydown}};window.addEventListener('keydown',keydown,true)})();
+(function(global){
+  'use strict';
+
+  /*
+   * LUNO CORE
+   * ----------
+   * UI-free application runtime.
+   *
+   * This layer owns state, storage, events, routing, focus and remote/keyboard
+   * input. It deliberately does not create LUNO screens, cards, styles or
+   * player UI. Lampa core sources are imported separately by the Pages build
+   * and will be adapted behind this API.
+   */
+
+  const VERSION = '1.0.0-core-rebuild';
+  const STORAGE_KEY = 'luno_core_v4';
+
+  const safeRead = () => {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {};
+    } catch (_) {
+      return {};
+    }
+  };
+
+  const safeWrite = (state) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (_) {}
+  };
+
+  const clone = value => {
+    if (value === undefined) return undefined;
+    try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
+  };
+
+  const state = {
+    version: VERSION,
+    route: 'home',
+    stack: [],
+    focus: {},
+    settings: {},
+    data: {},
+    ...safeRead()
+  };
+
+  const listeners = new Map();
+
+  const emit = (name, payload) => {
+    const list = listeners.get(name);
+    if (list) list.slice().forEach(fn => {
+      try { fn(payload); } catch (error) { setTimeout(() => { throw error; }); }
+    });
+    try {
+      global.dispatchEvent(new CustomEvent('luno:' + name, { detail: payload }));
+    } catch (_) {}
+  };
+
+  const on = (name, fn) => {
+    if (typeof fn !== 'function') return () => {};
+    const list = listeners.get(name) || [];
+    list.push(fn);
+    listeners.set(name, list);
+    return () => {
+      const current = listeners.get(name) || [];
+      listeners.set(name, current.filter(item => item !== fn));
+    };
+  };
+
+  const setState = (patch) => {
+    Object.assign(state, clone(patch) || {});
+    safeWrite(state);
+    emit('state', clone(state));
+    return state;
+  };
+
+  const storage = {
+    get(key, fallback = null) {
+      const value = state.data[key];
+      return value === undefined ? fallback : clone(value);
+    },
+    set(key, value) {
+      state.data[key] = clone(value);
+      safeWrite(state);
+      emit('storage', { key, value: clone(value) });
+      return value;
+    },
+    remove(key) {
+      delete state.data[key];
+      safeWrite(state);
+      emit('storage', { key, removed: true });
+    },
+    clear() {
+      state.data = {};
+      safeWrite(state);
+      emit('storage', { clear: true });
+    }
+  };
+
+  const validRoute = route =>
+    typeof route === 'string' &&
+    route.length > 0 &&
+    route.length <= 512 &&
+    !/[\u0000-\u001f]/.test(route);
+
+  const router = {
+    current: () => state.route,
+    stack: () => state.stack.slice(),
+    go(route, options = {}) {
+      if (!validRoute(route)) return false;
+      if (route === state.route && !options.force) return false;
+
+      const previous = state.route;
+      const nextStack = state.stack.slice();
+      if (!options.replace) {
+        if (previous && previous !== route) nextStack.push(previous);
+      }
+
+      while (nextStack.length > 50) nextStack.shift();
+
+      state.route = route;
+      state.stack = nextStack;
+      safeWrite(state);
+
+      emit('navigate', {
+        route,
+        previous,
+        stack: state.stack.slice(),
+        replace: !!options.replace
+      });
+      return true;
+    },
+    replace(route) {
+      return this.go(route, { replace: true, force: true });
+    },
+    back() {
+      if (!state.stack.length) {
+        if (state.route === 'home') return false;
+        return this.replace('home');
+      }
+
+      const route = state.stack.pop() || 'home';
+      const previous = state.route;
+      state.route = route;
+      safeWrite(state);
+
+      emit('navigate', {
+        route,
+        previous,
+        stack: state.stack.slice(),
+        back: true
+      });
+      return true;
+    },
+    reset(route = 'home') {
+      state.route = validRoute(route) ? route : 'home';
+      state.stack = [];
+      safeWrite(state);
+      emit('navigate', { route: state.route, previous: null, stack: [] });
+    }
+  };
+
+  const focus = {
+    key(element) {
+      if (!element) return '';
+      return element.dataset?.focusKey ||
+        element.dataset?.id ||
+        element.dataset?.route ||
+        element.dataset?.nav ||
+        element.id ||
+        '';
+    },
+    remember(scope, key) {
+      if (!scope || !key) return;
+      state.focus[scope] = String(key);
+      safeWrite(state);
+      emit('focus', { scope, key: String(key) });
+    },
+    remembered(scope) {
+      return state.focus[scope] || '';
+    },
+    move(container, active, direction) {
+      if (!container || !active) return null;
+      const items = [...container.querySelectorAll('button,input,[tabindex="0"]')]
+        .filter(item => item !== active && item.offsetParent !== null);
+      const a = active.getBoundingClientRect();
+      const ax = a.left + a.width / 2;
+      const ay = a.top + a.height / 2;
+      const candidates = items.map(item => {
+        const b = item.getBoundingClientRect();
+        const bx = b.left + b.width / 2;
+        const by = b.top + b.height / 2;
+        const dx = bx - ax;
+        const dy = by - ay;
+        if (direction === 'left' && dx >= -1) return null;
+        if (direction === 'right' && dx <= 1) return null;
+        if (direction === 'up' && dy >= -1) return null;
+        if (direction === 'down' && dy <= 1) return null;
+        const primary = direction === 'left' || direction === 'right' ? Math.abs(dx) : Math.abs(dy);
+        const secondary = direction === 'left' || direction === 'right' ? Math.abs(dy) : Math.abs(dx);
+        return { item, score: primary * 10 + secondary };
+      }).filter(Boolean).sort((a, b) => a.score - b.score);
+      return candidates[0]?.item || null;
+    },
+    set(element, options = {}) {
+      if (!element || typeof element.focus !== 'function') return false;
+      const key = this.key(element);
+      if (options.scope && key) this.remember(options.scope, key);
+      try { element.focus({ preventScroll: !!options.preventScroll }); }
+      catch (_) { element.focus(); }
+      if (options.scroll !== false && element.scrollIntoView) {
+        try {
+          element.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
+        } catch (_) {}
+      }
+      emit('focus', { element, key, scope: options.scope || null });
+      return true;
+    }
+  };
+
+  const controller = (() => {
+    const bindings = new Map();
+    let enabled = true;
+
+    const normalize = key => ({
+      Esc: 'Escape',
+      Back: 'Backspace',
+      OK: 'Enter',
+      Return: 'Enter'
+    }[key] || key);
+
+    const bind = (key, handler) => {
+      const normalized = normalize(key);
+      if (!bindings.has(normalized)) bindings.set(normalized, []);
+      bindings.get(normalized).push(handler);
+      return () => {
+        const list = bindings.get(normalized) || [];
+        bindings.set(normalized, list.filter(fn => fn !== handler));
+      };
+    };
+
+    const dispatch = event => {
+      if (!enabled) return false;
+      const key = normalize(event?.key || '');
+      const list = bindings.get(key) || [];
+      let handled = false;
+      list.slice().forEach(handler => {
+        try {
+          if (handler(event) === true) handled = true;
+        } catch (error) {
+          setTimeout(() => { throw error; });
+        }
+      });
+      if (handled) {
+        try { event.preventDefault(); } catch (_) {}
+      }
+      return handled;
+    };
+
+    global.addEventListener('keydown', dispatch, true);
+
+    return {
+      bind,
+      dispatch,
+      enable() { enabled = true; },
+      disable() { enabled = false; },
+      enabled: () => enabled
+    };
+  })();
+
+  const bindDefaultTvNavigation = () => {
+    ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].forEach(key => {
+      controller.bind(key, event => {
+        if (!platform.tv()) return false;
+        const active = document.activeElement;
+        const scope = active?.closest?.('[data-focus-container]');
+        if (!active || !scope) return false;
+        const direction = key.slice(5).toLowerCase();
+        const target = focus.move(scope, active, direction);
+        if (!target) return false;
+        focus.set(target, {
+          scope: scope.dataset.focusContainer || scope.id || 'screen',
+          preventScroll: false
+        });
+        return true;
+      });
+    });
+
+    controller.bind('Escape', () => router.back());
+    controller.bind('Backspace', () => router.back());
+  };
+
+  const platform = {
+    width: () => global.innerWidth || document.documentElement.clientWidth || 0,
+    height: () => global.innerHeight || document.documentElement.clientHeight || 0,
+    touch: () => ('ontouchstart' in global) || navigator.maxTouchPoints > 0,
+    tv() {
+      const ua = navigator.userAgent || '';
+      return /(smart-tv|smarttv|hbbtv|webos|tizen|netcast|viera|bravia|googletv|android tv|androidtv|tv;)/i.test(ua) ||
+        (this.width() >= 800 && this.height() >= 450 && this.width() / Math.max(this.height(), 1) >= 1.45);
+    }
+  };
+
+  const lifecycle = {
+    start() {
+      emit('ready', { version: VERSION });
+      return api;
+    },
+    destroy() {
+      emit('destroy');
+    }
+  };
+
+  const api = {
+    version: VERSION,
+    state,
+    setState,
+    on,
+    emit,
+    storage,
+    router,
+    focus,
+    controller,
+    platform,
+    lifecycle
+  };
+
+  global.LunoCore = api;
+  bindDefaultTvNavigation();
+  lifecycle.start();
+
+})(window);

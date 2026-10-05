@@ -1,392 +1,217 @@
-const app=document.getElementById('app');
+(function(global){
+  'use strict';
 
-const LOCAL_CATALOGS={movie:'./data/movies.json',series:'./data/series.json',anime:'./data/anime.json'};
-const catalogStore={movie:[],series:[],anime:[]};
+  const Core = global.LunoCore;
+  const Adapter = global.LunoAdapter;
+  const root = document.getElementById('app');
 
-const esc=(value='')=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const yearOf=item=>{
-  const y=item?.releaseInfo||item?.year;
-  const match=String(y||'').match(/\d{4}/);
-  return match?match[0]:'';
-};
-const scoreOf=value=>{
-  const n=Number(value);
-  return Number.isFinite(n)?n.toFixed(1):String(value||'');
-};
-async function fetchJson(url){
-  const res=await fetch(url,{cache:'force-cache',headers:{accept:'application/json'}});
-  if(!res.ok)throw new Error(String(res.status));
-  return res.json();
-}
-async function loadCatalog(type){
-  const data=await fetchJson(LOCAL_CATALOGS[type]);
-  const items=type==='anime'?(Array.isArray(data?.data)?data.data:[]):(Array.isArray(data?.metas)?data.metas:[]);
-  catalogStore[type]=items;
-  return items;
-}
-function poster(item){
-  return item?.poster||item?.images?.jpg?.large_image_url||item?.images?.jpg?.image_url||'';
-}
-function backdrop(item){
-  return item?.backdrop||item?.images?.jpg?.large_image_url||poster(item)||'';
-}
-function cardTypeLabel(item,type){
-  if(type==='anime')return 'Аниме';
-  if(type==='series')return 'Сериал';
-  const genres=Array.isArray(item?.genres)?item.genres.join(' ').toLowerCase():String(item?.genre||'').toLowerCase();
-  return /animation|анимац|мультфильм|мультик/.test(genres)?'Мультфильм':'Фильм';
-}
-function cardMarkup(item,type){
-  const title=item?.name||item?.title||'Без названия';
-  const image=poster(item);
-  const score=item?.imdbRating||item?.rating||item?.score;
-  const year=yearOf(item)||item?.year||'';
-  const label=cardTypeLabel(item,type);
-  return '<button class="media-card" tabindex="0" data-type="'+esc(type)+'" data-id="'+esc(item?.imdb_id||item?.tmdb_id||item?.mal_id||item?.id||'')+'">'+
-    '<span class="media-card__poster">'+
-      (image?'<img src="'+esc(image)+'" alt="" loading="lazy" decoding="async">':'<span class="media-card__poster-fallback">LUNO</span>')+
-      '<span class="media-card__shade"></span>'+
-      '<span class="media-card__type">'+esc(label)+'</span>'+
-      '<span class="media-card__bottom">'+
-        '<span class="media-card__meta">'+esc(year)+'</span>'+
-        (score?'<span class="media-card__score"><span class="media-card__star">★</span> '+esc(scoreOf(score))+'</span>':'')+
-      '</span>'+
-    '</span>'+
-    '<span class="media-card__title">'+esc(title)+'</span>'+
-  '</button>';
-}
-function sectionMarkup(title,sub,id){
-  return '<section class="content-section" id="'+id+'"><div class="section__head"><div><h2>'+title+'</h2><p>'+sub+'</p></div><div class="section-tools"><button class="row-control" data-row-scroll="'+id+'" data-dir="-1" aria-label="Назад">‹</button><button class="row-control" data-row-scroll="'+id+'" data-dir="1" aria-label="Вперёд">›</button><button class="section-link" data-scroll="'+id+'">Все</button></div></div><div class="media-row" data-row="'+id+'"><div class="row-loading" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div></div></section>';
-}
-function homeShell(){
-  const el=document.createElement('main');
-  el.className='home';
-  el.innerHTML=
-    '<header class="topbar">'+
-      '<button class="brand" data-nav="home" aria-label="LUNO">LUNO</button>'+
-      '<nav class="nav" aria-label="Основная навигация">'+
-        '<button class="active" data-nav="home">⌂ Главная</button><button data-nav="history">◷ История</button><button data-nav="movie">▣ Фильмы</button><button data-nav="series">▤ Сериалы</button><button data-settings>⚙ Настройки</button>'+
-      '</nav><button class="search" data-search aria-label="Поиск">⌕</button>'+
-    '</header>'+
-    '<section class="hero" data-hero><div class="hero__backdrop"></div><div class="hero__shade"></div><div class="hero__content"><div class="eyebrow">LUNO / REAL CATALOG</div><div class="hero__loading">Загружаем каталог…</div></div></section>'+
-    '<div class="catalog">'+
-      sectionMarkup('Продолжить просмотр','Вернитесь к тому, что смотрели последним','continue')+
-      sectionMarkup('История','Недавно открытые фильмы и сериалы','history')+
-      sectionMarkup('Рекомендуем посмотреть','Подборка на основе ваших просмотров','recommendations')+
-      sectionMarkup('Популярное','Что сейчас чаще выбирают в каталоге','popular')+
-      sectionMarkup('Новинки','Самые свежие позиции из подключённых каталогов','new')+
-      sectionMarkup('Фильмы','Реальные данные TMDB','movies')+
-      sectionMarkup('Сериалы','Реальные данные TMDB','series')+
-      sectionMarkup('Аниме','Реальные данные MyAnimeList через Jikan','anime')+
-    '</div>'+
-    '<div class="catalog-error" data-error hidden></div>'+
-    '<nav class="mobile-nav"><button class="active" data-nav="home">⌂<br>Главная</button><button data-nav="history">◷<br>История</button><button data-nav="movie">▣<br>Фильмы</button><button data-nav="series">▤<br>Сериалы</button><button data-settings>⚙<br>Настройки</button></nav>';
-  return el;
-}
-function setHero(el,item){
-  const hero=el.querySelector('[data-hero]');
-  if(!hero||!item)return;
-  const image=backdrop(item), title=item?.name||item?.title||'LUNO';
-  const score=item?.imdbRating||item?.rating||item?.score;
-  const year=yearOf(item)||item?.year||'';
-  const genres=Array.isArray(item?.genres)?item.genres.join(' · '):String(item?.genre||'');
-  const description=item?.description||item?.overview||item?.synopsis||'';
-  const type=item?.type==='series'?'Сериал':item?.type==='anime'?'Аниме':cardTypeLabel(item,'movie');
-  hero.querySelector('.hero__backdrop').style.backgroundImage=image?'url("'+image.replace(/"/g,'\\\"')+'")':'';
-  hero.querySelector('.hero__content').innerHTML=
-    '<div class="eyebrow">LUNO / '+esc(type.toUpperCase())+'</div>'+
-    '<h1>'+esc(title)+'</h1>'+
-    (description?'<p class="hero__quote">'+esc(description)+'</p>':'')+
-    '<div class="hero__meta">'+esc([type,year,genres].filter(Boolean).join(' · '))+'</div>'+
-    '<div class="hero__actions-row"><div class="actions"><button class="primary" data-open="'+esc(item?.imdb_id||item?.tmdb_id||item?.id||'')+'" data-open-type="'+esc(item?.type==='series'?'series':'movie')+'">▶ Смотреть</button><button class="secondary" data-open="'+esc(item?.imdb_id||item?.tmdb_id||item?.id||'')+'" data-open-type="'+esc(item?.type==='series'?'series':'movie')+'">Подробнее</button></div>'+
-    (score?'<div class="hero-rating"><span>★</span><strong>'+esc(scoreOf(score))+'</strong><small>оценка</small></div>':'')+
-    '</div>';
-}
-function renderRow(el,id,items,type){
-  const row=el.querySelector('[data-row="'+id+'"]');
-  if(!row)return;
-  row.innerHTML=items.length?items.slice(0,16).map(item=>cardMarkup(item,item.__type||type)).join(''):'<div class="row-empty">Пока здесь ничего нет. Откройте фильм или сериал — LUNO добавит его в историю.</div>';
-}
-function readHistory(){
-  try{return JSON.parse(localStorage.getItem('luno_history_v1')||'[]').filter(Boolean)}catch{return[]}
-}
-function saveHistory(item,type){
-  const id=item?.imdb_id||item?.tmdb_id||item?.mal_id||item?.id;
-  if(!id)return;
-  const entry={...item,__type:type,__historyId:String(id),__historyAt:Date.now(),__progress:0};
-  const list=readHistory().filter(x=>String(x.__historyId)!==String(id));
-  list.unshift(entry);
-  try{localStorage.setItem('luno_history_v1',JSON.stringify(list.slice(0,24)))}catch{}
-}
-function historyItems(){
-  return readHistory().map(x=>({...x,__type:x.__type||'movie'}));
-}
-function continueItems(){
-  return historyItems().filter(x=>x.__historyAt).sort((a,b)=>Number(b.__historyAt)-Number(a.__historyAt)).slice(0,10);
-}
-function recommendationScore(item,history,genreText){
-  const genres=Array.isArray(item?.genres)?item.genres:[].concat(item?.genre?String(item.genre).split(/[,|]/):[]).map(x=>String(x).trim()).filter(Boolean);
-  const text=genres.join(' ').toLowerCase();
-  const genreHits=genreText?genreText.split(/\s+/).reduce((n,g)=>n+(g.length>3&&text.includes(g)?1:0),0):0;
-  const rating=Number(item?.imdbRating||item?.rating||item?.score||0);
-  const year=Number(yearOf(item)||item?.year||0);
-  return genreHits*25+rating*3+(year?Math.max(0,year-2015)*.15:0);
-}
-function allCatalogItems(){
-  return [
-    ...catalogStore.movie.map(x=>({...x,__type:'movie'})),
-    ...catalogStore.series.map(x=>({...x,__type:'series'})),
-    ...catalogStore.anime.map(x=>({...x,__type:'anime'}))
+  const catalog = [
+    {id:'movie-1',type:'movie',title:'Дюна: Часть вторая',year:'2024',rating:8.7,tag:'Фильм',description:'Пол Атрейдес объединяется с Чани и фременами, вступая на путь войны против заговорщиков.'},
+    {id:'movie-2',type:'movie',title:'Оппенгеймер',year:'2023',rating:8.6,tag:'Фильм',description:'История физика, который возглавил проект по созданию первой атомной бомбы.'},
+    {id:'movie-3',type:'movie',title:'Интерстеллар',year:'2014',rating:8.7,tag:'Фильм',description:'Команда исследователей отправляется через червоточину в поисках нового дома для человечества.'},
+    {id:'movie-4',type:'movie',title:'Бегущий по лезвию 2049',year:'2017',rating:8.0,tag:'Фильм',description:'Офицер Кей раскрывает тайну, способную изменить отношения людей и репликантов.'},
+    {id:'movie-5',type:'movie',title:'Начало',year:'2010',rating:8.8,tag:'Фильм',description:'Профессионал проникает в сны людей, но получает почти невозможное задание.'},
+    {id:'movie-6',type:'movie',title:'Грань будущего',year:'2014',rating:7.9,tag:'Фильм',description:'Военный снова и снова переживает один и тот же день, пытаясь изменить исход битвы.'},
+    {id:'series-1',type:'series',title:'Разделение',year:'2022',rating:8.7,tag:'Сериал',description:'Сотрудники корпорации проходят процедуру, разделяющую рабочие и личные воспоминания.'},
+    {id:'series-2',type:'series',title:'Дом дракона',year:'2022',rating:8.3,tag:'Сериал',description:'История дома Таргариенов и борьбы за Железный трон.'},
+    {id:'series-3',type:'series',title:'Андор',year:'2022',rating:8.4,tag:'Сериал',description:'Шпионский триллер о зарождении восстания против Империи.'},
+    {id:'series-4',type:'series',title:'Очень странные дела',year:'2016',rating:8.6,tag:'Сериал',description:'Компания друзей сталкивается с тайнами маленького города и параллельного мира.'},
+    {id:'anime-1',type:'anime',title:'Атака титанов',year:'2013',rating:9.1,tag:'Аниме',description:'Человечество пытается выжить за стенами, защищающими его от гигантских титанов.'},
+    {id:'anime-2',type:'anime',title:'Монолог фармацевта',year:'2023',rating:8.9,tag:'Аниме',description:'Мэймэй расследует загадочные происшествия во дворце, используя знания о лекарствах.'}
   ];
-}
-function recommendationItems(){
-  const all=allCatalogItems();
-  const history=historyItems();
-  if(!history.length)return all.slice().sort((a,b)=>Number(b.imdbRating||b.rating||b.score||0)-Number(a.imdbRating||a.rating||a.score||0)).slice(0,16);
-  const watchedTitles=new Set(history.map(x=>String(x.name||x.title||'').toLowerCase()));
-  const genreText=history.map(x=>Array.isArray(x.genres)?x.genres.join(' '):String(x.genre||'')).join(' ').toLowerCase();
-  return all.filter(x=>!watchedTitles.has(String(x.name||x.title||'').toLowerCase())).sort((a,b)=>recommendationScore(b,history,genreText)-recommendationScore(a,history,genreText)).slice(0,16);
-}
-function popularItems(){
-  return allCatalogItems().sort((a,b)=>Number(b.imdbRating||b.rating||b.score||0)-Number(a.imdbRating||a.rating||a.score||0)).slice(0,16);
-}
-function newItems(){
-  return allCatalogItems().sort((a,b)=>Number(yearOf(b)||b.year||0)-Number(yearOf(a)||a.year||0)).slice(0,16);
-}
-function routeTo(target){if(window.LunoCore?.router?.go){window.LunoCore.router.go(target);return}scrollToSection(document.querySelector('.home'),target)}
-function detailsScreen(el,type,id){
-  const screen=document.createElement('main');
-  screen.className='luno-screen luno-details-screen';
-  screen.dataset.route='details:'+type+':'+id;
-  const list=catalogStore[type]||[];
-  const item=list.find(x=>String(x?.imdb_id||x?.tmdb_id||x?.mal_id||x?.id)===String(id))||historyItems().find(x=>String(x?.__historyId)===String(id));
-  if(!item){screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / DETAILS</div><h1>Карточка недоступна</h1><p>Этот фильм сейчас отсутствует в каталоге.</p></div></header>';el.appendChild(screen);return screen}
-  saveHistory(item,type);
-  const title=item?.name||item?.title||'Без названия',image=poster(item),score=item?.imdbRating||item?.rating||item?.score,year=yearOf(item)||item?.year||'',genres=Array.isArray(item?.genres)?item.genres.join(' · '):String(item?.genre||''),description=item?.description||item?.overview||item?.synopsis||'Описание отсутствует в источнике.';
-  screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / '+esc(type==='anime'?'ANIME':type.toUpperCase())+'</div><h1>'+esc(title)+'</h1><p>'+esc([year,genres].filter(Boolean).join(' · '))+'</p></div></header><div class="detail-layout"><div class="detail-poster">'+(image?'<img src="'+esc(image)+'" alt="">':'<div class="detail-poster-fallback">LUNO</div>')+'</div><div class="detail-copy"><div class="detail-rating">'+(score?'<span>★</span> '+esc(scoreOf(score)):'Без оценки')+'</div><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p><div class="detail-actions"><button class="primary" disabled>Смотреть</button><button class="secondary" data-route-back>Назад</button></div></div></div>';
-  el.appendChild(screen);return screen
-}
-function searchScreen(el){
-  const screen=document.createElement('main');
-  screen.className='luno-screen luno-search-screen';
-  screen.dataset.route='search';
-  screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back aria-label="Назад">‹</button><div><div class="eyebrow">LUNO / SEARCH</div><h1>Поиск</h1><p>Фильмы, сериалы и аниме из локальных каталогов</p></div></header><div class="screen-searchbar"><input data-screen-search type="search" autocomplete="off" placeholder="Название фильма, сериала или аниме" aria-label="Поиск"><button class="screen-search-clear" type="button" data-search-clear aria-label="Очистить">×</button></div><div class="screen-grid" data-search-results><div class="search-status">Введите минимум 2 символа.</div></div>';
-  el.appendChild(screen);
-  const input=screen.querySelector('[data-screen-search]');
-  const results=screen.querySelector('[data-search-results]');
-  const run=()=>{
-    const q=input.value.trim().toLowerCase();
-    if(q.length<2){results.innerHTML='<div class="search-status">Введите минимум 2 символа.</div>';return}
-    const items=allCatalogItems().filter(x=>String(x.name||x.title||'').toLowerCase().includes(q)).slice(0,24);
-    results.innerHTML=items.length?items.map(x=>cardMarkup(x,x.__type)).join(''):'<div class="search-status">Ничего не найдено.</div>';
-  };
-  input.addEventListener('input',run);
-  screen.querySelector('[data-search-clear]').addEventListener('click',()=>{input.value='';run();input.focus()});
-  input.focus();
-  return screen;
-}
-function settingsScreen(el){
-  const screen=document.createElement('main');
-  screen.className='luno-screen luno-settings-screen';
-  screen.dataset.route='settings';
-  const motion=localStorage.getItem('luno_motion')!=='off';
-  screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back aria-label="Назад">‹</button><div><div class="eyebrow">LUNO / SETTINGS</div><h1>Настройки</h1><p>Настройте интерфейс LUNO под себя</p></div></header><div class="settings-grid">'+
-    '<button class="settings-tile" data-setting="profile"><span>◉</span><strong>Профиль</strong><small>Локальный профиль</small></button>'+
-    '<button class="settings-tile" data-setting="interface"><span>◌</span><strong>Интерфейс</strong><small>Анимации: '+(motion?'включены':'выключены')+'</small></button>'+
-    '<button class="settings-tile" data-setting="catalog"><span>▤</span><strong>Каталог</strong><small>Фильмы, сериалы, аниме</small></button>'+
-    '<button class="settings-tile" data-setting="player"><span>▶</span><strong>Плеер</strong><small>Будет подключён следующим этапом</small></button>'+
-    '<button class="settings-tile settings-tile--wide" data-setting="clear-history"><span>⌫</span><strong>Очистить историю</strong><small>Удалить локальную историю просмотров</small></button>'+
-    '<button class="settings-tile settings-tile--wide" data-setting="other"><span>◒</span><strong>Остальное</strong><small>Дополнительные параметры LUNO</small></button>'+
-    '</div>';
-  el.appendChild(screen);
-  return screen;
-}
-function renderRouteScreen(el,route){
- if(route==='home'){el.querySelector('.luno-screen')?.remove();el.classList.remove('route-hidden');return}
- el.querySelector('.home')?.classList.add('route-hidden');el.querySelector('.luno-screen')?.remove();
- let screen=null;
- if(route==='search')screen=searchScreen(el);
- else if(route==='settings')screen=settingsScreen(el);
- else if(route.startsWith('details:')){const [,type,id]=route.split(':');screen=detailsScreen(el,type,decodeURIComponent(id))}
- else {const title=route==='movie'?'Фильмы':route==='series'?'Сериалы':route==='anime'?'Аниме':'История',sub=route==='movie'?'Полный каталог фильмов':route==='series'?'Полный каталог сериалов':route==='anime'?'Полный каталог аниме':'Недавно открытые',type=route==='movie'?'movie':route==='series'?'series':route==='anime'?'anime':'history',items=type==='history'?historyItems():catalogStore[type]||[];screen=document.createElement('main');screen.className='luno-screen';screen.dataset.route=route;screen.innerHTML='<header class="screen-head"><button class="screen-back" data-route-back>‹</button><div><div class="eyebrow">LUNO / CATALOG</div><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div>'+(type==='history'?'<div class="history-tools"><button class="secondary" data-setting="clear-history">Очистить историю</button></div>':'')+'</header><div class="screen-grid">'+(items.length?items.map(x=>cardMarkup(x,x.__type||type)).join(''):'<div class="row-empty">История пока пуста.</div>')+'</div>';el.appendChild(screen)}
- if(screen){
-  const remembered=window.LunoCore?.router?.focusFor?.(route)||'';
-  let first=null;
-  if(remembered){
-    first=screen.querySelector('[data-id="'+remembered+'"]')||screen.querySelector('[data-nav="'+remembered+'"]');
-  }
-  first=first||screen.querySelector('.media-card')||screen.querySelector('[data-screen-search]')||screen.querySelector('[data-setting]')||screen.querySelector('[data-route-back]');
-  first?.focus();
-}
-}
-function bindHome(el){
-  el.addEventListener('click',event=>{
-    const nav=event.target.closest('[data-nav]');
-    if(nav){
-      window.LunoCore?.focus?.(nav);
-      routeTo(nav.dataset.nav);
-      el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===nav.dataset.nav));
-      return;
-    }
-    const routeBack=event.target.closest('[data-route-back]');if(routeBack){window.LunoCore?.router?.back?.()||routeTo('home');return}
-    const link=event.target.closest('[data-scroll]');
-    if(link){el.querySelector('#'+link.dataset.scroll)?.scrollIntoView({behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth',block:'start'});return}
-    if(event.target.closest('[data-search]')){routeTo('search');return}
-    if(event.target.closest('[data-settings]')){routeTo('settings');return}
-    if(event.target.closest('[data-retry]')){loadHome();return}
-    const setting=event.target.closest('[data-setting]');if(setting){settingsAction(setting.dataset.setting);return}
-    const historyRemove=event.target.closest('[data-history-remove]');if(historyRemove){removeHistory(historyRemove.dataset.historyRemove);renderRouteScreen(el,'history');return}
-    const rowControl=event.target.closest('[data-row-scroll]');
-    if(rowControl){const row=el.querySelector('[data-row="'+rowControl.dataset.rowScroll+'"]');if(row)row.scrollBy({left:Number(rowControl.dataset.dir)*Math.max(420,row.clientWidth*.72),behavior:document.documentElement.dataset.device==='tv'?'auto':'smooth'});return}
-    const card=event.target.closest('.media-card');
-    if(card){window.LunoCore?.focus?.(card);routeTo('details:'+card.dataset.type+':'+encodeURIComponent(card.dataset.id));return}
-    const open=event.target.closest('[data-open]');
-    if(open){window.LunoCore?.focus?.(open);routeTo('details:'+(open.dataset.openType||'movie')+':'+encodeURIComponent(open.dataset.open))}
-  });
-  const scrollHost=document.documentElement.dataset.device==='tv'?app:window;scrollHost.addEventListener('scroll',()=>{const y=document.documentElement.dataset.device==='tv'?app.scrollTop:window.scrollY;el.querySelector('.topbar')?.classList.toggle('is-scrolled',y>28)},{passive:true});
-  el.querySelectorAll('.media-row').forEach(row=>{
-    let sx=0,sy=0;
-    row.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY},{passive:true});
-    row.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientX-sx)>Math.abs(e.touches[0].clientY-sy))e.stopPropagation()},{passive:true});
-    row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false});
-  });
-  const navObserver=new IntersectionObserver(entries=>{const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;const key=visible.target.id==='movies'?'movie':visible.target.id==='series'?'series':visible.target.id==='anime'?'anime':visible.target.id==='history'?'history':'home';el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===key))},{root:document.documentElement.dataset.device==='tv'?app:null,rootMargin:'-20% 0px -55% 0px',threshold:[0,.25,.5]});
-  el.querySelectorAll('.content-section').forEach(section=>navObserver.observe(section));
 
-}
-async function openDetails(el,type,id){
-  if(!id)return;
-  const modal=document.createElement('div');
-  modal.className='details-modal';
-  modal.innerHTML='<div class="details-modal__panel"><button class="details-modal__close" aria-label="Закрыть">×</button><div class="details-modal__body">Загружаем данные…</div></div>';
-  el.appendChild(modal);
-  modal.querySelector('.details-modal__close').focus();
-  modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('.details-modal__close'))modal.remove()});
-  const list=catalogStore[type]||[];
-  const item=list.find(x=>String(x?.imdb_id||x?.tmdb_id||x?.mal_id||x?.id)===String(id))||historyItems().find(x=>String(x?.__historyId)===String(id));
-  if(!item){
-    modal.querySelector('.details-modal__body').textContent='Карточка больше недоступна в текущем каталоге.';
-    return;
-  }
-  saveHistory(item,type);
-  const image=poster(item), score=item?.imdbRating||item?.rating||item?.score;
-  modal.querySelector('.details-modal__body').innerHTML=(image?'<img class="details-modal__poster" src="'+esc(image)+'" alt="">':'')+
-    '<div class="details-modal__info"><div class="eyebrow">LUNO / '+esc(type==='anime'?'ANIME':type.toUpperCase())+'</div><h2>'+esc(item.name||item.title||'Без названия')+'</h2><div class="details-modal__meta">'+esc([yearOf(item)||item.year,score?'★ '+scoreOf(score):''].filter(Boolean).join(' · '))+'</div><p>'+esc(item.description||item.synopsis||'Описание отсутствует в источнике.')+'</p><button class="primary" disabled>Смотреть — подключим плеер следующим этапом</button></div>';
-}
-function openSearch(el){
-  const modal=document.createElement('div');
-  modal.className='search-modal';
-  modal.innerHTML='<div class="search-modal__panel"><button class="details-modal__close" aria-label="Закрыть">×</button><input autofocus placeholder="Поиск по фильмам и сериалам"><div class="search-results"></div></div>';
-  el.appendChild(modal);
-  const input=modal.querySelector('input');
-  const run=()=>{
-    const q=input.value.trim().toLowerCase();
-    if(q.length<2){modal.querySelector('.search-results').innerHTML='';return}
-    const items=[...catalogStore.movie.map(x=>({...x,__type:'movie'})),...catalogStore.series.map(x=>({...x,__type:'series'}))]
-      .filter(x=>String(x.name||x.title||'').toLowerCase().includes(q)).slice(0,12);
-    modal.querySelector('.search-results').innerHTML=items.length?items.map(x=>'<button class="search-result" data-id="'+esc(x.imdb_id||x.id)+'" data-type="'+esc(x.__type)+'">'+(poster(x)?'<img src="'+esc(poster(x))+'" alt="">':'')+'<span>'+esc(x.name||'Без названия')+'</span></button>').join(''):'<div class="search-status">Ничего не найдено.</div>';
+  const byId = id => catalog.find(item => item.id === String(id));
+  const historyKey = 'luno_history_v2';
+
+  const readHistory = () => {
+    try { return JSON.parse(localStorage.getItem(historyKey) || '[]') || []; }
+    catch (_) { return []; }
   };
-  input.addEventListener('input',run);
-  modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('.details-modal__close'))modal.remove();const result=e.target.closest('.search-result');if(result){modal.remove();openDetails(el,result.dataset.type,result.dataset.id)}});
-}
-async function loadHome(){
-  const splashStarted=performance.now();
-  const el=homeShell();
-  const results=await Promise.allSettled([loadCatalog('movie'),loadCatalog('series'),loadCatalog('anime')]);
-  const [movies,series,anime]=results.map(r=>r.status==='fulfilled'?r.value:[]);
-  setHero(el,movies[0]||series[0]);
-  const history=historyItems();
-  renderRow(el,'continue',continueItems(),'movie');
-  renderRow(el,'history',history,'movie');
-  renderRow(el,'recommendations',recommendationItems(),'movie');
-  renderRow(el,'popular',popularItems(),'movie');
-  renderRow(el,'new',newItems(),'movie');
-  renderRow(el,'movies',movies,'movie');
-  renderRow(el,'series',series,'series');
-  renderRow(el,'anime',anime,'anime');
-  const failed=results.some(r=>r.status==='rejected'),allFailed=results.every(r=>r.status==='rejected');
-  if(failed){const error=el.querySelector('[data-error]');error.hidden=false;error.innerHTML='Один из каталогов временно недоступен.'+(allFailed?' <button class="retry-load" data-retry>Повторить</button>':'')}
-  const splashMinTime=2500;
-  const splashWait=Math.max(0,splashMinTime-(performance.now()-splashStarted));
-  if(splashWait)await new Promise(resolve=>setTimeout(resolve,splashWait));
-  app.replaceChildren(el);
-  const mobileNav=el.querySelector('.mobile-nav');
-  if(mobileNav){
-    app.appendChild(mobileNav);
-    mobileNav.addEventListener('click',event=>{
-      const nav=event.target.closest('[data-nav]');
-      if(nav){routeTo(nav.dataset.nav);mobileNav.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b===nav));}
-      const settings=event.target.closest('[data-settings]');
-      if(settings){routeTo('settings');mobileNav.querySelectorAll('[data-nav]').forEach(b=>b.classList.remove('active'));}
+
+  const writeHistory = list => {
+    try { localStorage.setItem(historyKey, JSON.stringify(list.slice(0,24))); } catch (_) {}
+  };
+
+  const remember = item => {
+    const list = readHistory().filter(x => x.id !== item.id);
+    list.unshift({...item, openedAt: Date.now()});
+    writeHistory(list);
+  };
+
+  const card = item => {
+    const letter = item.title.slice(0,1);
+    return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
+      '<span class="poster poster--'+esc(item.type)+'"><span class="poster__glow"></span><strong>'+esc(letter)+'</strong><small>'+esc(item.tag)+'</small></span>'+
+      '<span class="media-card__title">'+esc(item.title)+'</span>'+
+      '<span class="media-card__meta">'+esc(item.year)+' · ★ '+esc(item.rating.toFixed(1))+'</span>'+
+    '</button>';
+  };
+
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+  const section = (id,title,sub,items) =>
+    '<section class="catalog-section" id="'+id+'">'+
+      '<div class="section-head"><div><span class="section-kicker">LUNO</span><h2>'+title+'</h2><p>'+sub+'</p></div></div>'+
+      '<div class="card-row" data-focus-container="'+id+'">'+items.map(card).join('')+'</div>'+
+    '</section>';
+
+  const shell = () => {
+    const el = document.createElement('main');
+    el.className = 'luno-app';
+    el.innerHTML =
+      '<header class="topbar" data-focus-container="topbar">'+
+        '<button class="brand" data-route="home" data-focus-key="brand">LUNO</button>'+
+        '<nav class="desktop-nav">'+
+          navButton('home','Главная')+navButton('movie','Фильмы')+navButton('series','Сериалы')+navButton('history','История')+
+        '</nav>'+
+        '<div class="top-actions"><button data-action="search" aria-label="Поиск">⌕</button><button data-route="settings" aria-label="Настройки">⚙</button></div>'+
+      '</header>'+
+      '<div class="screen-host"></div>'+
+      '<nav class="mobile-nav" data-focus-container="mobile-nav">'+
+        navButton('home','⌂','Главная')+navButton('movie','▣','Фильмы')+navButton('series','▤','Сериалы')+navButton('history','◷','История')+
+      '</nav>';
+    return el;
+  };
+
+  const navButton = (route,label,sub) =>
+    '<button class="nav-button" data-route="'+route+'">'+(sub?'<span>'+label+'</span><small>'+sub+'</small>':label)+'</button>';
+
+  const home = () => {
+    const el = document.createElement('section');
+    el.className = 'screen screen-home';
+    const history = readHistory().map(x => byId(x.id)).filter(Boolean);
+    el.innerHTML =
+      '<section class="hero" data-focus-container="hero">'+
+        '<div class="hero-orbit"></div><div class="hero-copy">'+
+          '<span class="eyebrow">LUNO · MOONLIGHT</span><h1>Тишина экрана.<br><em>Сила истории.</em></h1>'+
+          '<p>Единая оболочка для фильмов, сериалов и аниме. Быстрая навигация и управление с пульта без лишних экранов.</p>'+
+          '<div class="hero-actions"><button class="primary" data-route="details:movie:movie-1">Подробнее</button><button class="secondary" data-action="scroll">Каталог</button></div>'+
+        '</div><div class="hero-art"><div class="moon"></div><div class="planet"></div></div>'+
+      '</section>'+
+      section('continue','Продолжить','Ваши последние открытия',history.length?history:catalog.slice(0,5))+
+      section('popular','Популярное','Подборка LUNO',catalog.slice(0,6))+
+      section('series','Сериалы','Истории на несколько вечеров',catalog.filter(x=>x.type==='series'))+
+      section('anime','Аниме','Яркие миры и персонажи',catalog.filter(x=>x.type==='anime'));
+    return el;
+  };
+
+  const catalogScreen = route => {
+    const items = route==='movie'?catalog.filter(x=>x.type==='movie'):route==='series'?catalog.filter(x=>x.type==='series'):readHistory().map(x=>byId(x.id)).filter(Boolean);
+    const title = route==='movie'?'Фильмы':route==='series'?'Сериалы':'История';
+    const el = baseScreen('CATALOG',title,route==='history'?'Недавно открытые позиции':'Выберите карточку');
+    el.querySelector('.screen-body').innerHTML = '<div class="screen-grid" data-focus-container="catalog">'+(items.length?items.map(card).join(''):'<div class="empty-state">Здесь пока пусто.</div>')+'</div>';
+    return el;
+  };
+
+  const searchScreen = () => {
+    const el = baseScreen('SEARCH','Поиск','Найдите фильм, сериал или аниме');
+    el.querySelector('.screen-body').innerHTML =
+      '<div class="search-box"><input data-search-input type="search" placeholder="Название…" autocomplete="off"><button data-action="clear-search">×</button></div>'+
+      '<div class="screen-grid" data-focus-container="search-results"><div class="empty-state">Введите название.</div></div>';
+    const input = el.querySelector('[data-search-input]');
+    const results = el.querySelector('[data-focus-container="search-results"]');
+    const render = () => {
+      const q = input.value.trim().toLowerCase();
+      const items = q.length<2 ? [] : catalog.filter(x=>x.title.toLowerCase().includes(q));
+      results.innerHTML = q.length<2 ? '<div class="empty-state">Введите минимум 2 символа.</div>' : items.length?items.map(card).join(''):'<div class="empty-state">Ничего не найдено.</div>';
+    };
+    input.addEventListener('input',render);
+    el.querySelector('[data-action="clear-search"]').addEventListener('click',()=>{input.value='';render();input.focus();});
+    setTimeout(()=>input.focus(),0);
+    return el;
+  };
+
+  const settingsScreen = () => {
+    const el = baseScreen('SETTINGS','Настройки','Только то, что относится к оболочке LUNO');
+    const reduced = localStorage.getItem('luno_motion')==='off';
+    el.querySelector('.screen-body').innerHTML =
+      '<div class="settings-grid" data-focus-container="settings">'+
+        setting('interface','◌','Интерфейс',reduced?'Анимации выключены':'Анимации включены')+
+        setting('history','⌫','История','Очистить локальную историю')+
+        setting('about','L','О LUNO','Core '+esc(Core.version))+
+      '</div><div class="settings-note" data-settings-note></div>';
+    return el;
+  };
+
+  const setting = (id,icon,title,sub) => '<button class="setting" data-setting="'+id+'"><span>'+icon+'</span><strong>'+title+'</strong><small>'+sub+'</small></button>';
+
+  const baseScreen = (kicker,title,sub) => {
+    const el = document.createElement('section');
+    el.className='screen';
+    el.innerHTML='<header class="screen-head" data-focus-container="screen-head"><button class="back" data-action="back">‹</button><div><span class="eyebrow">LUNO / '+kicker+'</span><h1>'+esc(title)+'</h1><p>'+esc(sub)+'</p></div></header><div class="screen-body"></div>';
+    return el;
+  };
+
+  const detailsScreen = (type,id) => {
+    const item=byId(id);
+    const el=baseScreen('DETAILS',item?item.title:'Карточка',item?[item.tag,item.year].join(' · '):'');
+    if(!item){el.querySelector('.screen-body').innerHTML='<div class="empty-state">Карточка недоступна.</div>';return el;}
+    remember(item);
+    el.querySelector('.screen-body').innerHTML=
+      '<div class="detail" data-focus-container="details">'+
+        '<div class="detail-poster poster poster--'+esc(item.type)+'"><span class="poster__glow"></span><strong>'+esc(item.title.slice(0,1))+'</strong><small>'+esc(item.tag)+'</small></div>'+
+        '<div class="detail-copy"><span class="rating">★ '+esc(item.rating.toFixed(1))+'</span><h2>'+esc(item.title)+'</h2><p>'+esc(item.description)+'</p><div class="detail-actions"><button class="primary" disabled>Смотреть</button><button class="secondary" data-action="back">Назад</button></div></div>'+
+      '</div>';
+    return el;
+  };
+
+  const render = route => {
+    const host=root.querySelector('.screen-host');
+    if(!host)return;
+    host.replaceChildren();
+    let screen;
+    if(route==='home') screen=home();
+    else if(route==='search') screen=searchScreen();
+    else if(route==='settings') screen=settingsScreen();
+    else if(route==='movie'||route==='series'||route==='history') screen=catalogScreen(route);
+    else if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
+    else screen=home();
+    host.appendChild(screen);
+    updateNav(route);
+    focusInitial(screen,route);
+  };
+
+  const updateNav = route => {
+    root.querySelectorAll('[data-route]').forEach(button=>{
+      const target=button.dataset.route;
+      button.classList.toggle('active',target===route);
     });
-  }
-  bindHome(el);
-  requestAnimationFrame(()=>{el.style.opacity='1';const route=window.LunoCore?.router?.current?.()||'home';if(route!=='home'){renderRouteScreen(el,route);return}const remembered=window.LunoCore?.router?.focusFor?.('home:hero')||window.LunoCore?.router?.focusFor?.('home:history')||window.LunoCore?.router?.focusFor?.('home:recommendations')||window.LunoCore?.router?.focusFor?.('home:popular')||window.LunoCore?.router?.focusFor?.('home:new')||window.LunoCore?.router?.focusFor?.('home:movies')||window.LunoCore?.router?.focusFor?.('home:series')||window.LunoCore?.router?.focusFor?.('home:anime');const target=remembered?el.querySelector('[data-id="'+remembered+'"]'):null;(target||el.querySelector('.hero .primary')||el.querySelector('.media-card'))?.focus()});
-}
-function openSettings(el){
-  const modal=document.createElement('div');
-  modal.className='settings-modal';
-  modal.innerHTML='<div class="settings-panel"><button class="details-modal__close" aria-label="Закрыть">×</button><div class="settings-head"><span class="settings-icon">☾</span><div><div class="eyebrow">LUNO</div><h2>Настройки</h2><p>Настройте интерфейс под себя</p></div></div><div class="settings-grid">'+
-    '<button class="settings-tile" data-setting="profile"><span>◉</span><strong>Профиль</strong><small>Локальный профиль</small></button>'+
-    '<button class="settings-tile" data-setting="interface"><span>◌</span><strong>Интерфейс</strong><small>Анимации и вид</small></button>'+
-    '<button class="settings-tile" data-setting="catalog"><span>▤</span><strong>Каталог</strong><small>Фильмы, сериалы, аниме</small></button>'+
-    '<button class="settings-tile" data-setting="player"><span>▶</span><strong>Плеер</strong><small>Настроим следующим этапом</small></button>'+
-    '<button class="settings-tile settings-tile--wide" data-setting="other"><span>◒</span><strong>Остальное</strong><small>Поведение LUNO и история</small></button>'+
-    '<button class="settings-tile settings-tile--wide" data-setting="pin"><span>⌁</span><strong>Защита PIN-кодом</strong><small>Раздел будет доступен после авторизации</small></button>'+
-    '</div></div>';
-  el.appendChild(modal);
-  modal.querySelector('.details-modal__close').focus();
-  modal.addEventListener('click',e=>{
-    if(e.target===modal||e.target.closest('.details-modal__close')){modal.remove();return}
-    const tile=e.target.closest('[data-setting]');
-    if(tile) settingsAction(tile.dataset.setting);
-  });
-}
-function removeHistory(id){
-  try{localStorage.setItem('luno_history_v1',JSON.stringify(readHistory().filter(x=>String(x.__historyId)!==String(id))))}catch{}
-}
-function clearHistory(){
-  try{localStorage.removeItem('luno_history_v1')}catch{}
-}
-function settingsAction(key){
-  if(key==='interface'){
-    const enabled=localStorage.getItem('luno_motion')!=='off';
-    localStorage.setItem('luno_motion',enabled?'off':'on');
-    document.documentElement.classList.toggle('luno-reduced-motion',!enabled);
-    const screen=document.querySelector('.luno-settings-screen');
-    if(screen) renderRouteScreen(document.querySelector('.home'), 'settings');
-    return;
-  }
-  if(key==='reset'){try{localStorage.removeItem('luno_motion');localStorage.removeItem('luno_core_state_v3');}catch{};document.documentElement.classList.remove('luno-reduced-motion');window.location.reload();return;}
-  if(key==='version'){return;}
-  if(key==='profile'){return;}
-  if(key==='clear-history'){
-    clearHistory();
-    document.querySelector('.luno-settings-screen')?.remove();
-    const route=window.LunoCore?.router?.current?.();
-    if(route==='history'){window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:'history',stack:[]}}))}
-    else {renderRouteScreen(document.querySelector('.home'),'settings')}
-    return;
-  }
-  if(key==='other'){return;}
-}
-const splash=document.createElement('main');
-splash.className='splash splash--boot';
-splash.innerHTML='<div class="splash__veil" aria-hidden="true"></div><div class="startup-loader" aria-label="Загрузка LUNO"><div class="startup-loader__brand">LUNO</div><div class="startup-loader__text">Загрузка…</div><div class="startup-loader__track"><div class="startup-loader__bar"></div></div></div>';
-if(window.matchMedia('(max-width:620px)').matches){splash.style.backgroundImage='url("./assets/luno-start-mobile.png?v=20261004-3")';splash.style.backgroundSize='cover';splash.style.backgroundPosition='center center';splash.style.backgroundRepeat='no-repeat';}
-app.replaceChildren(splash);
-loadHome();
-
-(function(){
-  const updateTvScale=()=>{
-    const w=window.innerWidth||document.documentElement.clientWidth,h=window.innerHeight||document.documentElement.clientHeight,ua=navigator.userAgent||'';
-    const tvUA=/(smart-tv|smarttv|hbbtv|web0s|webos|tizen|netcast|viera|bravia|googletv|aftb|aftm|android tv|androidtv|tv;)/i.test(ua);
-    const tvViewport=w>=800&&h>=450&&w/h>=1.45;
-    const isTv=tvUA||tvViewport;
-    const scale=isTv?Math.min(1920/Math.max(w,1),1080/Math.max(h,1)):1;
-    document.documentElement.style.setProperty('--tv-scale',Math.max(1,Math.min(2.5,scale)).toFixed(3));
-    document.documentElement.dataset.device=isTv?'tv':'other';
   };
-  updateTvScale();window.addEventListener('resize',updateTvScale,{passive:true});window.addEventListener('orientationchange',updateTvScale,{passive:true});
-})();
-window.addEventListener('luno:navigate',event=>{const route=event.detail?.route||'home',home=document.querySelector('.home');if(!home)return;renderRouteScreen(home,route);home.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===route));});
+
+  const focusInitial = (screen,route) => {
+    const remembered=Core.focus.remembered(route);
+    let target=remembered ? [...screen.querySelectorAll('[data-id]')].find(item=>item.dataset.id===remembered) : null;
+    target=target||screen.querySelector('[data-search-input]')||screen.querySelector('.media-card')||screen.querySelector('.setting')||screen.querySelector('.primary')||screen.querySelector('.back');
+    if(target) Core.focus.set(target,{scope:route,preventScroll:true});
+  };
+
+  root.appendChild(shell());
+
+  root.addEventListener('click',event=>{
+    const route=event.target.closest('[data-route]')?.dataset.route;
+    if(route){ Core.router.go(route); return; }
+    if(event.target.closest('[data-action="search"]')){Core.router.go('search');return;}
+    if(event.target.closest('[data-action="back"]')){Core.router.back();return;}
+    if(event.target.closest('[data-action="scroll"]')){root.querySelector('.catalog-section')?.scrollIntoView({behavior:'smooth'});return;}
+    const cardEl=event.target.closest('.media-card');
+    if(cardEl){Core.focus.set(cardEl,{scope:Core.router.current()});Core.router.go(cardEl.dataset.route);return;}
+    const settingEl=event.target.closest('[data-setting]');
+    if(settingEl){
+      const note=root.querySelector('.settings-note');
+      if(settingEl.dataset.setting==='interface'){
+        const off=localStorage.getItem('luno_motion')==='off';
+        localStorage.setItem('luno_motion',off?'on':'off');
+        render('settings');
+      } else if(settingEl.dataset.setting==='history'){
+        localStorage.removeItem(historyKey);
+        if(note)note.textContent='История очищена.';
+        render('settings');
+      } else if(note) note.textContent='LUNO Core '+Core.version;
+    }
+  });
+
+  Core.on('navigate',event=>render(event.route));
+  Core.controller.bind('Home',()=>{Core.router.go('home');return true;});
+
+  global.LunoUI={catalog,render};
+})(window);

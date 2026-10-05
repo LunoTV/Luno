@@ -3,13 +3,16 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -18,189 +21,19 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch Russian catalogs from TMDB
-        env:
-          TMDB_TOKEN: ${{ secrets.TMDB_API_READ_TOKEN }}
+
+      - name: Import Lampa core sources
         shell: bash
         run: |
           set -euo pipefail
-          test -n "${TMDB_TOKEN}" || { echo "TMDB_API_READ_TOKEN GitHub secret is missing"; exit 1; }
-          mkdir -p public/data
-          python3 - <<'PY'
-          import json
-          import os
-          import urllib.parse
-          import urllib.request
+          rm -rf /tmp/lampa-source public/core/lampa
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/yumata/lampa-source.git /tmp/lampa-source
+          git -C /tmp/lampa-source sparse-checkout set src/core src/utils
+          mkdir -p public/core/lampa
+          cp -R /tmp/lampa-source/src/core public/core/lampa/core
+          cp -R /tmp/lampa-source/src/utils public/core/lampa/utils
+          printf '%s\n' 'Lampa core sources imported for the LUNO core rebuild. Lampa UI is intentionally excluded.' > public/core/lampa/README.txt
 
-          token = os.environ["TMDB_TOKEN"]
-          base = "https://api.themoviedb.org/3"
-
-          def get(path, params):
-              query = urllib.parse.urlencode(params)
-              req = urllib.request.Request(
-                  f"{base}{path}?{query}",
-                  headers={
-                      "Authorization": f"Bearer {token}",
-                      "accept": "application/json",
-                      "User-Agent": "LUNO-Pages-Catalog/1.0",
-                  },
-              )
-              with urllib.request.urlopen(req, timeout=30) as response:
-                  return json.load(response)
-
-          def normalize_movies(payload):
-              out = []
-              for item in payload.get("results", []):
-                  if not item.get("poster_path"):
-                      continue
-                  out.append({
-                      "id": item.get("id"),
-                      "name": item.get("title") or item.get("original_title") or "Без названия",
-                      "poster": "https://image.tmdb.org/t/p/w500" + item["poster_path"],
-                      "backdrop": ("https://image.tmdb.org/t/p/w1280" + item["backdrop_path"]) if item.get("backdrop_path") else "",
-                      "description": item.get("overview") or "",
-                      "year": (item.get("release_date") or "")[:4],
-                      "rating": item.get("vote_average"),
-                      "tmdb_id": item.get("id"),
-                      "type": "movie",
-                  })
-              return out
-
-          def normalize_series(payload):
-              out = []
-              for item in payload.get("results", []):
-                  if not item.get("poster_path"):
-                      continue
-                  out.append({
-                      "id": item.get("id"),
-                      "name": item.get("name") or item.get("original_name") or "Без названия",
-                      "poster": "https://image.tmdb.org/t/p/w500" + item["poster_path"],
-                      "backdrop": ("https://image.tmdb.org/t/p/w1280" + item["backdrop_path"]) if item.get("backdrop_path") else "",
-                      "description": item.get("overview") or "",
-                      "year": (item.get("first_air_date") or "")[:4],
-                      "rating": item.get("vote_average"),
-                      "tmdb_id": item.get("id"),
-                      "type": "series",
-                  })
-              return out
-
-          movies = get("/discover/movie", {
-              "language": "ru-RU",
-              "region": "RU",
-              "include_adult": "false",
-              "include_video": "false",
-              "page": 1,
-              "sort_by": "popularity.desc",
-          })
-          series = get("/discover/tv", {
-              "language": "ru-RU",
-              "region": "RU",
-              "include_adult": "false",
-              "include_null_first_air_dates": "false",
-              "page": 1,
-              "sort_by": "popularity.desc",
-          })
-
-          with open("public/data/movies.json", "w", encoding="utf-8") as f:
-              json.dump({"metas": normalize_movies(movies)}, f, ensure_ascii=False, separators=(",", ":"))
-          with open("public/data/series.json", "w", encoding="utf-8") as f:
-              json.dump({"metas": normalize_series(series)}, f, ensure_ascii=False, separators=(",", ":"))
-          PY
-
-      - name: Fetch anime catalog
-        shell: bash
-        run: |
-          set -euo pipefail
-          if ! curl -fL --retry 3 --retry-delay 2 "https://api.jikan.moe/v4/top/anime?limit=12" -o public/data/anime.json; then
-            printf '{"data":[],"error":"source_unavailable"}\n' > public/data/anime.json
-          fi
-
-      - name: Cache catalog posters into Pages assets
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import concurrent.futures
-          import hashlib
-          import json
-          import os
-          import urllib.request
-
-          files = [
-              ("movie", "public/data/movies.json"),
-              ("series", "public/data/series.json"),
-              ("anime", "public/data/anime.json"),
-          ]
-          os.makedirs("public/posters", exist_ok=True)
-
-          def poster_url(item, kind):
-              if kind == "anime":
-                  images = item.get("images") or {}
-                  jpg = images.get("jpg") or {}
-                  return jpg.get("large_image_url") or jpg.get("image_url") or ""
-              return item.get("poster") or ""
-
-          jobs = []
-          documents = {}
-          for kind, path in files:
-              try:
-                  with open(path, encoding="utf-8") as f:
-                      data = json.load(f)
-              except Exception:
-                  continue
-              documents[kind] = data
-              items = data.get("data") if kind == "anime" else data.get("metas")
-              if not isinstance(items, list):
-                  continue
-              for item in items:
-                  if isinstance(item, dict):
-                      url = poster_url(item, kind)
-                      if url:
-                          jobs.append((kind, item, url))
-
-          def cache_one(job):
-              kind, item, url = job
-              digest = hashlib.sha256(url.encode("utf-8")).hexdigest()[:20]
-              target = f"public/posters/{digest}.jpg"
-              if not os.path.exists(target):
-                  try:
-                      req = urllib.request.Request(
-                          url,
-                          headers={"User-Agent": "Mozilla/5.0 LUNO-Pages-Poster-Cache/1.0"},
-                      )
-                      with urllib.request.urlopen(req, timeout=20) as r, open(target, "wb") as out:
-                          out.write(r.read())
-                  except Exception as exc:
-                      return kind, item, url, None, str(exc)
-              return kind, item, url, "./posters/" + digest + ".jpg", None
-
-          with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
-              results = list(pool.map(cache_one, jobs))
-
-          cached = 0
-          for kind, item, url, local, error in results:
-              if not local:
-                  continue
-              cached += 1
-              if kind == "anime":
-                  images = item.setdefault("images", {})
-                  jpg = images.setdefault("jpg", {})
-                  if jpg.get("large_image_url") == url:
-                      jpg["large_image_url"] = local
-                  elif jpg.get("image_url") == url:
-                      jpg["image_url"] = local
-              else:
-                  item["poster"] = local
-
-          for kind, path in files:
-              data = documents.get(kind)
-              if data is None:
-                  continue
-              with open(path, "w", encoding="utf-8") as f:
-                  json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-
-          print(f"Cached {cached} real catalog posters into same-origin Pages assets")
-          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
