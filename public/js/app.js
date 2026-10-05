@@ -4,6 +4,9 @@
   const Core = global.LunoCore;
   const Adapter = global.LunoAdapter;
   const root = document.getElementById('app');
+  const splash = document.getElementById('luno-splash');
+  const motionKey = 'luno_motion';
+  const applyMotion = () => root.querySelector('.luno-app')?.classList.toggle('motion-off', localStorage.getItem(motionKey)==='off');
 
   const catalog = [
     {id:'movie-1',type:'movie',title:'Дюна: Часть вторая',year:'2024',rating:8.7,tag:'Фильм',description:'Пол Атрейдес объединяется с Чани и фременами, вступая на путь войны против заговорщиков.'},
@@ -167,14 +170,20 @@
     else if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
     else screen=home();
     host.appendChild(screen);
+    applyMotion();
     updateNav(route);
     focusInitial(screen,route);
   };
 
   const updateNav = route => {
+    let active = route;
+    if(route.startsWith('details:')) {
+      const type = route.split(':')[1];
+      active = type === 'series' ? 'series' : type === 'movie' ? 'movie' : '';
+    }
     root.querySelectorAll('[data-route]').forEach(button=>{
       const target=button.dataset.route;
-      button.classList.toggle('active',target===route);
+      button.classList.toggle('active',target===active);
     });
   };
 
@@ -200,18 +209,28 @@
       const note=root.querySelector('.settings-note');
       if(settingEl.dataset.setting==='interface'){
         const off=localStorage.getItem('luno_motion')==='off';
-        localStorage.setItem('luno_motion',off?'on':'off');
+        localStorage.setItem(motionKey,off?'on':'off');
         render('settings');
       } else if(settingEl.dataset.setting==='history'){
         localStorage.removeItem(historyKey);
-        if(note)note.textContent='История очищена.';
         render('settings');
+        const nextNote=root.querySelector('.settings-note');
+        if(nextNote)nextNote.textContent='История очищена.';
       } else if(note) note.textContent='LUNO Core '+Core.version;
     }
   });
 
   Core.on('navigate',event=>render(event.route));
   Core.controller.bind('Home',()=>{Core.router.go('home');return true;});
+
+  const boot = () => {
+    render(Core.router.current() || 'home');
+    if(splash) {
+      splash.classList.add('is-hidden');
+      setTimeout(()=>splash.remove(),520);
+    }
+  };
+  setTimeout(boot,2500);
 
   global.LunoUI={catalog,render};
 })(window);
