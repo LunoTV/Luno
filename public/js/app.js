@@ -6,7 +6,7 @@ const catalogStore={movie:[],series:[],anime:[]};
 const esc=(value='')=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const yearOf=item=>{
   const y=item?.releaseInfo||item?.year;
-  const match=String(y||'').match(/\\d{4}/);
+  const match=String(y||'').match(/\d{4}/);
   return match?match[0]:'';
 };
 const scoreOf=value=>{
@@ -201,7 +201,7 @@ function bindHome(el){
     let sx=0,sy=0;
     row.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY},{passive:true});
     row.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientX-sx)>Math.abs(e.touches[0].clientY-sy))e.stopPropagation()},{passive:true});
-    row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false}));
+    row.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();row.scrollLeft+=event.deltaY}}, {passive:false});
   });
   const navObserver=new IntersectionObserver(entries=>{const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;const key=visible.target.id==='movies'?'movie':visible.target.id==='series'?'series':visible.target.id==='anime'?'anime':visible.target.id==='history'?'history':'home';el.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===key))},{root:document.documentElement.dataset.device==='tv'?app:null,rootMargin:'-20% 0px -55% 0px',threshold:[0,.25,.5]});
   el.querySelectorAll('.content-section').forEach(section=>navObserver.observe(section));
