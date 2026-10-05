@@ -432,14 +432,20 @@
   Core.controller.bind('Home',()=>{Core.router.go('home');return true;});
 
   const boot = async () => {
-    await loadTMDB();
-    render(Core.router.current() || 'home');
+    const route = Core.router.current() || 'home';
+
+    // Never block the UI on remote catalog data. Render the local shell first,
+    // then replace the catalog with the fresh TMDB snapshot when it arrives.
+    render(route);
     if(splash) {
       splash.classList.add('is-hidden');
       setTimeout(()=>splash.remove(),520);
     }
+
+    const loaded = await loadTMDB();
+    if(loaded) render(Core.router.current() || 'home');
   };
-  setTimeout(boot,2500);
+  boot();
 
   global.LunoUI={catalog,render};
 })(window);
