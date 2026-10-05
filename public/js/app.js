@@ -365,7 +365,7 @@ function settingsAction(key){
     document.querySelector('.luno-settings-screen')?.remove();
     const route=window.LunoCore?.router?.current?.();
     if(route==='history'){window.dispatchEvent(new CustomEvent('luno:navigate',{detail:{route:'history',stack:[]}}))}
-    else {routeTo('settings')}
+    else {renderRouteScreen(document.querySelector('.home'),'settings')}
     return;
   }
   if(key==='other'){return;}
