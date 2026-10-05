@@ -179,6 +179,29 @@
     remembered(scope) {
       return state.focus[scope] || '';
     },
+    move(container, active, direction) {
+      if (!container || !active) return null;
+      const items = [...container.querySelectorAll('button,input,[tabindex="0"]')]
+        .filter(item => item !== active && item.offsetParent !== null);
+      const a = active.getBoundingClientRect();
+      const ax = a.left + a.width / 2;
+      const ay = a.top + a.height / 2;
+      const candidates = items.map(item => {
+        const b = item.getBoundingClientRect();
+        const bx = b.left + b.width / 2;
+        const by = b.top + b.height / 2;
+        const dx = bx - ax;
+        const dy = by - ay;
+        if (direction === 'left' && dx >= -1) return null;
+        if (direction === 'right' && dx <= 1) return null;
+        if (direction === 'up' && dy >= -1) return null;
+        if (direction === 'down' && dy <= 1) return null;
+        const primary = direction === 'left' || direction === 'right' ? Math.abs(dx) : Math.abs(dy);
+        const secondary = direction === 'left' || direction === 'right' ? Math.abs(dy) : Math.abs(dx);
+        return { item, score: primary * 10 + secondary };
+      }).filter(Boolean).sort((a, b) => a.score - b.score);
+      return candidates[0]?.item || null;
+    },
     set(element, options = {}) {
       if (!element || typeof element.focus !== 'function') return false;
       const key = this.key(element);
