@@ -33,7 +33,7 @@
     rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0), tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
     description:x.overview||'Описание отсутствует.',
     poster:x.poster_path?tmdbImage+'w342'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:''),
-    posterFallback:x.poster_path?tmdbImage+'w500'+x.poster_path:(x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:''),
+    posterFallback:x.poster_fallback_url|| (x.poster_path?tmdbImage+'w500'+x.poster_path:(x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'')),
     backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'',
     backdropFallback:x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''
   });
