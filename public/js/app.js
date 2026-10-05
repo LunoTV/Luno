@@ -93,13 +93,19 @@
     }).filter(Boolean).sort((a,b)=>b.score-a.score).map(x=>x.item);
   };
   const loadTMDB = async () => {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeout = controller ? setTimeout(() => controller.abort(), 6000) : null;
     try {
-      const res=await fetch(tmdbDataPath,{cache:'no-store'});
+      const res=await fetch(tmdbDataPath,{cache:'no-store',signal:controller?.signal});
       if(!res.ok) return false;
       const data=await res.json();
       const next=[...(data.movies||[]).map(x=>tmdbItem(x,'movie')),...(data.series||[]).map(x=>tmdbItem(x,'series'))];
       if(next.length){ catalog=next; return true; }
-    } catch (_) {}
+    } catch (_) {
+      return false;
+    } finally {
+      if (timeout) clearTimeout(timeout);
+    }
     return false;
   };
 
