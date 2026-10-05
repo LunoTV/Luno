@@ -90,13 +90,13 @@
       '<header class="topbar" data-focus-container="topbar">'+
         '<button class="brand" data-route="home" data-focus-key="brand">LUNO</button>'+
         '<nav class="desktop-nav">'+
-          navButton('home','Главная')+navButton('movie','Фильмы')+navButton('series','Сериалы')+navButton('history','История')+
+          navButton('home','Главная')+navButton('movie','Фильмы')+navButton('series','Сериалы')+navButton('stream','Поток')+navButton('history','История')+
         '</nav>'+
         '<div class="top-actions"><button data-action="search" aria-label="Поиск">⌕</button><button data-route="settings" aria-label="Настройки">⚙</button></div>'+
       '</header>'+
       '<div class="screen-host"></div>'+
       '<nav class="mobile-nav" data-focus-container="mobile-nav">'+
-        navButton('home','⌂','Главная')+navButton('movie','▣','Фильмы')+navButton('series','▤','Сериалы')+navButton('history','◷','История')+
+        navButton('home','⌂','Главная')+navButton('movie','▣','Фильмы')+navButton('series','▤','Сериалы')+navButton('stream','≋','Поток')+navButton('history','◷','История')+
       '</nav>';
     return el;
   };
@@ -132,6 +132,32 @@
     const title = route==='movie'?'Фильмы':route==='series'?'Сериалы':'История';
     const el = baseScreen('CATALOG',title,route==='history'?'Недавно открытые позиции':'Выберите карточку');
     el.querySelector('.screen-body').innerHTML = '<div class="screen-grid" data-focus-container="catalog">'+(items.length?items.map(card).join(''):'<div class="empty-state">Здесь пока пусто.</div>')+'</div>';
+    return el;
+  };
+
+  const streamScreen = () => {
+    const el = baseScreen('STREAM','Поток','Бесконечная лента фильмов и сериалов');
+    const body=el.querySelector('.screen-body');
+    let shown=0;
+    const batch=24;
+    const items=catalog.slice();
+    const append=()=>{
+      const next=items.slice(shown,shown+batch);
+      if(!next.length) return;
+      const wrap=body.querySelector('[data-stream-grid]');
+      wrap.insertAdjacentHTML('beforeend',next.map(card).join(''));
+      shown+=next.length;
+      if(shown<items.length) sentinel();
+      else body.querySelector('[data-stream-end]')?.remove();
+    };
+    const sentinel=()=>{
+      body.querySelector('[data-stream-sentinel]')?.remove();
+      const s=document.createElement('div'); s.dataset.streamSentinel=''; s.className='stream-sentinel'; body.appendChild(s);
+      const io=new IntersectionObserver(entries=>{if(entries.some(x=>x.isIntersecting)){io.disconnect();s.remove();append();}}, {rootMargin:'700px'});
+      io.observe(s);
+    };
+    body.innerHTML='<div class="stream-toolbar"><strong>Все</strong><span>'+catalog.length+'+ материалов</span></div><div class="screen-grid" data-stream-grid data-focus-container="stream"></div>';
+    append();
     return el;
   };
 
@@ -197,6 +223,7 @@
     else if(route==='search') screen=searchScreen();
     else if(route==='settings') screen=settingsScreen();
     else if(route==='movie'||route==='series'||route==='history') screen=catalogScreen(route);
+    else if(route==='stream') screen=streamScreen();
     else if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
     else screen=home();
     host.appendChild(screen);
