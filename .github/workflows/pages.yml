@@ -45,15 +45,30 @@ jobs:
             printf '%s\n' '{"movies":[],"series":[],"generatedAt":null}' > public/data/tmdb.json
             exit 0
           fi
-          curl -fsSL -H "Authorization: Bearer $TMDB_API_READ_TOKEN" -H "accept: application/json" "https://api.themoviedb.org/3/trending/movie/week?language=ru-RU&page=1" -o /tmp/tmdb-movies.json
-          curl -fsSL -H "Authorization: Bearer $TMDB_API_READ_TOKEN" -H "accept: application/json" "https://api.themoviedb.org/3/trending/tv/week?language=ru-RU&page=1" -o /tmp/tmdb-series.json
+          export AUTH="Authorization: Bearer $TMDB_API_READ_TOKEN"
+          for kind in movie tv; do
+            for sort in popularity.desc vote_average.desc; do
+              for page in $(seq 1 10); do
+                curl -fsSL -H "$AUTH" -H "accept: application/json" "https://api.themoviedb.org/3/discover/$kind?language=ru-RU&page=$page&sort_by=$sort&include_adult=false&include_video=false" -o "/tmp/tmdb-${kind}-${sort//./-}-$page.json"
+              done
+            done
+          done
           node - <<'NODE'
-          const fs = require('fs');
-          const movies = JSON.parse(fs.readFileSync('/tmp/tmdb-movies.json','utf8')).results || [];
-          const series = JSON.parse(fs.readFileSync('/tmp/tmdb-series.json','utf8')).results || [];
-          fs.writeFileSync('public/data/tmdb.json', JSON.stringify({movies,series,generatedAt:new Date().toISOString()}));
+          const fs=require('fs');
+          const collect=(kind)=>{
+            const seen=new Set(), out=[];
+            for(const sort of ['popularity-desc','vote_average-desc']){
+              for(let p=1;p<=10;p++){
+                const file=`/tmp/tmdb-${kind}-${sort}-${p}.json`;
+                if(!fs.existsSync(file)) continue;
+                const data=JSON.parse(fs.readFileSync(file,'utf8'));
+                for(const x of (data.results||[])){ if(seen.has(x.id)) continue; seen.add(x.id); out.push(x); }
+              }
+            }
+            return out;
+          };
+          fs.writeFileSync('public/data/tmdb.json',JSON.stringify({movies:collect('movie'),series:collect('tv'),generatedAt:new Date().toISOString()}));
           NODE
-
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
