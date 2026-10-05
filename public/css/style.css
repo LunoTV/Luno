@@ -869,3 +869,16 @@ button,input{font-family:inherit}
   .media-row{scrollbar-width:none}
   .media-row::-webkit-scrollbar{display:none}
 }
+
+@media(max-width:700px){
+  .home>.topbar>.nav{display:none!important}
+  .home>.topbar{justify-content:space-between}
+  .home>.topbar .search{margin-left:auto}
+  .home>.mobile-nav{display:flex}
+}
+
+.splash--boot{position:fixed!important;inset:0;z-index:99999;display:grid!important;place-items:center;min-height:100dvh;background:#02070d;opacity:1;visibility:visible}
+.splash--boot .startup-loader{position:relative;z-index:2}
+.splash--boot .startup-loader__bar{animation:splashLoad 1.4s ease-in-out infinite}
+@keyframes splashLoad{0%{width:0}55%{width:72%}100%{width:100%}}
+@media(prefers-reduced-motion:reduce){.splash--boot .startup-loader__bar{animation:none;width:72%}}
