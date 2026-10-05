@@ -147,13 +147,13 @@
       '<header class="topbar" data-focus-container="topbar">'+
         '<button class="brand" data-route="home" data-focus-key="brand">LUNO</button>'+
         '<nav class="desktop-nav">'+
-          navButton('home','Главная')+navButton('movie','Фильмы')+navButton('series','Сериалы')+navButton('stream','Поток')+navButton('history','История')+
+          navButton('home','Главная')+navButton('catalog','Каталог')+navButton('movie','Фильмы')+navButton('series','Сериалы')+navButton('stream','Поток')+navButton('history','История')+
         '</nav>'+
         '<div class="top-actions"><button data-action="search" aria-label="Поиск">⌕</button><button data-route="settings" aria-label="Настройки">⚙</button></div>'+
       '</header>'+
       '<div class="screen-host"></div>'+
       '<nav class="mobile-nav" data-focus-container="mobile-nav">'+
-        navButton('home','⌂','Главная')+navButton('movie','▣','Фильмы')+navButton('series','▤','Сериалы')+navButton('stream','≋','Поток')+navButton('history','◷','История')+
+        navButton('home','⌂','Главная')+navButton('catalog','▦','Каталог')+navButton('movie','▣','Фильмы')+navButton('series','▤','Сериалы')+navButton('stream','≋','Поток')+navButton('history','◷','История')+
       '</nav>';
     return el;
   };
@@ -208,8 +208,8 @@
     title:(a,b)=>String(a.title||'').localeCompare(String(b.title||''),'ru')
   };
   const catalogScreen = route => {
-    const baseItems = route==='movie'?catalog.filter(x=>x.type==='movie'):route==='series'?catalog.filter(x=>x.type==='series'):readHistory().map(x=>byId(x.id)).filter(Boolean);
-    const title = route==='movie'?'Фильмы':route==='series'?'Сериалы':'История';
+    const baseItems = route==='movie'?catalog.filter(x=>x.type==='movie'):route==='series'?catalog.filter(x=>x.type==='series'):route==='history'?readHistory().map(x=>byId(x.id)).filter(Boolean):catalog.slice();
+    const title = route==='movie'?'Фильмы':route==='series'?'Сериалы':route==='history'?'История':'Каталог';
     const el = baseScreen('CATALOG',title,route==='history'?'Недавно открытые позиции':'Большая библиотека LUNO');
     const body=el.querySelector('.screen-body');
     if(!baseItems.length){body.innerHTML='<div class="empty-state">Здесь пока пусто.</div>';return el;}
@@ -356,9 +356,10 @@
     if(route==='home') screen=home();
     else if(route==='search') screen=searchScreen();
     else if(route==='settings') screen=settingsScreen();
-    else if(route==='movie'||route==='series'||route==='history') screen=catalogScreen(route);
+    else if(route==='catalog'||route==='movie'||route==='series'||route==='history') screen=catalogScreen(route);
     else if(route==='stream') screen=streamScreen();
-    else if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
+    else if(route==='catalog') active='catalog';
+    if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
     else screen=home();
     host.appendChild(screen);
     applyMotion();
