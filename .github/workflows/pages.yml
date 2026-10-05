@@ -67,8 +67,15 @@ jobs:
             }
             return out;
           };
-          fs.writeFileSync('public/data/tmdb.json',JSON.stringify({movies:collect('movie'),series:collect('tv'),generatedAt:new Date().toISOString()}));
+          const movies=collect('movie').map(x=>({...x,poster_url:x.poster_path?'https://image.tmdb.org/t/p/w500'+x.poster_path:'',poster_local_url:x.poster_path?'./data/posters/movie-'+x.id+'.jpg':''}));
+          const series=collect('tv').map(x=>({...x,poster_url:x.poster_path?'https://image.tmdb.org/t/p/w500'+x.poster_path:'',poster_local_url:x.poster_path?'./data/posters/series-'+x.id+'.jpg':''}));
+          fs.writeFileSync('public/data/tmdb.json',JSON.stringify({movies,series,generatedAt:new Date().toISOString()}));
+          const lines=[...movies.map(x=>['movie',x.id,x.poster_path]),...series.map(x=>['series',x.id,x.poster_path])].filter(x=>x[2]).map(x=>x.join('\t')).join('\n');
+          fs.writeFileSync('/tmp/tmdb-posters.tsv',lines+'\n');
           NODE
+          mkdir -p public/data/posters
+          cat /tmp/tmdb-posters.tsv | xargs -r -P 12 -n 3 bash -c 'kind="$1"; id="$2"; path="$3"; curl -fsSL --retry 2 --retry-delay 1 "https://image.tmdb.org/t/p/w500${path}" -o "public/data/posters/${kind}-${id}.jpg" || rm -f "public/data/posters/${kind}-${id}.jpg"' _
+          echo "Cached $(find public/data/posters -type f | wc -l) TMDB posters locally."
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
