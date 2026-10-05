@@ -48,7 +48,7 @@ jobs:
           export AUTH="Authorization: Bearer $TMDB_API_READ_TOKEN"
           for kind in movie tv; do
             for sort in popularity.desc vote_average.desc; do
-              for page in $(seq 1 10); do
+              for page in $(seq 1 30); do
                 curl -fsSL -H "$AUTH" -H "accept: application/json" "https://api.themoviedb.org/3/discover/$kind?language=ru-RU&page=$page&sort_by=$sort&include_adult=false&include_video=false" -o "/tmp/tmdb-${kind}-${sort//./-}-$page.json"
               done
             done
@@ -58,7 +58,7 @@ jobs:
           const collect=(kind)=>{
             const seen=new Set(), out=[];
             for(const sort of ['popularity-desc','vote_average-desc']){
-              for(let p=1;p<=10;p++){
+              for(let p=1;p<=30;p++){
                 const file=`/tmp/tmdb-${kind}-${sort}-${p}.json`;
                 if(!fs.existsSync(file)) continue;
                 const data=JSON.parse(fs.readFileSync(file,'utf8'));
