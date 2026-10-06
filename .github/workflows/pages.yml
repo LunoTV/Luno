@@ -42,48 +42,6 @@ jobs:
           echo "Built LUNO headless runtime from Lampa $LAMPA_SHA"
           wc -c "${GITHUB_WORKSPACE}/public/js/luno-lampa-runtime.js"
 
-      - name: Build TMDB catalog
-        env:
-          TMDB_API_READ_TOKEN: ${{ secrets.TMDB_API_READ_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p public/data
-          if [ -z "${TMDB_API_READ_TOKEN:-}" ]; then
-            printf '%s\n' '{"movies":[],"series":[],"generatedAt":null}' > public/data/tmdb.json
-            exit 0
-          fi
-          export AUTH="Authorization: Bearer $TMDB_API_READ_TOKEN"
-          for kind in movie tv; do
-            for sort in popularity.desc vote_average.desc; do
-              for page in $(seq 1 30); do
-                curl -fsSL -H "$AUTH" -H "accept: application/json" "https://api.themoviedb.org/3/discover/$kind?language=ru-RU&page=$page&sort_by=$sort&include_adult=false&include_video=false" -o "/tmp/tmdb-${kind}-${sort//./-}-$page.json"
-              done
-            done
-          done
-          node - <<'NODE'
-          const fs=require('fs');
-          const collect=(kind)=>{
-            const seen=new Set(), out=[];
-            for(const sort of ['popularity-desc','vote_average-desc']){
-              for(let p=1;p<=30;p++){
-                const file=`/tmp/tmdb-${kind}-${sort}-${p}.json`;
-                if(!fs.existsSync(file)) continue;
-                const data=JSON.parse(fs.readFileSync(file,'utf8'));
-                for(const x of (data.results||[])){ if(seen.has(x.id)) continue; seen.add(x.id); out.push(x); }
-              }
-            }
-            return out;
-          };
-          const movies=collect('movie').map(x=>({...x,poster_url:x.poster_path?'https://image.tmdb.org/t/p/w500'+x.poster_path:'',poster_local_url:x.poster_path?'./data/posters/movie-'+x.id+'.jpg':''}));
-          const series=collect('tv').map(x=>({...x,poster_url:x.poster_path?'https://image.tmdb.org/t/p/w500'+x.poster_path:'',poster_local_url:x.poster_path?'./data/posters/series-'+x.id+'.jpg':''}));
-          fs.writeFileSync('public/data/tmdb.json',JSON.stringify({movies,series,generatedAt:new Date().toISOString()}));
-          const lines=[...movies.map(x=>['movie',x.id,x.poster_path]),...series.map(x=>['series',x.id,x.poster_path])].filter(x=>x[2]).map(x=>x.join('\t')).join('\n');
-          fs.writeFileSync('/tmp/tmdb-posters.tsv',lines+'\n');
-          NODE
-          mkdir -p public/data/posters
-          cat /tmp/tmdb-posters.tsv | xargs -r -P 12 -n 3 bash -c 'kind="$1"; id="$2"; path="$3"; curl -fsSL --retry 2 --retry-delay 1 "https://image.tmdb.org/t/p/w500${path}" -o "public/data/posters/${kind}-${id}.jpg" || rm -f "public/data/posters/${kind}-${id}.jpg"' _
-          echo "Cached $(find public/data/posters -type f | wc -l) TMDB posters locally."
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
