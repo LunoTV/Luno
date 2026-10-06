@@ -8,6 +8,7 @@ import Arrays from './src/utils/arrays'
 import Manifest from './src/core/manifest'
 import Account from './src/core/account/account'
 import Settings from './src/interaction/settings/settings'
+import Reguest from './src/utils/reguest'
 
 /* LUNO uses Lampa only as a headless runtime. No Lampa UI, renderer or player is mounted. */
 if (typeof window.lampa_settings === 'undefined') window.lampa_settings = {}
@@ -35,6 +36,7 @@ Object.assign(window.Lampa, {
 // Initialize Lampa's parameter registry so official plugins see their real defaults.
 Params.init()
 
+const tmdbNetwork = new Reguest()
 
 /* Compatibility boundary for Lampa's Request abstraction: direct browser fetch, never a proxy. */
 if (!window.$ || typeof window.$.ajax !== 'function') {
@@ -96,6 +98,10 @@ const callbackPromise = (invoke) => new Promise((resolve,reject) => {
     const fail = error => { if(settled)return; settled=true; reject(error||new Error('Lampa runtime request failed')) }
     try { invoke(ok,fail) } catch(error) { fail(error) }
 })
+
+TMDB.request = function(url, params={}) {
+    return callbackPromise((ok, fail)=>tmdbNetwork.silent(url, ok, fail, false, params))
+}
 
 const runtime = {
     version: 'lampa-headless-b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d',
