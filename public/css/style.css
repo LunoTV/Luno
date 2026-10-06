@@ -112,3 +112,7 @@
 .media-card__title{height:40px;min-height:40px;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
 @media(max-width:760px){.media-card{flex-basis:140px}.poster{height:205px}.media-card__title{height:36px;min-height:36px;display:-webkit-box;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
 @media(max-width:390px){.media-card{flex-basis:104px}.poster{height:156px}.media-card__title{height:36px;min-height:36px}}
+
+/* Compact single-line card titles */
+.media-card__title{display:block!important;height:22px!important;min-height:22px!important;margin-top:8px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;line-height:22px!important}
+@media(max-width:760px){.media-card__title{height:21px!important;min-height:21px!important;line-height:21px!important;font-size:14px!important;margin-top:7px!important}}
