@@ -155,7 +155,7 @@
       return true;
     });
   };
-  const displayable = items => uniqueItems(items).filter(item => uiTitle(item));
+  const displayable = items => uniqueItems(items).filter(item => uiTitle(item) && posterCandidates(item).length);
 
   const byId = id => catalog.find(item => item.id === String(id));
   const historyKey = 'luno_history_v2';
