@@ -32,6 +32,9 @@ Object.assign(window.Lampa, {
     Settings
 })
 
+// Initialize Lampa's parameter registry so official plugins see their real defaults.
+Params.init()
+
 
 /* Compatibility boundary for Lampa's Request abstraction: direct browser fetch, never a proxy. */
 if (!window.$ || typeof window.$.ajax !== 'function') {
