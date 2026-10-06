@@ -26,6 +26,9 @@
   const tmdbDataPath = './data/tmdb.json';
   const tmdbImage = 'https://image.tmdb.org/t/p/';
   const tmdbImageAlt = 'https://media.themoviedb.org/t/p/';
+  const siteOrigin = global.location && global.location.origin ? global.location.origin : '';
+  const localPosterUrl = (kind,id) => siteOrigin + '/data/posters/' + kind + '-' + id + '.jpg';
+  const remotePosterUrl = (path,size='w500') => path ? tmdbImageAlt + size + path : '';
   const tmdbItem = (x,type) => ({
     id:'tmdb-'+type+'-'+x.id, tmdbId:x.id, type,
     title:type==='movie'?(x.title||x.original_title||'Без названия'):(x.name||x.original_name||'Без названия'),
@@ -35,8 +38,8 @@
     rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0),
     genreIds:Array.isArray(x.genre_ids)?x.genre_ids:[], tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
     description:x.overview||'Описание отсутствует.',
-    poster:(x.poster_local_url ? new URL(x.poster_local_url, global.location.href).href : '') || x.poster_url || (x.poster_path?tmdbImage+'w342'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:'')),
-    posterFallback:x.poster_fallback_url || (x.poster_path?tmdbImageAlt+'w500'+x.poster_path:(x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:'')) || x.poster_url,
+    poster:(x.poster_local_url ? new URL(x.poster_local_url, document.baseURI).href : '') || x.poster_url || (x.poster_path?tmdbImage+'w342'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:'')),
+    posterFallback:x.poster_fallback_url || remotePosterUrl(x.poster_path,'w500') || x.poster_url || (x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''),
     backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'',
     backdropFallback:x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''
   });
@@ -145,7 +148,7 @@
     const title=uiTitle(item);
     const letter=(title||item.title||'L').slice(0,1);
     const media = item.poster
-      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;delete this.dataset.fallbackSrc;}else{this.hidden=true;this.nextElementSibling.hidden=false;}"><span class="poster__fallback" hidden><strong>'+esc(letter)+'</strong></span>'
+      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;delete this.dataset.fallbackSrc;}else{this.hidden=true;this.nextElementSibling.hidden=false;}"><span class="poster__fallback" hidden><strong>'+esc(letter)+'</strong></span>'
       : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+
