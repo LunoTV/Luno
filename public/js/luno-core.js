@@ -52,7 +52,9 @@
   if (!Array.isArray(state.stack)) state.stack = [];
   if (!state.focus || typeof state.focus !== 'object' || Array.isArray(state.focus)) state.focus = {};
   if (!state.settings || typeof state.settings !== 'object' || Array.isArray(state.settings)) state.settings = {};
-  if (!state.data || typeof state.data !== 'object' || Array.isArray(state.data)) state.data = {};\n\n  const listeners = new Map();
+  if (!state.data || typeof state.data !== 'object' || Array.isArray(state.data)) state.data = {};
+
+  const listeners = new Map();
 
   const emit = (name, payload) => {
     const list = listeners.get(name);
