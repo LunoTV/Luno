@@ -34,9 +34,7 @@ Object.assign(window.Lampa, {
 
 // Initialize Lampa's parameter registry so official plugins see their real defaults.
 Params.init()
-// Test direct TMDB mode: without the CUB proxy plugin Lampa falls back to TMDB's own API/image URLs.
-try { Storage.set('proxy_tmdb', false) } catch (error) {}
-
+// TMDB proxy is loaded after this runtime and configures Lampa's official proxy fields.
 /* Compatibility boundary for Lampa's Request abstraction: direct browser fetch, never a proxy. */
 if (!window.$ || typeof window.$.ajax !== 'function') {
     const ajax = (options = {}) => {
