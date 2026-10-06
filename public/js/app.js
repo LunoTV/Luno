@@ -121,9 +121,8 @@
         try {
           const url = tmdbApiUrl('discover/'+kind,{page,sort_by:'popularity.desc',include_adult:'false',include_video:'false'});
           if (!url) break;
-          const res = await fetch(url,{cache:'no-store'});
-          if (!res.ok) break;
-          const data = await res.json();
+          if (!runtime?.tmdb?.request) break;
+          const data = await runtime.tmdb.request(url,{cache:{life:0}});
           results.push(...(data.results||[]).map(x=>tmdbItem(x,type)));
         } catch (_) {
           break;
