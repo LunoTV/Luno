@@ -135,7 +135,7 @@
       if(!res.ok) return false;
       const data=await res.json();
       const next=[...(data.movies||[]).map(x=>tmdbItem(x,'movie')),...(data.series||[]).map(x=>tmdbItem(x,'series'))];
-      if(next.length){ catalog=next; return true; }
+      if(next.length){ catalog=uniqueItems(next); return true; }
     } catch (_) {
       return false;
     } finally {
@@ -146,7 +146,16 @@
 
   const isRussianTitle = value => /[А-Яа-яЁё]/.test(String(value||''));
   const uiTitle = item => isRussianTitle(item.title) ? item.title : (isRussianTitle(item.originalTitle) ? item.originalTitle : '');
-  const displayable = items => items.filter(item => uiTitle(item));
+  const uniqueItems = items => {
+    const seen = new Set();
+    return (Array.isArray(items) ? items : []).filter(item => {
+      const key = item.tmdbId ? (item.type + ':tmdb:' + item.tmdbId) : String(item.id || '');
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+  const displayable = items => uniqueItems(items).filter(item => uiTitle(item));
 
   const byId = id => catalog.find(item => item.id === String(id));
   const historyKey = 'luno_history_v2';
