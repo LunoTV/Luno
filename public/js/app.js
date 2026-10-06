@@ -459,20 +459,34 @@
   };
 
   const boot = async () => {
+    // First paint is deliberately independent from router, Core state and TMDB.
+    // A broken persisted session must never leave the shell with an empty screen.
     try {
-      const route = Core.router.current() || 'home';
-      render(route);
-      hideSplash();
+      render('home');
+    } catch (error) {
+      console.error('[LUNO] initial home render failed', error);
+      const host=root.querySelector('.screen-host');
+      if (host) host.innerHTML='<section class="screen"><div class="empty-state">LUNO: ошибка первого экрана.</div></section>';
+    }
+    hideSplash();
+
+    try {
+      const route = (Core && Core.router && typeof Core.router.current === 'function')
+        ? (Core.router.current() || 'home')
+        : 'home';
+      if (route !== 'home') render(route);
 
       // TMDB must never block the initial LUNO UI.
       const loaded = await loadTMDB();
-      if(loaded) render(Core.router.current() || 'home');
-    } catch (error) {
-      console.error('[LUNO] boot failed', error);
-      hideSplash();
-      if(!root.querySelector('.luno-app')) {
-        root.innerHTML='<main class="luno-app"><section class="screen"><div class="empty-state">LUNO запускается. Попробуйте обновить страницу.</div></section></main>';
+      if (loaded) {
+        const nextRoute = (Core && Core.router && typeof Core.router.current === 'function')
+          ? (Core.router.current() || 'home')
+          : 'home';
+        render(nextRoute);
       }
+    } catch (error) {
+      console.error('[LUNO] background boot failed', error);
+      // Keep the already-rendered Home screen visible.
     }
   };
 
