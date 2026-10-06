@@ -41,6 +41,12 @@
     backdropFallback:x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''
   });
 
+  const runtimeItem = (x,type) => tmdbItem(Object.assign({},x,{
+    poster_url:'',
+    poster_local_url:'',
+    poster_fallback_url:x.poster_path ? tmdbImageAlt+'w500'+x.poster_path : '',
+  }),type);
+
   const translit = value => String(value||'')
     .toLowerCase()
     .replace(/ё/g,'е')
@@ -311,21 +317,49 @@
   };
 
   const searchScreen = () => {
-    const el = baseScreen('SEARCH','Поиск','Найдите фильм, сериал или аниме');
+    const el = baseScreen('SEARCH','Поиск','LUNO ищет в локальном каталоге и через Lampa Runtime');
     el.querySelector('.screen-body').innerHTML =
       '<div class="search-box"><input data-search-input type="search" placeholder="Название…" autocomplete="off"><button data-action="clear-search">×</button></div>'+
       '<div class="screen-grid" data-focus-container="search-results"><div class="empty-state">Введите название.</div></div>';
     const input = el.querySelector('[data-search-input]');
     const results = el.querySelector('[data-focus-container="search-results"]');
-    const render = () => {
+    let requestId = 0;
+    const render = async () => {
       const q = input.value.trim();
-      const items = searchCatalog(q);
-      results.innerHTML = normalizeSearch(q).length<2
-        ? '<div class="empty-state">Введите минимум 2 символа.</div>'
-        : items.length?items.map(card).join(''):'<div class="empty-state">Ничего не найдено.</div>';
+      const normalized = normalizeSearch(q);
+      if(normalized.length < 2){
+        results.innerHTML='<div class="empty-state">Введите минимум 2 символа.</div>';
+        return;
+      }
+      const local = searchCatalog(q);
+      results.innerHTML = local.length ? local.map(card).join('') : '<div class="empty-state">Поиск…</div>';
+      const current = ++requestId;
+      const runtime = window.LunoLampaRuntime;
+      if(!runtime || !window.LunoRuntimeReady) return;
+      try{
+        const found = await runtime.search(q);
+        if(current !== requestId || input.value.trim() !== q) return;
+        const remote = [];
+        for(const group of [found && found.movie, found && found.tv]){
+          if(!group || !Array.isArray(group.results)) continue;
+          const type = group.type === 'tv' ? 'series' : 'movie';
+          group.results.forEach(item=>remote.push(runtimeItem(item,type)));
+        }
+        const merged = [...remote,...local];
+        const seen = new Set();
+        const unique = merged.filter(item=>{
+          const key = item.type+':'+item.tmdbId;
+          if(seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        }).slice(0,60);
+        results.innerHTML = unique.length ? unique.map(card).join('') : '<div class="empty-state">Ничего не найдено.</div>';
+      }catch(error){
+        console.warn('[LUNO] headless search failed',error);
+      }
     };
     input.addEventListener('input',render);
-    el.querySelector('[data-action="clear-search"]').addEventListener('click',()=>{input.value='';render();input.focus();});
+    el.querySelector('[data-action="clear-search"]').addEventListener('click',()=>{requestId++;input.value='';render();input.focus();});
     setTimeout(()=>input.focus(),0);
     return el;
   };
