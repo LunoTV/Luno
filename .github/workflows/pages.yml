@@ -32,10 +32,12 @@ jobs:
           git -C /tmp/lampa-source checkout --detach "$LAMPA_SHA"
           cd /tmp/lampa-source
           npm install --no-audit --no-fund
-          npx rollup "${GITHUB_WORKSPACE}/runtime/lampa-headless-entry.js" \
+          cp "${GITHUB_WORKSPACE}/runtime/lampa-headless-entry.js" ./luno-headless-entry.js
+          npx rollup "./luno-headless-entry.js" \
             --format iife \
             --file "${GITHUB_WORKSPACE}/public/js/luno-lampa-runtime.js" \
-            --plugin @rollup/plugin-node-resolve
+            --plugin @rollup/plugin-node-resolve \
+            --plugin @rollup/plugin-commonjs
           test -s "${GITHUB_WORKSPACE}/public/js/luno-lampa-runtime.js"
           echo "Built LUNO headless runtime from Lampa $LAMPA_SHA"
           wc -c "${GITHUB_WORKSPACE}/public/js/luno-lampa-runtime.js"
