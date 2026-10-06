@@ -117,8 +117,12 @@
   const historyKey = 'luno_history_v2';
 
   const readHistory = () => {
-    try { return JSON.parse(localStorage.getItem(historyKey) || '[]') || []; }
-    catch (_) { return []; }
+    try {
+      const value = JSON.parse(localStorage.getItem(historyKey) || '[]');
+      return Array.isArray(value) ? value : [];
+    } catch (_) {
+      return [];
+    }
   };
 
   const writeHistory = list => {
@@ -182,7 +186,7 @@
     const el = document.createElement('section');
     el.className = 'screen screen-home';
     const history = readHistory().map(x => byId(x.id)).filter(Boolean);
-    const featured = ranked(displayable(catalog),1)[0] || fallbackCatalog[0];
+    const featured = ranked(displayable(Array.isArray(catalog) ? catalog : []),1)[0] || fallbackCatalog[0];
     const backdrop = featured.backdrop || featured.poster || '';
     const movies=catalog.filter(x=>x.type==='movie'), series=catalog.filter(x=>x.type==='series');
     el.innerHTML =
@@ -364,7 +368,8 @@
   const render = route => {
     const host=root.querySelector('.screen-host');
     if(!host)return;
-    host.replaceChildren();
+    try {
+      host.replaceChildren();
     let screen;
     if(route==='home') screen=home();
     else if(route==='search') screen=searchScreen();
@@ -373,10 +378,14 @@
     else if(route==='stream') screen=streamScreen();
     else if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
     else screen=home();
-    host.appendChild(screen);
-    applyMotion();
-    updateNav(route);
-    focusInitial(screen,route);
+      host.appendChild(screen);
+      applyMotion();
+      updateNav(route);
+      focusInitial(screen,route);
+    } catch (error) {
+      console.error('[LUNO] render failed', route, error);
+      host.innerHTML='<section class="screen"><div class="empty-state"><strong>LUNO</strong><br>Не удалось отрисовать экран.</div></section>';
+    }
   };
 
   const updateNav = route => {
