@@ -20,9 +20,8 @@ Object.assign(window.lampa_settings, {
 })
 if (!window.Lampa) window.Lampa = {}
 if (!window.Lampa.Listener) window.Lampa.Listener = Subscribe()
-// Expose the real Lampa modules required by official plugins.
-// No TMDB URL rewriting is implemented here: the CUB TMDB Proxy plugin
-// patches the real Lampa.TMDB object itself.
+// Expose the real Lampa modules used by the headless runtime.
+// TMDB proxy plugins are intentionally not loaded: API and images stay direct.
 Object.assign(window.Lampa, {
     TMDB,
     Storage,
@@ -35,6 +34,8 @@ Object.assign(window.Lampa, {
 
 // Initialize Lampa's parameter registry so official plugins see their real defaults.
 Params.init()
+// Test direct TMDB mode: without the CUB proxy plugin Lampa falls back to TMDB's own API/image URLs.
+try { Storage.set('proxy_tmdb', false) } catch (error) {}
 
 /* Compatibility boundary for Lampa's Request abstraction: direct browser fetch, never a proxy. */
 if (!window.$ || typeof window.$.ajax !== 'function') {
