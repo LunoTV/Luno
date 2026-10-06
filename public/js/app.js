@@ -189,7 +189,7 @@
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+
       '<span class="poster__glow"></span><span class="poster__tag">'+esc(item.tag)+'</span>'+
-      '<span class="poster__meta">'+esc(item.year)+' · ★ '+esc(Number(item.rating||0).toFixed(1))+'</span></span>'+
+      '<span class="poster__bottom"><span class="poster__line"></span><span class="poster__meta">'+esc(item.year)+' · ★ '+esc(Number(item.rating||0).toFixed(1))+'</span></span></span>'+
       (title?'<span class="media-card__title">'+esc(title)+'</span>':'')+
     '</button>';
   };
