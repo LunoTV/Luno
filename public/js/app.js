@@ -27,8 +27,24 @@
   const tmdbImage = 'https://image.tmdb.org/t/p/';
   const tmdbImageAlt = 'https://media.themoviedb.org/t/p/';
   const siteOrigin = global.location && global.location.origin ? global.location.origin : '';
-  const localPosterUrl = (kind,id) => siteOrigin + '/data/posters/' + kind + '-' + id + '.jpg';
+  const localPosterUrl = (kind,id) => {
+    if (!id) return '';
+    const file = 'data/posters/' + kind + '-' + id + '.jpg';
+    try { return new URL('./' + file, document.baseURI).href; } catch (_) { return './' + file; }
+  };
   const remotePosterUrl = (path,size='w500') => path ? tmdbImageAlt + size + path : '';
+  const posterCandidates = item => {
+    const kind = item.type === 'series' ? 'series' : 'movie';
+    const list = [];
+    if (item.tmdbId) list.push(localPosterUrl(kind,item.tmdbId));
+    if (item.posterFallback) list.push(item.posterFallback);
+    if (item.poster_path) {
+      list.push(tmdbImageAlt + 'w500' + item.poster_path);
+      list.push(tmdbImage + 'w500' + item.poster_path);
+    }
+    if (item.poster_url) list.push(item.poster_url);
+    return [...new Set(list.filter(Boolean))];
+  };
   const tmdbItem = (x,type) => ({
     id:'tmdb-'+type+'-'+x.id, tmdbId:x.id, type,
     title:type==='movie'?(x.title||x.original_title||'Без названия'):(x.name||x.original_name||'Без названия'),
@@ -38,8 +54,10 @@
     rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0),
     genreIds:Array.isArray(x.genre_ids)?x.genre_ids:[], tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
     description:x.overview||'Описание отсутствует.',
-    poster:(x.poster_local_url ? new URL(x.poster_local_url, document.baseURI).href : '') || x.poster_url || (x.poster_path?tmdbImage+'w342'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:'')),
+    poster:x.poster_path ? remotePosterUrl(x.poster_path,'w500') : (x.poster_url || ''),
     posterFallback:x.poster_fallback_url || remotePosterUrl(x.poster_path,'w500') || x.poster_url || (x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''),
+    poster_path:x.poster_path || '',
+    poster_url:x.poster_url || '',
     backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'',
     backdropFallback:x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''
   });
@@ -147,8 +165,9 @@
   const card = item => {
     const title=uiTitle(item);
     const letter=(title||item.title||'L').slice(0,1);
-    const media = item.poster
-      ? '<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;delete this.dataset.fallbackSrc;}else{this.hidden=true;this.nextElementSibling.hidden=false;}"><span class="poster__fallback" hidden><strong>'+esc(letter)+'</strong></span>'
+    const candidates = posterCandidates(item);
+    const media = candidates.length
+      ? '<img class="poster__image" src="'+esc(candidates[0])+'" data-poster-candidates="'+esc(JSON.stringify(candidates))+'" alt="" loading="lazy" decoding="async"><span class="poster__fallback" hidden><strong>'+esc(letter)+'</strong></span>'
       : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+
@@ -396,10 +415,29 @@
     remember(item);
     el.querySelector('.screen-body').innerHTML=
       '<div class="detail" data-focus-container="details">'+
-        '<div class="detail-poster poster poster--'+esc(item.type)+'">'+(item.poster?'<img class="poster__image" src="'+esc(item.poster)+'" data-fallback-src="'+esc(item.posterFallback||'')+'" alt="" onerror="if(this.dataset.fallbackSrc && this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc=\'\';}else{this.style.display=\'none\';}">':'<span class="poster__fallback"><strong>'+esc(item.title.slice(0,1))+'</strong></span>')+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></div>'+
+        '<div class="detail-poster poster poster--'+esc(item.type)+'">'+(posterCandidates(item).length?'<img class="poster__image" src="'+esc(posterCandidates(item)[0])+'" data-poster-candidates="'+esc(JSON.stringify(posterCandidates(item)))+'" alt="">':'<span class="poster__fallback"><strong>'+esc(item.title.slice(0,1))+'</strong></span>')+'<span class="poster__glow"></span><small>'+esc(item.tag)+'</small></div>'+
         '<div class="detail-copy"><span class="rating">★ '+esc(item.rating.toFixed(1))+'</span><h2>'+esc(item.title)+'</h2><p>'+esc(item.description)+'</p><div class="detail-actions"><button class="primary" disabled>Смотреть</button><button class="secondary" data-action="back">Назад</button></div></div>'+
       '</div>';
     return el;
+  };
+
+  const wirePosters = rootNode => {
+    if (!rootNode) return;
+    rootNode.querySelectorAll('img[data-poster-candidates]').forEach(img => {
+      let candidates = [];
+      try { candidates = JSON.parse(img.dataset.posterCandidates || '[]'); } catch (_) {}
+      let index = Math.max(0, candidates.indexOf(img.currentSrc || img.src));
+      img.addEventListener('error', () => {
+        index += 1;
+        if (index < candidates.length) {
+          img.src = candidates[index];
+          return;
+        }
+        img.hidden = true;
+        const fallback = img.nextElementSibling;
+        if (fallback) fallback.hidden = false;
+      }, {passive:true});
+    });
   };
 
   const render = route => {
@@ -416,6 +454,7 @@
     else if(route.startsWith('details:')) { const p=route.split(':'); screen=detailsScreen(p[1],p.slice(2).join(':')); }
     else screen=home();
       host.appendChild(screen);
+      wirePosters(screen);
       applyMotion();
       updateNav(route);
       focusInitial(screen,route);
