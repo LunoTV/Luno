@@ -123,3 +123,44 @@
 .poster__meta{position:static!important;display:block;color:#f0f6fa!important;background:none!important;border:0!important;padding:0!important;border-radius:0!important;font-size:11px!important;font-weight:700;line-height:1.2;backdrop-filter:none!important;text-shadow:0 1px 8px rgba(0,0,0,.75)}
 .poster__tag{text-transform:none}
 @media(max-width:760px){.poster__bottom{left:9px;right:9px;bottom:8px;gap:5px}.poster__meta{font-size:10px!important}.poster__tag{top:9px;left:9px}}
+
+/* Refine poster chrome to match the requested streaming-card layout */
+.poster__tag{
+  top:12px!important;
+  left:12px!important;
+  padding:6px 11px!important;
+  border-radius:9px!important;
+  background:rgba(31,40,50,.86)!important;
+  border:1px solid rgba(220,235,247,.22)!important;
+  color:#eef5fb!important;
+  font-size:11px!important;
+  font-weight:750!important;
+  line-height:1!important;
+  backdrop-filter:blur(10px)!important;
+}
+.poster__bottom{
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  padding:0 12px 10px!important;
+  gap:7px!important;
+  background:linear-gradient(180deg,transparent 0%,rgba(2,6,10,.08) 12%,rgba(2,6,10,.78) 48%,rgba(2,6,10,.94) 100%)!important;
+}
+.poster__line{
+  width:100%!important;
+  height:1px!important;
+  background:rgba(235,245,252,.72)!important;
+  box-shadow:none!important;
+}
+.poster__meta{
+  color:#f4f8fb!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  line-height:1.1!important;
+  text-shadow:0 1px 5px rgba(0,0,0,.8)!important;
+}
+@media(max-width:760px){
+  .poster__tag{top:9px!important;left:9px!important;padding:5px 9px!important;font-size:10px!important}
+  .poster__bottom{padding:0 9px 8px!important;gap:6px!important}
+  .poster__meta{font-size:10px!important}
+}
