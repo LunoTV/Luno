@@ -1,8 +1,8 @@
-import Api from '../.lampa-source/src/core/api/api'
-import TMDB from '../.lampa-source/src/core/tmdb/tmdb'
-import Storage from '../.lampa-source/src/core/storage/storage'
-import Params from '../.lampa-source/src/interaction/settings/params'
-import Subscribe from '../.lampa-source/src/utils/subscribe'
+import Api from './src/core/api/api'
+import TMDB from './src/core/tmdb/tmdb'
+import Storage from './src/core/storage/storage'
+import Params from './src/interaction/settings/params'
+import Subscribe from './src/utils/subscribe'
 
 /* LUNO uses Lampa only as a headless runtime. No Lampa UI, renderer or player is mounted. */
 if (typeof window.lampa_settings === 'undefined') window.lampa_settings = {}
