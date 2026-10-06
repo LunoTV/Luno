@@ -36,8 +36,6 @@ Object.assign(window.Lampa, {
 // Initialize Lampa's parameter registry so official plugins see their real defaults.
 Params.init()
 
-const tmdbNetwork = new Reguest()
-
 /* Compatibility boundary for Lampa's Request abstraction: direct browser fetch, never a proxy. */
 if (!window.$ || typeof window.$.ajax !== 'function') {
     const ajax = (options = {}) => {
@@ -100,7 +98,9 @@ const callbackPromise = (invoke) => new Promise((resolve,reject) => {
 })
 
 TMDB.request = function(url, params={}) {
-    return callbackPromise((ok, fail)=>tmdbNetwork.silent(url, ok, fail, false, params))
+    return callbackPromise((ok, fail)=>{
+        TMDB.get(url, params, ok, fail, {cache:{life:0}})
+    })
 }
 
 const runtime = {
