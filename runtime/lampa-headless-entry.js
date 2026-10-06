@@ -32,7 +32,6 @@ Object.assign(window.Lampa, {
     Settings
 })
 
-window.vpn_region = window.vpn_region || 'ru'
 
 /* Compatibility boundary for Lampa's Request abstraction: direct browser fetch, never a proxy. */
 if (!window.$ || typeof window.$.ajax !== 'function') {
