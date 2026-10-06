@@ -3,6 +3,11 @@ import TMDB from './src/core/tmdb/tmdb'
 import Storage from './src/core/storage/storage'
 import Params from './src/interaction/settings/params'
 import Subscribe from './src/utils/subscribe'
+import Utils from './src/utils/utils'
+import Arrays from './src/utils/arrays'
+import Manifest from './src/core/manifest'
+import Account from './src/core/account/account'
+import Settings from './src/interaction/settings/settings'
 
 /* LUNO uses Lampa only as a headless runtime. No Lampa UI, renderer or player is mounted. */
 if (typeof window.lampa_settings === 'undefined') window.lampa_settings = {}
@@ -14,6 +19,19 @@ Object.assign(window.lampa_settings, {
 })
 if (!window.Lampa) window.Lampa = {}
 if (!window.Lampa.Listener) window.Lampa.Listener = Subscribe()
+// Expose the real Lampa modules required by official plugins.
+// No TMDB URL rewriting is implemented here: the CUB TMDB Proxy plugin
+// patches the real Lampa.TMDB object itself.
+Object.assign(window.Lampa, {
+    TMDB,
+    Storage,
+    Utils,
+    Arrays,
+    Manifest,
+    Account,
+    Settings
+})
+
 window.vpn_region = window.vpn_region || 'ru'
 
 /* Compatibility boundary for Lampa's Request abstraction: direct browser fetch, never a proxy. */
