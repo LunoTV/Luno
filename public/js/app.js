@@ -35,8 +35,8 @@
     rating:Number(x.vote_average||0), popularity:Number(x.popularity||0), votes:Number(x.vote_count||0),
     genreIds:Array.isArray(x.genre_ids)?x.genre_ids:[], tag:type==='movie'?'Фильм':type==='series'?'Сериал':'Аниме',
     description:x.overview||'Описание отсутствует.',
-    poster:x.poster_local_url||x.poster_url|| (x.poster_path?tmdbImage+'w342'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:'')),
-    posterFallback:x.poster_url||x.poster_fallback_url|| (x.poster_path?tmdbImage+'w500'+x.poster_path:(x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'')),
+    poster:(x.poster_local_url ? new URL(x.poster_local_url, global.location.href).href : '') || x.poster_url || (x.poster_path?tmdbImage+'w342'+x.poster_path:(x.backdrop_path?tmdbImage+'w780'+x.backdrop_path:'')),
+    posterFallback:x.poster_fallback_url || (x.poster_path?tmdbImageAlt+'w500'+x.poster_path:(x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:'')) || x.poster_url,
     backdrop:x.backdrop_path?tmdbImage+'w1280'+x.backdrop_path:'',
     backdropFallback:x.backdrop_path?tmdbImageAlt+'w1280'+x.backdrop_path:''
   });
