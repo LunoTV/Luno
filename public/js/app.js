@@ -113,30 +113,47 @@
   };
   const loadTMDB = async () => {
     const runtime = tmdbRuntime();
-    if (!runtime?.category) return false;
+    if (!runtime?.main) return false;
 
-    const loadKind = async (kind,type) => {
-      try {
-        const groups = await runtime.category({url:kind});
-        const results = [];
-        for (const group of (Array.isArray(groups) ? groups : [])) {
-          if (!group || !Array.isArray(group.results)) continue;
-          results.push(...group.results.map(x=>tmdbItem(x,type)));
+    const collectGroups = groups => {
+      const items = [];
+      for (const group of (Array.isArray(groups) ? groups : [])) {
+        if (!group || !Array.isArray(group.results)) continue;
+        for (const item of group.results) {
+          if (!item || item.id == null) continue;
+          const type = item.name || item.first_air_date ? 'series' : 'movie';
+          items.push(tmdbItem(item,type));
         }
-        return results;
-      } catch (_) {
-        return [];
       }
+      return uniqueItems(items);
     };
 
     try {
-      const [movies,series] = await Promise.all([
-        loadKind('movie','movie'),
-        loadKind('tv','series')
-      ]);
-      const next=uniqueItems([...movies,...series]);
-      if(next.length){ catalog=next; return true; }
+      // Use the exact Lampa home-page pipeline: Api.main -> TMDB.main ->
+      // partNext. Do not rebuild TMDB discover URLs in LUNO.
+      const groups = await runtime.main({source:'tmdb'});
+      const next = collectGroups(groups);
+      if (next.length) {
+        catalog = next;
+        return true;
+      }
     } catch (_) {}
+
+    // Keep Lampa's category pipeline as a secondary recovery path.
+    if (runtime.category) {
+      try {
+        const [movieGroups, tvGroups] = await Promise.all([
+          runtime.category({url:'movie',source:'tmdb'}),
+          runtime.category({url:'tv',source:'tmdb'})
+        ]);
+        const next = collectGroups([...(movieGroups || []), ...(tvGroups || [])]);
+        if (next.length) {
+          catalog = next;
+          return true;
+        }
+      } catch (_) {}
+    }
+
     return false;
   };
 
