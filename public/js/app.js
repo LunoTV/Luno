@@ -139,7 +139,44 @@
       }
     } catch (_) {}
 
-    // Keep Lampa's category pipeline as a secondary recovery path.
+    // Headless-safe recovery: use Lampa's own TMDB module directly.
+    // Api.main also builds UI-specific keyword/person rows; those are unnecessary
+    // for LUNO and can fail before the basic movie/tv rows are returned.
+    if (runtime.tmdb?.request) {
+      try {
+        const methods = [
+          'trending/movie/week',
+          'trending/tv/week',
+          'movie/popular',
+          'tv/popular',
+          'movie/top_rated',
+          'tv/top_rated',
+          'movie/now_playing',
+          'movie/upcoming'
+        ];
+        const responses = await Promise.all(
+          methods.map(method => runtime.tmdb.request(method, {langs:['ru-RU']}))
+        );
+        const next = [];
+        responses.forEach((data, index) => {
+          const type = methods[index].startsWith('tv/') || methods[index] === 'trending/tv/week' ? 'series' : 'movie';
+          if (data && Array.isArray(data.results)) {
+            data.results.forEach(item => {
+              if (item && item.id != null) next.push(tmdbItem(item, type));
+            });
+          }
+        });
+        const clean = uniqueItems(next);
+        if (clean.length) {
+          catalog = clean;
+          return true;
+        }
+      } catch (error) {
+        console.warn('[LUNO] direct Lampa TMDB fallback failed', error);
+      }
+    }
+
+    // Keep Lampa's category pipeline as the last recovery path.
     if (runtime.category) {
       try {
         const [movieGroups, tvGroups] = await Promise.all([
