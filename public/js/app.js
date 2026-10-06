@@ -398,8 +398,19 @@
     if(target) Core.focus.set(target,{scope:route,preventScroll:true});
   };
 
-  var bootstrap=root.querySelector('.luno-bootstrap'); if(bootstrap) bootstrap.remove();
-  root.appendChild(shell());
+  const bootstrap=root.querySelector('.luno-bootstrap');
+  let appShell=null;
+  try {
+    appShell=shell();
+    root.appendChild(appShell);
+  } catch (error) {
+    console.error('[LUNO] shell failed', error);
+    if (bootstrap) {
+      bootstrap.querySelector('.empty-state').textContent='Не удалось запустить LUNO. Попробуйте обновить страницу.';
+    }
+    return;
+  }
+  if (bootstrap) bootstrap.remove();
 
   root.addEventListener('click',event=>{
     const route=event.target.closest('[data-route]')?.dataset.route;
