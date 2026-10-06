@@ -186,7 +186,7 @@
     const media = candidates.length
       ? '<img class="poster__image" data-poster-candidates="'+esc(JSON.stringify(candidates))+'" alt="" loading="lazy" decoding="async"><span class="poster__fallback" hidden><strong>'+esc(letter)+'</strong></span>'
       : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
-    return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
+    return '<button class="media-card" data-poster-required="true" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+
       '<span class="poster__glow"></span><span class="poster__tag">'+esc(item.tag)+'</span>'+
       '<span class="poster__bottom"><span class="poster__line"></span><span class="poster__meta">'+esc(item.year)+' · ★ '+esc(Number(item.rating||0).toFixed(1))+'</span></span></span>'+
@@ -446,6 +446,11 @@
       let index = -1;
       const fallback = img.nextElementSibling;
       const showFallback = () => {
+        const card = img.closest('.media-card');
+        if (card && card.dataset.posterRequired === 'true') {
+          card.remove();
+          return;
+        }
         img.style.display = 'none';
         if (fallback) fallback.style.display = 'flex';
       };
