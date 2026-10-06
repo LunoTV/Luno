@@ -119,10 +119,8 @@
       const results = [];
       for (const page of pages) {
         try {
-          const url = tmdbApiUrl('discover/'+kind,{page,sort_by:'popularity.desc',include_adult:'false',include_video:'false'});
-          if (!url) break;
           if (!runtime?.tmdb?.request) break;
-          const data = await runtime.tmdb.request(url,{cache:{life:0}});
+          const data = await runtime.tmdb.request('discover/'+kind,{page,sort_by:'popularity.desc',include_adult:'false',include_video:'false'});
           results.push(...(data.results||[]).map(x=>tmdbItem(x,type)));
         } catch (_) {
           break;
