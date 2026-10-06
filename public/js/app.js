@@ -36,12 +36,12 @@
   const posterCandidates = item => {
     const kind = item.type === 'series' ? 'series' : 'movie';
     const list = [];
-    if (item.tmdbId) list.push(localPosterUrl(kind,item.tmdbId));
-    if (item.posterFallback) list.push(item.posterFallback);
     if (item.poster_path) {
       list.push(tmdbImageAlt + 'w500' + item.poster_path);
       list.push(tmdbImage + 'w500' + item.poster_path);
     }
+    if (item.tmdbId) list.push(localPosterUrl(kind,item.tmdbId));
+    if (item.posterFallback) list.push(item.posterFallback);
     if (item.poster_url) list.push(item.poster_url);
     return [...new Set(list.filter(Boolean))];
   };
@@ -167,7 +167,7 @@
     const letter=(title||item.title||'L').slice(0,1);
     const candidates = posterCandidates(item);
     const media = candidates.length
-      ? '<img class="poster__image" src="'+esc(candidates[0])+'" data-poster-candidates="'+esc(JSON.stringify(candidates))+'" alt="" loading="lazy" decoding="async"><span class="poster__fallback" hidden><strong>'+esc(letter)+'</strong></span>'
+      ? '<img class="poster__image" data-poster-candidates="'+esc(JSON.stringify(candidates))+'" alt="" loading="lazy" decoding="async"><span class="poster__fallback" hidden><strong>'+esc(letter)+'</strong></span>'
       : '<span class="poster__fallback"><strong>'+esc(letter)+'</strong></span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+
@@ -426,17 +426,25 @@
     rootNode.querySelectorAll('img[data-poster-candidates]').forEach(img => {
       let candidates = [];
       try { candidates = JSON.parse(img.dataset.posterCandidates || '[]'); } catch (_) {}
-      let index = Math.max(0, candidates.indexOf(img.currentSrc || img.src));
-      img.addEventListener('error', () => {
+      let index = -1;
+      const fallback = img.nextElementSibling;
+      const next = () => {
         index += 1;
-        if (index < candidates.length) {
-          img.src = candidates[index];
+        if (index >= candidates.length) {
+          img.hidden = true;
+          if (fallback) fallback.hidden = false;
           return;
         }
-        img.hidden = true;
-        const fallback = img.nextElementSibling;
-        if (fallback) fallback.hidden = false;
+        img.hidden = false;
+        if (fallback) fallback.hidden = true;
+        img.src = candidates[index];
+      };
+      img.addEventListener('load', () => {
+        img.hidden = false;
+        if (fallback) fallback.hidden = true;
       }, {passive:true});
+      img.addEventListener('error', next, {passive:true});
+      next();
     });
   };
 
