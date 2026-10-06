@@ -113,23 +113,27 @@
   };
   const loadTMDB = async () => {
     const runtime = tmdbRuntime();
-    if (!runtime?.tmdb?.api) return false;
-    const pages = Array.from({length:6},(_,i)=>i+1);
+    if (!runtime?.category) return false;
+
     const loadKind = async (kind,type) => {
-      const results = [];
-      for (const page of pages) {
-        try {
-          if (!runtime?.tmdb?.request) break;
-          const data = await runtime.tmdb.request('discover/'+kind,{page,sort_by:'popularity.desc',include_adult:'false',include_video:'false'});
-          results.push(...(data.results||[]).map(x=>tmdbItem(x,type)));
-        } catch (_) {
-          break;
+      try {
+        const groups = await runtime.category({url:kind});
+        const results = [];
+        for (const group of (Array.isArray(groups) ? groups : [])) {
+          if (!group || !Array.isArray(group.results)) continue;
+          results.push(...group.results.map(x=>tmdbItem(x,type)));
         }
+        return results;
+      } catch (_) {
+        return [];
       }
-      return results;
     };
+
     try {
-      const [movies,series] = await Promise.all([loadKind('movie','movie'),loadKind('tv','series')]);
+      const [movies,series] = await Promise.all([
+        loadKind('movie','movie'),
+        loadKind('tv','series')
+      ]);
       const next=uniqueItems([...movies,...series]);
       if(next.length){ catalog=next; return true; }
     } catch (_) {}
