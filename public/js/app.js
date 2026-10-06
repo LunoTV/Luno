@@ -26,21 +26,29 @@
   const tmdbDataPath = './data/tmdb.json';
   const tmdbImage = 'https://image.tmdb.org/t/p/';
   const tmdbImageAlt = 'https://media.themoviedb.org/t/p/';
-  const siteOrigin = global.location && global.location.origin ? global.location.origin : '';
+  const appScriptUrl = (() => {
+    try {
+      const script = Array.from(document.scripts).find(s => /\/js\/app\.js(?:\?|$)/.test(s.src));
+      return script ? script.src : '';
+    } catch (_) { return ''; }
+  })();
+  const appRootUrl = (() => {
+    try { return appScriptUrl ? new URL('../', appScriptUrl).href : new URL('./', document.baseURI).href; }
+    catch (_) { return './'; }
+  })();
   const localPosterUrl = (kind,id) => {
     if (!id) return '';
-    const file = 'data/posters/' + kind + '-' + id + '.jpg';
-    try { return new URL('./' + file, document.baseURI).href; } catch (_) { return './' + file; }
+    return appRootUrl + 'data/posters/' + kind + '-' + id + '.jpg';
   };
   const remotePosterUrl = (path,size='w500') => path ? tmdbImageAlt + size + path : '';
   const posterCandidates = item => {
     const kind = item.type === 'series' ? 'series' : 'movie';
     const list = [];
+    if (item.tmdbId) list.push(localPosterUrl(kind,item.tmdbId));
     if (item.poster_path) {
       list.push(tmdbImageAlt + 'w500' + item.poster_path);
       list.push(tmdbImage + 'w500' + item.poster_path);
     }
-    if (item.tmdbId) list.push(localPosterUrl(kind,item.tmdbId));
     if (item.posterFallback) list.push(item.posterFallback);
     if (item.poster_url) list.push(item.poster_url);
     return [...new Set(list.filter(Boolean))];
@@ -428,21 +436,24 @@
       try { candidates = JSON.parse(img.dataset.posterCandidates || '[]'); } catch (_) {}
       let index = -1;
       const fallback = img.nextElementSibling;
+      const showFallback = () => {
+        img.style.display = 'none';
+        if (fallback) fallback.style.display = 'flex';
+      };
+      const showImage = () => {
+        img.style.display = 'block';
+        if (fallback) fallback.style.display = 'none';
+      };
       const next = () => {
         index += 1;
         if (index >= candidates.length) {
-          img.hidden = true;
-          if (fallback) fallback.hidden = false;
+          showFallback();
           return;
         }
-        img.hidden = false;
-        if (fallback) fallback.hidden = true;
+        showImage();
         img.src = candidates[index];
       };
-      img.addEventListener('load', () => {
-        img.hidden = false;
-        if (fallback) fallback.hidden = true;
-      }, {passive:true});
+      img.addEventListener('load', showImage, {passive:true});
       img.addEventListener('error', next, {passive:true});
       next();
     });
