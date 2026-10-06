@@ -97,9 +97,9 @@ const callbackPromise = (invoke) => new Promise((resolve,reject) => {
     try { invoke(ok,fail) } catch(error) { fail(error) }
 })
 
-TMDB.request = function(url, params={}) {
+TMDB.request = function(method, params={}) {
     return callbackPromise((ok, fail)=>{
-        TMDB.get(url, params, ok, fail, {cache:{life:0}})
+        TMDB.get(method, params, ok, fail, {life:0})
     })
 }
 
