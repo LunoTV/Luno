@@ -90,10 +90,21 @@ async function fetchCinemetaCatalog(type,extra=""){
 }
 
 async function loadDirectCatalog(){
-  const [movies,series]=await Promise.all([
+  const results=await Promise.allSettled([
     fetchCinemetaCatalog("movie"),
     fetchCinemetaCatalog("series")
   ]);
+
+  const movies=results[0].status==="fulfilled" ? results[0].value : [];
+  const series=results[1].status==="fulfilled" ? results[1].value : [];
+
+  if(!movies.length && !series.length){
+    throw new Error(
+      results.map((result)=>result.status==="rejected" ? result.reason?.message || "catalog request failed" : "").filter(Boolean).join("; ")
+      || "empty catalog"
+    );
+  }
+
   return [...movies,...series];
 }
 
