@@ -32,8 +32,10 @@
   };
   const tmdbImageUrl = (path, size='w500') => {
     const runtime = tmdbRuntime();
-    if (!runtime?.tmdb?.image || !path) return '';
-    return runtime.tmdb.image('t/p/' + size + path);
+    if (!runtime || !path) return '';
+    if (typeof runtime.image === 'function') return runtime.image(path,size) || '';
+    if (runtime.tmdb?.image) return runtime.tmdb.image('t/p/' + size + path);
+    return '';
   };
   const posterCandidates = item => {
     const list = [];
@@ -113,7 +115,7 @@
   };
   const loadTMDB = async () => {
     const runtime = tmdbRuntime();
-    if (!runtime?.main) return false;
+    if (!runtime?.tmdb?.request) return false;
 
     const collectGroups = groups => {
       const items = [];
@@ -129,51 +131,36 @@
     };
 
     try {
-      // Use the exact Lampa home-page pipeline: Api.main -> TMDB.main ->
-      // partNext. Do not rebuild TMDB discover URLs in LUNO.
-      const groups = await runtime.main({source:'tmdb'});
-      const next = collectGroups(groups);
-      if (next.length) {
-        catalog = next;
+      // Use Lampa's real TMDB source directly. Api.main is a UI-oriented
+      // orchestration layer and expects Lampa's renderer/ContentRows modules;
+      // LUNO owns the shell, so we consume the same source data here instead.
+      const methods = [
+        'trending/movie/week',
+        'trending/tv/week',
+        'movie/popular',
+        'tv/popular',
+        'movie/top_rated',
+        'tv/top_rated',
+        'movie/now_playing',
+        'movie/upcoming'
+      ];
+      const responses = await Promise.all(methods.map(method => runtime.tmdb.request(method, {})));
+      const next = [];
+      responses.forEach((data, index) => {
+        const type = methods[index].startsWith('tv/') || methods[index] === 'trending/tv/week' ? 'series' : 'movie';
+        if (data && Array.isArray(data.results)) {
+          data.results.forEach(item => {
+            if (item && item.id != null) next.push(tmdbItem(item, type));
+          });
+        }
+      });
+      const clean = uniqueItems(next);
+      if (clean.length) {
+        catalog = clean;
         return true;
       }
-    } catch (_) {}
-
-    // Headless-safe recovery: use Lampa's own TMDB module directly.
-    // Api.main also builds UI-specific keyword/person rows; those are unnecessary
-    // for LUNO and can fail before the basic movie/tv rows are returned.
-    if (runtime.tmdb?.request) {
-      try {
-        const methods = [
-          'trending/movie/week',
-          'trending/tv/week',
-          'movie/popular',
-          'tv/popular',
-          'movie/top_rated',
-          'tv/top_rated',
-          'movie/now_playing',
-          'movie/upcoming'
-        ];
-        const responses = await Promise.all(
-          methods.map(method => runtime.tmdb.request(method, {langs:['ru-RU']}))
-        );
-        const next = [];
-        responses.forEach((data, index) => {
-          const type = methods[index].startsWith('tv/') || methods[index] === 'trending/tv/week' ? 'series' : 'movie';
-          if (data && Array.isArray(data.results)) {
-            data.results.forEach(item => {
-              if (item && item.id != null) next.push(tmdbItem(item, type));
-            });
-          }
-        });
-        const clean = uniqueItems(next);
-        if (clean.length) {
-          catalog = clean;
-          return true;
-        }
-      } catch (error) {
-        console.warn('[LUNO] direct Lampa TMDB fallback failed', error);
-      }
+    } catch (error) {
+      console.warn('[LUNO] Lampa TMDB source failed', error);
     }
 
     // Keep Lampa's category pipeline as the last recovery path.
@@ -195,7 +182,9 @@
   };
 
   const isRussianTitle = value => /[А-Яа-яЁё]/.test(String(value||''));
-  const uiTitle = item => isRussianTitle(item.title) ? item.title : (isRussianTitle(item.originalTitle) ? item.originalTitle : '');
+  // Lampa keeps the localized title when available, but does not discard a result
+  // merely because TMDB returned an original/non-Russian title.
+  const uiTitle = item => isRussianTitle(item.title) ? item.title : (isRussianTitle(item.originalTitle) ? item.originalTitle : (item.title || item.originalTitle || ''));
   const uniqueItems = items => {
     const seen = new Set();
     return (Array.isArray(items) ? items : []).filter(item => {
