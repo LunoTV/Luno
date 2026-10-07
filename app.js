@@ -88,18 +88,15 @@ function card(item){
   const title=item?.name || "Без названия";
   const poster=item?.poster || "";
   const background=item?.background || "";
+  const image=poster || background;
   const rating=Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : "";
   const meta=[metaLine(item),rating].filter(Boolean).join(" • ");
-  const fallback=background || "";
   return `<button class="card" data-id="${escapeHtml(item?.id || "")}" data-type="${escapeHtml(item?.type || "movie")}" data-title="${escapeHtml(title)}" aria-label="${escapeHtml(title)}">
-    <div class="card-art">
-      ${poster ? `<img src="${escapeHtml(poster)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.classList.add('broken');${fallback ? `this.parentElement.style.backgroundImage="url('\\${escapeHtml(fallback)}')"` : ""}">` : (fallback ? `<img src="${escapeHtml(fallback)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : "🌑")}
-    </div>
+    <div class="card-art"${image ? ` style="background-image:url("${escapeHtml(image)}")"` : ""}></div>
     <div class="card-title">${escapeHtml(title)}</div>
     <div class="card-meta">${escapeHtml(meta)}</div>
   </button>`;
 }
-
 function bindCards(){
   document.querySelectorAll(".card").forEach((c)=>{
     c.onclick=()=>openPlayer(c.dataset.id,c.dataset.type,c.dataset.title);
