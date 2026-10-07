@@ -26,11 +26,16 @@ jobs:
           cd /tmp/lampa-source
           npm install --no-audit --no-fund
           cp "${GITHUB_WORKSPACE}/runtime/lampa-headless-entry.js" ./luno-headless-entry.js
-          npx rollup "./luno-headless-entry.js" --format iife --file "${GITHUB_WORKSPACE}/public/js/luno-lampa-runtime.js" --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs
-          test -s "${GITHUB_WORKSPACE}/public/js/luno-lampa-runtime.js"
+          npx rollup ./luno-headless-entry.js --format iife --file "${GITHUB_WORKSPACE}/luno-lampa-runtime.js" --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs
+          mkdir -p "${GITHUB_WORKSPACE}/dist/js"
+          cp "${GITHUB_WORKSPACE}/luno-lampa-runtime.js" "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js"
+          cp -R "${GITHUB_WORKSPACE}/css" "${GITHUB_WORKSPACE}/dist/css"
+          cp -R "${GITHUB_WORKSPACE}/js" "${GITHUB_WORKSPACE}/dist/js-src"
+          sed 's#./js/luno-lampa-runtime.js?v=2#./js/luno-lampa-runtime.js?v=3#; s#./js/app.js?v=3#./js-src/app.js?v=3#' "${GITHUB_WORKSPACE}/index.html" > "${GITHUB_WORKSPACE}/dist/index.html"
+          test -s "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public
+          path: ./dist
       - id: deployment
         uses: actions/deploy-pages@v4
