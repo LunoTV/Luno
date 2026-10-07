@@ -34,8 +34,8 @@ Object.assign(window.Lampa, {
 
 // Initialize Lampa's parameter registry so official plugins see their real defaults.
 Params.init()
-// TMDB proxy is loaded after this runtime and configures Lampa's official proxy fields.
-/* Compatibility boundary for Lampa's Request abstraction: direct browser fetch, never a proxy. */
+// The CUB TMDB plugin is loaded immediately after this runtime and configures Lampa's official TMDB API/image endpoints.
+/* Compatibility boundary for Lampa's Request abstraction: use the browser transport required by Lampa's Request layer. */
 if (!window.$ || typeof window.$.ajax !== 'function') {
     const ajax = (options = {}) => {
         const controller = new AbortController()
@@ -121,7 +121,9 @@ const runtime = {
     person(params={}) { return callbackPromise((ok,fail)=>Api.person(params,ok,fail)) },
     seasons(tv,from) { return callbackPromise(ok=>Api.seasons(tv,from,ok)) },
     collections(params={}) { return callbackPromise((ok,fail)=>Api.collections(params,ok,fail)) },
-    image(path,size='w500') { return TMDB.img(path,size) },
+    // Image formatting belongs to Lampa's TMDB source (the core TMDB module has no img() method).
+    image(path,size='w500') { return LampaTMDBSource.img(path,size) },
+    get(method,params={}) { return TMDB.request(method,params) },
     clear() { return Api.clear() }
 }
 
