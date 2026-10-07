@@ -85,7 +85,16 @@ const resolveSource = (name, movie, searchData) => new Promise((resolve,reject)=
     const finish=()=>{clearTimeout(timeout);if(capturedPlayer)resolve(capturedPlayer);else reject(new Error('Lampa source returned no stream: '+name))}
     const originalPlay=window.Lampa.Player.play
     window.Lampa.Player.play=(item)=>{capturedPlayer=item;finish()}
-    instance.search({movie},searchData||[])
+    const run = (data) => instance.search({movie}, data || [])
+    if(searchData && searchData.length) run(searchData)
+    else {
+      const network = new Lampa.Reguest()
+      network.timeout(15000)
+      let url = 'http://cdn.svetacdn.in/api/short?api_token=3i40G5TSECmLF77oAqnEgbx61ZWaOYaE'
+      if(movie?.imdb_id) url += '&imdb_id=' + encodeURIComponent(movie.imdb_id)
+      else url += '&title=' + encodeURIComponent(movie?.title || movie?.name || '')
+      network.native(url, json => run(json?.data || []), () => reject(new Error('Lampa source discovery failed: '+name)))
+    }
     setTimeout(()=>{window.Lampa.Player.play=originalPlay},31000)
   }catch(e){reject(e)}
 })
