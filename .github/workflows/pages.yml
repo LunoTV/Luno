@@ -31,7 +31,7 @@ jobs:
           cp "${GITHUB_WORKSPACE}/luno-lampa-runtime.js" "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js"
           cp -R "${GITHUB_WORKSPACE}/css" "${GITHUB_WORKSPACE}/dist/css"
           cp -R "${GITHUB_WORKSPACE}/js" "${GITHUB_WORKSPACE}/dist/js-src"
-          sed 's#./js/luno-lampa-runtime.js?v=2#./js/luno-lampa-runtime.js?v=3#; s#./js/app.js?v=3#./js-src/app.js?v=3#' "${GITHUB_WORKSPACE}/index.html" > "${GITHUB_WORKSPACE}/dist/index.html"
+          sed 's#./js/luno-lampa-runtime.js?v=2#./js/luno-lampa-runtime.js?v=4#; s#./js/app.js?v=4#./js-src/app.js?v=4#' "${GITHUB_WORKSPACE}/index.html" > "${GITHUB_WORKSPACE}/dist/index.html"
           test -s "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
