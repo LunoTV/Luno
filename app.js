@@ -6,6 +6,45 @@ const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
 
 const CINEMETA_BASE="https://cinemeta-catalogs.strem.io";
+const TMDB_BASE="https://api.themoviedb.org/3";
+const TMDB_IMAGE_BASE="https://image.tmdb.org/t/p";
+const TMDB_API_TOKEN=window.__LUNO_TMDB_API_TOKEN__ || "";
+const tmdbCache=new Map();
+function tmdbHeaders(){ return TMDB_API_TOKEN ? {accept:"application/json",authorization:"Bearer "+TMDB_API_TOKEN} : {accept:"application/json"}; }
+function tmdbImage(path,size="w500"){ return path ? TMDB_IMAGE_BASE+"/"+size+path : ""; }
+async function tmdbFind(imdbId){
+  if(!TMDB_API_TOKEN || !imdbId) return null;
+  if(tmdbCache.has(imdbId)) return tmdbCache.get(imdbId);
+  const key="luno-tmdb-"+imdbId;
+  try{ const saved=localStorage.getItem(key); if(saved){ const value=JSON.parse(saved); tmdbCache.set(imdbId,value); return value; } }catch{}
+  const response=await fetch(TMDB_BASE+"/find/"+encodeURIComponent(imdbId)+"?external_source=imdb_id&language=ru-RU",{headers:tmdbHeaders(),cache:"no-store"});
+  if(!response.ok) throw new Error("TMDB HTTP "+response.status);
+  const data=await response.json();
+  const value=data.movie_results?.[0] || data.tv_results?.[0] || null;
+  if(value){ try{localStorage.setItem(key,JSON.stringify(value));}catch{} }
+  tmdbCache.set(imdbId,value);
+  return value;
+}
+function applyTmdb(item,t){
+  if(!t) return item;
+  const movie=item.type==="movie";
+  return {...item,name:(movie?t.title:t.name)||item.name,poster:tmdbImage(t.poster_path)||item.poster,background:tmdbImage(t.backdrop_path,"w1280")||item.background,description:t.overview||item.description||"",releaseInfo:(movie?t.release_date:t.first_air_date)||item.releaseInfo,rating:Number(t.vote_average)||item.rating,tmdbId:t.id||item.tmdbId};
+}
+async function hydrateWithTmdb(items){
+  if(!TMDB_API_TOKEN) return items;
+  const targets=items.filter(x=>x?.id?.startsWith("tt")).slice(0,24), enriched=[];
+  for(let i=0;i<targets.length;i+=6){
+    const batch=targets.slice(i,i+6);
+    enriched.push(...await Promise.all(batch.map(async item=>{try{return applyTmdb(item,await tmdbFind(item.id));}catch(e){console.warn("LUNO TMDB item failed",item.id,e);return item;}})));
+  }
+  const map=new Map(enriched.map(x=>[x.id,x]));
+  return items.map(x=>map.get(x.id)||x);
+}
+async function hydrateRenderedCards(items){
+  if(!TMDB_API_TOKEN) return;
+  const enriched=await hydrateWithTmdb(items);
+  if(enriched.some((x,i)=>x.poster!==items[i]?.poster||x.name!==items[i]?.name)){ renderItems(enriched); prefetchPosters(enriched); }
+}
 
 function escapeHtml(value=""){
   return String(value).replace(/[&<>"']/g,(char)=>({
@@ -34,7 +73,7 @@ function normalizeItem(item,type){
 function card(item){
   const title=item?.name || "Без названия";
   const poster=item?.poster;
-  const meta=metaLine(item);
+  const rating=Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : "";\n  const meta=[metaLine(item),rating].filter(Boolean).join(" • ");
   return `<button class="card" data-id="${escapeHtml(item?.id || "")}" data-type="${escapeHtml(item?.type || "movie")}" data-title="${escapeHtml(title)}" aria-label="${escapeHtml(title)}">
     <div class="card-art"${poster ? ` style="background-image:url('${escapeHtml(poster)}')"` : ""}>${poster ? "" : "🌑"}</div>
     <div class="card-title">${escapeHtml(title)}</div>
