@@ -144,9 +144,18 @@
         'movie/now_playing',
         'movie/upcoming'
       ];
-      const responses = await Promise.all(methods.map(method => runtime.tmdb.request(method, {})));
+      // Lampa loads catalog parts independently. Do the same here: one broken
+      // TMDB endpoint must never discard all other successful sections.
+      const settled = await Promise.allSettled(
+        methods.map(method => runtime.tmdb.request(method, {}))
+      );
       const next = [];
-      responses.forEach((data, index) => {
+      settled.forEach((result, index) => {
+        if (result.status !== 'fulfilled') {
+          console.warn('[LUNO] TMDB part failed:', methods[index], result.reason);
+          return;
+        }
+        const data = result.value;
         const type = methods[index].startsWith('tv/') || methods[index] === 'trending/tv/week' ? 'series' : 'movie';
         if (data && Array.isArray(data.results)) {
           data.results.forEach(item => {
