@@ -73,7 +73,8 @@ function normalizeItem(item,type){
 function card(item){
   const title=item?.name || "Без названия";
   const poster=item?.poster;
-  const rating=Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : "";\n  const meta=[metaLine(item),rating].filter(Boolean).join(" • ");
+  const rating=Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : "";
+  const meta=[metaLine(item),rating].filter(Boolean).join(" • ");
   return `<button class="card" data-id="${escapeHtml(item?.id || "")}" data-type="${escapeHtml(item?.type || "movie")}" data-title="${escapeHtml(title)}" aria-label="${escapeHtml(title)}">
     <div class="card-art"${poster ? ` style="background-image:url('${escapeHtml(poster)}')"` : ""}>${poster ? "" : "🌑"}</div>
     <div class="card-title">${escapeHtml(title)}</div>
