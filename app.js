@@ -5,7 +5,7 @@ const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
 
-const CINEMETA_BASE="https://cinemeta-catalogs.strem.io/top";
+const CINEMETA_BASES=["https://v3-cinemeta.strem.io","https://cinemeta-catalogs.strem.io/top"];
 const TMDB_BASE="https://api.themoviedb.org/3";
 const TMDB_IMAGE_BASE="https://image.tmdb.org/t/p";
 const TMDB_API_TOKEN=window.__LUNO_TMDB_API_TOKEN__ || "";
@@ -118,15 +118,28 @@ function renderCoreCatalog(state){
 
 async function fetchCinemetaCatalog(type,extra=""){
   const suffix=extra ? `/${extra}` : "";
-  const response=await fetch(`${CINEMETA_BASE}/catalog/${type}/top${suffix}.json`,{
-    cache:"no-store",
-    headers:{accept:"application/json"}
-  });
-  if(!response.ok) throw new Error(`Cinemeta ${type}: HTTP ${response.status}`);
-  const data=await response.json();
-  return Array.isArray(data?.metas)
-    ? data.metas.map((item)=>normalizeItem(item,type))
-    : [];
+  let lastError=null;
+
+  for(const base of CINEMETA_BASES){
+    try{
+      const response=await fetch(`${base}/catalog/${type}/top${suffix}.json`,{
+        cache:"no-store",
+        headers:{accept:"application/json"}
+      });
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data=await response.json();
+      const items=Array.isArray(data?.metas)
+        ? data.metas.map((item)=>normalizeItem(item,type))
+        : [];
+      if(items.length) return items;
+      throw new Error("empty catalog");
+    }catch(error){
+      lastError=error;
+      console.warn("LUNO Cinemeta endpoint failed",base,type,error);
+    }
+  }
+
+  throw new Error(`Cinemeta ${type}: ${lastError?.message || "request failed"}`);
 }
 
 async function loadDirectCatalog(){
