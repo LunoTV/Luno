@@ -6,6 +6,7 @@ const popularCards=document.querySelector("#popularCards");
 const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
+const player=document.querySelector("#player");
 
 function escapeHtml(value=""){
   return String(value).replace(/[&<>"']/g,(char)=>({
@@ -19,7 +20,7 @@ function metaLine(item){
   return [year,type].filter(Boolean).join(" • ");
 }
 
-function card(item, index=0){
+function card(item,index=0){
   const title=item?.name || demoTitles[index % demoTitles.length];
   const poster=item?.poster;
   const meta=metaLine(item) || demoMetas[index % demoMetas.length];
@@ -30,6 +31,12 @@ function card(item, index=0){
   </button>`;
 }
 
+function bindCards(){
+  document.querySelectorAll(".card").forEach((c)=>{
+    c.onclick=()=>openPlayer(c.dataset.id,c.dataset.type,c.dataset.title);
+  });
+}
+
 function renderDemo(){
   continueCards.innerHTML=[0,1,2,3,4,5].map((i)=>card(null,i)).join("");
   popularCards.innerHTML=[3,4,1,5,0,2].map((i)=>card(null,i)).join("");
@@ -38,16 +45,16 @@ function renderDemo(){
 
 function extractItems(state){
   const catalogs=Array.isArray(state?.catalogs) ? state.catalogs : [];
-  return catalogs.flatMap((catalog)=> {
+  return catalogs.flatMap((catalog)=>{
     const content=catalog?.content;
-    if (!content || content.type !== "Ready") return [];
+    if(!content || content.type!=="Ready") return [];
     return Array.isArray(content.value) ? content.value : [];
   });
 }
 
 function renderRealCatalog(state){
   const items=extractItems(state);
-  if (!items.length) return false;
+  if(!items.length) return false;
 
   const unique=[...new Map(items.map((item)=>[item.id,item])).values()];
   const movies=unique.filter((item)=>item.type==="movie");
@@ -62,13 +69,6 @@ function renderRealCatalog(state){
   return true;
 }
 
-function bindCards(){
-  document.querySelectorAll(".card").forEach((c)=>{
-    c.onclick=()=>openPlayer(c.dataset.id,c.dataset.type,c.dataset.title);
-  });
-}
-
-const player=document.querySelector("#player");
 function openPlayer(id,type,title){
   player.classList.remove("hidden");
   const heading=player.querySelector(".player-placeholder h2");
@@ -79,13 +79,12 @@ function openPlayer(id,type,title){
     : "Демо-режим LUNO.";
   document.querySelector("#closePlayer").focus();
 }
-function closePlayer(){player.classList.add("hidden")}
 
-document.querySelector("#openDemo").onclick=()=>openPlayer("","movie","Интерстеллар");
-document.querySelector("#continueBtn").onclick=()=>openPlayer("","movie","Продолжить просмотр");
-document.querySelector("#closePlayer").onclick=closePlayer;
+function closePlayer(){
+  player.classList.add("hidden");
+}
 
-function showSearchResults(state, query){
+function showSearchResults(state,query){
   const items=extractItems(state);
   const results=items.slice(0,24);
   let resultBox=document.querySelector("#searchResults");
@@ -101,6 +100,10 @@ function showSearchResults(state, query){
   bindCards();
 }
 
+document.querySelector("#openDemo").onclick=()=>openPlayer("","movie","Интерстеллар");
+document.querySelector("#continueBtn").onclick=()=>openPlayer("","movie","Продолжить просмотр");
+document.querySelector("#closePlayer").onclick=closePlayer;
+
 document.querySelector("#searchBtn").onclick=()=>{
   searchPanel.classList.remove("hidden");
   searchInput.focus();
@@ -110,28 +113,59 @@ let searchTimer=null;
 searchInput.addEventListener("input",()=>{
   clearTimeout(searchTimer);
   const query=searchInput.value.trim();
-  if(!query) {
+  if(!query){
     document.querySelector("#searchResults")?.remove();
     return;
   }
   searchTimer=setTimeout(async()=>{
+    try{
+      const { searchLuno }=await import("./core.js");
+      const state=await searchLuno(query);
+      showSearchResults(state,query);
+    }catch(error){
+      console.error("LUNO search failed",error);
+    }
+  },350);
+});
+
+searchInput.addEventListener("keydown",(e)=>{
+  if(e.key==="Escape") searchPanel.classList.add("hidden");
+  if(e.key==="Enter") searchPanel.classList.remove("hidden");
+});
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="Escape"){
+    closePlayer();
+    searchPanel.classList.add("hidden");
+  }
+});
+
+document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("click",()=>{
+  document.querySelectorAll(".nav-item").forEach((x)=>x.classList.remove("active"));
+  btn.classList.add("active");
+}));
+
+// Render the LUNO shell immediately. Core is optional during startup.
+renderDemo();
+
+(async()=>{
   try{
-    const { initLunoCore, loadBoard, onLunoState, getLunoModel } = await import("./core.js");
+    const { initLunoCore, loadBoard, onLunoState, getLunoModel }=await import("./core.js");
     await initLunoCore();
     const state=await loadBoard();
     renderRealCatalog(state);
+
     onLunoState(async(models)=>{
       if(models.includes("board")){
-        const next=await getLunoModel("board");
-        renderRealCatalog(next);
+        renderRealCatalog(await getLunoModel("board"));
       }
       if(models.includes("search") && searchInput.value.trim()){
         const query=searchInput.value.trim();
-        const next=await getLunoModel("search");
-        showSearchResults(next,query);
+        showSearchResults(await getLunoModel("search"),query);
       }
     });
-    console.info("LUNO Core connected • real catalog model loaded");
+
+    console.info("LUNO Core connected");
   }catch(error){
     console.error("LUNO Core/catalog initialization failed",error);
     document.querySelector(".hero .eyebrow").textContent="LUNO • OFFLINE MODE";
