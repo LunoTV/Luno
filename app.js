@@ -26,7 +26,7 @@ function card(item, index=0){
   const poster=item?.poster;
   const meta=metaLine(item) || demoMetas[index % demoMetas.length];
   return `<button class="card" data-id="${escapeHtml(item?.id || "")}" data-type="${escapeHtml(item?.type || "movie")}" data-title="${escapeHtml(title)}" aria-label="${escapeHtml(title)}">
-    <div class="card-art"${poster ? ` style="background-image:url("${escapeHtml(poster)}")"` : ""}>${poster ? "" : "🌑"}</div>
+    <div class="card-art"${poster ? ` style="background-image:url('${escapeHtml(poster)}')"` : ""}>${poster ? "" : "🌑"}</div>
     <div class="card-title">${escapeHtml(title)}</div>
     <div class="card-meta">${escapeHtml(meta)}</div>
   </button>`;
