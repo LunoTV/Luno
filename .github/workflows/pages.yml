@@ -18,9 +18,19 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Build pinned Lampa headless runtime
+        run: |
+          LAMPA_SHA="b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d"
+          git clone https://github.com/yumata/lampa-source.git /tmp/lampa-source
+          git -C /tmp/lampa-source checkout --detach "$LAMPA_SHA"
+          cd /tmp/lampa-source
+          npm install --no-audit --no-fund
+          cp "${GITHUB_WORKSPACE}/runtime/lampa-headless-entry.js" ./luno-headless-entry.js
+          npx rollup "./luno-headless-entry.js" --format iife --file "${GITHUB_WORKSPACE}/public/js/luno-lampa-runtime.js" --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs
+          test -s "${GITHUB_WORKSPACE}/public/js/luno-lampa-runtime.js"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ./public
       - id: deployment
         uses: actions/deploy-pages@v4
