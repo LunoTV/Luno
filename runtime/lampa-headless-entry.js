@@ -103,12 +103,17 @@ const LampaTMDBSource = Api.sources.tmdb
 TMDB.request = function(method, params={}) {
     return callbackPromise((ok, fail)=>{
         let settled = false
-        const done = data => {
+        let timer = null
+
+        const finish = (fn, value) => {
             if (settled) return
             settled = true
-            ok(data)
+            if (timer) clearTimeout(timer)
+            fn(value)
         }
-        const failed = error => {
+        const done = data => finish(ok, data)
+
+        const startFetchFallback = (reason) => {
             if (settled) return
             const query = new URLSearchParams()
             query.set('api_key', TMDB.key())
@@ -117,9 +122,8 @@ TMDB.request = function(method, params={}) {
                 if (params[key] !== undefined && params[key] !== null && params[key] !== '') query.set(key, params[key])
             })
 
-            // First use Lampa's real source. If its Request/jQuery boundary fails,
-            // retry the exact same Lampa TMDB endpoint with browser fetch. This
-            // keeps the API/image routing owned by Lampa (including CUB proxy).
+            // Keep the exact Lampa TMDB URL. If the headless Request layer is
+            // slow or unavailable, browser fetch takes over after a short guard.
             const url = TMDB.api(method + '?' + query.toString())
             fetch(url, {credentials:'omit'})
                 .then(async response => {
@@ -129,13 +133,20 @@ TMDB.request = function(method, params={}) {
                     if (!data) throw new Error('TMDB empty response')
                     done(data)
                 })
-                .catch(fetchError => fail(fetchError || error || new Error('Lampa TMDB request failed')))
+                .catch(fetchError => finish(fail, fetchError || reason || new Error('Lampa TMDB request failed')))
         }
+
+        const failed = error => startFetchFallback(error)
+
+        // Lampa normally has a 10s network timeout. Do not wait that long in
+        // LUNO: if the source transport stalls, use the same Lampa endpoint
+        // through browser fetch after 6s instead of leaving the catalog blank.
+        timer = setTimeout(() => startFetchFallback(new Error('Lampa TMDB request timeout')), 6000)
 
         try {
             LampaTMDBSource.get(method, params, done, failed, {life:0})
         } catch (error) {
-            failed(error)
+            startFetchFallback(error)
         }
     })
 }
