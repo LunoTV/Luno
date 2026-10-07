@@ -9,12 +9,12 @@
   const applyMotion = () => root.querySelector('.luno-app')?.classList.toggle('motion-off', localStorage.getItem(motionKey)==='off');
 
   const fallbackCatalog = [
-    {id:'movie-1',type:'movie',title:'Дюна: Часть вторая',year:'2024',rating:8.7,tag:'Фильм',description:'Пол Атрейдес объединяется с Чани и фременами, вступая на путь войны против заговорщиков.'},
-    {id:'movie-2',type:'movie',title:'Оппенгеймер',year:'2023',rating:8.6,tag:'Фильм',description:'История физика, который возглавил проект по созданию первой атомной бомбы.'},
-    {id:'movie-3',type:'movie',title:'Интерстеллар',year:'2014',rating:8.7,tag:'Фильм',description:'Команда исследователей отправляется через червоточину в поисках нового дома для человечества.'},
-    {id:'movie-4',type:'movie',title:'Бегущий по лезвию 2049',year:'2017',rating:8.0,tag:'Фильм',description:'Офицер Кей раскрывает тайну, способную изменить отношения людей и репликантов.'},
-    {id:'movie-5',type:'movie',title:'Начало',year:'2010',rating:8.8,tag:'Фильм',description:'Профессионал проникает в сны людей, но получает почти невозможное задание.'},
-    {id:'movie-6',type:'movie',title:'Грань будущего',year:'2014',rating:7.9,tag:'Фильм',description:'Военный снова и снова переживает один и тот же день, пытаясь изменить исход битвы.'},
+    {id:'movie-1',type:'movie',title:'Дюна: Часть вторая',year:'2024',rating:8.7,tag:'Фильм',poster_path:'/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg',description:'Пол Атрейдес объединяется с Чани и фременами, вступая на путь войны против заговорщиков.'},
+    {id:'movie-2',type:'movie',title:'Оппенгеймер',year:'2023',rating:8.6,tag:'Фильм',poster_path:'/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',description:'История физика, который возглавил проект по созданию первой атомной бомбы.'},
+    {id:'movie-3',type:'movie',title:'Интерстеллар',year:'2014',rating:8.7,tag:'Фильм',poster_path:'/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',description:'Команда исследователей отправляется через червоточину в поисках нового дома для человечества.'},
+    {id:'movie-4',type:'movie',title:'Бегущий по лезвию 2049',year:'2017',rating:8.0,tag:'Фильм',poster_path:'/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg',description:'Офицер Кей раскрывает тайну, способную изменить отношения людей и репликантов.'},
+    {id:'movie-5',type:'movie',title:'Начало',year:'2010',rating:8.8,tag:'Фильм',poster_path:'/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg',description:'Профессионал проникает в сны людей, но получает почти невозможное задание.'},
+    {id:'movie-6',type:'movie',title:'Грань будущего',year:'2014',rating:7.9,tag:'Фильм',poster_path:'/hPuzAqfUlcK3W8e1pYxVh4KfF5.jpg',description:'Военный снова и снова переживает один и тот же день, пытаясь изменить исход битвы.'},
     {id:'series-1',type:'series',title:'Разделение',year:'2022',rating:8.7,tag:'Сериал',description:'Сотрудники корпорации проходят процедуру, разделяющую рабочие и личные воспоминания.'},
     {id:'series-2',type:'series',title:'Дом дракона',year:'2022',rating:8.3,tag:'Сериал',description:'История дома Таргариенов и борьбы за Железный трон.'},
     {id:'series-3',type:'series',title:'Андор',year:'2022',rating:8.4,tag:'Сериал',description:'Шпионский триллер о зарождении восстания против Империи.'},
@@ -250,9 +250,11 @@
 
   const card = item => {
     const title=uiTitle(item);
+    if(!title) return '';
     const candidates=posterCandidates(item);
-    if(!title || !candidates.length) return '';
-    const media = '<img class="poster__image" data-poster-candidates="'+esc(JSON.stringify(candidates))+'" alt="" loading="lazy" decoding="async">';
+    const media = candidates.length
+      ? '<img class="poster__image" data-poster-candidates="'+esc(JSON.stringify(candidates))+'" alt="" loading="lazy" decoding="async">'
+      : '<span class="poster__fallback">'+esc(title.slice(0,1))+'</span>';
     return '<button class="media-card" data-id="'+esc(item.id)+'" data-route="details:'+esc(item.type)+':'+esc(item.id)+'" tabindex="0">'+
       '<span class="poster poster--'+esc(item.type)+'">'+media+
       '<span class="poster__glow"></span><span class="poster__tag">'+esc(item.tag)+'</span>'+
