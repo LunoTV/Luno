@@ -53,3 +53,9 @@ button,input{font:inherit}
   .card-title{font-size:12px;padding:8px 8px 2px}
   .card-meta{font-size:10px;padding:0 8px 9px}
 }
+
+.search-results{margin-top:18px;max-height:60vh;overflow:auto}
+.search-results-title{font-size:15px;font-weight:700;margin-bottom:12px}
+.search-results-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.search-empty{padding:18px 0;color:#9b9ca5}
+@media (max-width:700px){.search-results-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}}
