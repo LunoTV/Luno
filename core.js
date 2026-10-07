@@ -1,6 +1,4 @@
 import Bridge from "@stremio/stremio-core-web/bridge";
-import CoreWorker from "@stremio/stremio-core-web/worker.js?worker";
-
 let transport = null;
 let worker = null;
 let bridge = null;
@@ -9,7 +7,7 @@ let initialized = false;
 function ensureTransport() {
   if (transport) return transport;
 
-  worker = new CoreWorker();
+  worker = new Worker(new URL("./core-worker.js", document.baseURI), { type: "classic" });
   bridge = new Bridge(window, worker);
 
   const stateListeners = new Set();
