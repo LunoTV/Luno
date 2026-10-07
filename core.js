@@ -1,35 +1,11 @@
 import Bridge from "@stremio/stremio-core-web/bridge";
+
 let transport = null;
 let worker = null;
 let bridge = null;
 let initialized = false;
+
 const CINEMETA_URL = "https://v3-cinemeta.strem.io/manifest.json";
-
-async function installDefaultCatalogAddon(core) {
-  const installed = await core.getState("installed_addons");
-  const existing = installed?.catalog || installed?.addons || [];
-  const alreadyInstalled = existing.some?.((item) =>
-    item?.manifest?.id === "com.linvo.cinemeta" || item?.id === "com.linvo.cinemeta"
-  );
-  if (alreadyInstalled) return;
-
-  const response = await fetch(CINEMETA_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Cinemeta manifest HTTP ${response.status}`);
-  const manifest = await response.json();
-
-  await core.dispatch({
-    action: "Ctx",
-    args: {
-      action: "InstallAddon",
-      args: {
-        manifest,
-        transportUrl: CINEMETA_URL,
-        flags: { official: true, protected: true }
-      }
-    }
-  });
-}
-
 
 function ensureTransport() {
   if (transport) return transport;
@@ -78,10 +54,32 @@ function ensureTransport() {
   return transport;
 }
 
+async function installDefaultCatalogAddon(core) {
+  const response = await fetch(CINEMETA_URL, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Cinemeta manifest HTTP ${response.status}`);
+  const manifest = await response.json();
+
+  await core.dispatch({
+    action: "Ctx",
+    args: {
+      action: "InstallAddon",
+      args: {
+        manifest,
+        transportUrl: CINEMETA_URL,
+        flags: { official: true, protected: true }
+      }
+    }
+  });
+}
+
 export async function initLunoCore() {
   if (initialized) return transport;
 
   const core = ensureTransport();
+
+  core.on("error", (error) => console.error("LUNO Core error", error));
+  core.on("event", (event) => console.debug("LUNO Core event", event));
+
   await core.init({
     appVersion: "0.3.0",
     shellVersion: null
@@ -91,9 +89,14 @@ export async function initLunoCore() {
   window.__LUNO_CORE__ = core;
   window.dispatchEvent(new CustomEvent("luno-core-ready", { detail: { core } }));
 
-  // Keep LUNO self-contained: install the official metadata catalog locally,
-  // then let Core build its catalog models from that addon.
-  await installDefaultCatalogAddon(core);
+  try {
+    await installDefaultCatalogAddon(core);
+  } catch (error) {
+    console.warn("LUNO Cinemeta install warning", error);
+  }
+
+  // Give Core a moment to persist the addon before asking it to build the board.
+  await new Promise((resolve) => setTimeout(resolve, 350));
 
   return core;
 }
@@ -118,7 +121,9 @@ export async function loadLunoModel(model, modelName, extra = []) {
 }
 
 export async function loadBoard() {
-  return loadLunoModel("CatalogsWithExtra", "board", []);
+  const state = await loadLunoModel("CatalogsWithExtra", "board", []);
+  const rangeState = await loadBoardRange(0, 12);
+  return rangeState || state;
 }
 
 export async function loadBoardRange(start, end) {
@@ -126,7 +131,7 @@ export async function loadBoardRange(start, end) {
   if (!core) throw new Error("LUNO Core is not initialized");
 
   const from = Math.max(0, Number(start) || 0);
-  const to = Math.max(from, Number(end) || from);
+  const to = Math.max(from + 1, Number(end) || from + 1);
 
   await core.dispatch({
     action: "CatalogsWithExtra",
@@ -143,7 +148,9 @@ export async function searchLuno(query) {
   const value = String(query || "").trim();
   if (!value) return null;
 
-  return loadLunoModel("CatalogsWithExtra", "search", [["search", value]]);
+  const state = await loadLunoModel("CatalogsWithExtra", "search", [["search", value]]);
+  await loadBoardRange(0, 12);
+  return state;
 }
 
 export async function getLunoModel(modelName) {
@@ -155,6 +162,7 @@ export async function getLunoModel(modelName) {
 export function onLunoState(listener) {
   const core = getLunoTransport();
   if (!core) return () => {};
+
   const handler = (models) => listener(models);
   core.on("state", handler);
   return () => core.off("state", handler);
