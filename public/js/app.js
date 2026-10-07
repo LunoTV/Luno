@@ -516,35 +516,45 @@
       const itemId = item?.dataset.id || '';
       const sourcePath = itemId ? byId(itemId)?.poster_path || '' : '';
       let index = -1;
-      let attempts = 0;
+      let mirrorAttempts = 0;
       const runtime = tmdbRuntime();
-      const retryLampaMirror = failedUrl => {
-        if (runtime?.tmdb?.broken && failedUrl) {
-          try { runtime.tmdb.broken(failedUrl); } catch (_) {}
-        }
-        if (sourcePath && runtime?.image && attempts < 8) {
-          attempts += 1;
+
+      const tryMirror = failedUrl => {
+        if (!sourcePath || !runtime?.image || mirrorAttempts >= 2) return false;
+        mirrorAttempts += 1;
+        try {
+          if (runtime.tmdb?.broken && failedUrl) runtime.tmdb.broken(failedUrl);
+        } catch (_) {}
+        try {
           const refreshed = runtime.image(sourcePath, 'w500');
-          if (refreshed && refreshed !== failedUrl) {
-            img.src = refreshed;
+          if (refreshed && refreshed !== failedUrl && !candidates.includes(refreshed)) {
+            candidates.push(refreshed);
+            index = candidates.length - 2;
             return true;
           }
-        }
+        } catch (_) {}
         return false;
       };
+
       const next = () => {
         index += 1;
-        if (index >= candidates.length) {
-          const failedUrl = img.src || '';
-          if (retryLampaMirror(failedUrl)) return;
-          // Keep the Lampa-style broken image state instead of deleting the card.
-          img.removeAttribute('src');
-          img.style.display = 'none';
+        if (index < candidates.length) {
+          img.src = candidates[index];
           return;
         }
-        img.src = candidates[index];
+        const failedUrl = img.src || '';
+        if (tryMirror(failedUrl)) {
+          index += 1;
+          img.src = candidates[index];
+          return;
+        }
+        img.removeAttribute('src');
+        img.style.display = 'none';
       };
-      img.addEventListener('load', () => { img.style.display='block'; }, {passive:true});
+
+      img.addEventListener('load', () => {
+        img.style.display = 'block';
+      }, {passive:true});
       img.addEventListener('error', () => next(), {passive:true});
       next();
     });
