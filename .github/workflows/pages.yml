@@ -19,6 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build pinned Lampa headless runtime
+        env:
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
         run: |
           LAMPA_SHA="b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d"
           git clone https://github.com/yumata/lampa-source.git /tmp/lampa-source
