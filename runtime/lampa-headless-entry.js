@@ -6,8 +6,8 @@ import Subscribe from './src/utils/subscribe'
 import Utils from './src/utils/utils'
 import Arrays from './src/utils/arrays'
 import Manifest from './src/core/manifest'
-import Account from './src/core/account/account'
-import Settings from './src/interaction/settings/settings'
+import Reguest from './src/utils/reguest'
+import Lang from './src/core/lang'
 import videocdn from './plugins/online/videocdn'
 
 if (typeof window.lampa_settings === 'undefined') window.lampa_settings = {}
@@ -20,7 +20,7 @@ Object.assign(window.lampa_settings, {
 
 if (!window.Lampa) window.Lampa = {}
 if (!window.Lampa.Listener) window.Lampa.Listener = Subscribe()
-Object.assign(window.Lampa,{TMDB,Storage,Utils,Arrays,Manifest,Account,Settings})
+Object.assign(window.Lampa,{TMDB,Storage,Utils,Arrays,Manifest,Reguest,Lang})
 Params.init()
 
 const promise = invoke => new Promise((resolve,reject)=>{
@@ -69,6 +69,7 @@ const bridgeComponent = {
   loading(){}, reset(){}, saveChoice(){},
   filter(){}, start(){}, contextmenu(){}, empty(){},
   emptyForQuery(){}, render(){return noopNode},
+  getLastEpisode(){return 0},
   append(item){ if(item && typeof item.trigger==='function') item.trigger('hover:enter') }
 }
 
