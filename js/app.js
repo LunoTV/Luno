@@ -1,50 +1,17 @@
-(() => {
-  "use strict";
-  const API="https://api.themoviedb.org/3";
-  const IMG="https://image.tmdb.org/t/p/w500";
-  const KEY="4ef0d7355d9ffb5151e987764708ce96";
-  const app=document.getElementById("app");
-
-  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const title=x=>x.title||x.name||"Без названия";
-  const year=x=>(x.release_date||x.first_air_date||"").slice(0,4);
-  const poster=x=>x.poster_path?IMG+x.poster_path:"";
-
-  function card(x){
-    const p=poster(x);
-    return '<button class="card" data-id="'+esc(x.id)+'" data-type="'+esc(x.media_type||"movie")+'">'+
-      '<div class="poster">'+(p?'<img loading="lazy" src="'+esc(p)+'" alt="">':'<span class="placeholder">'+esc(title(x).slice(0,1))+'</span>')+'</div>'+
-      '<div class="meta"><div class="title">'+esc(title(x))+'</div><div class="sub">'+esc(year(x))+(x.vote_average?' · ★ '+Number(x.vote_average).toFixed(1):"")+'</div></div></button>';
-  }
-
-  async function tmdb(path){
-    const url=new URL(API+path);
-    url.searchParams.set("api_key",KEY);
-    url.searchParams.set("language","ru-RU");
-    const r=await fetch(url,{headers:{accept:"application/json"}});
-    if(!r.ok)throw new Error("TMDB "+r.status);
-    return r.json();
-  }
-
-  async function load(){
-    app.innerHTML='<div class="shell"><header class="top"><div class="logo">LUNO</div><button aria-label="Поиск">⌕</button></header><main><section class="section"><div class="state">Загружаем каталог…</div></section></main></div>';
-    const sections=[
-      ["В тренде","Популярное прямо сейчас","/trending/all/week"],
-      ["Новинки","Свежие релизы","/movie/now_playing"],
-      ["Лучшие фильмы","Высокие оценки","/movie/top_rated"]
-    ];
-    try{
-      const data=await Promise.all(sections.map(s=>tmdb(s[2])));
-      app.querySelector("main").innerHTML=data.map((d,i)=>{
-        const items=(d.results||[]).filter(x=>x.poster_path||title(x)).slice(0,20);
-        return '<section class="section"><div class="section-head"><span class="eyebrow">LUNO</span><h2>'+sections[i][0]+'</h2><p>'+sections[i][1]+'</p></div><div class="row">'+items.map(card).join("")+'</div></section>';
-      }).join("");
-      app.querySelectorAll(".card").forEach(b=>b.addEventListener("click",()=>console.log("LUNO card",b.dataset.id,b.dataset.type)));
-    }catch(e){
-      console.error(e);
-      app.querySelector("main").innerHTML='<div class="state">Каталог временно недоступен.</div>';
-    }
-  }
-
-  load();
+(()=>{"use strict";
+const app=document.getElementById("app"),R=()=>window.LunoLampaRuntime;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const title=x=>x?.title||x?.name||"Без названия",year=x=>(x?.release_date||x?.first_air_date||"").slice(0,4);
+const image=x=>{try{return R()?.image(x?.poster_path,"w500")||""}catch(_){return""}};
+const media=x=>x?.media_type||x?.type||(x?.first_air_date?"tv":"movie");
+const card=x=>'<button class="card" data-id="'+esc(x.id)+'" data-type="'+esc(media(x))+'"><div class="poster">'+(image(x)?'<img loading="lazy" src="'+esc(image(x))+'" alt="">':'<span class="placeholder">'+esc(title(x).slice(0,1))+'</span>')+'</div><div class="meta"><div class="title">'+esc(title(x))+'</div><div class="sub">'+esc(year(x))+(x.vote_average?' · ★ '+Number(x.vote_average).toFixed(1):"")+'</div></div></button>';
+const shell=body=>'<div class="shell"><header class="top"><div class="logo">LUNO</div><button id="searchBtn" aria-label="Поиск">⌕</button></header><main>'+body+'</main><nav class="nav"><span class="active" data-nav="home"><b>⌂</b>Главная</span><span data-nav="catalog"><b>▦</b>Каталог</span><span data-nav="movies"><b>□</b>Фильмы</span><span data-nav="series"><b>≋</b>Сериалы</span><span data-nav="history"><b>◷</b>История</span></nav></div>';
+const wait=()=>'<div class="state">Lampa Runtime загружает каталог…</div>';
+function groups(data){const out=[];if(Array.isArray(data))data.forEach((g,i)=>{const a=g?.results||g?.items||g?.collection||g;if(Array.isArray(a)&&a.length)out.push({name:g?.title||g?.name||["Сейчас в тренде","Новинки","Популярное","Лучшее"][i]||"LUNO",items:a})});else if(data&&typeof data==="object")Object.entries(data).forEach(([k,v])=>{const a=v?.results||v?.items||v;if(Array.isArray(a)&&a.length)out.push({name:k,items:a})});return out}
+async function home(){app.innerHTML=shell(wait());const r=R();if(!r)throw Error("Lampa runtime not ready");let gs=groups(await r.main({}));if(!gs.length){const q=[["trending/movie/week","Сейчас в тренде"],["movie/now_playing","Новинки"],["movie/popular","Популярное"],["movie/top_rated","Лучшее"]];for(const [m,n] of q){try{const d=await r.get(m);if(d?.results?.length)gs.push({name:n,items:d.results})}catch(e){console.warn(e)}}}if(!gs.length)throw Error("Lampa catalog empty");app.querySelector("main").innerHTML=gs.slice(0,7).map(g=>'<section class="section"><div class="section-head"><span class="eyebrow">LUNO · LAMPA</span><h2>'+esc(g.name)+'</h2><p>Каталог Lampa Runtime</p></div><div class="row">'+g.items.slice(0,24).map(card).join("")+'</div></section>').join("");bind()}
+async function catalog(kind="movie"){app.innerHTML=shell(wait());const r=R();const p=kind==="tv"?{type:"tv"}:{};const d=await r.category(p);const items=d?.results||d?.items||d?.collection||[];app.querySelector("main").innerHTML='<section class="section"><div class="section-head"><span class="eyebrow">LUNO · LAMPA</span><h2>'+esc(kind==="tv"?"Сериалы":"Фильмы")+'</h2></div><div class="row">'+(Array.isArray(items)?items:[]).map(card).join("")+'</div></section>';bind()}
+async function search(){app.innerHTML=shell('<div class="search"><input id="q" autofocus placeholder="Поиск фильмов и сериалов"></div><section class="section"><div id="results" class="row"></div></section>');const q=app.querySelector("#q");q.addEventListener("input",async()=>{if(q.value.trim().length<2)return;try{const d=await R().search(q.value.trim(),{});const items=d?.results||d?.items||d?.collection||[];app.querySelector("#results").innerHTML=(Array.isArray(items)?items:[]).map(card).join("");bind()}catch(e){console.warn(e)}})}
+async function detail(id,type){app.innerHTML=shell('<div class="state">Открываем…</div>');const d=await R().full({id,type});const x=d?.movie||d?.tv||d?.data||d;const p=image(x);app.querySelector("main").innerHTML='<div class="detail"><button id="back">← Назад</button><div class="detail-grid"><div>'+(p?'<img src="'+esc(p)+'" alt="">':'')+'</div><div><div class="eyebrow">LUNO · LAMPA</div><h1>'+esc(title(x))+'</h1><p>'+esc(x?.overview||"")+'</p><p>'+esc(year(x))+(x?.vote_average?' · ★ '+Number(x.vote_average).toFixed(1):"")+'</p></div></div></div>';app.querySelector("#back").onclick=home}
+function bind(){app.querySelectorAll(".card").forEach(b=>b.onclick=()=>detail(b.dataset.id,b.dataset.type));const s=app.querySelector("#searchBtn");if(s)s.onclick=search;app.querySelectorAll("[data-nav]").forEach(n=>n.onclick=()=>{const v=n.dataset.nav;if(v==="home")home();else if(v==="movies")catalog("movie");else if(v==="series")catalog("tv");else if(v==="catalog")home();else if(v==="history")home()})}
+home().catch(e=>{console.error("[LUNO]",e);app.innerHTML=shell('<div class="state">Lampa Runtime не вернул каталог.<br><small>'+esc(e.message)+'</small></div>');bind()});
 })();
