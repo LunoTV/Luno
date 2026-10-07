@@ -96,9 +96,13 @@ const callbackPromise = (invoke) => new Promise((resolve,reject) => {
     try { invoke(ok,fail) } catch(error) { fail(error) }
 })
 
+// Lampa keeps HTTP helpers (api/image/key) in core/tmdb/tmdb,
+// but catalog requests (get/search/main/category) live in core/api/sources/tmdb.
+// Use the real Lampa TMDB source here; calling TMDB.get would be undefined.
+const LampaTMDBSource = Api.sources.tmdb
 TMDB.request = function(method, params={}) {
     return callbackPromise((ok, fail)=>{
-        TMDB.get(method, params, ok, fail, {life:0})
+        LampaTMDBSource.get(method, params, ok, fail, {life:0})
     })
 }
 
@@ -107,6 +111,7 @@ const runtime = {
     storage: Storage,
     params: Params,
     tmdb: TMDB,
+    tmdbSource: LampaTMDBSource,
     api: Api,
     main(params={}) { return callbackPromise((ok,fail)=>Api.main(params,ok,fail)) },
     category(params={}) { return callbackPromise((ok,fail)=>Api.category(params,ok,fail)) },
