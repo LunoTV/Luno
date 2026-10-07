@@ -5,6 +5,8 @@ const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
 
+const CINEMETA_BASE="https://v3-cinemeta.strem.io";
+
 function escapeHtml(value=""){
   return String(value).replace(/[&<>"']/g,(char)=>({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
@@ -12,9 +14,21 @@ function escapeHtml(value=""){
 }
 
 function metaLine(item){
-  const year=item?.releaseInfo?.match?.(/\d{4}/)?.[0] || item?.released?.slice?.(0,4) || "";
+  const year=String(item?.releaseInfo || item?.released || "").match(/\d{4}/)?.[0] || "";
   const type=item?.type==="series" ? "Сериал" : item?.type==="movie" ? "Фильм" : item?.type || "";
   return [year,type].filter(Boolean).join(" • ");
+}
+
+function normalizeItem(item,type){
+  return {
+    ...item,
+    id:item?.id || item?.imdb_id || item?.imdbId || "",
+    type:item?.type || type,
+    name:item?.name || "Без названия",
+    poster:item?.poster || "",
+    background:item?.background || "",
+    releaseInfo:item?.releaseInfo || item?.released || ""
+  };
 }
 
 function card(item){
@@ -34,12 +48,6 @@ function bindCards(){
   });
 }
 
-function setCardsLoading(){
-  const skeleton=Array.from({length:6},()=>'<div class="card card-loading"><div class="card-art"></div><div class="card-title">Загрузка…</div><div class="card-meta">LUNO Core</div></div>').join("");
-  continueCards.innerHTML=skeleton;
-  popularCards.innerHTML=skeleton;
-}
-
 function extractItems(state){
   const catalogs=Array.isArray(state?.catalogs) ? state.catalogs : [];
   return catalogs.flatMap((catalog)=>{
@@ -49,11 +57,10 @@ function extractItems(state){
   });
 }
 
-function renderRealCatalog(state){
-  const items=extractItems(state);
-  if(!items.length) return false;
+function renderItems(items){
+  const unique=[...new Map(items.filter((x)=>x?.id).map((item)=>[item.id,item])).values()];
+  if(!unique.length) return false;
 
-  const unique=[...new Map(items.map((item)=>[item.id,item])).values()];
   const movies=unique.filter((item)=>item.type==="movie");
   const series=unique.filter((item)=>item.type==="series");
 
@@ -61,13 +68,52 @@ function renderRealCatalog(state){
   popularCards.innerHTML=(series.length ? series : unique).slice(0,6).map(card).join("");
   bindCards();
 
-  document.querySelector(".hero .eyebrow").textContent="LUNO • CORE ONLINE";
+  document.querySelector(".hero .eyebrow").textContent="LUNO • КАТАЛОГ ONLINE";
   return true;
+}
+
+function renderCoreCatalog(state){
+  return renderItems(extractItems(state));
+}
+
+async function fetchCinemetaCatalog(type,extra=""){
+  const suffix=extra ? `/${extra}` : "";
+  const response=await fetch(`${CINEMETA_BASE}/catalog/${type}/top${suffix}.json`,{
+    cache:"no-store",
+    headers:{accept:"application/json"}
+  });
+  if(!response.ok) throw new Error(`Cinemeta ${type}: HTTP ${response.status}`);
+  const data=await response.json();
+  return Array.isArray(data?.metas)
+    ? data.metas.map((item)=>normalizeItem(item,type))
+    : [];
+}
+
+async function loadDirectCatalog(){
+  const [movies,series]=await Promise.all([
+    fetchCinemetaCatalog("movie"),
+    fetchCinemetaCatalog("series")
+  ]);
+  return [...movies,...series];
+}
+
+async function loadDirectSearch(query){
+  const extra=`search=${encodeURIComponent(query)}`;
+  const [movies,series]=await Promise.all([
+    fetchCinemetaCatalog("movie",extra),
+    fetchCinemetaCatalog("series",extra)
+  ]);
+  return [...movies,...series];
 }
 
 function showCoreStatus(message){
   const eyebrow=document.querySelector(".hero .eyebrow");
   if(eyebrow) eyebrow.textContent=message;
+}
+
+function showCatalogMessage(message){
+  continueCards.innerHTML=`<div class="catalog-message">${escapeHtml(message)}</div>`;
+  popularCards.innerHTML="";
 }
 
 function openPlayer(id,type,title){
@@ -85,9 +131,7 @@ function closePlayer(){
   player.classList.add("hidden");
 }
 
-function showSearchResults(state,query){
-  const items=extractItems(state);
-  const results=items.slice(0,24);
+function showSearchResults(items,query){
   let resultBox=document.querySelector("#searchResults");
 
   if(!resultBox){
@@ -97,8 +141,8 @@ function showSearchResults(state,query){
     searchBox.appendChild(resultBox);
   }
 
-  resultBox.innerHTML=results.length
-    ? `<div class="search-results-title">Результаты для «${escapeHtml(query)}»</div><div class="search-results-grid">${results.map(card).join("")}</div>`
+  resultBox.innerHTML=items.length
+    ? `<div class="search-results-title">Результаты для «${escapeHtml(query)}»</div><div class="search-results-grid">${items.slice(0,24).map(card).join("")}</div>`
     : `<div class="search-empty">Ничего не найдено</div>`;
 
   bindCards();
@@ -125,14 +169,13 @@ searchInput.addEventListener("input",()=>{
 
   searchTimer=setTimeout(async()=>{
     try{
-      const { searchLuno }=await import("./core.js");
-      const state=await searchLuno(query);
-      showSearchResults(state,query);
+      const items=await loadDirectSearch(query);
+      showSearchResults(items,query);
     }catch(error){
       console.error("LUNO search failed",error);
       showCoreStatus("LUNO • ПОИСК НЕДОСТУПЕН");
     }
-  },350);
+  },300);
 });
 
 searchInput.addEventListener("keydown",(e)=>{
@@ -151,42 +194,49 @@ document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("clic
   btn.classList.add("active");
 }));
 
-setCardsLoading();
+showCatalogMessage("Загружаем каталог LUNO…");
 
 (async()=>{
+  let coreReady=false;
+
   try{
-    const { initLunoCore, loadBoard, onLunoState, getLunoModel }=await import("./core.js");
+    const {initLunoCore,loadBoard,onLunoState,getLunoModel}=await import("./core.js");
 
     await initLunoCore();
+    coreReady=true;
 
-    // Subscribe before loading so asynchronous Core state changes cannot be missed.
     onLunoState(async(models)=>{
       try{
         if(models.includes("board")){
           const board=await getLunoModel("board");
-          if(renderRealCatalog(board)) return;
-        }
-        if(models.includes("search") && searchInput.value.trim()){
-          showSearchResults(await getLunoModel("search"),searchInput.value.trim());
+          renderCoreCatalog(board);
         }
       }catch(error){
-        console.error("LUNO state render failed",error);
+        console.error("LUNO Core state render failed",error);
       }
     });
 
     const state=await loadBoard();
-    if(!renderRealCatalog(state)){
-      document.querySelector(".hero .eyebrow").textContent="LUNO • ЗАГРУЗКА КАТАЛОГА";
-      setTimeout(async()=>{
-        const latest=await getLunoModel("board");
-        if(!renderRealCatalog(latest)){
-          document.querySelector(".hero .eyebrow").textContent="LUNO • КАТАЛОГ НЕ ЗАГРУЖЕН";
-        }
-      },1200);
+    if(renderCoreCatalog(state)){
+      console.info("LUNO catalog loaded through Core");
+      return;
     }
-    console.info("LUNO Core connected");
   }catch(error){
-    console.error("LUNO Core/catalog initialization failed",error);
-    showCoreStatus("LUNO • CORE ERROR");
+    console.warn("LUNO Core catalog unavailable, using direct catalog fallback",error);
+  }
+
+  try{
+    const items=await loadDirectCatalog();
+    if(renderItems(items)){
+      showCoreStatus(coreReady ? "LUNO • КАТАЛОГ ONLINE" : "LUNO • ONLINE");
+      console.info("LUNO direct Cinemeta catalog loaded",items.length);
+    }else{
+      showCoreStatus("LUNO • КАТАЛОГ ПУСТ");
+      showCatalogMessage("Каталог пока недоступен.");
+    }
+  }catch(error){
+    console.error("LUNO catalog fallback failed",error);
+    showCoreStatus("LUNO • ОШИБКА КАТАЛОГА");
+    showCatalogMessage("Не удалось загрузить каталог. Попробуйте обновить страницу.");
   }
 })();
