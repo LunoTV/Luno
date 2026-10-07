@@ -5,7 +5,7 @@ const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
 
-const CINEMETA_BASE="https://v3-cinemeta.strem.io";
+const CINEMETA_BASE="https://cinemeta-catalogs.strem.io/top";
 
 function escapeHtml(value=""){
   return String(value).replace(/[&<>"']/g,(char)=>({
