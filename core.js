@@ -3,6 +3,33 @@ let transport = null;
 let worker = null;
 let bridge = null;
 let initialized = false;
+const CINEMETA_URL = "https://v3-cinemeta.strem.io/manifest.json";
+
+async function installDefaultCatalogAddon(core) {
+  const installed = await core.getState("installed_addons");
+  const existing = installed?.catalog || installed?.addons || [];
+  const alreadyInstalled = existing.some?.((item) =>
+    item?.manifest?.id === "com.linvo.cinemeta" || item?.id === "com.linvo.cinemeta"
+  );
+  if (alreadyInstalled) return;
+
+  const response = await fetch(CINEMETA_URL, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Cinemeta manifest HTTP ${response.status}`);
+  const manifest = await response.json();
+
+  await core.dispatch({
+    action: "Ctx",
+    args: {
+      action: "InstallAddon",
+      args: {
+        manifest,
+        transportUrl: CINEMETA_URL,
+        flags: { official: true, protected: true }
+      }
+    }
+  });
+}
+
 
 function ensureTransport() {
   if (transport) return transport;
@@ -64,11 +91,9 @@ export async function initLunoCore() {
   window.__LUNO_CORE__ = core;
   window.dispatchEvent(new CustomEvent("luno-core-ready", { detail: { core } }));
 
-  // Same addon synchronization entry point used by the official Stremio Web UI.
-  await core.dispatch({
-    action: "Ctx",
-    args: { action: "PullAddonsFromAPI" }
-  });
+  // Keep LUNO self-contained: install the official metadata catalog locally,
+  // then let Core build its catalog models from that addon.
+  await installDefaultCatalogAddon(core);
 
   return core;
 }
