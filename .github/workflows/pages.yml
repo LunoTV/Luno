@@ -34,6 +34,29 @@ jobs:
           s = p.read_text()
           s = s.replace("import Params from '../../interaction/settings/params'", "import Params from './headless-params'")
           p.write_text(s)
+
+          p = Path("src/core/tmdb/tmdb.js")
+          s = p.read_text()
+          old_key = "return '4ef0d7355d9ffb5151e987764708ce96'"
+          if old_key not in s:
+              raise SystemExit("Lampa TMDB key function changed; refusing unsafe patch")
+          p.write_text(s.replace(old_key, "return ''"))
+
+          p = Path("src/utils/reguest.js")
+          s = p.read_text()
+          token = __import__('os').environ["TMDB_API_TOKEN"].replace("\\", "\\\\").replace("'", "\\'")
+          needle = "        let data = {"
+          inject = "        if(params.url.indexOf('api.themoviedb.org/3/') >= 0){ params.headers = Object.assign({}, params.headers || {}, { Authorization: 'Bearer " + token + "' }) }\\n\\n        let data = {"
+          if needle not in s:
+              raise SystemExit("Lampa request module changed; refusing unsafe patch")
+          p.write_text(s.replace(needle, inject, 1))
+
+          p = Path("src/interaction/noty.js")
+          p.write_text("""let html = null
+function show(){}
+function render(){return html}
+export default {show,render}
+""")
           PY
           cp "${GITHUB_WORKSPACE}/runtime/lampa-headless-entry.js" ./luno-headless-entry.js
           npx rollup ./luno-headless-entry.js --format iife --file "${GITHUB_WORKSPACE}/luno-lampa-runtime.js" --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs
