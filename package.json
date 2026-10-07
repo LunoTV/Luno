@@ -1,0 +1,7 @@
+{
+  "name":"luno",
+  "version":"0.1.0",
+  "private":true,
+  "scripts":{"build":"mkdir -p dist && cp index.html styles.css app.js msx.json dist/"},
+  "dependencies":{"@stremio/stremio-core-web":"^0.64.1"}
+}
