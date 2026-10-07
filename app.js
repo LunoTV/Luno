@@ -5,7 +5,7 @@ const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
 
-const CINEMETA_BASE="https://cinemeta-catalogs.strem.io/top";
+const CINEMETA_BASE="https://cinemeta-catalogs.strem.io";
 const TMDB_BASE="https://api.themoviedb.org/3";
 const TMDB_IMAGE_BASE="https://image.tmdb.org/t/p";
 const TMDB_API_TOKEN=window.__LUNO_TMDB_API_TOKEN__ || "";
