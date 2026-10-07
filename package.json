@@ -1,9 +1,17 @@
 {
-  "name":"luno",
-  "version":"0.2.0",
-  "private":true,
-  "type":"module",
-  "scripts":{"dev":"vite","build":"vite build"},
-  "dependencies":{"@stremio/stremio-core-web":"0.64.1"},
-  "devDependencies":{"vite":"^7.1.7"}
+  "name": "luno",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@stremio/stremio-core-web": "0.64.1"
+  },
+  "devDependencies": {
+    "vite": "^7.1.7",
+    "vite-plugin-wasm": "^3.5.0"
+  }
 }
