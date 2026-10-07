@@ -1,13 +1,6 @@
 import Api from './src/core/api/api'
 import TMDB from './src/core/tmdb/tmdb'
 import Storage from './src/core/storage/storage'
-import Subscribe from './src/utils/subscribe'
-import Utils from './src/utils/utils'
-import Arrays from './src/utils/arrays'
-import Manifest from './src/core/manifest'
-import Reguest from './src/utils/reguest'
-import Lang from './src/core/lang'
-import videocdn from './plugins/online/videocdn'
 
 if (typeof window.lampa_settings === 'undefined') window.lampa_settings = {}
 Object.assign(window.lampa_settings, {
@@ -18,89 +11,13 @@ Object.assign(window.lampa_settings, {
 })
 
 if (!window.Lampa) window.Lampa = {}
-if (!window.Lampa.Listener) window.Lampa.Listener = Subscribe()
-Object.assign(window.Lampa,{TMDB,Storage,Utils,Arrays,Manifest,Reguest,Lang})
-// Headless mode: do not initialize Lampa settings UI/platform DOM. Params defaults remain available to Storage.field.
-
-const promise = invoke => new Promise((resolve,reject)=>{
-  let done=false
-  const ok=x=>{if(done)return;done=true;resolve(x)}
-  const fail=e=>{if(done)return;done=true;reject(e||new Error('Lampa request failed'))}
-  try{invoke(ok,fail)}catch(e){fail(e)}
-})
-
 const source = Api.sources.tmdb
 if (!source) throw new Error('Lampa TMDB source is unavailable')
 
-const noopNode = {
-  on(){return this}, off(){return this}, unbind(){return this}, append(){return this},
-  addClass(){return this}, removeClass(){return this}, find(){return this},
-  text(){return this}, remove(){return this}, after(){return this},
-  parent(){return this}, eq(){return this}, last(){return this}, first(){return this},
-  length:0
-}
-const fakeItem = () => {
-  const handlers={}
-  return Object.assign({},noopNode,{
-    on(name,fn){if(fn)handlers[name]=fn;return this},
-    trigger(name){if(handlers[name])handlers[name]();return this}
-  })
-}
-
-if(!window.Lampa.Template) window.Lampa.Template={}
-if(!window.Lampa.Template.get) window.Lampa.Template.get=()=>fakeItem()
-if(!window.Lampa.Timeline) window.Lampa.Timeline={
-  view:()=>({percent:0,time:0,duration:0}),
-  render:()=>noopNode,
-  details:()=>noopNode,
-  update:()=>{}
-}
-if(!window.Lampa.Noty) window.Lampa.Noty={show:()=>{}}
-if(!window.Lampa.Lang) window.Lampa.Lang={translate:k=>k}
-if(!window.Lampa.Favorite) window.Lampa.Favorite={add:()=>{}}
-if(!window.Lampa.Player) window.Lampa.Player={}
-let capturedPlayer=null
-window.Lampa.Player.play=(item)=>{capturedPlayer=item}
-window.Lampa.Player.playlist=()=>{}
-
-const bridgeComponent = {
-  proxy(){return ''},
-  loading(){}, reset(){}, saveChoice(){},
-  filter(){}, start(){}, contextmenu(){}, empty(){},
-  emptyForQuery(){}, render(){return noopNode},
-  getLastEpisode(){return 0},
-  append(item){ if(item && typeof item.trigger==='function') item.trigger('hover:enter') }
-}
-
-const sourceClasses = { videocdn }
-
-const resolveSource = (name, movie, searchData) => new Promise((resolve,reject)=>{
-  capturedPlayer=null
-  const Source=sourceClasses[name]
-  if(!Source) return reject(new Error('Lampa source unavailable: '+name))
-  let instance
-  try{
-    instance=new Source(bridgeComponent,{movie})
-    const timeout=setTimeout(()=>reject(new Error('Lampa source timeout: '+name)),30000)
-    const finish=()=>{clearTimeout(timeout);if(capturedPlayer)resolve(capturedPlayer);else reject(new Error('Lampa source returned no stream: '+name))}
-    const originalPlay=window.Lampa.Player.play
-    window.Lampa.Player.play=(item)=>{capturedPlayer=item;finish()}
-    const run = (data) => instance.search({movie}, data || [])
-    if(searchData && searchData.length) run(searchData)
-    else {
-      const network = new Lampa.Reguest()
-      network.timeout(15000)
-      let url = 'http://cdn.svetacdn.in/api/short?api_token=3i40G5TSECmLF77oAqnEgbx61ZWaOYaE'
-      if(movie?.imdb_id) url += '&imdb_id=' + encodeURIComponent(movie.imdb_id)
-      else url += '&title=' + encodeURIComponent(movie?.title || movie?.name || '')
-      network.native(url, json => run(json?.data || []), () => reject(new Error('Lampa source discovery failed: '+name)))
-    }
-    setTimeout(()=>{window.Lampa.Player.play=originalPlay},31000)
-  }catch(e){reject(e)}
-})
+const promise = invoke => new Promise((resolve,reject)=>{let done=false;const ok=x=>{if(done)return;done=true;resolve(x)};const fail=e=>{if(done)return;done=true;reject(e||new Error('Lampa request failed'))};try{invoke(ok,fail)}catch(e){fail(e)}})
 
 const runtime = {
-  version:'lampa-headless-b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d-headless3',
+  version:'lampa-headless-b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d-core1',
   storage:Storage, params:{field:(name)=>Storage.field(name)}, tmdb:TMDB, tmdbSource:source, api:Api,
   main(p={}){return promise((ok,fail)=>Api.main(p,ok,fail))},
   category(p={}){return promise((ok,fail)=>Api.category(p,ok,fail))},
@@ -112,7 +29,7 @@ const runtime = {
   collections(p={}){return promise((ok,fail)=>Api.collections(p,ok,fail))},
   image(path,size='w500'){return source.img(path,size)},
   get(method,p={}){return promise((ok,fail)=>source.get(method,p,ok,fail,{life:0}))},
-  source(name,movie,searchData){return resolveSource(name,movie,searchData)},
+  source(name,movie,searchData){return window.LunoLampaSourceRuntime?.source(name,movie,searchData) || Promise.reject(new Error('Lampa Source runtime not loaded'))},
   clear(){return Api.clear()}
 }
 window.LunoLampaRuntime=runtime
