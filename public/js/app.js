@@ -31,15 +31,36 @@
     return runtime.tmdb.api(path + '?' + query.toString());
   };
   const tmdbImageUrl = (path, size='w500') => {
+    if (!path) return '';
     const runtime = tmdbRuntime();
-    if (!runtime || !path) return '';
-    if (typeof runtime.image === 'function') return runtime.image(path,size) || '';
-    if (runtime.tmdb?.image) return runtime.tmdb.image('t/p/' + size + path);
-    return '';
+    if (runtime) {
+      try {
+        if (typeof runtime.image === 'function') {
+          const url = runtime.image(path,size);
+          if (url) return url;
+        }
+      } catch (error) {
+        console.warn('[LUNO] Lampa image helper failed', error);
+      }
+      try {
+        if (runtime.tmdb?.image) {
+          const url = runtime.tmdb.image('t/p/' + size + path);
+          if (url) return url;
+        }
+      } catch (error) {
+        console.warn('[LUNO] TMDB image helper failed', error);
+      }
+    }
+    // Last-resort image endpoint is the same TMDB CDN Lampa uses when no
+    // image proxy is active. It is never the Worker/player/source path.
+    return 'https://image.tmdb.org/t/p/' + size + path;
   };
   const posterCandidates = item => {
     const list = [];
-    if (item.poster_path) list.push(tmdbImageUrl(item.poster_path,'w500'));
+    if (item.poster_path) {
+      list.push(tmdbImageUrl(item.poster_path,'w500'));
+      list.push('https://image.tmdb.org/t/p/w500' + item.poster_path);
+    }
     if (item.poster_url) list.push(item.poster_url);
     return [...new Set(list.filter(Boolean))];
   };
@@ -203,7 +224,7 @@
       return true;
     });
   };
-  const displayable = items => uniqueItems(items).filter(item => uiTitle(item) && posterCandidates(item).length);
+  const displayable = items => uniqueItems(items).filter(item => uiTitle(item));
 
   const byId = id => catalog.find(item => item.id === String(id));
   const historyKey = 'luno_history_v2';
