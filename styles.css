@@ -81,3 +81,15 @@ button,input{font:inherit}
   .nav-item{font-size:13px}
   .hero{margin-top:10px}
 }
+
+.catalog-message{
+  grid-column:1/-1;
+  min-height:260px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:24px;
+  color:#858791;
+  background:rgba(255,255,255,.018);
+  font-size:16px;
+}
