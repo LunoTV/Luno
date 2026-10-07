@@ -1,5 +1,3 @@
-import { initLunoCore, loadBoard, searchLuno, onLunoState } from "./core.js";
-
 const demoTitles=["Интерстеллар","Дюна","Оппенгеймер","Начало","Марсианин","Гран Туризмо"];
 const demoMetas=["2014 • Фантастика","2021 • Фантастика","2023 • Драма","2010 • Триллер","2015 • Фантастика","2023 • Спорт"];
 
@@ -117,50 +115,25 @@ searchInput.addEventListener("input",()=>{
     return;
   }
   searchTimer=setTimeout(async()=>{
-    try{
-      const state=await searchLuno(query);
-      showSearchResults(state,query);
-    }catch(error){
-      console.error("LUNO search failed",error);
-    }
-  },350);
-});
-searchInput.addEventListener("keydown",(e)=>{
-  if(e.key==="Escape") searchPanel.classList.add("hidden");
-  if(e.key==="Enter") searchPanel.classList.remove("hidden");
-});
-document.addEventListener("keydown",(e)=>{
-  if(e.key==="Escape"){
-    closePlayer();
-    searchPanel.classList.add("hidden");
-  }
-});
-
-document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("click",()=>{
-  document.querySelectorAll(".nav-item").forEach((x)=>x.classList.remove("active"));
-  btn.classList.add("active");
-}));
-
-renderDemo();
-
-(async()=>{
   try{
+    const { initLunoCore, loadBoard, onLunoState, getLunoModel } = await import("./core.js");
     await initLunoCore();
     const state=await loadBoard();
     renderRealCatalog(state);
     onLunoState(async(models)=>{
       if(models.includes("board")){
-        const next=await import("./core.js").then((m)=>m.getLunoModel("board"));
+        const next=await getLunoModel("board");
         renderRealCatalog(next);
       }
       if(models.includes("search") && searchInput.value.trim()){
         const query=searchInput.value.trim();
-        const next=await import("./core.js").then((m)=>m.getLunoModel("search"));
+        const next=await getLunoModel("search");
         showSearchResults(next,query);
       }
     });
     console.info("LUNO Core connected • real catalog model loaded");
   }catch(error){
     console.error("LUNO Core/catalog initialization failed",error);
+    document.querySelector(".hero .eyebrow").textContent="LUNO • OFFLINE MODE";
   }
 })();
