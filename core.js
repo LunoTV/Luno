@@ -70,6 +70,8 @@ async function installDefaultCatalogAddon(core) {
       }
     }
   });
+
+  await new Promise((resolve) => setTimeout(resolve, 350));
 }
 
 export async function initLunoCore() {
