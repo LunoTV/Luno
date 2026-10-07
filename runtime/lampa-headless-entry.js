@@ -21,7 +21,7 @@ Object.assign(window.lampa_settings, {
 if (!window.Lampa) window.Lampa = {}
 if (!window.Lampa.Listener) window.Lampa.Listener = Subscribe()
 Object.assign(window.Lampa,{TMDB,Storage,Utils,Arrays,Manifest,Reguest,Lang})
-Params.init()
+// Headless mode: do not initialize Lampa settings UI/platform DOM. Params defaults remain available to Storage.field.
 
 const promise = invoke => new Promise((resolve,reject)=>{
   let done=false
@@ -101,7 +101,7 @@ const resolveSource = (name, movie, searchData) => new Promise((resolve,reject)=
 })
 
 const runtime = {
-  version:'lampa-headless-b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d',
+  version:'lampa-headless-b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d-headless2',
   storage:Storage, params:Params, tmdb:TMDB, tmdbSource:source, api:Api,
   main(p={}){return promise((ok,fail)=>Api.main(p,ok,fail))},
   category(p={}){return promise((ok,fail)=>Api.category(p,ok,fail))},
