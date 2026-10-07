@@ -1,7 +1,6 @@
 import Api from './src/core/api/api'
 import TMDB from './src/core/tmdb/tmdb'
 import Storage from './src/core/storage/storage'
-import Params from './src/interaction/settings/params'
 import Subscribe from './src/utils/subscribe'
 import Utils from './src/utils/utils'
 import Arrays from './src/utils/arrays'
@@ -101,8 +100,8 @@ const resolveSource = (name, movie, searchData) => new Promise((resolve,reject)=
 })
 
 const runtime = {
-  version:'lampa-headless-b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d-headless2',
-  storage:Storage, params:Params, tmdb:TMDB, tmdbSource:source, api:Api,
+  version:'lampa-headless-b4a13b6af7fe2f3bbbcb91f4eb434ab3378f8d5d-headless3',
+  storage:Storage, params:{field:(name)=>Storage.field(name)}, tmdb:TMDB, tmdbSource:source, api:Api,
   main(p={}){return promise((ok,fail)=>Api.main(p,ok,fail))},
   category(p={}){return promise((ok,fail)=>Api.category(p,ok,fail))},
   search(q,p={}){return promise((ok,fail)=>Api.search(Object.assign({},p,{query:q}),ok,fail))},
