@@ -102,7 +102,41 @@ const callbackPromise = (invoke) => new Promise((resolve,reject) => {
 const LampaTMDBSource = Api.sources.tmdb
 TMDB.request = function(method, params={}) {
     return callbackPromise((ok, fail)=>{
-        LampaTMDBSource.get(method, params, ok, fail, {life:0})
+        let settled = false
+        const done = data => {
+            if (settled) return
+            settled = true
+            ok(data)
+        }
+        const failed = error => {
+            if (settled) return
+            const query = new URLSearchParams()
+            query.set('api_key', TMDB.key())
+            query.set('language', Storage.field('tmdb_lang') || 'ru')
+            Object.keys(params || {}).forEach(key => {
+                if (params[key] !== undefined && params[key] !== null && params[key] !== '') query.set(key, params[key])
+            })
+
+            // First use Lampa's real source. If its Request/jQuery boundary fails,
+            // retry the exact same Lampa TMDB endpoint with browser fetch. This
+            // keeps the API/image routing owned by Lampa (including CUB proxy).
+            const url = TMDB.api(method + '?' + query.toString())
+            fetch(url, {credentials:'omit'})
+                .then(async response => {
+                    const text = await response.text()
+                    if (!response.ok) throw new Error('TMDB HTTP '+response.status)
+                    const data = text ? JSON.parse(text) : null
+                    if (!data) throw new Error('TMDB empty response')
+                    done(data)
+                })
+                .catch(fetchError => fail(fetchError || error || new Error('Lampa TMDB request failed')))
+        }
+
+        try {
+            LampaTMDBSource.get(method, params, done, failed, {life:0})
+        } catch (error) {
+            failed(error)
+        }
     })
 }
 
