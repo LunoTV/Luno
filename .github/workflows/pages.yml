@@ -42,7 +42,7 @@ jobs:
           cp "${GITHUB_WORKSPACE}/luno-lampa-source-runtime.js" "${GITHUB_WORKSPACE}/dist/js/luno-lampa-source-runtime.js"
           cp -R "${GITHUB_WORKSPACE}/css" "${GITHUB_WORKSPACE}/dist/css"
           cp -R "${GITHUB_WORKSPACE}/js" "${GITHUB_WORKSPACE}/dist/js-src"
-          sed 's#./js/luno-lampa-runtime.js?v=7#./js/luno-lampa-runtime.js?v=6#; s#./js/app.js?v=7#./js-src/app.js?v=6#' "${GITHUB_WORKSPACE}/index.html" > "${GITHUB_WORKSPACE}/dist/index.html"
+          sed 's#./js/luno-lampa-runtime.js?v=8#./js/luno-lampa-runtime.js?v=9#; s#./js/luno-lampa-source-runtime.js?v=8#./js/luno-lampa-source-runtime.js?v=9#; s#./js/app.js?v=8#./js-src/app.js?v=9#; s#./css/style.css?v=8#./css/style.css?v=9#' "${GITHUB_WORKSPACE}/index.html" > "${GITHUB_WORKSPACE}/dist/index.html"
           test -s "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js"
           test -s "${GITHUB_WORKSPACE}/dist/js/luno-lampa-source-runtime.js"
       - uses: actions/configure-pages@v5
