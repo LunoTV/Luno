@@ -35,12 +35,16 @@ jobs:
           PY
           cp "${GITHUB_WORKSPACE}/runtime/lampa-headless-entry.js" ./luno-headless-entry.js
           npx rollup ./luno-headless-entry.js --format iife --file "${GITHUB_WORKSPACE}/luno-lampa-runtime.js" --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs
+          cp "${GITHUB_WORKSPACE}/runtime/lampa-source-headless-entry.js" ./luno-source-headless-entry.js
+          npx rollup ./luno-source-headless-entry.js --format iife --file "${GITHUB_WORKSPACE}/luno-lampa-source-runtime.js" --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs
           mkdir -p "${GITHUB_WORKSPACE}/dist/js"
           cp "${GITHUB_WORKSPACE}/luno-lampa-runtime.js" "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js"
+          cp "${GITHUB_WORKSPACE}/luno-lampa-source-runtime.js" "${GITHUB_WORKSPACE}/dist/js/luno-lampa-source-runtime.js"
           cp -R "${GITHUB_WORKSPACE}/css" "${GITHUB_WORKSPACE}/dist/css"
           cp -R "${GITHUB_WORKSPACE}/js" "${GITHUB_WORKSPACE}/dist/js-src"
           sed 's#./js/luno-lampa-runtime.js?v=7#./js/luno-lampa-runtime.js?v=6#; s#./js/app.js?v=7#./js-src/app.js?v=6#' "${GITHUB_WORKSPACE}/index.html" > "${GITHUB_WORKSPACE}/dist/index.html"
           test -s "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js"
+          test -s "${GITHUB_WORKSPACE}/dist/js/luno-lampa-source-runtime.js"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
