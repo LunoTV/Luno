@@ -1,3 +1,4 @@
+import './lampa-headless-bootstrap'
 import Subscribe from './src/utils/subscribe'
 import Utils from './src/utils/utils'
 import Arrays from './src/utils/arrays'
