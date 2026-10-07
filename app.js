@@ -104,7 +104,7 @@ function showSearchResults(state,query){
   bindCards();
 }
 
-document.querySelector("#openDemo").onclick=()=>openPlayer("","movie","LUNO");
+document.querySelector("#openDemo").onclick=()=>document.querySelector("#continueCards")?.scrollIntoView({behavior:"smooth",block:"start"});
 document.querySelector("#continueBtn").onclick=()=>document.querySelector("#continueCards")?.scrollIntoView({behavior:"smooth",block:"start"});
 document.querySelector("#closePlayer").onclick=closePlayer;
 
@@ -189,6 +189,16 @@ setCardsLoading();
       },1200);
     }
 
+    const state=await loadBoard();
+    if(!renderRealCatalog(state)){
+      document.querySelector(".hero .eyebrow").textContent="LUNO • ЗАГРУЗКА КАТАЛОГА";
+      setTimeout(async()=>{
+        const latest=await getLunoModel("board");
+        if(!renderRealCatalog(latest)){
+          document.querySelector(".hero .eyebrow").textContent="LUNO • КАТАЛОГ НЕ ЗАГРУЖЕН";
+        }
+      },1200);
+    }
     console.info("LUNO Core connected");
   }catch(error){
     console.error("LUNO Core/catalog initialization failed",error);
