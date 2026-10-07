@@ -175,21 +175,6 @@ setCardsLoading();
     });
 
     const state=await loadBoard();
-
-    if(!renderRealCatalog(state)){
-      showCoreStatus("LUNO • ЗАГРУЗКА КАТАЛОГА");
-      // One more read after the addon/catalog requests have had time to finish.
-      setTimeout(async()=>{
-        try{
-          const latest=await getLunoModel("board");
-          if(!renderRealCatalog(latest)) showCoreStatus("LUNO • КАТАЛОГ НЕ ЗАГРУЖЕН");
-        }catch(error){
-          console.error("LUNO board refresh failed",error);
-        }
-      },1200);
-    }
-
-    const state=await loadBoard();
     if(!renderRealCatalog(state)){
       document.querySelector(".hero .eyebrow").textContent="LUNO • ЗАГРУЗКА КАТАЛОГА";
       setTimeout(async()=>{
