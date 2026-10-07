@@ -1,3 +1,4 @@
+import './lampa-headless-bootstrap'
 import Api from './src/core/api/api'
 import TMDB from './src/core/tmdb/tmdb'
 import Storage from './src/core/storage/storage'
