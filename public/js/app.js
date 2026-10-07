@@ -480,21 +480,40 @@
     rootNode.querySelectorAll('img[data-poster-candidates]').forEach(img => {
       let candidates = [];
       try { candidates = JSON.parse(img.dataset.posterCandidates || '[]'); } catch (_) {}
+      const item = img.closest('.media-card');
+      const itemId = item?.dataset.id || '';
+      const sourcePath = itemId ? byId(itemId)?.poster_path || '' : '';
       let index = -1;
-      const removeCard = () => {
-        const card = img.closest('.media-card');
-        if (card) card.remove();
+      let attempts = 0;
+      const runtime = tmdbRuntime();
+      const retryLampaMirror = failedUrl => {
+        if (runtime?.tmdb?.broken && failedUrl) {
+          try { runtime.tmdb.broken(failedUrl); } catch (_) {}
+        }
+        if (sourcePath && runtime?.image && attempts < 8) {
+          attempts += 1;
+          const refreshed = runtime.image(sourcePath, 'w500');
+          if (refreshed && refreshed !== failedUrl) {
+            img.src = refreshed;
+            return true;
+          }
+        }
+        return false;
       };
       const next = () => {
         index += 1;
         if (index >= candidates.length) {
-          removeCard();
+          const failedUrl = img.src || '';
+          if (retryLampaMirror(failedUrl)) return;
+          // Keep the Lampa-style broken image state instead of deleting the card.
+          img.removeAttribute('src');
+          img.style.display = 'none';
           return;
         }
         img.src = candidates[index];
       };
       img.addEventListener('load', () => { img.style.display='block'; }, {passive:true});
-      img.addEventListener('error', next, {passive:true});
+      img.addEventListener('error', () => next(), {passive:true});
       next();
     });
   };
