@@ -196,8 +196,31 @@ document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("clic
 
 showCatalogMessage("Загружаем каталог LUNO…");
 
+// Start the fast browser catalog immediately; Core can finish in parallel.
+const directCatalogPromise=loadDirectCatalog();
+
+function prefetchPosters(items){
+  items.slice(0,24).forEach((item)=>{
+    if(item?.poster){
+      const image=new Image();
+      image.decoding="async";
+      image.src=item.poster;
+    }
+  });
+}
+
 (async()=>{
   let coreReady=false;
+  let directShown=false;
+
+  // Do not make the UI wait for Core. Render the first usable catalog immediately.
+  directCatalogPromise.then((items)=>{
+    if(!directShown && renderItems(items)){
+      directShown=true;
+      prefetchPosters(items);
+      showCoreStatus("LUNO • КАТАЛОГ ONLINE");
+    }
+  }).catch((error)=>console.warn("LUNO fast catalog failed",error));
 
   try{
     const {initLunoCore,loadBoard,onLunoState,getLunoModel}=await import("./core.js");
@@ -226,8 +249,10 @@ showCatalogMessage("Загружаем каталог LUNO…");
   }
 
   try{
-    const items=await loadDirectCatalog();
-    if(renderItems(items)){
+    const items=await directCatalogPromise;
+    if(!directShown && renderItems(items)){
+      directShown=true;
+      prefetchPosters(items);
       showCoreStatus(coreReady ? "LUNO • КАТАЛОГ ONLINE" : "LUNO • ONLINE");
       console.info("LUNO direct Cinemeta catalog loaded",items.length);
     }else{
