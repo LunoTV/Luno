@@ -130,3 +130,12 @@ button,input{font:inherit}
 .resume-section.resume-empty{display:none}
 .resume-section .card{position:relative}
 .resume-section .card:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffffff22}
+
+/* LG webOS fallback: older TV WebViews may not calculate aspect-ratio.
+   Give poster blocks a real height so cards cannot collapse to metadata-only pills. */
+@media (min-width:901px){
+  .card-art{height:280px;aspect-ratio:auto}
+}
+@media (min-width:1400px){
+  .card-art{height:320px}
+}
