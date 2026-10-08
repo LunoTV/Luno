@@ -1,4 +1,3 @@
-import tmdbCatalog from "./tmdb-catalog.generated.js";
 import Hls from "hls.js";
 import dashjs from "dashjs";
 import {
@@ -746,17 +745,14 @@ function renderItems(items,sections={}){
 }
 
 async function loadTmdbCatalog(){
-  if(tmdbCatalog && Array.isArray(tmdbCatalog.items) && tmdbCatalog.items.length){
-    return {items:tmdbCatalog.items,sections:tmdbCatalog.sections||{}};
-  }
   const candidates=[
-    new URL("./tmdb-catalog.json?v=5",document.baseURI).href,
-    new URL("./tmdb-catalog.json?v=6",document.baseURI).href
+    new URL("./tmdb-catalog.json?v=7",document.baseURI).href,
+    new URL("./tmdb-catalog.json",document.baseURI).href
   ];
   let lastError=null;
   for(const url of [...new Set(candidates)]){
     try{
-      const response=await fetch(url,{cache:"no-store"});
+      const response=await fetch(url,{cache:"no-store",headers:{accept:"application/json"}});
       if(!response.ok) throw new Error("HTTP "+response.status);
       const data=await response.json();
       const items=Array.isArray(data?.items) ? data.items : [];
