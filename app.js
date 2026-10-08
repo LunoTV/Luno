@@ -25,8 +25,12 @@ const playerBarTitle=document.querySelector("#playerBarTitle");
 const playerBarMeta=document.querySelector("#playerBarMeta");
 const playerSourceButton=document.querySelector("#playerSourceButton");
 const playerQualityButton=document.querySelector("#playerQualityButton");
+const playerEpisodeButton=document.querySelector("#playerEpisodeButton");
 const playerVoiceButton=document.querySelector("#playerVoiceButton");
 const playerSubtitleButton=document.querySelector("#playerSubtitleButton");
+const episodeSheet=document.querySelector("#episodeSheet");
+const episodeList=document.querySelector("#episodeList");
+const closeEpisodeSheet=document.querySelector("#closeEpisodeSheet");
 const voiceSheet=document.querySelector("#voiceSheet");
 const voiceList=document.querySelector("#voiceList");
 const closeVoiceSheet=document.querySelector("#closeVoiceSheet");
@@ -785,6 +789,27 @@ function streamQualities(entry){
 function streamSubtitles(entry){
   return Array.isArray(entry?.stream?.subtitles)?entry.stream.subtitles.filter(x=>/^https?:\/\//i.test(String(x?.url||""))):[];
 }
+function streamEpisode(entry){
+  const s=entry?.stream||{};
+  const season=Number(s.season)||0;
+  const episode=Number(s.episode)||0;
+  if(!season&&!episode)return "";
+  return "S"+String(season).padStart(2,"0")+"E"+String(episode).padStart(2,"0");
+}
+function renderEpisodeSheet(){
+  if(!episodeList)return;
+  const items=playerStreams.map((entry,index)=>({entry,index,label:streamEpisode(entry)||("Серия "+(index+1))}))
+    .filter(x=>x.label);
+  const uniqueItems=[]; const seen=new Set();
+  for(const item of items){if(!seen.has(item.label)){seen.add(item.label);uniqueItems.push(item)}}
+  episodeList.innerHTML=uniqueItems.length
+    ? uniqueItems.map((x,i)=>'<button class="source-option" type="button" data-episode-index="'+i+'"><span><strong>'+escapeHtml(x.label)+'</strong><span>'+escapeHtml(x.entry?.stream?.episode_title||"Источник")+'</span></span></button>').join("")
+    : '<div class="source-empty">Источник не передал данные серий.</div>';
+  episodeList.querySelectorAll("[data-episode-index]").forEach(btn=>btn.onclick=()=>{
+    const item=uniqueItems[Number(btn.dataset.episodeIndex)];
+    if(item){selectLunoSource(item.index);episodeSheet?.classList.add("hidden")}
+  });
+}
 function streamVoice(entry){
   const s=entry?.stream||{};
   const value=s.voice||s.voice_name||s.translation||s.dubbing||s.author;
@@ -1325,6 +1350,8 @@ lunoVideo?.addEventListener("error",()=>{
   if(playerMessage) playerMessage.textContent="Не удалось воспроизвести этот источник.";
 });
 
+playerEpisodeButton?.addEventListener("click",()=>{renderEpisodeSheet();episodeSheet?.classList.remove("hidden")});
+closeEpisodeSheet?.addEventListener("click",()=>episodeSheet?.classList.add("hidden"));
 playerVoiceButton?.addEventListener("click",()=>{renderVoiceSheet();voiceSheet?.classList.remove("hidden")});
 closeVoiceSheet?.addEventListener("click",()=>voiceSheet?.classList.add("hidden"));
 playerQualityButton?.addEventListener("click",()=>{renderQualitySheet();qualitySheet?.classList.remove("hidden")});
