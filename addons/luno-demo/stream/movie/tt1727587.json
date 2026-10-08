@@ -1,0 +1,12 @@
+{
+  "streams": [
+    {
+      "name": "Sintel • HLS",
+      "description": "CC BY 3.0 • HLS • прямой поток",
+      "url": "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
+      "behaviorHints": {
+        "bingeGroup": "luno-open-sintel"
+      }
+    }
+  ]
+}
