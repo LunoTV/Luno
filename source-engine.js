@@ -1,7 +1,7 @@
 import {createSourceRegistry} from "./sources/registry.js";
 import {loadSourceDefinitions} from "./sources/loader.js";
-import {normalizeSubtitle,normalizeStream,streamKind} from "./sources/normalizer.js";
-import {selectBestUrl as selectBestQualityUrl} from "./sources/quality.js";
+import {normalizeSubtitles as normalizeSubtitle,normalizeStream,streamKind} from "./sources/normalizer.js";
+import {selectBestUrl as selectBestQualityUrl,qualityNumber} from "./sources/quality.js";
 
 const PROVIDERS_KEY="luno-source-providers";
 const DEFAULT_TIMEOUT=15000;
@@ -30,42 +30,6 @@ function unique(list){return [...new Set(list.filter(Boolean))]}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
 
-
-
-){
-  const s=raw?.stream||raw||{};
-  const quality=normalizeQualityMap(s.quality||s.qualitys);
-  let url=text(s.url||s.streamingUrl||s.externalUrl||s.webosUrl||s.file||"");
-  if(!url&&Object.keys(quality).length)url=quality[String(Math.max(...Object.keys(quality).map(qualityNumber)))];
-  if(!http(url))return null;
-
-  const subtitles=normalizeSubtitle(s.subtitles);
-  const fallback=text(s.url_reserve||s.reserve||"");
-  return {
-    stream:{
-      ...s,
-      title:text(s.title||s.name||source.name),
-      name:text(s.name||s.title||source.name),
-      url,
-      url_reserve:http(fallback)?fallback:"",
-      quality,
-      qualitys:quality,
-      subtitles,
-      segments:s.segments||null,
-      behaviorHints:{
-        ...(s.behaviorHints||{}),
-        contentType:s.behaviorHints?.contentType||s.contentType||(
-          /\.m3u8(?:$|[?#])/i.test(url)?"application/x-mpegURL":
-          /\.mpd(?:$|[?#])/i.test(url)?"application/dash+xml":"video/mp4"
-        )
-      }
-    },
-    request:raw?.request||request,
-    addon:{id:source.id,name:source.name,transportUrl:source.url||""},
-    resolver:source.id,
-    kind:streamKind({url,contentType:s.contentType||s.behaviorHints?.contentType})
-  };
-}
 
 function sourceName(value){
   return text(value?.balanser||(value?.name||"").split(" ")[0]).toLowerCase();
@@ -292,9 +256,7 @@ async function resolveFile(raw){
   }
 }
 
-function selectBestUrl(stream){
-  const quality=normalizeQualityMap(stream?.quality||stream?.qualitys);
-  const entries=Object.entries(quality).sort((a,b)=>Number(String(b[0]).match(/\d{3,4}/)?.[0]||0)-Number(String(a[0]).match(/\d{3,4}/)?.[0]||0));
+/)?.[0]||0)-Number(String(a[0]).match(/\d{3,4}/)?.[0]||0));
   if(entries.length){
     const max=entries[0][1];
     if(http(max))return max;
@@ -392,7 +354,7 @@ async function resolveProvider(provider,item,videoId,signal){
   });
   const out=(Array.isArray(values)?values:[]).map(v=>v?.stream?{
     ...v,
-    stream:{...v.stream,subtitles:normalizeSubtitle(v.stream.subtitles),url:selectBestUrl(v.stream)},
+    stream:{...v.stream,subtitles:normalizeSubtitle(v.stream.subtitles),url:selectBestQualityUrl(v.stream)},
     kind:streamKind(v.stream)
   }:normalizeStream(v,provider)).filter(v=>v?.stream&&http(v.stream.url));
   cache.set(key,{expires:Date.now()+CACHE_TTL,value:out});
@@ -448,7 +410,7 @@ export async function loadMetaDetails(item,videoId=""){
 
 export async function loadLunoPlayer(stream){
   const candidate=stream?.stream||stream||{};
-  const url=selectBestUrl(candidate);
+  const url=selectBestQualityUrl(candidate);
   if(!http(url)){
     playerState={stream:{type:"Err",content:{message:"No direct HTTP(S) stream"}}};
     return playerState;
