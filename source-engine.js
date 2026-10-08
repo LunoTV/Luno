@@ -378,9 +378,34 @@ async function resolveItemStreams(item,{videoId="",signal}={}){
   }).sort((a,b)=>qualityNumber(b.stream.name)-qualityNumber(a.stream.name));
 }
 
-const api={listProviders:listSourceProviders,resolve:resolveItemStreams,registerProvider};
+function listAvailableSources(){
+  return SOURCE_CATALOG.map(id=>({
+    id,
+    name:id,
+    type:"remote",
+    enabled:true
+  }));
+}
 
-export {initSourceEngine,listSourceProviders,resolveItemStreams,registerProvider};
+function getSourceRuntimeStatus(){
+  return {
+    initialized,
+    apiMirrors:API_MIRRORS.length,
+    catalogSources:SOURCE_CATALOG.length,
+    providers:registry.list().length,
+    cacheEntries:cache.size
+  };
+}
+
+function setSourceProviderEnabled(id,enabled){
+  const changed=registry.setEnabled(id,enabled);
+  if(changed)window.dispatchEvent(new CustomEvent("luno-source-state",{detail:{id,enabled:enabled!==false}}));
+  return changed;
+}
+
+const api={listProviders:listSourceProviders,listSources:listAvailableSources,getStatus:getSourceRuntimeStatus,setProviderEnabled:setSourceProviderEnabled,resolve:resolveItemStreams,registerProvider};
+
+export {initSourceEngine,listSourceProviders,listAvailableSources,getSourceRuntimeStatus,setSourceProviderEnabled,resolveItemStreams,registerProvider};
 
 export async function initLunoCore(){
   initSourceEngine();
