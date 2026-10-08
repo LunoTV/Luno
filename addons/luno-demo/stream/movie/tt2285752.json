@@ -1,0 +1,12 @@
+{
+  "streams": [
+    {
+      "name": "Tears of Steel • HLS",
+      "description": "CC BY 3.0 • HLS • прямой поток",
+      "url": "https://test-streams.mux.dev/tos_ismc/main.m3u8",
+      "behaviorHints": {
+        "bingeGroup": "luno-open-tos"
+      }
+    }
+  ]
+}
