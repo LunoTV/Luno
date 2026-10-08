@@ -150,8 +150,34 @@ async function expandMovieCollections(items) {
   return unique(additions);
 }
 
+async function loadOpenCinemaItems() {
+  const imdbIds = ["tt1254207", "tt1727587", "tt2285752", "tt0807840"];
+  const output = [];
+  for (const imdbId of imdbIds) {
+    try {
+      const data = await tmdb("/find/" + imdbId, {
+        external_source: "imdb_id",
+        language: "ru-RU"
+      });
+      const movie = Array.isArray(data?.movie_results) ? data.movie_results[0] : null;
+      if (!movie?.id) continue;
+      const item = normalize(movie, "movie", movieGenres);
+      output.push({
+        ...item,
+        imdbId,
+        openCinema: true
+      });
+    } catch (error) {
+      console.warn("Open Cinema metadata failed:", imdbId, error.message);
+    }
+  }
+  return await enrichExternalIds(output);
+}
+
 const collectionMovies = await expandMovieCollections(movies);
 movies = unique([...movies, ...collectionMovies]);
+const openCinemaMovies = await loadOpenCinemaItems();
+movies = unique([...openCinemaMovies, ...movies]);
 movies = await enrichExternalIds(movies);
 
 movies = unique([...movies, ...animationMoviesClean]);
