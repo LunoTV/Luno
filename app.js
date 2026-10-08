@@ -372,7 +372,7 @@ function paintDetail(value){
   if(detailRecommendations){
     const pool=(catalogItems||[]).filter(x=>x?.id && x.id!==value?.id);
     const currentYear=new Date().getFullYear();
-    const getItemYear=item=>Number(String(item?.releaseInfo||"").match(/\\d{4}/)?.[0]||0);
+    const getItemYear=item=>Number(String(item?.releaseInfo||"").match(/\d{4}/)?.[0]||0);
     const sharedGenres=(item?.genreIds||[]).filter(g=>(value.genreIds||[]).includes(g)).length;
     const seeded=(item)=>{
       let n=0;
