@@ -189,7 +189,18 @@ export async function loadMetaDetails(item, videoId = "") {
     }
   }, "meta_details");
 
-  return waitForModel("meta_details", (state) => state);
+  const started = Date.now();
+  return waitForModel("meta_details", (state) => {
+    const metaReady = state?.metaItem?.content?.type === "Ready";
+    const resources = Array.isArray(state?.streams) && state.streams.length
+      ? state.streams
+      : (Array.isArray(state?.metaStreams) ? state.metaStreams : []);
+    const settled = resources.length > 0 && resources.every(resource =>
+      resource?.content?.type === "Ready" || resource?.content?.type === "Err"
+    );
+    if (metaReady && (settled || Date.now() - started > 1200)) return state;
+    return null;
+  }, 9000);
 }
 
 export async function loadLunoPlayer(stream, streamRequest, metaRequest = null, subtitlesPath = null) {
