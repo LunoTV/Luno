@@ -113,8 +113,10 @@ function unique(items) {
 
 let movies = unique([...popularMovies, ...topMovies]);
 let series = unique([...popularSeries, ...topSeries]);
-const animationMoviesClean = unique(animationMovies);
-const animationSeriesClean = unique(animationSeries);
+let animationMoviesClean = unique(animationMovies);
+let animationSeriesClean = unique(animationSeries);
+animationMoviesClean = await enrichExternalIds(animationMoviesClean);
+animationSeriesClean = await enrichExternalIds(animationSeriesClean);
 
 movies = await enrichExternalIds(movies.slice(0, 1000));
 series = await enrichExternalIds(series.slice(0, 1000));
