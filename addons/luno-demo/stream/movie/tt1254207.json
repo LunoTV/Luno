@@ -1,16 +1,16 @@
 {
   "streams": [
     {
-      "name": "Big Buck Bunny • 720p",
-      "description": "CC BY 3.0 • MP4 • прямой поток",
-      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "name": "Big Buck Bunny • HLS",
+      "description": "CC BY 3.0 • HLS • прямой поток",
+      "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
       "behaviorHints": {
         "bingeGroup": "luno-open-bbb"
       }
     },
     {
       "name": "Big Buck Bunny • 320p",
-      "description": "CC BY 3.0 • MP4 • прямой поток",
+      "description": "CC BY 3.0 • MP4 • Blender Foundation",
       "url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4",
       "behaviorHints": {
         "bingeGroup": "luno-open-bbb"
