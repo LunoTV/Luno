@@ -264,6 +264,20 @@ function searchLocal(query){
     .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
 }
 
+function dynamicSearchUrl(query){
+  const base=String(window.__LUNO_API_BASE__||"").replace(/\\/$/,"");
+  return (base||"")+"/api/tmdb/search?query="+encodeURIComponent(query);
+}
+
+async function searchDynamic(query){
+  const response=await fetch(dynamicSearchUrl(query),{headers:{accept:"application/json"},cache:"no-store"});
+  if(!response.ok) throw new Error("TMDB search HTTP "+response.status);
+  const data=await response.json();
+  const items=Array.isArray(data?.results) ? data.results.map(normalizeItem).filter(x=>x.tmdbId) : [];
+  for(const item of items) window.__LUNO_ITEMS__.set(item.id,item);
+  return items;
+}
+
 document.querySelector("#openDemo").onclick=()=>{
   const first=movieItems[0];
   if(first) openDetail(first);
@@ -287,13 +301,26 @@ searchInput.addEventListener("input",()=>{
     document.querySelector("#searchResults")?.remove();
     return;
   }
-  searchTimer=setTimeout(()=>showSearchResults(searchLocal(query),query),120);
+  searchTimer=setTimeout(async()=>{
+    try{
+      const remote=await searchDynamic(query);
+      showSearchResults(remote.length ? remote : searchLocal(query),query);
+    }catch(error){
+      console.warn("LUNO remote search unavailable, using local catalog:",error);
+      showSearchResults(searchLocal(query),query);
+    }
+  },220);
 });
 
 searchInput.addEventListener("keydown",(e)=>{
   if(e.key==="Escape") searchPanel.classList.add("hidden");
   if(e.key==="Enter"){
-    const result=searchLocal(searchInput.value.trim())[0];
+    const query=searchInput.value.trim();
+    let result=searchLocal(query)[0];
+    try{
+      const remote=await searchDynamic(query);
+      result=remote[0]||result;
+    }catch{}
     if(result){
       searchPanel.classList.add("hidden");
       openDetail(result);
