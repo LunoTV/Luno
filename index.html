@@ -151,15 +151,27 @@
     </div>
 
     <div id="searchPanel" class="overlay hidden">
-      <div class="search-box">
-        <button id="closeSearch" class="close" aria-label="Закрыть поиск">×</button>
-        <div class="search-kicker">ПОИСК</div>
-        <div class="search-title">Что будем смотреть?</div>
-        <div class="search-field">
+      <div class="search-box luno-search-screen">
+        <button id="closeSearch" class="search-close-x" aria-label="Закрыть поиск">×</button>
+        <div class="search-topbar">
+          <button id="searchBack" class="search-back" type="button" aria-label="Назад">‹</button>
+          <div class="search-page-title">Поиск</div>
+          <span class="search-top-spacer"></span>
+        </div>
+        <div class="search-field luno-search-field">
           <span class="search-icon"></span>
           <input id="searchInput" autofocus autocomplete="off" placeholder="Название фильма или сериала">
+          <button id="searchClear" class="search-clear" type="button" aria-label="Очистить">×</button>
         </div>
-        <div class="search-hint">Enter — открыть · Esc — закрыть</div>
+        <div id="searchHistoryBlock" class="search-history-block">
+          <div class="search-subtitle">История просмотров</div>
+          <div id="searchHistory" class="search-history"></div>
+        </div>
+        <div class="search-sources" role="tablist" aria-label="Источники поиска">
+          <button class="search-source active" type="button" data-search-source="tmdb">TMDB <b id="searchTmdbCount">0</b></button>
+          <button class="search-source" type="button" data-search-source="luno">LUNO <b id="searchLunoCount">0</b></button>
+          <button class="search-source search-ai" type="button" data-search-source="ai">✦ AI-поиск</button>
+        </div>
         <div id="searchResults" class="search-results"></div>
       </div>
     </div>
