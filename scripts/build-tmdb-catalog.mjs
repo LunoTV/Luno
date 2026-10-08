@@ -72,7 +72,14 @@ async function enrichExternalIds(items) {
         const endpoint = item.type === "movie" ? "/movie/" + item.tmdbId : "/tv/" + item.tmdbId;
         const data = await tmdb(endpoint, { language: "ru-RU", append_to_response: "external_ids" });
         const imdbId = data?.external_ids?.imdb_id || "";
-        if (imdbId) output[index] = { ...item, imdbId };
+        const collectionId = Number(data?.belongs_to_collection?.id) || 0;
+        if (imdbId || collectionId) {
+          output[index] = {
+            ...item,
+            ...(imdbId ? { imdbId } : {}),
+            ...(collectionId ? { collectionId } : {})
+          };
+        }
       } catch (error) {
         console.warn("TMDB external ids failed:", item.id, error.message);
       }
@@ -91,10 +98,10 @@ const movieGenres = new Map((movieGenresData.genres || []).map(g => [g.id, g.nam
 const seriesGenres = new Map((seriesGenresData.genres || []).map(g => [g.id, g.name]));
 
 const [popularMovies, popularSeries, topMovies, topSeries] = await Promise.all([
-  collect("movie", "popularity.desc", 8, movieGenres),
-  collect("tv", "popularity.desc", 8, seriesGenres),
-  collect("movie", "vote_average.desc", 4, movieGenres),
-  collect("tv", "vote_average.desc", 4, seriesGenres)
+  collect("movie", "popularity.desc", 12, movieGenres),
+  collect("tv", "popularity.desc", 12, seriesGenres),
+  collect("movie", "vote_average.desc", 8, movieGenres),
+  collect("tv", "vote_average.desc", 8, seriesGenres)
 ]);
 
 function unique(items) {
@@ -104,19 +111,51 @@ function unique(items) {
 let movies = unique([...popularMovies, ...topMovies]);
 let series = unique([...popularSeries, ...topSeries]);
 
-movies = await enrichExternalIds(movies.slice(0, 260));
-series = await enrichExternalIds(series.slice(0, 260));
+movies = await enrichExternalIds(movies.slice(0, 420));
+series = await enrichExternalIds(series.slice(0, 420));
+
+async function expandMovieCollections(items) {
+  const collectionIds = [...new Set(items.map(x => Number(x?.collectionId) || 0).filter(Boolean))];
+  const additions = [];
+  let cursor = 0;
+
+  const worker = async () => {
+    while (true) {
+      const index = cursor++;
+      if (index >= collectionIds.length) return;
+      const collectionId = collectionIds[index];
+      try {
+        const data = await tmdb("/collection/" + collectionId, { language: "ru-RU" });
+        for (const part of data?.parts || []) {
+          if (!part?.id) continue;
+          additions.push(normalize(part, "movie", movieGenres));
+        }
+      } catch (error) {
+        console.warn("TMDB collection failed:", collectionId, error.message);
+      }
+    }
+  };
+
+  await Promise.all(Array.from({ length: 6 }, worker));
+  return unique(additions);
+}
+
+const collectionMovies = await expandMovieCollections(movies);
+movies = unique([...movies, ...collectionMovies]);
+movies = await enrichExternalIds(movies.slice(0, 520));
 
 const all = [...movies, ...series];
+const movieSection = unique([...popularMovies, ...movies]).map(x => x.id).filter(Boolean);
+const seriesSection = unique([...popularSeries, ...series]).map(x => x.id).filter(Boolean);
 const payload = {
   generatedAt: new Date().toISOString(),
   source: "TMDB",
   language: "ru-RU",
   sections: {
-    popularMovies: popularMovies.map(x => x.id).filter(Boolean),
-    popularSeries: popularSeries.map(x => x.id).filter(Boolean),
-    topMovies: topMovies.map(x => x.id).filter(Boolean),
-    topSeries: topSeries.map(x => x.id).filter(Boolean)
+    popularMovies: movieSection,
+    popularSeries: seriesSection,
+    topMovies: unique([...topMovies, ...movies]).map(x => x.id).filter(Boolean),
+    topSeries: unique([...topSeries, ...series]).map(x => x.id).filter(Boolean)
   },
   items: all
 };
