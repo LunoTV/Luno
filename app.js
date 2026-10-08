@@ -243,25 +243,30 @@ function normalizeItem(item){
 
 function card(item){
   const title=item?.name || "Без названия";
-  const image=item?.poster || item?.background || "";
-  const fallbackImage=item?.posterSource || item?.background || "";
+  // Prefer the original TMDB poster URL. The generated local cache is only a fallback,
+  // so a missing build artifact can never turn the whole rail into blank cards.
+  const image=item?.posterSource || item?.poster || item?.background || "";
+  const fallbackImage=item?.poster && item.poster!==image ? item.poster : (item?.background || "");
+  const fallbackImage2=item?.background && item.background!==fallbackImage && item.background!==image ? item.background : "";
   const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
   const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" data-fallback-2="'+escapeHtml(fallbackImage2)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback">◐</span>';
+  const meta=[
+    '<span class="card-type">'+escapeHtml(type)+'</span>',
+    '<span class="card-quality">'+quality+'</span>',
+    rating ? '<span class="card-rating">★ '+rating+'</span>' : '',
+    year ? '<span class="card-year">'+year+'</span>' : ''
+  ].filter(Boolean).join('<i class="card-meta-dot">•</i>');
   return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
     '<div class="card-art">'+imageHtml+
-      '<span class="card-type">'+escapeHtml(type)+'</span>'+
-      '<div class="card-info"><span class="card-quality">'+quality+'</span>'+
-        (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
-        (year ? '<span class="card-year">'+year+'</span>' : '')+
-      '</div>'+
       '<div class="card-gradient"></div>'+
     '</div>'+
     '<div class="card-title">'+escapeHtml(title)+'</div>'+
+    '<div class="card-meta">'+meta+'</div>'+
   '</button>';
 }
 
@@ -295,8 +300,11 @@ function bindCards(){
       image.dataset.fallbackBound="1";
       image.addEventListener("error",()=>{
         const fallback=image.dataset.fallback || "";
+        const fallback2=image.dataset.fallback2 || "";
         if(fallback && image.src!==fallback){
           image.src=fallback;
+        }else if(fallback2 && image.src!==fallback2){
+          image.src=fallback2;
         }else{
           image.remove();
           c.querySelector(".card-art")?.insertAdjacentHTML("afterbegin",'<span class="poster-fallback">◐</span>');
