@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=11">
+  <link rel="stylesheet" href="./styles.css?v=14">
 </head>
 <body>
   <div id="splash" class="splash-screen">
@@ -230,10 +230,21 @@
           </div>
           <button id="playerSourceButton" class="player-source" type="button">Источник</button>
         </div>
+        <div id="sourceSheet" class="source-sheet hidden" aria-label="Источники просмотра">
+          <div class="source-sheet-head">
+            <div>
+              <span class="section-kicker">ИСТОЧНИКИ</span>
+              <strong>Выбери источник</strong>
+            </div>
+            <button id="closeSourceSheet" class="source-sheet-close" type="button" aria-label="Закрыть">×</button>
+          </div>
+          <div id="sourceList" class="source-list"></div>
+          <div id="sourceEmpty" class="source-empty hidden">Подходящих источников пока нет.</div>
+        </div>
       </div>
     </div>
   </div>
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
-  <script type="module" src="./app.js?v=ui11"></script>
+  <script type="module" src="./app.js?v=ui14"></script>
 </body>
 </html>
