@@ -1,4 +1,6 @@
 import tmdbCatalog from "./tmdb-catalog.generated.js";
+import { resolveCinemaStreams } from "./cinema-adapter.js";
+import Hls from "hls.js";
 import {
   loadMetaDetails,
   loadLunoPlayer,
@@ -813,6 +815,18 @@ async function resolveLunoStreams(item){
 
     playerStreamState=state;
     playerStreams=streams.filter(entry=>entry?.stream);
+
+    // Cinema подключается как отдельный источник LUNO. Он получает только
+    // ссылку на поток; сам видеопоток не проходит через сервер LUNO.
+    try{
+      const cinemaStreams=await resolveCinemaStreams(item);
+      if(cinemaStreams.length){
+        playerStreams.push(...cinemaStreams);
+      }
+    }catch(error){
+      console.warn("LUNO Cinema resolution failed",error);
+    }
+
     renderSourceSheet();
 
     if(!playerStreams.length){
@@ -920,11 +934,28 @@ function closePlayer(){
   unloadLunoPlayer().catch?.(()=>{});
 }
 
+let activeHls=null;
+
 function setLunoStream(streamUrl,streamMeta={}){
   if(!lunoVideo || !streamUrl) return false;
+  activeHls?.destroy?.();
+  activeHls=null;
   playerEmpty?.classList.add("hidden");
   lunoVideo.classList.add("is-ready");
-  lunoVideo.src=streamUrl;
+  lunoVideo.removeAttribute("src");
+
+  const isHls=/\.m3u8(?:$|[?#])/i.test(String(streamUrl));
+  if(isHls && Hls.isSupported()){
+    activeHls=new Hls({
+      enableWorker:true,
+      lowLatencyMode:false
+    });
+    activeHls.loadSource(streamUrl);
+    activeHls.attachMedia(lunoVideo);
+  }else{
+    lunoVideo.src=streamUrl;
+  }
+
   if(playerBarMeta) playerBarMeta.textContent=streamMeta.label || playerBarMeta.textContent || "";
   const resume=loadResume().find(item=>item.id===currentItem?.id);
   const startAt=Number(resume?.position)||0;
