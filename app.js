@@ -149,19 +149,53 @@ function bindCards(){
 function paintDetail(value){
   const title=value?.name || "Без названия";
   const image=value?.poster || value?.background || "";
+  const year=String(value?.releaseInfo || "").match(/\d{4}/)?.[0] || "";
+  const score=Number(value?.rating)||0;
+  const type=value?.type==="series" ? "Сериал" : "Фильм";
+  const genres=Array.isArray(value?.genres) ? value.genres : [];
+  const genreMap={
+    28:"Боевик",12:"Приключения",16:"Мультфильм",35:"Комедия",80:"Криминал",
+    99:"Документальный",18:"Драма",10751:"Семейный",14:"Фэнтези",36:"История",
+    27:"Ужасы",10402:"Музыка",9648:"Детектив",10749:"Мелодрама",878:"Фантастика",
+    10770:"ТВ",53:"Триллер",10752:"Военный",37:"Вестерн",10759:"Боевик",10762:"Детский",
+    10763:"Новости",10764:"Реалити",10765:"Фантастика",10766:"Мыльная опера",
+    10767:"Ток-шоу",10768:"Война"
+  };
+  const genreNames=genres.map(g=>genreMap[g]||g).filter(Boolean).slice(0,4);
+
   if(detailPoster){
     detailPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
     detailPoster.classList.toggle("has-image",!!image);
   }
   if(detailTitle) detailTitle.textContent=title;
   if(detailMeta) detailMeta.textContent=[
-    metaLine(value),
-    Number(value?.rating)>0 ? "★ "+Number(value.rating).toFixed(1) : "",
-    Array.isArray(value?.genres)&&value.genres.length ? value.genres.slice(0,3).join(" • ") : ""
+    year,
+    type,
+    value?.runtime ? value.runtime+" мин" : ""
   ].filter(Boolean).join(" • ");
-  if(detailDescription) detailDescription.textContent=value?.description || "Описание пока недоступно.";
-}
 
+  if(detailBadges){
+    detailBadges.innerHTML=[
+      year ? '<span class="detail-badge">'+escapeHtml(year)+'</span>' : "",
+      '<span class="detail-badge">'+escapeHtml(type)+'</span>',
+      score>0 ? '<span class="detail-badge detail-badge-score">★ '+score.toFixed(1)+' TMDB</span>' : "",
+      ...genreNames.slice(0,2).map(g=>'<span class="detail-badge detail-badge-muted">'+escapeHtml(g)+'</span>')
+    ].filter(Boolean).join("");
+  }
+
+  if(detailDescription) detailDescription.textContent=value?.description || "Описание пока недоступно.";
+
+  if(detailRatings){
+    detailRatings.innerHTML=score>0
+      ? '<div class="detail-rating-main"><strong>★ '+score.toFixed(1)+'</strong><span>TMDB</span></div>'+
+        '<div class="detail-rating"><strong>'+escapeHtml(year||"—")+'</strong><span>год</span></div>'+
+        '<div class="detail-rating"><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>'+
+        '<div class="detail-rating"><strong>'+escapeHtml(String(genreNames[0]||"—"))+'</strong><span>жанр</span></div>'
+      : '<div class="detail-rating-main"><strong>—</strong><span>Рейтинг TMDB</span></div>'+
+        '<div class="detail-rating"><strong>'+escapeHtml(year||"—")+'</strong><span>год</span></div>'+
+        '<div class="detail-rating"><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>';
+  }
+}
 function isFavorite(id){
   return loadFavorites().some(item=>item.id===id);
 }
