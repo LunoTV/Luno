@@ -1,16 +1,16 @@
 {
-  "id": "tv.luno.demo",
-  "version": "1.0.2",
-  "name": "LUNO Demo Source",
-  "description": "Безопасный публичный тестовый источник LUNO на Big Buck Bunny.",
+  "id": "tv.luno.opencinema",
+  "version": "2.0.0",
+  "name": "LUNO Open Cinema",
+  "description": "Открытые и свободно распространяемые фильмы с прямыми HTTP/HLS-потоками.",
   "resources": [
-    "stream"
+    {
+      "name": "stream",
+      "types": ["movie"],
+      "idPrefixes": ["tt"]
+    }
   ],
-  "types": [
-    "movie"
-  ],
+  "types": ["movie"],
   "catalogs": [],
-  "idPrefixes": [
-    "tt"
-  ]
+  "idPrefixes": ["tt"]
 }
