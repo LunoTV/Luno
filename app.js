@@ -350,6 +350,35 @@ function renderLibraryBatch(){
   bindCards();
 }
 
+function openCategoryHub(){
+  if(!libraryView || !libraryContent) return;
+  libraryType="catalog";
+  libraryTitle.textContent="Каталог";
+  libraryKicker.textContent="LUNO • РАЗДЕЛЫ";
+  libraryContent.innerHTML=
+    '<div class="category-hub">'+
+      '<button class="category-hub-card" data-category="movies"><span>🎬</span><strong>Фильмы</strong><small>Полнометражное кино</small></button>'+
+      '<button class="category-hub-card" data-category="series"><span>📺</span><strong>Сериалы</strong><small>Сезоны и эпизоды</small></button>'+
+      '<button class="category-hub-card" data-category="cartoons"><span>✦</span><strong>Мультфильмы</strong><small>Анимационное кино</small></button>'+
+      '<button class="category-hub-card" data-category="anime"><span>◈</span><strong>Аниме</strong><small>Японская анимация</small></button>'+
+      '<button class="category-hub-card" data-category="shows"><span>◉</span><strong>Шоу</strong><small>Реалити, ток-шоу и другое</small></button>'+
+      '<button class="category-hub-card" data-category="favorites"><span>♡</span><strong>Моё</strong><small>Избранное и продолжение</small></button>'+
+    '</div>';
+  libraryView.classList.remove("hidden");
+  document.body.classList.add("library-open");
+  libraryContent.scrollTop=0;
+  libraryContent.querySelectorAll("[data-category]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const category=button.dataset.category;
+      if(category==="favorites"){
+        closeLibrary();
+        favoritesSection?.scrollIntoView({behavior:"smooth",block:"start"});
+      }else{
+        openLibrary(category);
+      }
+    });
+  });
+}
 function openLibrary(type){
   const config={
     movies:{title:"Фильмы",kicker:"LUNO • КИНО"},
@@ -406,6 +435,10 @@ function navigate(section){
   document.querySelectorAll('.nav-item[data-section="'+section+'"],.mobile-tab[data-section="'+section+'"]').forEach(x=>x.classList.add("active"));
   if(["movies","series","cartoons","anime","shows"].includes(section)){
     openLibrary(section);
+    return;
+  }
+  if(section==="catalog"){
+    openCategoryHub();
     return;
   }
   if(section==="favorites"){
