@@ -162,3 +162,199 @@ button,input{font:inherit}
 
 .tmdb-attribution{padding:28px 5vw 42px;text-align:center;color:#626570;font-size:11px;line-height:1.5;letter-spacing:.02em}
 .poster-fallback{font-size:54px;color:#aeb2bd;filter:grayscale(1);opacity:.75}
+
+
+/* =========================================================
+   LUNO Mobile v2 — native-app feel
+   ========================================================= */
+.mobile-tabbar{display:none}
+
+@media (max-width:700px){
+  body{padding-bottom:78px}
+  body:before{
+    background:
+      radial-gradient(circle at 88% 4%,rgba(255,255,255,.10),transparent 26%),
+      radial-gradient(circle at 8% 52%,rgba(130,136,155,.06),transparent 30%);
+  }
+
+  .topbar{
+    height:58px;
+    min-height:58px;
+    padding:7px 14px;
+    display:grid;
+    grid-template-columns:1fr 42px;
+    grid-template-areas:"brand search";
+    position:sticky;
+    top:0;
+    background:rgba(5,6,9,.82);
+    border-bottom:1px solid rgba(255,255,255,.055);
+    backdrop-filter:blur(22px);
+  }
+  .brand{font-size:18px;letter-spacing:.22em}
+  .moon{font-size:23px}
+  .topbar>.nav{display:none}
+  .icon-btn{
+    width:42px;height:42px;
+    display:grid;place-items:center;
+    border-radius:14px;
+    background:rgba(255,255,255,.055);
+    font-size:28px;
+  }
+
+  .mobile-tabbar{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    position:fixed;
+    left:10px;right:10px;bottom:10px;
+    height:62px;
+    z-index:60;
+    padding:5px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:21px;
+    background:rgba(13,14,18,.88);
+    backdrop-filter:blur(24px);
+    box-shadow:0 16px 50px rgba(0,0,0,.55);
+  }
+  .mobile-tab{
+    border:0;background:transparent;color:#777b86;
+    border-radius:16px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;cursor:pointer;
+  }
+  .mobile-tab span{font-size:21px;line-height:1}
+  .mobile-tab small{font-size:9px;font-weight:700;letter-spacing:.02em}
+  .mobile-tab.active{color:#fff;background:rgba(255,255,255,.09)}
+  .mobile-tab:active{transform:scale(.96)}
+
+  main{padding-bottom:28px}
+  .hero{
+    min-height:460px;
+    margin:12px 12px 0;
+    border-radius:26px;
+    border:1px solid rgba(255,255,255,.07);
+    overflow:hidden;
+    background:
+      linear-gradient(180deg,rgba(7,8,11,.22) 0%,rgba(7,8,11,.54) 44%,#07080b 100%),
+      radial-gradient(circle at 78% 20%,rgba(255,255,255,.16),transparent 30%);
+  }
+  .hero-glow{
+    width:240px;height:240px;right:-45px;top:-55px;
+    opacity:.35;filter:blur(8px);
+  }
+  .hero-poster{
+    display:block;
+    width:180px;height:260px;
+    right:-12px;top:20px;
+    opacity:.42;
+    transform:rotate(7deg);
+    filter:saturate(.75);
+    box-shadow:0 30px 80px #000;
+  }
+  .hero-copy{
+    width:100%;
+    padding:30px 22px 25px;
+    align-self:flex-end;
+    margin-top:170px;
+    background:linear-gradient(180deg,transparent,rgba(7,8,11,.35) 15%,#07080b 32%);
+  }
+  .eyebrow{font-size:9px;letter-spacing:.22em;margin-bottom:12px}
+  .hero h1{
+    font-size:40px;
+    line-height:.98;
+    letter-spacing:-.045em;
+    margin-bottom:14px;
+    max-width:290px;
+  }
+  .hero p{font-size:14px;line-height:1.5;color:#999da8;margin:0;max-width:340px}
+  .hero-actions{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:20px;
+  }
+  .primary,.secondary{min-height:48px;border-radius:14px;font-size:14px}
+  .hero-actions .secondary{background:rgba(255,255,255,.07)}
+
+  .section{
+    margin:30px 0 0;
+    padding-left:14px;
+  }
+  .section-head{
+    padding-right:14px;
+    margin-bottom:13px;
+  }
+  .section-head h2{font-size:20px;letter-spacing:-.025em}
+  .section-head span{font-size:27px}
+
+  .cards{
+    display:flex;
+    overflow-x:auto;
+    overflow-y:hidden;
+    gap:10px;
+    padding:2px 14px 8px 0;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+  }
+  .cards::-webkit-scrollbar{display:none}
+  .card{
+    flex:0 0 128px;
+    width:128px;
+    scroll-snap-align:start;
+    border-radius:13px;
+    background:#0c0d11;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);
+  }
+  .card-art{height:192px;aspect-ratio:auto;border-radius:12px 12px 0 0}
+  .card-title{font-size:12px;padding:8px 8px 2px}
+  .card-meta{font-size:9px;padding:0 8px 9px;white-space:nowrap;overflow:hidden}
+  .catalog-message{
+    flex:0 0 calc(100vw - 28px);
+    min-height:210px;
+    border-radius:20px;
+    font-size:14px;
+    text-align:center;
+    padding:20px;
+  }
+
+  .resume-section.resume-empty{display:none}
+  .resume-section .card{flex-basis:150px;width:150px}
+  .resume-section .card-art{height:225px}
+
+  .tmdb-attribution{padding:20px 20px 30px;font-size:9px}
+
+  .search-box{
+    width:100vw;
+    min-height:100vh;
+    border:0;
+    border-radius:0;
+    padding:76px 18px 30px;
+    background:#050609;
+  }
+  .search-title{font-size:30px;margin-bottom:18px}
+  .search-box input{
+    height:54px;
+    border-radius:16px;
+    font-size:17px;
+    background:#101116;
+  }
+  .search-hint{font-size:11px;margin-top:10px}
+  .search-results{max-height:none;margin-top:24px}
+  .search-results-grid{
+    display:flex;
+    overflow-x:auto;
+    gap:10px;
+    padding-bottom:8px;
+    scrollbar-width:none;
+  }
+  .search-results-grid::-webkit-scrollbar{display:none}
+  .search-results-grid .card{flex:0 0 128px}
+
+  .detail-poster{width:54vw;max-width:220px}
+  .detail-copy h2{font-size:36px}
+
+  .catalog-sentinel{height:60px}
+}
+
+@media (min-width:701px){
+  .mobile-tabbar{display:none!important}
+}
