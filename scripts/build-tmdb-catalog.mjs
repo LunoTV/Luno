@@ -24,8 +24,8 @@ function image(path, size = "w500") {
 function normalize(item, type, genres) {
   const movie = type === "movie";
   const tmdbId = Number(item.id);
-  const originalName = movie ? item.original_title : item.original_name;
-  const name = movie ? item.title : item.name;
+  const originalName = movie ? (item.original_title || item.original_name) : (item.original_name || item.original_title);
+  const name = movie ? (item.title || item.name) : (item.name || item.title);
   return {
     id: "tmdb:" + tmdbId,
     tmdbId,
@@ -98,10 +98,10 @@ const movieGenres = new Map((movieGenresData.genres || []).map(g => [g.id, g.nam
 const seriesGenres = new Map((seriesGenresData.genres || []).map(g => [g.id, g.name]));
 
 const [popularMovies, popularSeries, topMovies, topSeries] = await Promise.all([
-  collect("movie", "popularity.desc", 12, movieGenres),
-  collect("tv", "popularity.desc", 12, seriesGenres),
-  collect("movie", "vote_average.desc", 8, movieGenres),
-  collect("tv", "vote_average.desc", 8, seriesGenres)
+  collect("movie", "popularity.desc", 20, movieGenres),
+  collect("tv", "popularity.desc", 20, seriesGenres),
+  collect("movie", "vote_average.desc", 12, movieGenres),
+  collect("tv", "vote_average.desc", 12, seriesGenres)
 ]);
 
 function unique(items) {
@@ -111,8 +111,8 @@ function unique(items) {
 let movies = unique([...popularMovies, ...topMovies]);
 let series = unique([...popularSeries, ...topSeries]);
 
-movies = await enrichExternalIds(movies.slice(0, 420));
-series = await enrichExternalIds(series.slice(0, 420));
+movies = await enrichExternalIds(movies.slice(0, 1000));
+series = await enrichExternalIds(series.slice(0, 1000));
 
 async function expandMovieCollections(items) {
   const collectionIds = [...new Set(items.map(x => Number(x?.collectionId) || 0).filter(Boolean))];
@@ -142,7 +142,7 @@ async function expandMovieCollections(items) {
 
 const collectionMovies = await expandMovieCollections(movies);
 movies = unique([...movies, ...collectionMovies]);
-movies = await enrichExternalIds(movies.slice(0, 520));
+movies = await enrichExternalIds(movies);
 
 const all = [...movies, ...series];
 const movieSection = unique([...popularMovies, ...movies]).map(x => x.id).filter(Boolean);
