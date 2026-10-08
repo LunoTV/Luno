@@ -1,5 +1,7 @@
 const continueCards=document.querySelector("#continueCards");
 const popularCards=document.querySelector("#popularCards");
+const movieCards=document.querySelector("#movieCards");
+const seriesCards=document.querySelector("#seriesCards");
 const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
@@ -212,8 +214,8 @@ function renderCatalogSections(){
   const series=unique.filter((item)=>item.type==="series");
   const movieList=movies.length ? movies : unique;
   const seriesList=series.length ? series : unique;
-  continueCards.innerHTML=movieList.slice(0,movieVisible).map(card).join("");
-  popularCards.innerHTML=seriesList.slice(0,seriesVisible).map(card).join("");
+  if(movieCards) movieCards.innerHTML=movieList.slice(0,movieVisible).map(card).join("");
+  if(seriesCards) seriesCards.innerHTML=seriesList.slice(0,seriesVisible).map(card).join("");
   renderResume();
   bindCards();
   document.querySelector(".hero .eyebrow").textContent="LUNO • КАТАЛОГ ONLINE";
@@ -360,10 +362,7 @@ function openPlayer(id,type,title){
   if(text) text.textContent=id
     ? "Метаданные подключены. Следующий слой — получение stream и запуск видео."
     : "Выберите фильм или сериал.";
-  if(id){
-    const item=window.__LUNO_ITEMS__?.get(id) || {id,type,name:title};
-    saveResume(item,0,0);
-  }
+
   document.querySelector("#closePlayer").focus();
 }
 
