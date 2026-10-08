@@ -1909,3 +1909,35 @@ body.detail-open{
 @media(max-width:700px){
  .player-browse{position:fixed;inset:0;grid-template-rows:34vh auto;overflow:auto}.player-browse-hero{min-height:0}.player-browse-copy{padding:18px 18px 22px}.player-browse-copy h2{font-size:32px}.player-browse-meta{font-size:11px}.player-browse-copy p{font-size:12px}.player-browse-panel{padding:16px 14px 80px}.player-browse-source{margin-bottom:12px}.player-source-select{min-width:0;flex:1}.player-browse-episodes{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.player-episode-card{min-height:112px}.player-episode-thumb{height:68px}
 }
+
+
+/* ---------- LUNO WATCH SCREEN v15 ---------- */
+#player .player-shell{display:flex!important;flex-direction:column!important;background:radial-gradient(90% 70% at 70% 0%,rgba(130,150,190,.08),transparent 60%),#050609!important}
+#player .player-stage{flex:1 1 auto!important;min-height:46vh!important;max-height:62vh!important;position:relative!important;order:1!important;background:#020305!important}
+#player .player-browse{position:relative!important;inset:auto!important;order:2!important;z-index:8!important;display:block!important;flex:0 0 auto!important;max-height:54vh!important;overflow:auto!important;background:linear-gradient(180deg,#0b0d12,#07080c)!important;border-top:1px solid rgba(255,255,255,.08)!important}
+#player .player-browse.hidden{display:none!important}
+.player-browse-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;padding:22px 30px 16px}
+.player-browse-identity{min-width:0}.player-browse-identity h2{margin:5px 0;font-size:clamp(25px,2.5vw,40px);line-height:.98;letter-spacing:-.05em}.player-browse-identity p{margin:0;max-width:760px;color:#858a96;font-size:11px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.player-browse-meta{font-size:11px!important;margin:0!important;color:#cdd0d7!important}
+.player-browse-source-wrap{flex:0 0 280px;display:flex;align-items:center;gap:10px}.player-browse-source-wrap .section-kicker{flex:0 0 auto}
+.player-source-select{flex:1;height:42px;border:1px solid rgba(255,255,255,.11);border-radius:12px;background:rgba(255,255,255,.055);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 12px;cursor:pointer;text-align:left}
+.player-source-select strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.player-source-select span{color:#7f8490}
+.player-browse-toolbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;padding:0 30px 13px!important;margin:0!important;border:0!important}
+.player-browse-season-wrap{display:flex;align-items:center;gap:12px;min-width:0}.player-browse-tabs{display:flex;gap:6px;overflow:auto;scrollbar-width:none}.player-browse-tabs button{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.045);color:#969ba6;border-radius:9px;padding:8px 12px;font-size:11px;font-weight:750;white-space:nowrap;cursor:pointer}.player-browse-tabs button.active{background:#fff;color:#08090b;border-color:#fff}
+.player-browse-actions{display:flex;gap:6px;flex:0 0 auto}.player-browse-actions button{width:38px!important;height:36px!important;border:1px solid rgba(255,255,255,.1)!important;background:rgba(255,255,255,.055)!important;color:#dfe1e6!important;border-radius:10px!important;padding:0!important}
+.player-browse-episodes-head{display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 10px}.player-browse-episodes-head strong{display:block;margin-top:3px;font-size:14px}.player-browse-episodes-head>span{color:#666b76;font-size:10px}
+.player-browse-episodes{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:10px!important;padding:0 30px 22px!important;overflow:visible!important}
+.player-episode-card{min-height:0!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:12px!important;background:rgba(255,255,255,.035)!important;transform:none!important}.player-episode-card:hover{border-color:rgba(255,255,255,.22)!important;background:rgba(255,255,255,.06)!important}.player-episode-card.active{border-color:rgba(255,255,255,.75)!important;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 12px 35px rgba(0,0,0,.25);background:rgba(255,255,255,.08)!important}
+.player-episode-thumb{height:110px!important}.player-episode-num{font-size:11px!important;padding:4px 7px!important}.player-episode-quality{position:absolute;z-index:2;right:8px;top:7px;color:#dfff55;font-size:8px;font-weight:850;background:rgba(0,0,0,.58);padding:4px 5px;border-radius:5px}.player-episode-duration{font-size:9px!important}.player-episode-progress{position:absolute;z-index:4;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.15)}.player-episode-progress i{display:block;height:100%;background:#fff}.player-episode-body{padding:8px 9px 10px!important}.player-episode-body strong{font-size:11px!important}.player-episode-meta{display:flex;gap:8px;margin-top:5px;color:#747985;font-size:8px}.player-episode-meta span:first-child{color:#d7d9df}
+#player .player-bar{position:absolute!important;left:0;right:0;bottom:0;z-index:12;pointer-events:none;opacity:0;transform:translateY(8px);transition:.2s ease}#player:hover .player-bar,#player:focus-within .player-bar{opacity:1;transform:none;pointer-events:auto}
+@media(max-width:1000px){.player-episode-thumb{height:92px!important}.player-browse-episodes{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:700px){
+ #player .player-stage{flex:0 0 38dvh!important;min-height:38dvh!important;max-height:46dvh!important}
+ #player .player-browse{max-height:62dvh!important;overflow:auto!important;padding-bottom:72px}
+ .player-browse-head{display:block;padding:15px 15px 11px}.player-browse-identity h2{font-size:27px}.player-browse-identity p{font-size:10px;-webkit-line-clamp:2}
+ .player-browse-source-wrap{margin-top:12px;display:flex;align-items:center}.player-source-select{height:40px}
+ .player-browse-toolbar{padding:0 15px 11px!important;gap:10px!important}.player-browse-season-wrap{display:block;min-width:0}.player-browse-season-wrap>.section-kicker{display:block;margin-bottom:6px}.player-browse-tabs{max-width:calc(100vw - 70px)}.player-browse-tabs button{padding:7px 10px;font-size:10px}
+ .player-browse-actions button{width:34px!important;height:34px!important}.player-browse-episodes-head{padding:0 15px 9px}.player-browse-episodes-head strong{font-size:13px}
+ .player-browse-episodes{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;padding:0 15px 20px!important}.player-episode-thumb{height:82px!important}.player-episode-body{padding:7px 8px 9px!important}.player-episode-body strong{font-size:10px!important}.player-episode-meta{font-size:7px}
+ #player .player-close{top:12px;right:12px;z-index:20}#player .player-bar{display:none!important}
+}
