@@ -2137,3 +2137,24 @@ body.detail-open{overflow:hidden}
   .luno-detail-hero{min-height:610px;padding:150px 20px 72px}
   .luno-detail-hero::after{width:78%;height:52%;top:13%;opacity:.22}
 }
+
+/* LUNO HOME RAILS — one cinematic row, rest hidden behind horizontal scroll */
+main > .section .cards{
+  display:flex;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  overflow-y:hidden;
+  gap:16px;
+  padding:2px 4px 14px 0;
+  scrollbar-width:none;
+  scroll-snap-type:x proximity;
+}
+main > .section .cards::-webkit-scrollbar{display:none}
+main > .section .cards .card{
+  flex:0 0 184px;
+  width:184px;
+  min-width:184px;
+  scroll-snap-align:start;
+}
+main > .section .cards .card-art{height:276px}
+main > .section .cards .card-title{font-size:12px}
