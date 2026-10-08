@@ -43,7 +43,7 @@ function normalize(item, type, genres) {
   };
 }
 
-async function collect(type, sort, pages, genres) {
+async function collect(type, sort, pages, genres, genreId = "") {
   const result = [];
   for (let page = 1; page <= pages; page++) {
     const data = await tmdb("/discover/" + type, {
@@ -53,7 +53,8 @@ async function collect(type, sort, pages, genres) {
       include_video: "false",
       sort_by: sort,
       page,
-      "vote_count.gte": sort === "vote_average.desc" ? 200 : 25
+      "vote_count.gte": sort === "vote_average.desc" ? 200 : 25,
+      with_genres: genreId
     });
     result.push(...(data.results || []).map(item => normalize(item, type, genres)));
   }
@@ -97,11 +98,13 @@ const [movieGenresData, seriesGenresData] = await Promise.all([
 const movieGenres = new Map((movieGenresData.genres || []).map(g => [g.id, g.name]));
 const seriesGenres = new Map((seriesGenresData.genres || []).map(g => [g.id, g.name]));
 
-const [popularMovies, popularSeries, topMovies, topSeries] = await Promise.all([
+const [popularMovies, popularSeries, topMovies, topSeries, animationMovies, animationSeries] = await Promise.all([
   collect("movie", "popularity.desc", 20, movieGenres),
   collect("tv", "popularity.desc", 20, seriesGenres),
   collect("movie", "vote_average.desc", 12, movieGenres),
-  collect("tv", "vote_average.desc", 12, seriesGenres)
+  collect("tv", "vote_average.desc", 12, seriesGenres),
+  collect("movie", "popularity.desc", 8, movieGenres, 16),
+  collect("tv", "popularity.desc", 8, seriesGenres, 16)
 ]);
 
 function unique(items) {
@@ -110,6 +113,8 @@ function unique(items) {
 
 let movies = unique([...popularMovies, ...topMovies]);
 let series = unique([...popularSeries, ...topSeries]);
+const animationMoviesClean = unique(animationMovies);
+const animationSeriesClean = unique(animationSeries);
 
 movies = await enrichExternalIds(movies.slice(0, 1000));
 series = await enrichExternalIds(series.slice(0, 1000));
@@ -144,6 +149,9 @@ const collectionMovies = await expandMovieCollections(movies);
 movies = unique([...movies, ...collectionMovies]);
 movies = await enrichExternalIds(movies);
 
+movies = unique([...movies, ...animationMoviesClean]);
+series = unique([...series, ...animationSeriesClean]);
+
 const all = [...movies, ...series];
 const movieSection = unique([...popularMovies, ...movies]).map(x => x.id).filter(Boolean);
 const seriesSection = unique([...popularSeries, ...series]).map(x => x.id).filter(Boolean);
@@ -155,7 +163,8 @@ const payload = {
     popularMovies: movieSection,
     popularSeries: seriesSection,
     topMovies: unique([...topMovies, ...movies]).map(x => x.id).filter(Boolean),
-    topSeries: unique([...topSeries, ...series]).map(x => x.id).filter(Boolean)
+    topSeries: unique([...topSeries, ...series]).map(x => x.id).filter(Boolean),
+    animation: unique([...animationMoviesClean, ...animationSeriesClean]).map(x => x.id).filter(Boolean)
   },
   items: all
 };
