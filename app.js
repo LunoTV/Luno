@@ -120,7 +120,7 @@ async function openDetail(item){
     const title=value?.name || "Без названия";
     const image=value?.poster || value?.background || "";
     if(detailPoster){
-      detailPoster.style.backgroundImage=image ? \`url("\${String(image).replace(/"/g,"&quot;")}")\` : "";
+      detailPoster.style.backgroundImage=image ? `url("${String(image).replace(/"/g,"&quot;")}")` : "";
       detailPoster.classList.toggle("has-image",!!image);
     }
     if(detailTitle) detailTitle.textContent=title;
