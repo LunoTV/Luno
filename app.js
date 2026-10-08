@@ -266,7 +266,8 @@ function card(item){
   return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
     '<div class="card-art">'+imageHtml+
       '<div class="card-gradient"></div>'+
-      '<div class="card-info"><span class="card-type">'+escapeHtml(type)+'</span>'+meta+'</div>'+
+      '<span class="card-type card-corner">'+escapeHtml(type)+'</span>'+
+      '<div class="card-info">'+meta+'</div>'+
     '</div>'+
     '<div class="card-title">'+escapeHtml(title)+'</div>'+
   '</button>';
