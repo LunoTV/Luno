@@ -414,3 +414,6 @@ body.library-open{overflow:hidden}
   .library-infinite-grid .card-meta{font-size:8.5px;padding:0 7px 9px}
   .library-loader{min-height:100px}
 }
+
+body.library-open .mobile-tabbar,
+body.library-open .topbar{display:none!important}
