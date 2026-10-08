@@ -2569,3 +2569,11 @@ main > .section .cards .card-title{font-size:12px}
 #moviesSection,#seriesSection,#cartoonsSection{
   display:block!important;
 }
+
+/* LUNO HOME ORDER V9 */
+#openCinemaSection{
+  display:none!important;
+}
+#topSection{
+  display:block!important;
+}
