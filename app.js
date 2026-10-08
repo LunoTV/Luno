@@ -376,9 +376,7 @@ function renderItems(items,sections={}){
   catalogItems=unique;
   movieItems=fromIds(sections.popularMovies,"movie");
   seriesItems=fromIds(sections.popularSeries,"series");
-  animationItems=fromIds(sections.animation, "movie").concat(
-    (sections.animation||[]).map(id=>map.get(id)).filter(item=>item?.type==="series")
-  );
+  animationItems=(sections.animation||[]).map(id=>map.get(id)).filter(Boolean);
   animationItems=[...new Map(animationItems.map(item=>[item.id,item])).values()];
 
   window.__LUNO_ITEMS__=new Map(unique.map(item=>[item.id,item]));
