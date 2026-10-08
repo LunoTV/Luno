@@ -2853,3 +2853,34 @@ body.home-mode .hero{
     background:rgba(255,255,255,.10)!important;
   }
 }
+
+
+/* LUNO SEARCH COMPACT V2 — tighter mobile scale */
+@media(max-width:700px){
+  .luno-search-screen{padding:48px 18px 82px!important}
+  .search-topbar{min-height:36px!important;margin-bottom:10px!important}
+  .search-page-title{font-size:20px!important}
+  .search-back{left:16px!important;top:48px!important;font-size:27px!important;width:30px!important;height:30px!important}
+  .search-close-x{right:16px!important;top:47px!important;width:32px!important;height:32px!important;font-size:22px!important}
+  .luno-search-field{height:46px!important;margin-top:20px!important;border-radius:12px!important}
+  .luno-search-field input{font-size:14px!important}
+  .search-history-block{margin-top:16px!important}
+  .search-subtitle{font-size:12px!important;margin-bottom:6px!important}
+  .search-history-empty{font-size:10px!important}
+  .search-sources{margin-top:12px!important;gap:6px!important}
+  .search-source{height:34px!important;padding:0 12px!important;font-size:12px!important}
+  .search-source b{min-width:15px!important;height:15px!important;font-size:9px!important;margin-left:3px!important}
+  .search-results{margin-top:16px!important}
+  .search-result-section{margin-bottom:20px!important}
+  .search-result-section h3{font-size:18px!important;margin-bottom:8px!important}
+  .search-result-section h3 span{font-size:9px!important}
+  .mobile-tabbar{
+    height:50px!important;
+    left:20px!important;right:20px!important;
+    bottom:calc(6px + env(safe-area-inset-bottom))!important;
+    padding:3px!important;border-radius:26px!important
+  }
+  .mobile-tab{height:42px!important;border-radius:22px!important}
+  .mobile-tab .tab-icon{font-size:16px!important;line-height:17px!important}
+  .mobile-tab small{font-size:7px!important;line-height:8px!important}
+}
