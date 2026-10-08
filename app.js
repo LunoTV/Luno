@@ -13,7 +13,9 @@ const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
 const openCinemaCards=document.querySelector("#openCinemaCards");
 const seriesCards=document.querySelector("#seriesCards");
-const cartoonCards=document.querySelector("#cartoonCards");
+const lunoPicksCards=document.querySelector("#lunoPicksCards");
+const eveningCards=document.querySelector("#eveningCards");
+const classicsCards=document.querySelector("#classicsCards");
 const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
@@ -783,7 +785,20 @@ function renderCatalogSections(){
   if(movieCards) movieCards.innerHTML=movieItems.slice(0,movieVisible).map(card).join("");
   if(openCinemaCards) openCinemaCards.innerHTML=openCinemaItems.map(card).join("");
   if(seriesCards) seriesCards.innerHTML=seriesItems.slice(0,seriesVisible).map(card).join("");
-  if(cartoonCards) cartoonCards.innerHTML=cartoonItems.slice(0,18).map(card).join("");
+  const picks=all.slice().sort((a,b)=>
+    ((Number(b.rating)||0)*0.6+(Number(b.popularity)||0)*0.4)-
+    ((Number(a.rating)||0)*0.6+(Number(a.popularity)||0)*0.4)
+  ).slice(0,18);
+  const evening=all.filter(item=>{
+    const genres=Array.isArray(item.genres)?item.genres.map(x=>String(x).toLowerCase()):[];
+    return genres.some(g=>/комеди|роман|приключ|семейн|фэнтези|мелодрам/.test(g));
+  }).sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)).slice(0,18);
+  const classics=all.filter(item=>getYear(item)>0 && getYear(item)<=2010)
+    .sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0) || (Number(b.popularity)||0)-(Number(a.popularity)||0))
+    .slice(0,18);
+  if(lunoPicksCards) lunoPicksCards.innerHTML=picks.map(card).join("");
+  if(eveningCards) eveningCards.innerHTML=evening.map(card).join("");
+  if(classicsCards) classicsCards.innerHTML=classics.map(card).join("");
   renderResume();
   renderFavorites();
   renderDiscovery();
