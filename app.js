@@ -10,11 +10,15 @@ const detailTitle=document.querySelector("#detailTitle");
 const detailMeta=document.querySelector("#detailMeta");
 const detailDescription=document.querySelector("#detailDescription");
 const detailPlay=document.querySelector("#detailPlay");
+const continueSection=document.querySelector("#continueSection");
+const moviesSection=document.querySelector("#moviesSection");
+const seriesSection=document.querySelector("#seriesSection");
 let currentItem=null;
 let catalogItems=[];
 let movieVisible=18;
 let seriesVisible=18;
 let catalogLoading=false;
+let resumeItems=[];
 
 const CINEMETA_BASES=["https://v3-cinemeta.strem.io","https://cinemeta-catalogs.strem.io/top"];
 const TMDB_BASE="https://api.themoviedb.org/3";
@@ -174,6 +178,34 @@ function extractItems(state){
   });
 }
 
+function loadResume(){
+  try{
+    const value=JSON.parse(localStorage.getItem("luno-resume")||"[]");
+    return Array.isArray(value) ? value.filter(x=>x?.id) : [];
+  }catch{return []}
+}
+function saveResume(item,position=0,duration=0){
+  if(!item?.id) return;
+  const list=loadResume().filter(x=>x.id!==item.id);
+  list.unshift({...item,position:Number(position)||0,duration:Number(duration)||0,updatedAt:Date.now()});
+  try{localStorage.setItem("luno-resume",JSON.stringify(list.slice(0,20)));}catch{}
+  renderResume();
+}
+function renderResume(){
+  resumeItems=loadResume();
+  if(!continueSection) return;
+  if(!resumeItems.length){ continueSection.classList.add("resume-empty"); continueCards.innerHTML=""; return; }
+  continueSection.classList.remove("resume-empty");
+  continueCards.innerHTML=resumeItems.slice(0,12).map(card).join("");
+  bindCards();
+}
+function navigate(section){
+  document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
+  document.querySelector(`.nav-item[data-section="${section}"]`)?.classList.add("active");
+  const target=section==="home" ? document.querySelector(".hero") : section==="movies" ? moviesSection : section==="series" ? seriesSection : continueSection;
+  target?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 function renderCatalogSections(){
   const unique=catalogItems;
   const movies=unique.filter((item)=>item.type==="movie");
@@ -182,6 +214,7 @@ function renderCatalogSections(){
   const seriesList=series.length ? series : unique;
   continueCards.innerHTML=movieList.slice(0,movieVisible).map(card).join("");
   popularCards.innerHTML=seriesList.slice(0,seriesVisible).map(card).join("");
+  renderResume();
   bindCards();
   document.querySelector(".hero .eyebrow").textContent="LUNO • КАТАЛОГ ONLINE";
 }
@@ -327,6 +360,10 @@ function openPlayer(id,type,title){
   if(text) text.textContent=id
     ? "Метаданные подключены. Следующий слой — получение stream и запуск видео."
     : "Выберите фильм или сериал.";
+  if(id){
+    const item=window.__LUNO_ITEMS__?.get(id) || {id,type,name:title};
+    saveResume(item,0,0);
+  }
   document.querySelector("#closePlayer").focus();
 }
 
@@ -393,11 +430,9 @@ document.addEventListener("keydown",(e)=>{
   }
 });
 
-document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("click",()=>{
-  document.querySelectorAll(".nav-item").forEach((x)=>x.classList.remove("active"));
-  btn.classList.add("active");
-}));
+document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
 
+renderResume();
 showCatalogMessage("Загружаем каталог LUNO…");
 
 const catalogSentinel=document.querySelector("#catalogSentinel");
@@ -408,8 +443,8 @@ if(catalogSentinel && "IntersectionObserver" in window){
   observer.observe(catalogSentinel);
 }
 
-// Start the fast browser catalog immediately; Core can finish in parallel.
-const directCatalogPromise=loadDirectCatalog();
+// Start the live catalog in the background. The local build seed is the TV-safe first paint.
+const directCatalogPromise=loadDirectCatalog().catch(()=>[]);
 
 function prefetchPosters(items){
   items.slice(0,24).forEach((item)=>{
@@ -422,43 +457,35 @@ function prefetchPosters(items){
 }
 
 (async()=>{
-  // LUNO UI catalog is authoritative from the direct browser catalog.
-  // Stremio Core stays initialized as the runtime foundation and must never
-  // replace visible cards with an empty/intermediate board state.
+  // TV-safe: paint the bundled seed first, then replace it with the live catalog if available.
   try{
-    let items=await directCatalogPromise;
-    items=await loadRussianMetadata(items);
-    if(renderItems(items)){
+    let seed=loadCatalogCache();
+    if(!seed.length) seed=await loadCatalogSeed();
+    seed=await loadRussianMetadata(seed);
+    if(renderItems(seed)){
+      prefetchPosters(seed);
+      showCoreStatus("LUNO • КАТАЛОГ ONLINE");
+      console.info("LUNO TV-safe seed loaded",seed.length);
+    }
+  }catch(error){ console.warn("LUNO seed load failed",error); }
+
+  try{
+    const live=await Promise.race([
+      directCatalogPromise,
+      new Promise(resolve=>setTimeout(()=>resolve([]),7000))
+    ]);
+    if(live?.length){
+      const items=await loadRussianMetadata(live);
+      renderItems(items);
       prefetchPosters(items);
       showCoreStatus("LUNO • КАТАЛОГ ONLINE");
-      hydrateRenderedCards(items);
-      console.info("LUNO direct Cinemeta catalog loaded",items.length);
-      return;
+      console.info("LUNO live catalog loaded",items.length);
     }
-  }catch(error){
-    console.warn("LUNO live catalog failed",error);
-  }
+  }catch(error){ console.warn("LUNO live catalog failed",error); }
 
-  let cached=loadCatalogCache();
-  if(!cached.length) cached=await loadCatalogSeed();
-  cached=await loadRussianMetadata(cached);
-  if(renderItems(cached)){
-    prefetchPosters(cached);
-    showCoreStatus("LUNO • КАТАЛОГ ONLINE");
-    hydrateRenderedCards(cached);
-    console.info("LUNO cached catalog loaded",cached.length);
-  }else{
-    showCoreStatus("LUNO • КАТАЛОГ ОЖИДАЕТ СЕТЬ");
-    showCatalogMessage("Подключаем каталог…");
-  }
-
-  // Core is initialized in parallel, but its board state is not allowed
-  // to overwrite the LUNO catalog UI.
   try{
     const {initLunoCore}=await import("./core.js");
     await initLunoCore();
     console.info("LUNO Core ready");
-  }catch(error){
-    console.warn("LUNO Core unavailable",error);
-  }
+  }catch(error){ console.warn("LUNO Core unavailable",error); }
 })();
