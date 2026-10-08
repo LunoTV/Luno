@@ -763,12 +763,16 @@ function closeSourceSheetPanel(){
 function buildMetaRequest(item,entry){
   const base=entry?.addon?.transportUrl || entry?.request?.base;
   if(!base || !item?.id) return null;
+  const type=item.type==="series" ? "series" : "movie";
+  const id=type==="movie"
+    ? String(item.imdbId || item.videoId || item.id)
+    : String(item.id);
   return {
     base,
     path:{
       resource:"meta",
-      type:item.type==="series" ? "series" : "movie",
-      id:String(item.id),
+      type,
+      id,
       extra:[]
     }
   };
