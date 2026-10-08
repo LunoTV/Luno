@@ -234,3 +234,27 @@ main{padding-top:76px;padding-bottom:100px}
 }
 @media(hover:none){.card:hover,.hero-poster-wrap:hover .hero-poster{transform:none}.card:active{transform:scale(.985)}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* ---------- DISCOVERY LAYER ---------- */
+.discovery-section{margin-top:58px}
+.discovery-section .cards{padding-bottom:5px}
+.genre-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.genre-tile{
+  min-height:125px;border:1px solid rgba(255,255,255,.08);border-radius:18px;
+  background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+  padding:18px;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;gap:5px;
+  cursor:pointer;position:relative;overflow:hidden;transition:.2s;
+}
+.genre-tile:before{
+  content:"";position:absolute;width:100px;height:100px;right:-25px;top:-25px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.16),transparent 68%);
+}
+.genre-tile:hover,.genre-tile:focus-visible{transform:translateY(-3px);background:rgba(255,255,255,.09)}
+.genre-tile span{font-size:28px;position:absolute;right:17px;top:14px;color:#dfe1e5}
+.genre-tile strong{font-size:17px;position:relative}.genre-tile small{color:#777b86;font-size:10px;position:relative}
+@media(max-width:700px){
+  .discovery-section{margin-top:34px}
+  .genre-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding-right:14px}
+  .genre-tile{min-height:105px;border-radius:15px;padding:14px}
+  .genre-tile strong{font-size:14px}.genre-tile small{font-size:9px}.genre-tile span{font-size:23px}
+}
