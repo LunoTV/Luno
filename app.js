@@ -178,8 +178,8 @@ function renderItems(items){
   const movies=unique.filter((item)=>item.type==="movie");
   const series=unique.filter((item)=>item.type==="series");
 
-  continueCards.innerHTML=(movies.length ? movies : unique).slice(0,6).map(card).join("");
-  popularCards.innerHTML=(series.length ? series : unique).slice(0,6).map(card).join("");
+  continueCards.innerHTML=(movies.length ? movies : unique).slice(0,18).map(card).join("");
+  popularCards.innerHTML=(series.length ? series : unique).slice(0,18).map(card).join("");
   bindCards();
 
   document.querySelector(".hero .eyebrow").textContent="LUNO • КАТАЛОГ ONLINE";
@@ -244,6 +244,22 @@ async function loadDirectSearch(query){
     fetchCinemetaCatalog("series",extra)
   ]);
   return [...movies,...series];
+}
+
+async function loadRussianMetadata(items){
+  try{
+    const response=await fetch("./tmdb-ru.json?v=ru1",{cache:"no-store"});
+    if(!response.ok) return items;
+    const data=await response.json();
+    const map=data?.items||{};
+    return items.map(item=>{
+      const ru=map[item.id];
+      return ru ? {...item,...ru} : item;
+    });
+  }catch(error){
+    console.warn("LUNO Russian metadata unavailable",error);
+    return items;
+  }
 }
 
 function showCoreStatus(message){
@@ -355,7 +371,8 @@ function prefetchPosters(items){
   // Stremio Core stays initialized as the runtime foundation and must never
   // replace visible cards with an empty/intermediate board state.
   try{
-    const items=await directCatalogPromise;
+    let items=await directCatalogPromise;
+    items=await loadRussianMetadata(items);
     if(renderItems(items)){
       directShown=true;
       prefetchPosters(items);
@@ -368,7 +385,8 @@ function prefetchPosters(items){
     console.warn("LUNO live catalog failed",error);
   }
 
-  const cached=loadCatalogCache();
+  let cached=loadCatalogCache();
+  cached=await loadRussianMetadata(cached);
   if(renderItems(cached)){
     directShown=true;
     prefetchPosters(cached);
