@@ -1,5 +1,6 @@
 import tmdbCatalog from "./tmdb-catalog.generated.js";
 import Hls from "hls.js";
+import dashjs from "dash.js";
 import {
   loadMetaDetails,
   loadLunoPlayer,
@@ -1003,8 +1004,7 @@ function closePlayer(){
   if(lunoVideo && currentItem && Number(lunoVideo.duration)>0 && Number(lunoVideo.currentTime)>5){
     window.LUNOPlayback?.progress(currentItem,lunoVideo.currentTime,lunoVideo.duration);
   }
-  activeHls?.destroy?.();
-  activeHls=null;
+  destroyActivePlayback();
   lunoVideo?.pause();
   sourceSheet?.classList.add("hidden");
   player.classList.add("hidden");
@@ -1012,23 +1012,38 @@ function closePlayer(){
 }
 
 let activeHls=null;
+let activeDash=null;
+
+function destroyActivePlayback(){
+  activeHls?.destroy?.();
+  activeHls=null;
+  try{ activeDash?.reset?.(); }catch{}
+  activeDash=null;
+}
 
 function setLunoStream(streamUrl,streamMeta={}){
   if(!lunoVideo || !streamUrl) return false;
-  activeHls?.destroy?.();
-  activeHls=null;
+  destroyActivePlayback();
   playerEmpty?.classList.add("hidden");
   lunoVideo.classList.add("is-ready");
   lunoVideo.removeAttribute("src");
   lunoVideo.removeAttribute("type");
   lunoVideo.load();
 
-  const url=String(streamUrl);
-  const isHls=/\.m3u8(?:$|[?#])/i.test(url);
+  const rawUrl=String(streamUrl).trim();
+  const mediaUrl=rawUrl.split("|")[0];
+  const hint=String(
+    streamMeta?.stream?.behaviorHints?.contentType ||
+    streamMeta?.stream?.contentType ||
+    streamMeta?.contentType ||
+    ""
+  ).toLowerCase();
+
+  const isHls=hint.includes("mpegurl") || hint.includes("hls") || /\.m3u8(?:$|[?#])/i.test(mediaUrl);
+  const isDash=hint.includes("dash") || hint.includes("mpd") || /\.mpd(?:$|[?#])/i.test(mediaUrl);
 
   const showPlaybackError=(message)=>{
-    activeHls?.destroy?.();
-    activeHls=null;
+    destroyActivePlayback();
     lunoVideo.pause();
     lunoVideo.classList.remove("is-ready");
     playerEmpty?.classList.remove("hidden");
@@ -1039,12 +1054,25 @@ function setLunoStream(streamUrl,streamMeta={}){
     showPlaybackError("Поток не удалось воспроизвести. Выберите другой источник.");
   };
 
-  if(isHls && Hls.isSupported()){
+  if(isDash && dashjs?.MediaPlayer){
+    try{
+      activeDash=dashjs.MediaPlayer().create();
+      activeDash.initialize(lunoVideo,mediaUrl,true);
+      activeDash.on(dashjs.MediaPlayer.events.ERROR,(event)=>{
+        console.warn("LUNO DASH playback error",event);
+      });
+    }catch(error){
+      console.warn("LUNO DASH init failed",error);
+      showPlaybackError("DASH-поток не удалось запустить.");
+      return false;
+    }
+  }else if(isHls && Hls.isSupported()){
     activeHls=new Hls({
       enableWorker:true,
       lowLatencyMode:false,
       backBufferLength:30,
-      maxBufferLength:30
+      maxBufferLength:30,
+      capLevelToPlayerSize:true
     });
 
     activeHls.on(Hls.Events.ERROR,(event,data)=>{
@@ -1056,13 +1084,15 @@ function setLunoStream(streamUrl,streamMeta={}){
           return;
         }catch{}
       }
-      showPlaybackError("HLS-поток не удалось запустить. Выберите другой источник.");
+      showPlaybackError("HLS-поток не удалось запустить.");
     });
 
-    activeHls.loadSource(url);
+    activeHls.loadSource(mediaUrl);
     activeHls.attachMedia(lunoVideo);
+  }else if(isHls && lunoVideo.canPlayType("application/vnd.apple.mpegurl")){
+    lunoVideo.src=mediaUrl;
   }else{
-    lunoVideo.src=url;
+    lunoVideo.src=mediaUrl;
   }
 
   if(playerBarMeta) playerBarMeta.textContent=streamMeta.label || playerBarMeta.textContent || "";
