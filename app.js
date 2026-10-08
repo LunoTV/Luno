@@ -1,3 +1,4 @@
+import tmdbCatalog from "./tmdb-catalog.generated.js";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
 const seriesCards=document.querySelector("#seriesCards");
@@ -176,13 +177,12 @@ function renderItems(items,sections={}){
 }
 
 async function loadTmdbCatalog(){
-  const embedded=window.__LUNO_TMDB_CATALOG__;
-  if(embedded && Array.isArray(embedded.items) && embedded.items.length){
-    return {items:embedded.items,sections:embedded.sections||{}};
+  if(tmdbCatalog && Array.isArray(tmdbCatalog.items) && tmdbCatalog.items.length){
+    return {items:tmdbCatalog.items,sections:tmdbCatalog.sections||{}};
   }
   const candidates=[
-    new URL("./tmdb-catalog.json?v=3",document.baseURI).href,
-    new URL("/Luno/tmdb-catalog.json?v=3",window.location.origin).href
+    new URL("./tmdb-catalog.json?v=5",document.baseURI).href,
+    new URL("/Luno/tmdb-catalog.json?v=5",window.location.origin).href
   ];
   let lastError=null;
   for(const url of [...new Set(candidates)]){
