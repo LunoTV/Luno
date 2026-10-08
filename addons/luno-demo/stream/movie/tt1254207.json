@@ -1,11 +1,19 @@
 {
   "streams": [
     {
-      "name": "Big Buck Bunny",
-      "description": "720p • публичный тестовый MP4",
+      "name": "Big Buck Bunny • 720p",
+      "description": "CC BY 3.0 • MP4 • прямой поток",
       "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4",
       "behaviorHints": {
-        "bingeGroup": "luno-demo-720p"
+        "bingeGroup": "luno-open-bbb"
+      }
+    },
+    {
+      "name": "Big Buck Bunny • 320p",
+      "description": "CC BY 3.0 • MP4 • прямой поток",
+      "url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4",
+      "behaviorHints": {
+        "bingeGroup": "luno-open-bbb"
       }
     }
   ]
