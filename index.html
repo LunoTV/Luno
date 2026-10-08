@@ -215,7 +215,6 @@
               <button class="detail-circle-action" type="button" aria-label="Трейлер">▶</button>
             </div>
           </div>
-          <div id="detailHeroPoster" class="luno-detail-poster"></div>
           <div id="detailRatings" class="luno-detail-ratings"></div>
         </section>
 
@@ -233,11 +232,6 @@
           <div class="luno-about-grid">
             <div class="luno-about-main">
               <p id="detailDescription">Описание загружается…</p>
-              <div class="luno-fact-card">
-                <div class="luno-fact-index"><strong>01</strong><span>ИНТЕРЕСНЫЙ ФАКТ</span></div>
-                <p id="detailFact">LUNO собирает информацию о фильме в одном чистом интерфейсе.</p>
-                <div class="luno-fact-actions"><button type="button">Следующий →</button><button type="button">Все факты</button></div>
-              </div>
               <div id="detailTags" class="luno-tags"></div>
             </div>
             <aside class="luno-about-side">
@@ -252,9 +246,14 @@
           </div>
         </section>
 
-        <section class="luno-detail-section credits-section">
-          <div class="luno-section-title"><h3>Создатели</h3><span>Команда проекта</span></div>
-          <div class="luno-credit-row" id="detailCredits"></div>
+        <section class="luno-detail-section actors-section">
+          <div class="luno-section-title"><h3>Актёры</h3><span>В главных ролях</span></div>
+          <div class="luno-actor-row" id="detailCredits"></div>
+        </section>
+
+        <section class="luno-detail-section similar-section">
+          <div class="luno-section-title"><h3 id="detailSimilarTitle">Похожие</h3><span>Фильмы и сериалы в этой вселенной</span></div>
+          <div id="detailSimilar" class="luno-recommend-row"></div>
         </section>
 
         <section class="luno-detail-section recommend-section">
