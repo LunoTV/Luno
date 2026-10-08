@@ -8,7 +8,7 @@ import {
   getPlayerStreamUrl,
   unloadLunoPlayer,
   dispatchLunoPlayerAction,
-} from "./core.js";
+} from "./source-engine.js";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
 const openCinemaCards=document.querySelector("#openCinemaCards");
@@ -1368,7 +1368,7 @@ function prefetchPosters(items){
   }
 
   try{
-    const {initLunoCore}=await import("./core.js");
+    const {initLunoCore}=await import("./source-engine.js");
     await Promise.race([
       initLunoCore(),
       new Promise((_,reject)=>window.setTimeout(()=>reject(new Error("LUNO Source Engine init timeout")),6500))
