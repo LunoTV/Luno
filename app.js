@@ -959,17 +959,49 @@ function setLunoStream(streamUrl,streamMeta={}){
   playerEmpty?.classList.add("hidden");
   lunoVideo.classList.add("is-ready");
   lunoVideo.removeAttribute("src");
+  lunoVideo.removeAttribute("type");
+  lunoVideo.load();
 
-  const isHls=/\.m3u8(?:$|[?#])/i.test(String(streamUrl));
+  const url=String(streamUrl);
+  const isHls=/\.m3u8(?:$|[?#])/i.test(url);
+
+  const showPlaybackError=(message)=>{
+    activeHls?.destroy?.();
+    activeHls=null;
+    lunoVideo.pause();
+    lunoVideo.classList.remove("is-ready");
+    playerEmpty?.classList.remove("hidden");
+    if(playerMessage) playerMessage.textContent=message;
+  };
+
+  lunoVideo.onerror=()=>{
+    showPlaybackError("Поток не удалось воспроизвести. Выберите другой источник.");
+  };
+
   if(isHls && Hls.isSupported()){
     activeHls=new Hls({
       enableWorker:true,
-      lowLatencyMode:false
+      lowLatencyMode:false,
+      backBufferLength:30,
+      maxBufferLength:30
     });
-    activeHls.loadSource(streamUrl);
+
+    activeHls.on(Hls.Events.ERROR,(event,data)=>{
+      if(!data?.fatal) return;
+      console.warn("LUNO HLS playback error",data);
+      if(data.type===Hls.ErrorTypes.MEDIA_ERROR){
+        try{
+          activeHls.recoverMediaError();
+          return;
+        }catch{}
+      }
+      showPlaybackError("HLS-поток не удалось запустить. Выберите другой источник.");
+    });
+
+    activeHls.loadSource(url);
     activeHls.attachMedia(lunoVideo);
   }else{
-    lunoVideo.src=streamUrl;
+    lunoVideo.src=url;
   }
 
   if(playerBarMeta) playerBarMeta.textContent=streamMeta.label || playerBarMeta.textContent || "";
