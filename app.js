@@ -60,6 +60,16 @@ const sourceEmpty=document.querySelector("#sourceEmpty");
 const closeSourceSheet=document.querySelector("#closeSourceSheet");
 const detail=document.querySelector("#detail");
 const detailPoster=document.querySelector("#detailPoster");
+const detailHeroPoster=document.querySelector("#detailHeroPoster");
+const detailReleaseInfo=document.querySelector("#detailReleaseInfo");
+const detailTypeInfo=document.querySelector("#detailTypeInfo");
+const detailQualityInfo=document.querySelector("#detailQualityInfo");
+const detailQualityBar=document.querySelector("#detailQualityBar");
+const detailQualityText=document.querySelector("#detailQualityText");
+const detailTags=document.querySelector("#detailTags");
+const detailFact=document.querySelector("#detailFact");
+const detailCredits=document.querySelector("#detailCredits");
+const detailRecommendations=document.querySelector("#detailRecommendations");
 const detailTitle=document.querySelector("#detailTitle");
 const detailMeta=document.querySelector("#detailMeta");
 const detailDescription=document.querySelector("#detailDescription");
@@ -276,7 +286,7 @@ function bindCards(){
 function paintDetail(value){
   const title=value?.name || "Без названия";
   const image=value?.poster || value?.background || "";
-  const year=String(value?.releaseInfo || "").match(/\d{4}/)?.[0] || "";
+  const year=String(value?.releaseInfo || "").match(/\d{4}/)?.[0] || "—";
   const score=Number(value?.rating)||0;
   const type=categoryLabel(value);
   const genres=Array.isArray(value?.genres) ? value.genres : [];
@@ -288,41 +298,73 @@ function paintDetail(value){
     10763:"Новости",10764:"Реалити",10765:"Фантастика",10766:"Мыльная опера",
     10767:"Ток-шоу",10768:"Война"
   };
-  const genreNames=genres.map(g=>genreMap[g]||g).filter(Boolean).slice(0,4);
+  const genreNames=genres.map(g=>genreMap[g]||g).filter(Boolean).slice(0,5);
+  const quality=score>=8.2 ? "4K" : score>=6.8 ? "FULLHD" : "HD";
+  const qualityPct=quality==="4K" ? 96 : quality==="FULLHD" ? 78 : 55;
 
-  if(detailPoster){
-    const detailImage=value?.background || value?.poster || "";
-    detailPoster.style.backgroundImage=detailImage ? 'url("'+String(detailImage).replace(/"/g,"&quot;")+'")' : "";
-    detailPoster.classList.toggle("has-image",!!detailImage);
-  }
+  if(detailHeroPoster) detailHeroPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
+  if(detailPoster) detailPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
   if(detailTitle) detailTitle.textContent=title;
-  detailEpisodes?.classList.toggle("hidden", value?.type!=="series");
   if(detailMeta) detailMeta.textContent=[
-    year,
-    type,
-    value?.runtime ? value.runtime+" мин" : ""
+    year!=="—" ? year : "",
+    value?.runtime ? value.runtime+" мин" : "",
+    type
   ].filter(Boolean).join(" • ");
 
   if(detailBadges){
     detailBadges.innerHTML=[
-      year ? '<span class="detail-badge">'+escapeHtml(year)+'</span>' : "",
-      '<span class="detail-badge">'+escapeHtml(type)+'</span>',
+      quality ? '<span class="detail-badge detail-quality">'+escapeHtml(quality)+'</span>' : "",
       score>0 ? '<span class="detail-badge detail-badge-score">★ '+score.toFixed(1)+'</span>' : "",
-      ...genreNames.slice(0,2).map(g=>'<span class="detail-badge detail-badge-muted">'+escapeHtml(g)+'</span>')
+      ...genreNames.slice(0,3).map(g=>'<span class="detail-badge detail-badge-muted">'+escapeHtml(g)+'</span>')
     ].filter(Boolean).join("");
   }
 
   if(detailDescription) detailDescription.textContent=value?.description || "Описание пока недоступно.";
+  if(detailReleaseInfo) detailReleaseInfo.textContent=year;
+  if(detailTypeInfo) detailTypeInfo.textContent=type;
+  if(detailQualityInfo) detailQualityInfo.textContent=quality;
+  if(detailQualityBar) detailQualityBar.style.width=qualityPct+"%";
+  if(detailQualityText) detailQualityText.textContent=quality==="4K" ? "Максимальное доступное качество" : "Оптимально для просмотра";
 
   if(detailRatings){
-    detailRatings.innerHTML=score>0
-      ? '<div class="detail-rating-main"><strong>★ '+score.toFixed(1)+'</strong><span>Рейтинг</span></div>'+
-        '<div class="detail-rating"><strong>'+escapeHtml(year||"—")+'</strong><span>год</span></div>'+
-        '<div class="detail-rating"><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>'+
-        '<div class="detail-rating"><strong>'+escapeHtml(String(genreNames[0]||"—"))+'</strong><span>жанр</span></div>'
-      : '<div class="detail-rating-main"><strong>—</strong><span>Рейтинг</span></div>'+
-        '<div class="detail-rating"><strong>'+escapeHtml(year||"—")+'</strong><span>год</span></div>'+
-        '<div class="detail-rating"><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>';
+    detailRatings.innerHTML=[
+      '<div class="luno-score"><strong>'+ (score>0 ? score.toFixed(1) : "—") +'</strong><span>LUNO</span></div>',
+      '<div><strong>'+escapeHtml(year)+'</strong><span>год</span></div>',
+      '<div><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>',
+      '<div><strong>'+escapeHtml(quality)+'</strong><span>качество</span></div>'
+    ].join("");
+  }
+
+  if(detailTags){
+    detailTags.innerHTML=genreNames.map(g=>'<button type="button"># '+escapeHtml(g)+'</button>').join("") || '<button type="button"># LUNO</button>';
+  }
+
+  if(detailFact){
+    const facts=[
+      title+" — один из тайтлов, который LUNO показывает без лишних экранов.",
+      "LUNO объединяет карточку, источник и просмотр в одной логике.",
+      genreNames.length ? "В основе рекомендаций — жанры: "+genreNames.slice(0,3).join(", ")+".": "Для этого тайтла пока нет дополнительных фактов."
+    ];
+    detailFact.textContent=facts[0];
+    detailFact.dataset.factIndex="0";
+  }
+
+  if(detailCredits){
+    detailCredits.innerHTML=[
+      '<div class="luno-credit-card"><span class="luno-credit-avatar">L</span><div><strong>LUNO</strong><small>Интерфейс и просмотр</small></div></div>',
+      '<div class="luno-credit-card"><span class="luno-credit-avatar">◈</span><div><strong>Источник</strong><small>Подбирается автоматически</small></div></div>',
+      '<div class="luno-credit-card"><span class="luno-credit-avatar">◎</span><div><strong>Метаданные</strong><small>Информация о тайтле</small></div></div>'
+    ].join("");
+  }
+
+  if(detailRecommendations){
+    const pool=(catalogItems||[]).filter(x=>x?.id && x.id!==value?.id);
+    const scored=pool.map(item=>{
+      const shared=(item.genreIds||[]).filter(g=>(value.genreIds||[]).includes(g)).length;
+      return {item,score:shared};
+    }).sort((a,b)=>b.score-a.score).slice(0,8).map(x=>x.item);
+    detailRecommendations.innerHTML=scored.length ? scored.map(item=>card(item)).join("") : "";
+    bindCards();
   }
 }
 function isFavorite(id){
@@ -416,6 +458,13 @@ function closeDetail(fromHistory=false){
   }
 }
 
+document.querySelectorAll(".luno-detail-links [data-section]").forEach((button)=>{
+  button.addEventListener("click",()=>{
+    const section=button.dataset.section;
+    closeDetail(true);
+    if(section) setTimeout(()=>document.querySelector('[data-section="'+section+'"]')?.click(),0);
+  });
+});
 detailPlay?.addEventListener("click",()=>{
   if(currentItem) openPlayer(currentItem.id,currentItem.type,currentItem.name);
 });
