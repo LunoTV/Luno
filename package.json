@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@stremio/stremio-core-web": "0.64.1",
-    "hls.js": "1.7.2"
+    "hls.js": "1.7.2",
+    "dash.js": "5.2.1"
   },
   "devDependencies": {
     "vite": "^7.1.7",
