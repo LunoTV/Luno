@@ -2555,3 +2555,17 @@ main > .section .cards .card-title{font-size:12px}
     padding-right:9px!important;
   }
 }
+
+/* LUNO HOME ORDER V8 — continue viewing returns directly under hero */
+#continueSection{
+  display:block!important;
+}
+#continueSection.resume-empty{
+  display:none!important;
+}
+#newSection,#topSection,#genreSection{
+  display:none!important;
+}
+#moviesSection,#seriesSection,#cartoonsSection{
+  display:block!important;
+}
