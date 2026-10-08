@@ -1951,6 +1951,12 @@ document.addEventListener("keydown",(e)=>{
 });
 
 document.querySelectorAll(".nav-item,.mobile-tab").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
+document.querySelector(".dock-back")?.addEventListener("click",()=>{
+  if(history.state?.luno && history.state.luno!=="home"){
+    try{history.back();return;}catch{}
+  }
+  window.scrollTo({top:0,behavior:"smooth"});
+});
 document.querySelectorAll(".nav-item").forEach((btn,index,buttons)=>btn.addEventListener("keydown",(e)=>{
   if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return;
   e.preventDefault();
