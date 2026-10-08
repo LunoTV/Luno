@@ -6,6 +6,11 @@ const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
+const lunoVideo=document.querySelector("#lunoVideo");
+const playerEmpty=document.querySelector("#playerEmpty");
+const playerMessage=document.querySelector("#playerMessage");
+const playerBarTitle=document.querySelector("#playerBarTitle");
+const playerBarMeta=document.querySelector("#playerBarMeta");
 const detail=document.querySelector("#detail");
 const detailPoster=document.querySelector("#detailPoster");
 const detailTitle=document.querySelector("#detailTitle");
@@ -175,7 +180,7 @@ function paintDetail(value){
   const image=value?.poster || value?.background || "";
   const year=String(value?.releaseInfo || "").match(/\d{4}/)?.[0] || "";
   const score=Number(value?.rating)||0;
-  const type=value?.type==="series" ? "Сериал" : "Фильм";
+  const type=categoryLabel(value);
   const genres=Array.isArray(value?.genres) ? value.genres : [];
   const genreMap={
     28:"Боевик",12:"Приключения",16:"Мультфильм",35:"Комедия",80:"Криминал",
@@ -223,6 +228,19 @@ function paintDetail(value){
 }
 function isFavorite(id){
   return loadFavorites().some(item=>item.id===id);
+}
+
+function loadHistory(){
+  try{
+    const value=JSON.parse(localStorage.getItem("luno-history")||"[]");
+    return Array.isArray(value) ? value.filter(x=>x?.id) : [];
+  }catch{return []}
+}
+function saveHistoryItem(item){
+  if(!item?.id) return;
+  const list=loadHistory().filter(x=>x.id!==item.id);
+  list.unshift({...item,updatedAt:Date.now()});
+  try{localStorage.setItem("luno-history",JSON.stringify(list.slice(0,50)));}catch{}
 }
 
 function loadFavorites(){
@@ -275,6 +293,7 @@ function openDetail(item){
   if(detailReturnLibrary) closeLibrary(true);
   setLunoHistory("detail");
   currentItem=item;
+  saveHistoryItem(item);
   paintDetail(item);
   if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
   paintFavoriteButton(item);
@@ -609,16 +628,49 @@ function showCatalogMessage(message){
   if(seriesCards) seriesCards.innerHTML="";
 }
 
-function openPlayer(id,type,title){
+function openPlayer(id,type,title,streamUrl=""){
   player.classList.remove("hidden");
-  const heading=player.querySelector(".player-placeholder h2");
-  const text=player.querySelector(".player-placeholder p");
-  if(heading) heading.textContent=title || "LUNO Player";
-  if(text) text.textContent=id
-    ? "Карточка готова. Подключение просмотра через Stremio Core — следующий слой."
-    : "Выберите фильм или сериал.";
+  if(playerBarTitle) playerBarTitle.textContent=title || "LUNO";
+  if(playerBarMeta) playerBarMeta.textContent=type==="series" ? "Сериал" : "Фильм";
+  if(lunoVideo){
+    lunoVideo.pause();
+    lunoVideo.removeAttribute("src");
+    lunoVideo.load();
+  }
+  if(streamUrl && lunoVideo){
+    playerEmpty?.classList.add("hidden");
+    lunoVideo.classList.add("is-ready");
+    lunoVideo.src=streamUrl;
+    lunoVideo.play().catch(()=>{});
+    window.LUNOPlayback?.start(currentItem);
+  }else{
+    playerEmpty?.classList.remove("hidden");
+    if(lunoVideo) lunoVideo.classList.remove("is-ready");
+    if(playerMessage) playerMessage.textContent="Источник просмотра будет подключён через Stremio Core.";
+  }
   document.querySelector("#closePlayer")?.focus();
 }
+
+function closePlayer(){
+  if(lunoVideo && currentItem && Number(lunoVideo.duration)>0 && Number(lunoVideo.currentTime)>5){
+    window.LUNOPlayback?.progress(currentItem,lunoVideo.currentTime,lunoVideo.duration);
+  }
+  lunoVideo?.pause();
+  player.classList.add("hidden");
+}
+
+function setLunoStream(streamUrl,streamMeta={}){
+  if(!lunoVideo || !streamUrl) return false;
+  playerEmpty?.classList.add("hidden");
+  lunoVideo.classList.add("is-ready");
+  lunoVideo.src=streamUrl;
+  if(playerBarMeta) playerBarMeta.textContent=streamMeta.label || playerBarMeta.textContent || "";
+  lunoVideo.play().catch(()=>{});
+  window.LUNOPlayback?.start(currentItem);
+  return true;
+}
+
+window.LUNOPlayer={openStream:setLunoStream};
 
 function closePlayer(){
   player.classList.add("hidden");
@@ -749,6 +801,11 @@ document.querySelector("#continueBtn").onclick=()=>{
 document.querySelectorAll(".section-more").forEach(btn=>btn.addEventListener("click",()=>{
   navigate(btn.dataset.section||"home");
 }));
+lunoVideo?.addEventListener("timeupdate",()=>{
+  if(currentItem && Number(lunoVideo.duration)>0 && Math.floor(lunoVideo.currentTime)%5===0) window.LUNOPlayback?.progress(currentItem,lunoVideo.currentTime,lunoVideo.duration);
+});
+lunoVideo?.addEventListener("ended",()=>{ if(currentItem) window.LUNOPlayback?.finish(currentItem); });
+
 document.querySelector("#closePlayer").onclick=()=>{
   showDialog("Выйти из просмотра?","Прогресс просмотра сохранится на этом устройстве.","Выйти",closePlayer);
 };
