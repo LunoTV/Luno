@@ -2473,3 +2473,27 @@ main > .section .cards .card-title{font-size:12px}
     font-size:7px!important;
   }
 }
+
+/* LUNO CARD META V5 — compact so the full year always fits */
+@media(max-width:700px){
+  .card-info{
+    padding:6px 7px 7px!important;
+    gap:4px!important;
+  }
+  .card-info .card-quality{
+    font-size:7.5px!important;
+    letter-spacing:-.01em;
+  }
+  .card-info .card-rating,
+  .card-info .card-year{
+    font-size:8px!important;
+  }
+  .card-info .card-quality+.card-rating:before,
+  .card-info .card-rating+.card-year:before{
+    margin-right:4px!important;
+  }
+  .card-info .card-year{
+    min-width:0!important;
+    flex-shrink:0!important;
+  }
+}
