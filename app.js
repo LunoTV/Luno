@@ -261,10 +261,19 @@ function renderFavorites(){
   bindCards();
 }
 
+function setLunoHistory(view){
+  try{history.pushState({luno:view},"",view==="home" ? location.pathname+location.search : "#"+view);}catch{}
+}
+function ensureLunoHistory(){
+  try{
+    if(!history.state?.luno) history.replaceState({luno:"home"},"",location.pathname+location.search);
+  }catch{}
+}
 function openDetail(item){
   if(!item) return;
   detailReturnLibrary=libraryView && !libraryView.classList.contains("hidden") ? libraryType : "";
-  if(detailReturnLibrary) closeLibrary();
+  if(detailReturnLibrary) closeLibrary(false);
+  setLunoHistory("detail");
   currentItem=item;
   paintDetail(item);
   if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
@@ -274,14 +283,17 @@ function openDetail(item){
   detailPlay?.focus();
 }
 
-function closeDetail(){
+function closeDetail(fromHistory=false){
   detail?.classList.add("hidden");
   document.body.classList.remove("detail-open");
   currentItem=null;
   if(detailReturnLibrary){
     const target=detailReturnLibrary;
     detailReturnLibrary="";
-    openLibrary(target);
+    openLibrary(target,false);
+  }
+  if(!fromHistory) {
+    try{ if(history.state?.luno==="detail") history.back(); }catch{}
   }
 }
 
@@ -351,6 +363,7 @@ function renderLibraryBatch(){
 }
 
 function openCategoryHub(){
+  setLunoHistory("catalog");
   if(!libraryView || !libraryContent) return;
   libraryType="catalog";
   libraryTitle.textContent="Каталог";
@@ -379,7 +392,7 @@ function openCategoryHub(){
     });
   });
 }
-function openLibrary(type){
+function openLibrary(type,pushHistory=true){
   const config={
     movies:{title:"Фильмы",kicker:"LUNO • КИНО"},
     series:{title:"Сериалы",kicker:"LUNO • СЕРИАЛЫ"},
@@ -389,6 +402,7 @@ function openLibrary(type){
   }[type];
   if(!config || !libraryView) return;
 
+  if(pushHistory) setLunoHistory(type);
   libraryType=type;
   libraryItems=getLibraryItems(type);
   libraryVisible=0;
@@ -425,9 +439,14 @@ function openLibrary(type){
   }
 }
 
-function closeLibrary(){
+function closeLibrary(fromHistory=false){
   libraryView?.classList.add("hidden");
   document.body.classList.remove("library-open");
+  if(!fromHistory){
+    try{
+      if(history.state?.luno && history.state.luno!=="home" && history.state.luno!=="detail") history.back();
+    }catch{}
+  }
 }
 
 function navigate(section){
@@ -779,6 +798,17 @@ searchInput.addEventListener("keydown",async(e)=>{
   }
 });
 
+ensureLunoHistory();
+window.addEventListener("popstate",()=>{
+  if(!detail?.classList.contains("hidden")){
+    closeDetail(true);
+    return;
+  }
+  if(!libraryView?.classList.contains("hidden")){
+    closeLibrary(true);
+    return;
+  }
+});
 document.addEventListener("keydown",(e)=>{
   if(e.key==="Escape"){
     closePlayer();
