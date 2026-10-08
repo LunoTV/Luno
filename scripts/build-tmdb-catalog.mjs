@@ -213,7 +213,25 @@ await mkdir("public/tmdb-posters", { recursive: true });
 async function cachePosters(items) {
   let cursor = 0;
   let cached = 0;
+  let fallbackCached = 0;
   let failed = 0;
+
+  async function download(url, file) {
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const response = await fetch(url, { headers: { accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8" } });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const bytes = Buffer.from(await response.arrayBuffer());
+        if (!bytes.length) throw new Error("empty response");
+        await writeFile(file, bytes);
+        return true;
+      } catch (error) {
+        if (attempt === 3) console.warn("TMDB image failed:", url, error.message);
+        await new Promise(resolve => setTimeout(resolve, attempt * 300));
+      }
+    }
+    return false;
+  }
 
   const worker = async () => {
     while (true) {
@@ -221,39 +239,44 @@ async function cachePosters(items) {
       if (index >= items.length) return;
 
       const item = items[index];
-      if (!item?.poster || !item.poster.includes("image.tmdb.org")) continue;
-
-      const source = item.poster;
       const file = "public/tmdb-posters/" + item.tmdbId + ".jpg";
-      let success = false;
+      const candidates = [
+        item?.poster,
+        item?.poster_path ? IMAGE + "/w500" + String(item.poster_path).replace(/^\\//, "") : "",
+        item?.poster_path ? IMAGE + "/original" + String(item.poster_path).replace(/^\\//, "") : ""
+      ].filter(Boolean);
 
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          const response = await fetch(source, { headers: { accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8" } });
-          if (!response.ok) throw new Error("HTTP " + response.status);
-          const bytes = Buffer.from(await response.arrayBuffer());
-          if (!bytes.length) throw new Error("empty response");
-          await writeFile(file, bytes);
+      let success = false;
+      for (const source of [...new Set(candidates)]) {
+        if (await download(source, file)) {
           item.posterSource = source;
           item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
           cached++;
           success = true;
           break;
-        } catch (error) {
-          if (attempt === 3) console.warn("TMDB poster cache failed:", item.id, error.message);
-          await new Promise(resolve => setTimeout(resolve, attempt * 300));
+        }
+      }
+
+      if (!success && item?.backdrop_path) {
+        const source = IMAGE + "/w1280" + String(item.backdrop_path).replace(/^\\//, "");
+        if (await download(source, file)) {
+          item.posterSource = source;
+          item.posterFallback = "backdrop";
+          item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
+          fallbackCached++;
+          success = true;
         }
       }
 
       if (!success) {
         failed++;
-        item.posterSource = source;
+        item.poster = "";
       }
     }
   };
 
   await Promise.all(Array.from({ length: 8 }, worker));
-  console.log("TMDB posters cached:", cached, "failed:", failed);
+  console.log("TMDB posters cached:", cached, "backdrop fallbacks:", fallbackCached, "failed:", failed);
 }
 
 await mkdir("public", { recursive: true });
