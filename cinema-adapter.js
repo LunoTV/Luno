@@ -121,6 +121,42 @@ function appendRjson(url) {
   }
 }
 
+function providerRequestUrl(url, item, format = "rjson") {
+  const next = new URL(url, CINEMA_HOST);
+  const tmdbId = Number(item?.tmdbId) || 0;
+  const imdbId = String(item?.imdbId || "").trim();
+  const rawId = tmdbId || String(item?.id || "").replace(/^tmdb:/i, "");
+  const title = String(item?.name || item?.originalName || "").trim();
+  const originalTitle = String(item?.originalName || item?.name || "").trim();
+  const year = String(item?.releaseInfo || "").match(/\d{4}/)?.[0] || "";
+
+  const params = {
+    id: rawId,
+    imdb_id: imdbId,
+    tmdb_id: tmdbId || "",
+    title,
+    original_title: originalTitle,
+    serial: item?.type === "series" ? 1 : 0,
+    original_language: item?.originalLanguage || "",
+    year,
+    source: "tmdb",
+    clarification: 0,
+    similar: false,
+    rchtype: "cors"
+  };
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== "") {
+      next.searchParams.set(key, String(value));
+    }
+  }
+
+  if (format === "rjson") next.searchParams.set("rjson", "true");
+  else next.searchParams.delete("rjson");
+
+  return next.href;
+}
+
 async function collectPlayable(value, context, depth = 0, visited = new Set(), output = []) {
   if (!value || output.length >= MAX_STREAMS || depth > 3) return output;
 
@@ -186,14 +222,19 @@ async function resolveProvider(provider, item) {
   const sourceName = providerName(provider);
   if (BLOCKED_NAMES.has(sourceName.toLowerCase())) return [];
 
-  try {
-    const url = appendRjson(providerUrl);
-    const payload = await readRemote(url, { timeout: 10000 });
-    if (payload?.rch) return [];
-    return collectPlayable(payload, sourceName);
-  } catch {
-    return [];
+  const formats = ["rjson", "nojson"];
+  for (const format of formats) {
+    try {
+      const url = providerRequestUrl(providerUrl, item, format);
+      const payload = await readRemote(url, { timeout: 10000 });
+      if (payload?.rch) continue;
+
+      const playable = await collectPlayable(payload, sourceName);
+      if (playable.length) return playable;
+    } catch {}
   }
+
+  return [];
 }
 
 async function loadCinemaProviders(item) {
@@ -210,8 +251,36 @@ async function loadCinemaProviders(item) {
 
   for (let attempt = 0; attempt < 8; attempt += 1) {
     await new Promise((resolve) => setTimeout(resolve, attempt === 0 ? 250 : 700));
-    const pollUrl = new URL(initialUrl);
+    const pollUrl = new URL(CINEMA_HOST + "/lifeevents");
     pollUrl.searchParams.set("memkey", memkey);
+
+    const tmdbId = Number(item?.tmdbId) || 0;
+    const imdbId = String(item?.imdbId || "").trim();
+    const rawId = tmdbId || String(item?.id || "").replace(/^tmdb:/i, "");
+    const title = String(item?.name || item?.originalName || "").trim();
+    const originalTitle = String(item?.originalName || item?.name || "").trim();
+    const year = String(item?.releaseInfo || "").match(/\d{4}/)?.[0] || "";
+
+    const params = {
+      id: rawId,
+      imdb_id: imdbId,
+      tmdb_id: tmdbId || "",
+      title,
+      original_title: originalTitle,
+      original_language: item?.originalLanguage || "",
+      year,
+      source: "tmdb",
+      serial: item?.type === "series" ? 1 : 0,
+      anime: -1,
+      rchtype: "cors"
+    };
+
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== null && value !== "") {
+        pollUrl.searchParams.set(key, String(value));
+      }
+    }
+
     try {
       const payload = await readRemote(pollUrl.href, { timeout: 10000 });
       const providers = Array.isArray(payload?.online) ? payload.online : [];
