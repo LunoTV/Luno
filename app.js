@@ -11,6 +11,10 @@ const detailMeta=document.querySelector("#detailMeta");
 const detailDescription=document.querySelector("#detailDescription");
 const detailPlay=document.querySelector("#detailPlay");
 let currentItem=null;
+let catalogItems=[];
+let movieVisible=18;
+let seriesVisible=18;
+let catalogLoading=false;
 
 const CINEMETA_BASES=["https://v3-cinemeta.strem.io","https://cinemeta-catalogs.strem.io/top"];
 const TMDB_BASE="https://api.themoviedb.org/3";
@@ -170,20 +174,63 @@ function extractItems(state){
   });
 }
 
-function renderItems(items){
-  const unique=[...new Map(items.filter((x)=>x?.id).map((item)=>[item.id,item])).values()];
-  window.__LUNO_ITEMS__=new Map(unique.map(item=>[item.id,item]));
-  if(!unique.length) return false;
-
+function renderCatalogSections(){
+  const unique=catalogItems;
   const movies=unique.filter((item)=>item.type==="movie");
   const series=unique.filter((item)=>item.type==="series");
-
-  continueCards.innerHTML=(movies.length ? movies : unique).slice(0,18).map(card).join("");
-  popularCards.innerHTML=(series.length ? series : unique).slice(0,18).map(card).join("");
+  const movieList=movies.length ? movies : unique;
+  const seriesList=series.length ? series : unique;
+  continueCards.innerHTML=movieList.slice(0,movieVisible).map(card).join("");
+  popularCards.innerHTML=seriesList.slice(0,seriesVisible).map(card).join("");
   bindCards();
-
   document.querySelector(".hero .eyebrow").textContent="LUNO • КАТАЛОГ ONLINE";
+}
+
+function renderItems(items){
+  const unique=[...new Map(items.filter((x)=>x?.id).map((item)=>[item.id,item])).values()];
+  if(!unique.length) return false;
+  catalogItems=unique;
+  window.__LUNO_ITEMS__=new Map(unique.map(item=>[item.id,item]));
+  renderCatalogSections();
   return true;
+}
+
+async function loadCatalogSeed(){
+  try{
+    const response=await fetch("./catalog-seed.json?v=1",{cache:"no-store"});
+    if(!response.ok) return [];
+    const data=await response.json();
+    return Array.isArray(data?.items) ? data.items.map((item)=>normalizeItem(item,item?.type||"movie")) : [];
+  }catch(error){
+    console.warn("LUNO local catalog seed unavailable",error);
+    return [];
+  }
+}
+
+async function loadMoreCatalog(){
+  if(catalogLoading) return;
+  const movies=catalogItems.filter(x=>x.type==="movie");
+  const series=catalogItems.filter(x=>x.type==="series");
+  const needMovie=movieVisible>=movies.length;
+  const needSeries=seriesVisible>=series.length;
+  if(needMovie||needSeries){
+    catalogLoading=true;
+    try{
+      const requests=[];
+      if(needMovie) requests.push(fetchCinemetaCatalog("movie","skip="+movies.length).catch(()=>[]));
+      if(needSeries) requests.push(fetchCinemetaCatalog("series","skip="+series.length).catch(()=>[]));
+      const batches=await Promise.all(requests);
+      const merged=[...catalogItems,...batches.flat()];
+      const unique=[...new Map(merged.filter(x=>x?.id).map(x=>[x.id,x])).values()];
+      if(unique.length>catalogItems.length){
+        catalogItems=unique;
+        window.__LUNO_ITEMS__=new Map(unique.map(item=>[item.id,item]));
+      }
+    }finally{ catalogLoading=false; }
+  }
+  movieVisible+=18;
+  seriesVisible+=18;
+  renderCatalogSections();
 }
 
 function renderCoreCatalog(state){
@@ -353,6 +400,14 @@ document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("clic
 
 showCatalogMessage("Загружаем каталог LUNO…");
 
+const catalogSentinel=document.querySelector("#catalogSentinel");
+if(catalogSentinel && "IntersectionObserver" in window){
+  const observer=new IntersectionObserver((entries)=>{
+    if(entries.some(entry=>entry.isIntersecting)) loadMoreCatalog();
+  },{rootMargin:"900px 0px"});
+  observer.observe(catalogSentinel);
+}
+
 // Start the fast browser catalog immediately; Core can finish in parallel.
 const directCatalogPromise=loadDirectCatalog();
 
@@ -374,7 +429,6 @@ function prefetchPosters(items){
     let items=await directCatalogPromise;
     items=await loadRussianMetadata(items);
     if(renderItems(items)){
-      directShown=true;
       prefetchPosters(items);
       showCoreStatus("LUNO • КАТАЛОГ ONLINE");
       hydrateRenderedCards(items);
@@ -386,9 +440,9 @@ function prefetchPosters(items){
   }
 
   let cached=loadCatalogCache();
+  if(!cached.length) cached=await loadCatalogSeed();
   cached=await loadRussianMetadata(cached);
   if(renderItems(cached)){
-    directShown=true;
     prefetchPosters(cached);
     showCoreStatus("LUNO • КАТАЛОГ ONLINE");
     hydrateRenderedCards(cached);
