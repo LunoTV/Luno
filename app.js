@@ -25,7 +25,11 @@ const playerBarTitle=document.querySelector("#playerBarTitle");
 const playerBarMeta=document.querySelector("#playerBarMeta");
 const playerSourceButton=document.querySelector("#playerSourceButton");
 const playerQualityButton=document.querySelector("#playerQualityButton");
+const playerVoiceButton=document.querySelector("#playerVoiceButton");
 const playerSubtitleButton=document.querySelector("#playerSubtitleButton");
+const voiceSheet=document.querySelector("#voiceSheet");
+const voiceList=document.querySelector("#voiceList");
+const closeVoiceSheet=document.querySelector("#closeVoiceSheet");
 const qualitySheet=document.querySelector("#qualitySheet");
 const qualityList=document.querySelector("#qualityList");
 const closeQualitySheet=document.querySelector("#closeQualitySheet");
@@ -781,6 +785,34 @@ function streamQualities(entry){
 function streamSubtitles(entry){
   return Array.isArray(entry?.stream?.subtitles)?entry.stream.subtitles.filter(x=>/^https?:\/\//i.test(String(x?.url||""))):[];
 }
+function streamVoice(entry){
+  const s=entry?.stream||{};
+  const value=s.voice||s.voice_name||s.translation||s.dubbing||s.author;
+  if(!value)return "";
+  if(typeof value==="string")return value.trim();
+  return String(value.name||value.title||value.label||value.id||"").trim();
+}
+function renderVoiceSheet(){
+  if(!voiceList)return;
+  const groups=new Map();
+  for(const entry of playerStreams){
+    const voice=streamVoice(entry)||"Оригинал";
+    const key=voice.toLowerCase();
+    if(!groups.has(key))groups.set(key,{label:voice,entry});
+  }
+  const list=[...groups.values()];
+  voiceList.innerHTML=list.length
+    ? list.map((v,i)=>'<button class="source-option" type="button" data-voice-index="'+i+'"><span><strong>'+escapeHtml(v.label)+'</strong><span>Источник с этой озвучкой</span></span></button>').join("")
+    : '<div class="source-empty">Источник не передал данные об озвучке.</div>';
+  voiceList.querySelectorAll("[data-voice-index]").forEach(btn=>btn.onclick=()=>{
+    const item=list[Number(btn.dataset.voiceIndex)];
+    if(item?.entry){
+      const index=playerStreams.indexOf(item.entry);
+      if(index>=0)selectLunoSource(index);
+    }
+    voiceSheet?.classList.add("hidden");
+  });
+}
 function renderQualitySheet(){
   if(!qualityList)return;
   const entry=currentStreamEntry();
@@ -1293,6 +1325,8 @@ lunoVideo?.addEventListener("error",()=>{
   if(playerMessage) playerMessage.textContent="Не удалось воспроизвести этот источник.";
 });
 
+playerVoiceButton?.addEventListener("click",()=>{renderVoiceSheet();voiceSheet?.classList.remove("hidden")});
+closeVoiceSheet?.addEventListener("click",()=>voiceSheet?.classList.add("hidden"));
 playerQualityButton?.addEventListener("click",()=>{renderQualitySheet();qualitySheet?.classList.remove("hidden")});
 playerSubtitleButton?.addEventListener("click",()=>{renderSubtitleSheet();subtitleSheet?.classList.remove("hidden")});
 closeQualitySheet?.addEventListener("click",()=>qualitySheet?.classList.add("hidden"));
