@@ -1,0 +1,9 @@
+{
+  "name": "LUNO",
+  "short_name": "LUNO",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#06070a",
+  "theme_color": "#06070a",
+  "orientation": "any"
+}
