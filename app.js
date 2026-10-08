@@ -262,6 +262,17 @@ function card(item){
   '</button>';
 }
 
+// Global card click handler: keeps posters/cards clickable even after dynamic rails are re-rendered.
+document.addEventListener("click",(event)=>{
+  const c=event.target?.closest?.(".card");
+  if(!c) return;
+  const item=window.__LUNO_ITEMS__?.get(c.dataset.id);
+  if(!item) return;
+  event.preventDefault();
+  event.stopPropagation();
+  openDetail(item);
+},true);
+
 function bindCards(){
   document.querySelectorAll(".card").forEach((c)=>{
     const image=c.querySelector(".card-art img");
