@@ -158,6 +158,8 @@ main{padding-top:76px;padding-bottom:100px}
 .detail-meta{color:#d1d3d9;font-size:15px;margin-bottom:23px}
 .detail-copy p{color:#a4a7b0;font-size:17px;line-height:1.65;max-width:690px;margin:0;display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden}
 .detail-actions{display:flex;gap:10px;margin-top:31px}
+.detail-series-button{border-color:rgba(255,255,255,.16)}
+.detail-series-button span{font-size:14px;margin-right:5px}
 .detail-actions .primary,.detail-actions .secondary{padding:0 24px}
 .detail-overlay .close{position:fixed}
 
