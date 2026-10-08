@@ -129,6 +129,7 @@ let playerStreams=[];
 let playerStreamState=null;
 let playerResolving=false;
 let lastCoreTime=-1;
+let playerSeason=0;
 
 function setSplashProgress(value,status){
   if(splashProgress) splashProgress.style.width=Math.max(0,Math.min(100,value))+"%";
@@ -1043,8 +1044,8 @@ async function selectLunoSource(index){
   const entry=playerStreams[index];
   if(!entry?.stream) return;
   closeSourceSheetPanel();
-  playerBrowse?.classList.add("hidden");
   if(playerStreamState) playerStreamState.selectedIndex=index;
+  if(currentItem?.type==="series"){ playerBrowse?.classList.remove("hidden"); renderPlayerBrowse(); } else { playerBrowse?.classList.add("hidden"); }
   playerEmpty?.classList.remove("hidden");
   if(playerMessage) playerMessage.textContent="Подготавливаем источник…";
   if(playerBarMeta) playerBarMeta.textContent=streamLabel(entry,index);
@@ -1099,49 +1100,94 @@ function renderPlayerBrowse(){
   if(!playerBrowse || currentItem?.type!=="series") return;
   const item=currentItem;
   const image=item?.background || item?.poster || "";
-  if(playerBrowseBackdrop) playerBrowseBackdrop.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
+  const selectedIndex=Number(playerStreamState?.selectedIndex);
+  const selectedEntry=Number.isInteger(selectedIndex) ? playerStreams[selectedIndex] : null;
   if(playerBrowseTitle) playerBrowseTitle.textContent=item?.name || "Сериал";
   if(playerBrowseMeta) playerBrowseMeta.textContent=[
     item?.rating ? "★ "+Number(item.rating).toFixed(1) : "",
     String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "",
     "Сериал"
   ].filter(Boolean).join(" • ");
-  if(playerBrowseDescription) playerBrowseDescription.textContent=item?.description || "Выберите серию и источник для просмотра.";
-  if(playerBrowseSource) playerBrowseSource.textContent=playerStreams.length
-    ? (streamVoice(playerStreams[0]) || playerStreams[0]?.addon?.manifest?.name || "LUNO")
-    : "Поиск источника…";
-
-  const items=playerStreams.map((entry,index)=>({entry,index,label:streamEpisode(entry)||("Серия "+(index+1))}));
-  const unique=[]; const seen=new Set();
-  for(const x of items){
-    if(seen.has(x.label)) continue;
-    seen.add(x.label); unique.push(x);
+  if(playerBrowseDescription) playerBrowseDescription.textContent=item?.description || "Выберите сезон, серию и источник для просмотра.";
+  if(playerBrowseSource){
+    const sourceName=selectedEntry ? (streamVoice(selectedEntry) || streamLabel(selectedEntry,selectedIndex)) :
+      (playerStreams[0] ? (streamVoice(playerStreams[0]) || streamLabel(playerStreams[0],0)) : "Поиск источника…");
+    const strong=playerBrowseSource.querySelector("strong");
+    if(strong) strong.textContent=sourceName;
+    else playerBrowseSource.textContent=sourceName;
   }
+  const seasonValues=[...new Set(playerStreams.map(entry=>Number(entry?.stream?.season)||0).filter(Boolean))].sort((a,b)=>a-b);
+  if(!seasonValues.length) seasonValues.push(1);
+  if(!seasonValues.includes(playerSeason)){
+    const selectedSeason=Number(selectedEntry?.stream?.season)||0;
+    playerSeason=seasonValues.includes(selectedSeason) ? selectedSeason : seasonValues[0];
+  }
+  const seasonTabs=document.querySelector("#playerBrowseSeasons");
+  if(seasonTabs){
+    seasonTabs.innerHTML=seasonValues.map(season=>
+      '<button type="button" class="'+(season===playerSeason?"active":"")+'" data-season="'+season+'">Сезон '+season+'</button>'
+    ).join("");
+    seasonTabs.querySelectorAll("[data-season]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        playerSeason=Number(button.dataset.season)||seasonValues[0];
+        renderPlayerBrowse();
+      });
+    });
+  }
+  const filtered=playerStreams.map((entry,index)=>({entry,index})).filter(({entry})=>{
+    const season=Number(entry?.stream?.season)||0;
+    return !season || season===playerSeason;
+  });
+  const count=document.querySelector("#playerBrowseEpisodeCount");
+  if(count) count.textContent=filtered.length ? filtered.length+" серий" : "Нет серий";
   if(!playerBrowseEpisodes) return;
-  if(!unique.length){
-    playerBrowseEpisodes.innerHTML='<div class="player-browse-loading">Ищем доступные серии и источники…</div>';
+  if(!filtered.length){
+    playerBrowseEpisodes.innerHTML='<div class="player-browse-loading">Для этого сезона источник пока не передал серии.</div>';
     return;
   }
-  playerBrowseEpisodes.innerHTML=unique.map((x)=>{
-    const thumb=x.entry?.stream?.thumbnail || x.entry?.stream?.poster || image || "";
-    const title=x.entry?.stream?.episode_title || x.label;
-    const quality=streamQuality(x.entry) || "AUTO";
-    return '<button class="player-episode-card" type="button" data-player-episode="'+x.index+'">'+
+  playerBrowseEpisodes.innerHTML=filtered.map(({entry,index})=>{
+    const s=entry?.stream||{};
+    const episode=Number(s.episode)||0;
+    const label=episode ? String(episode).padStart(2,"0") : String(index+1).padStart(2,"0");
+    const thumb=s.thumbnail || s.poster || s.logo || image || "";
+    const title=s.episode_title || s.episodeName || s.title || ("Серия "+label);
+    const rating=Number(s.rating ?? s.vote_average ?? item?.rating)||0;
+    const duration=Number(s.duration ?? s.runtime ?? 0);
+    const date=s.releaseInfo || s.air_date || s.date || "";
+    const quality=streamQuality(entry)||"AUTO";
+    const progress=Number(s.progress ?? s.position ?? 0);
+    const progressDuration=Number(s.progressDuration ?? s.duration ?? 0);
+    const percent=progressDuration>0 ? Math.max(0,Math.min(100,(progress/progressDuration)*100)) : 0;
+    const active=index===selectedIndex;
+    return '<button class="player-episode-card'+(active?" active":"")+'" type="button" data-player-episode="'+index+'">'+
       '<div class="player-episode-thumb" style="background-image:url(&quot;'+escapeHtml(thumb)+'&quot;)">'+
-        '<span class="player-episode-num">'+escapeHtml(x.label)+'</span>'+
-        '<span class="player-episode-duration">'+escapeHtml(quality)+'</span>'+
+        '<span class="player-episode-num">'+escapeHtml(label)+'</span>'+
+        '<span class="player-episode-quality">'+escapeHtml(quality)+'</span>'+
+        '<span class="player-episode-duration">'+(duration?escapeHtml(formatDuration(duration)):"")+'</span>'+
+        (percent>0?'<span class="player-episode-progress"><i style="width:'+percent.toFixed(1)+'%"></i></span>':"")+
       '</div>'+
-      '<div class="player-episode-body"><strong>'+escapeHtml(title)+'</strong><span>Источник готов</span></div>'+
-    '</button>';
+      '<div class="player-episode-body"><strong>'+escapeHtml(title)+'</strong><div class="player-episode-meta">'+
+        (rating?'<span>★ '+rating.toFixed(1)+'</span>':"")+
+        (date?'<span>'+escapeHtml(String(date).match(/\d{4}-?\d{2}-?\d{2}/)?.[0]||String(date))+'</span>':"")+
+      '</div></div></button>';
   }).join("");
   playerBrowseEpisodes.querySelectorAll("[data-player-episode]").forEach(btn=>{
     btn.addEventListener("click",()=>{
-      const item=unique[Number(btn.dataset.playerEpisode)];
-      if(item) selectLunoSource(item.index);
+      const index=Number(btn.dataset.playerEpisode);
+      if(Number.isInteger(index)) selectLunoSource(index);
     });
   });
 }
-
+function formatDuration(value){
+  const seconds=Number(value)||0;
+  if(seconds<=0)return "";
+  const minutes=Math.round(seconds/60);
+  if(minutes>=60){
+    const h=Math.floor(minutes/60),m=minutes%60;
+    return h+"ч"+(m?" "+m+"м":"");
+  }
+  return minutes+" мин";
+}
 function openPlayer(id,type,title,streamUrl=""){
   player.classList.remove("hidden");
   if(playerBarTitle) playerBarTitle.textContent=title || "LUNO";
@@ -1159,6 +1205,7 @@ function openPlayer(id,type,title,streamUrl=""){
   subtitleSheet?.classList.add("hidden");
   playerStreams=[];
   playerStreamState=null;
+  playerSeason=0;
   playerBrowse?.classList.toggle("hidden",type!=="series");
   if(type==="series") renderPlayerBrowse();
   lastCoreTime=-1;
