@@ -287,3 +287,36 @@ main{padding-top:76px;padding-bottom:100px}
   .detail-overlay{z-index:998}
   .player-shell{height:100dvh}
 }
+
+/* ---------- iOS / SAFARI CHROME HARDENING ---------- */
+html{
+  background:#06070a;
+  overscroll-behavior-y:none;
+}
+body{
+  background:#06070a;
+  overscroll-behavior-y:none;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(max-width:700px){
+  body{
+    min-height:100dvh;
+    padding-top:env(safe-area-inset-top);
+  }
+  main{padding-top:calc(64px + env(safe-area-inset-top))}
+  .topbar{
+    top:env(safe-area-inset-top);
+    height:64px;
+  }
+  .mobile-tabbar{
+    bottom:calc(10px + env(safe-area-inset-bottom));
+  }
+  .search-box{
+    padding-top:calc(78px + env(safe-area-inset-top));
+  }
+}
+@media(display-mode:standalone){
+  .topbar{top:0}
+  main{padding-top:64px}
+  .search-box{padding-top:78px}
+}
