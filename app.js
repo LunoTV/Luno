@@ -188,10 +188,11 @@ function normalizeItem(item){
 function card(item){
   const title=item?.name || "Без названия";
   const image=item?.poster || item?.background || "";
+  const fallbackImage=item?.posterSource || item?.background || "";
   const rating=Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : "";
   const meta=[metaLine(item),rating].filter(Boolean).join(" • ");
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback">◐</span>';
   return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
     '<div class="card-art">'+imageHtml+'</div>'+
@@ -202,6 +203,19 @@ function card(item){
 
 function bindCards(){
   document.querySelectorAll(".card").forEach((c)=>{
+    const image=c.querySelector(".card-art img");
+    if(image && !image.dataset.fallbackBound){
+      image.dataset.fallbackBound="1";
+      image.addEventListener("error",()=>{
+        const fallback=image.dataset.fallback || "";
+        if(fallback && image.src!==fallback){
+          image.src=fallback;
+        }else{
+          image.remove();
+          c.querySelector(".card-art")?.insertAdjacentHTML("afterbegin",'<span class="poster-fallback">◐</span>');
+        }
+      },{once:false});
+    }
     c.onclick=()=>{
       const item=window.__LUNO_ITEMS__?.get(c.dataset.id);
       if(item) openDetail(item);
