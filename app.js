@@ -37,6 +37,14 @@ const libraryTitle=document.querySelector("#libraryTitle");
 const libraryKicker=document.querySelector("#libraryKicker");
 const libraryBack=document.querySelector("#libraryBack");
 const librarySearch=document.querySelector("#librarySearch");
+const splash=document.querySelector("#splash");
+const splashStatus=document.querySelector("#splashStatus");
+const splashProgress=document.querySelector("#splashProgress");
+const confirmDialog=document.querySelector("#confirmDialog");
+const dialogTitle=document.querySelector("#dialogTitle");
+const dialogMessage=document.querySelector("#dialogMessage");
+const dialogCancel=document.querySelector("#dialogCancel");
+const dialogConfirm=document.querySelector("#dialogConfirm");
 
 let currentItem=null;
 let catalogItems=[];
@@ -49,6 +57,41 @@ let catalogLoading=false;
 let resumeItems=[];
 let favoriteItems=[];
 let heroItem=null;
+let splashDone=false;
+let dialogAction=null;
+
+function setSplashProgress(value,status){
+  if(splashProgress) splashProgress.style.width=Math.max(0,Math.min(100,value))+"%";
+  if(splashStatus && status) splashStatus.textContent=status;
+}
+function finishSplash(){
+  if(splashDone) return;
+  splashDone=true;
+  setSplashProgress(100,"Готово");
+  window.setTimeout(()=>splash?.classList.add("is-hidden"),260);
+}
+function showDialog(title,message,confirmText="Выйти",action=null){
+  if(!confirmDialog) return;
+  dialogAction=action;
+  dialogTitle.textContent=title;
+  dialogMessage.textContent=message;
+  dialogConfirm.textContent=confirmText;
+  confirmDialog.classList.remove("hidden");
+  dialogCancel.focus();
+}
+function closeDialog(){
+  confirmDialog?.classList.add("hidden");
+  dialogAction=null;
+}
+dialogCancel?.addEventListener("click",closeDialog);
+dialogConfirm?.addEventListener("click",()=>{
+  const action=dialogAction;
+  closeDialog();
+  if(action) action();
+});
+confirmDialog?.addEventListener("click",(event)=>{
+  if(event.target===confirmDialog) closeDialog();
+});
 
 function escapeHtml(value=""){
   return String(value).replace(/[&<>"']/g,(char)=>({
@@ -571,8 +614,12 @@ document.querySelector("#continueBtn").onclick=()=>{
 document.querySelectorAll(".section-more").forEach(btn=>btn.addEventListener("click",()=>{
   navigate(btn.dataset.section||"home");
 }));
-document.querySelector("#closePlayer").onclick=closePlayer;
-libraryBack?.addEventListener("click",closeLibrary);
+document.querySelector("#closePlayer").onclick=()=>{
+  showDialog("Выйти из просмотра?","Прогресс просмотра сохранится на этом устройстве.","Выйти",closePlayer);
+};
+libraryBack?.addEventListener("click",()=>{
+  showDialog("Выйти из каталога?","Текущий каталог закроется, а вы вернётесь на главную.","Выйти",closeLibrary);
+});
 librarySearch?.addEventListener("click",()=>{
   closeLibrary();
   searchPanel.classList.remove("hidden");
@@ -674,10 +721,13 @@ function prefetchPosters(items){
 
 (async()=>{
   try{
+    setSplashProgress(25,"Подключаем каталог…");
     const catalog=await loadTmdbCatalog();
+    setSplashProgress(68,"Загружаем фильмы и сериалы…");
     renderItems(catalog.items,catalog.sections);
     prefetchPosters(catalogItems);
     showCoreStatus("LUNO • TMDB • РУССКИЙ КАТАЛОГ");
+    setSplashProgress(88,"Почти готово…");
     console.info("LUNO TMDB catalog loaded",catalogItems.length);
   }catch(error){
     console.error("LUNO TMDB catalog failed",error);
@@ -689,7 +739,9 @@ function prefetchPosters(items){
     const {initLunoCore}=await import("./core.js");
     await initLunoCore();
     console.info("LUNO Core ready");
+    setSplashProgress(96,"Запускаем LUNO…");
   }catch(error){
     console.warn("LUNO Core unavailable",error);
   }
+  finishSplash();
 })();
