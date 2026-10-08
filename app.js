@@ -226,9 +226,12 @@ function metaLine(item){
 function normalizeItem(item){
   const posterValue=String(item?.poster||"");
   const backgroundValue=String(item?.background||"");
+  const tmdbPoster=item?.poster_path
+    ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\//,"")
+    : (item?.tmdbId ? "https://image.tmdb.org/t/p/w500/"+item.tmdbId+".jpg" : "");
   const poster=posterValue.startsWith("http")
     ? posterValue
-    : (posterValue.startsWith("/") ? "https://image.tmdb.org/t/p/w500"+posterValue : (item?.poster_path ? "https://image.tmdb.org/t/p/w500"+item.poster_path : posterValue));
+    : (posterValue.startsWith("/") ? "https://image.tmdb.org/t/p/w500"+posterValue : (tmdbPoster || posterValue));
   const background=backgroundValue.startsWith("http")
     ? backgroundValue
     : (backgroundValue.startsWith("/") ? "https://image.tmdb.org/t/p/w1280"+backgroundValue : (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280"+item.backdrop_path : backgroundValue));
@@ -257,12 +260,15 @@ function card(item){
   const image=item?.poster || item?.posterSource || item?.background || "";
   const fallbackImage=item?.posterSource && item.posterSource!==image ? item.posterSource : "";
   const fallbackBackground=item?.background && item.background!==image && item.background!==fallbackImage ? item.background : "";
+  const fallbackTmdb=item?.poster_path
+    ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\//,"")
+    : "";
   const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
   const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" data-fallback2="'+escapeHtml(fallbackBackground)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" data-fallback2="'+escapeHtml(fallbackBackground)+'" data-fallback3="'+escapeHtml(fallbackTmdb)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback">◐</span>';
   const meta='<span class="card-quality">'+quality+'</span>'+
     (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
@@ -318,10 +324,13 @@ function bindCards(){
       image.addEventListener("error",()=>{
         const fallback=image.dataset.fallback || "";
         const fallback2=image.dataset.fallback2 || "";
+        const fallback3=image.dataset.fallback3 || "";
         if(fallback && image.src!==fallback){
           image.src=fallback;
         }else if(fallback2 && image.src!==fallback2){
           image.src=fallback2;
+        }else if(fallback3 && image.src!==fallback3){
+          image.src=fallback3;
         }else{
           image.remove();
           c.querySelector(".card-art")?.insertAdjacentHTML("afterbegin",'<span class="poster-fallback">◐</span>');
