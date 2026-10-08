@@ -954,7 +954,7 @@ function renderItems(items,sections={}){
 
 async function loadTmdbCatalog(){
   const candidates=[
-    new URL("./tmdb-catalog.json?v=8",document.baseURI).href,
+    new URL("./tmdb-catalog.json?v=9",document.baseURI).href,
     new URL("./tmdb-catalog.json",document.baseURI).href
   ];
   let lastError=null;
