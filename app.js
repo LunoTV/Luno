@@ -223,18 +223,25 @@ function metaLine(item){
   return [year,categoryLabel(item)].filter(Boolean).join(" • ");
 }
 
+function normalizeImageValue(value,size){
+  const raw=String(value||"").trim();
+  if(!raw) return "";
+  if(/^https?:\/\//i.test(raw)) return raw;
+  if(raw.startsWith("./") || raw.startsWith("../")) return raw;
+  if(raw.startsWith("data:")) return raw;
+  if(raw.startsWith("/")) return "https://image.tmdb.org/t/p/"+size+raw;
+  return raw;
+}
+
 function normalizeItem(item){
   const posterValue=String(item?.poster||"");
   const backgroundValue=String(item?.background||"");
   const tmdbPoster=item?.poster_path
     ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\//,"")
-    : (item?.tmdbId ? "https://image.tmdb.org/t/p/w500/"+item.tmdbId+".jpg" : "");
-  const poster=posterValue.startsWith("http")
-    ? posterValue
-    : (posterValue.startsWith("/") ? "https://image.tmdb.org/t/p/w500"+posterValue : (tmdbPoster || posterValue));
-  const background=backgroundValue.startsWith("http")
-    ? backgroundValue
-    : (backgroundValue.startsWith("/") ? "https://image.tmdb.org/t/p/w1280"+backgroundValue : (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280"+item.backdrop_path : backgroundValue));
+    : "";
+  const poster=normalizeImageValue(posterValue,"w500") || tmdbPoster;
+  const background=normalizeImageValue(backgroundValue,"w1280") ||
+    (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280"+String(item.backdrop_path).replace(/^\//,"") : "");
   return {
     ...item,
     id:item?.id || (item?.tmdbId ? "tmdb:"+item.tmdbId : ""),
@@ -943,7 +950,7 @@ function renderItems(items,sections={}){
 
 async function loadTmdbCatalog(){
   const candidates=[
-    new URL("./tmdb-catalog.json?v=7",document.baseURI).href,
+    new URL("./tmdb-catalog.json?v=8",document.baseURI).href,
     new URL("./tmdb-catalog.json",document.baseURI).href
   ];
   let lastError=null;
