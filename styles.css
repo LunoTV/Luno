@@ -20,7 +20,7 @@ body:before{
 
 /* ---------- HEADER ---------- */
 .topbar{
-  height:76px;padding:0 clamp(24px,5vw,80px);display:flex;align-items:center;gap:42px;
+  height:92px;padding:0 clamp(24px,5vw,80px);display:flex;align-items:center;gap:46px;
   position:fixed;top:0;left:0;right:0;z-index:50;
   background:linear-gradient(180deg,rgba(6,7,10,.96),rgba(6,7,10,.72) 65%,transparent);
   backdrop-filter:blur(14px);
@@ -34,7 +34,7 @@ body:before{
 .brand-moon{width:19px;height:19px;border-radius:50%;background:linear-gradient(135deg,#fff,#858995);display:block;box-shadow:inset -5px -3px 7px rgba(0,0,0,.38)}
 .nav{display:flex;align-items:center;gap:5px;flex:1}
 .nav-item,.section-more,.mobile-tab{border:0;background:transparent;cursor:pointer}
-.nav-item{padding:10px 15px;border-radius:11px;color:#9da0aa;font-size:15px;transition:.2s}
+.nav-item{padding:12px 17px;border-radius:13px;color:#a7aab4;font-size:15px;font-weight:600;transition:.2s}
 .nav-item:hover{color:#fff;background:rgba(255,255,255,.05)}
 .nav-item.active{color:#fff;background:rgba(255,255,255,.09)}
 .source-nav-btn{
@@ -57,7 +57,7 @@ body:before{
 .search-icon:after{content:"";position:absolute;width:7px;height:2px;background:currentColor;right:-6px;bottom:-3px;transform:rotate(45deg);border-radius:2px}
 
 /* ---------- MAIN / HERO ---------- */
-main{padding-top:76px;padding-bottom:100px}
+main{padding-top:92px;padding-bottom:100px}
 .hero{
   min-height:min(670px,78vh);margin:0;position:relative;display:flex;align-items:center;overflow:hidden;
   border-bottom:1px solid rgba(255,255,255,.06);background:#08090d;
