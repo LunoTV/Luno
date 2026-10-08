@@ -477,30 +477,30 @@ body.library-open .library-content{
 
 /* ---------- LUNO SPLASH ---------- */
 .splash-screen{
-  position:fixed;inset:0;z-index:2147483647;background:#06070a;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:fixed;inset:0;z-index:2147483647;background:#000;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
   transition:opacity .55s ease,visibility .55s ease;
 }
 .splash-screen.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.splash-orbit{
-  width:86px;height:86px;border:1px solid rgba(255,255,255,.3);border-radius:50%;
-  position:relative;display:grid;place-items:center;animation:splashFloat 2.8s ease-in-out infinite;
+.splash-art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.splash-art img{width:100%;height:100%;display:block;object-fit:cover}
+.splash-shade{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.08) 55%,rgba(0,0,0,.45));
 }
-.splash-orbit:after{
-  content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;
-  right:3px;top:10px;box-shadow:0 0 18px rgba(255,255,255,.5);
+.splash-loading{
+  position:absolute;left:50%;bottom:clamp(28px,6vh,60px);transform:translateX(-50%);
+  width:min(260px,55vw);text-align:center;
 }
-.splash-moon{
-  width:54px;height:54px;border-radius:50%;
-  background:linear-gradient(135deg,#fff 0%,#bfc2ca 48%,#565963 100%);
-  box-shadow:inset -13px -9px 18px rgba(0,0,0,.38),0 0 35px rgba(255,255,255,.08);
+.splash-status{
+  color:rgba(255,255,255,.78);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;text-shadow:0 2px 15px #000;
 }
-.splash-logo{margin-top:28px;font-size:30px;font-weight:850;letter-spacing:.42em;padding-left:.42em}
-.splash-status{margin-top:12px;color:#777b86;font-size:11px;letter-spacing:.08em}
-.splash-progress{width:120px;height:2px;background:rgba(255,255,255,.08);border-radius:4px;margin-top:22px;overflow:hidden}
+.splash-progress{
+  width:100%;height:2px;background:rgba(255,255,255,.2);
+  border-radius:4px;margin-top:12px;overflow:hidden;box-shadow:0 0 12px rgba(0,0,0,.4);
+}
 .splash-progress span{display:block;width:0;height:100%;background:#fff;border-radius:4px;transition:width .45s ease}
-@keyframes splashFloat{50%{transform:translateY(-5px) rotate(4deg)}}
-
 /* ---------- DIALOGS ---------- */
 .dialog-overlay{
   position:fixed;inset:0;z-index:2147483001;background:rgba(2,3,5,.72);
