@@ -183,39 +183,88 @@
     </div>
 
     <div id="detail" class="detail-overlay hidden">
-      <div class="detail-shell">
-        <div id="detailBackdrop" class="detail-backdrop"></div>
-        <div class="detail-vignette"></div>
-        <button id="closeDetail" class="close" aria-label="Закрыть">×</button>
-        <div class="detail-mobile-hero">
-          <div id="detailPoster" class="detail-poster"></div>
-        </div>
-        <div class="detail-copy">
-          <div class="detail-kicker"></div>
-          <h2 id="detailTitle">Фильм</h2>
-          <div id="detailMeta" class="detail-meta"></div>
-          <div id="detailBadges" class="detail-badges"></div>
-          <p id="detailDescription">Описание загружается…</p>
-          <div id="detailRatings" class="detail-ratings"></div>
-          <div class="detail-actions">
-            <button id="detailPlay" class="primary"><span>▶</span> Смотреть</button>
-            <button id="detailEpisodes" class="secondary detail-series-button hidden"><span>▤</span> Серии</button>
-            <button id="detailFavorite" class="secondary"><span>♡</span><em>В избранное</em></button>
-            <button class="secondary detail-action-extra" type="button" aria-label="Нравится"><span>♥</span></button>
-            <button class="secondary detail-action-extra" type="button" aria-label="Трейлер"><span>▶</span></button>
-          </div>
-          <section class="detail-reviews">
-            <h3>Отзывы</h3>
-            <div class="detail-review-row">
-              <button class="detail-review-add" type="button"><span>＋</span><small>Оставить отзыв</small></button>
-              <div class="detail-review-empty">Отзывов пока нет</div>
+      <div class="luno-detail">
+        <header class="luno-detail-nav">
+          <button id="closeDetail" class="luno-detail-back" aria-label="Назад">‹</button>
+          <button class="luno-detail-brand" type="button" aria-label="LUNO">
+            <span class="brand-orbit"><span class="brand-moon"></span></span><span>LUNO</span>
+          </button>
+          <nav class="luno-detail-links">
+            <button type="button" data-section="home">Главная</button>
+            <button type="button" data-section="movies">Фильмы</button>
+            <button type="button" data-section="series">Сериалы</button>
+            <button type="button" data-section="cartoons">Мультфильмы</button>
+            <button type="button" data-section="favorites">Моё</button>
+          </nav>
+          <button class="luno-detail-search" type="button" aria-label="Поиск">⌕</button>
+        </header>
+
+        <section class="luno-detail-hero">
+          <div id="detailBackdrop" class="detail-backdrop"></div>
+          <div class="luno-detail-hero-vignette"></div>
+          <div class="luno-detail-hero-copy">
+            <div class="detail-kicker">LUNO • ПРЕМЬЕРА</div>
+            <h2 id="detailTitle">Фильм</h2>
+            <div id="detailMeta" class="detail-meta"></div>
+            <div id="detailBadges" class="detail-badges"></div>
+            <div class="luno-detail-actions">
+              <button id="detailPlay" class="primary"><span>▶</span> Смотреть</button>
+              <button id="detailEpisodes" class="secondary detail-series-button hidden"><span>▤</span> Серии</button>
+              <button id="detailFavorite" class="secondary"><span>♡</span><em>В избранное</em></button>
+              <button class="detail-circle-action" type="button" aria-label="Нравится">♡</button>
+              <button class="detail-circle-action" type="button" aria-label="Трейлер">▶</button>
             </div>
-          </section>
-        </div>
+          </div>
+          <div id="detailHeroPoster" class="luno-detail-poster"></div>
+          <div id="detailRatings" class="luno-detail-ratings"></div>
+        </section>
+
+        <section class="luno-detail-section reviews-section">
+          <div class="luno-section-title"><h3>Отзывы</h3><span>Мнение зрителей</span></div>
+          <div class="luno-review-row">
+            <button class="luno-review-add" type="button"><span>＋</span><strong>Написать отзыв</strong><small>Поделись впечатлением</small></button>
+            <div class="luno-review-card"><b>Пока без отзывов</b><span>Стань первым, кто оставит отзыв.</span></div>
+            <div class="luno-review-card"><b>Твоё мнение важно</b><span>Оцени фильм после просмотра.</span></div>
+          </div>
+        </section>
+
+        <section class="luno-detail-section about-section">
+          <div class="luno-section-title"><h3>О фильме</h3><span>Подробнее о тайтле</span></div>
+          <div class="luno-about-grid">
+            <div class="luno-about-main">
+              <p id="detailDescription">Описание загружается…</p>
+              <div class="luno-fact-card">
+                <div class="luno-fact-index"><strong>01</strong><span>ИНТЕРЕСНЫЙ ФАКТ</span></div>
+                <p id="detailFact">LUNO собирает информацию о фильме в одном чистом интерфейсе.</p>
+                <div class="luno-fact-actions"><button type="button">Следующий →</button><button type="button">Все факты</button></div>
+              </div>
+              <div id="detailTags" class="luno-tags"></div>
+            </div>
+            <aside class="luno-about-side">
+              <div class="luno-info-card"><span>◷</span><small>Год релиза</small><strong id="detailReleaseInfo">—</strong></div>
+              <div class="luno-info-card"><span>◎</span><small>Формат</small><strong id="detailTypeInfo">—</strong></div>
+              <div class="luno-budget-card">
+                <div><span>Качество</span><strong id="detailQualityInfo">FULLHD</strong></div>
+                <div class="luno-quality-track"><i id="detailQualityBar"></i></div>
+                <small id="detailQualityText">Оптимально для просмотра</small>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="luno-detail-section credits-section">
+          <div class="luno-section-title"><h3>Создатели</h3><span>Команда проекта</span></div>
+          <div class="luno-credit-row" id="detailCredits"></div>
+        </section>
+
+        <section class="luno-detail-section recommend-section">
+          <div class="luno-section-title"><h3>LUNO рекомендует</h3><span>Похожие по настроению</span></div>
+          <div id="detailRecommendations" class="luno-recommend-row"></div>
+        </section>
       </div>
     </div>
 
-    <div id="confirmDialog" class="dialog-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+ class="dialog-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
       <div class="dialog-card">
         <div class="dialog-icon">◐</div>
         <h2 id="dialogTitle">Выйти?</h2>
