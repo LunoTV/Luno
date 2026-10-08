@@ -109,7 +109,7 @@ function card(item){
   const rating=Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : "";
   const meta=[metaLine(item),rating].filter(Boolean).join(" • ");
   return '<button class="card" data-id="'+escapeHtml(item?.id || "")+'" data-type="'+escapeHtml(item?.type || "movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
-    '<div class="card-art">'+(image ? '<img src="'+escapeHtml(image)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">' : "")+'</div>'+
+    '<div class="card-art"'+(image ? ' style="background-image:url("'+escapeHtml(image).replace(/"/g,"&quot;")+'")' : "")+'>'+(image ? '<img src="'+escapeHtml(image)+'" alt="" loading="eager" referrerpolicy="no-referrer" onload="this.parentElement.classList.add(\'poster-ready\')" onerror="this.remove()">' : "")+'</div>'+
     '<div class="card-title">'+escapeHtml(title)+'</div>'+
     '<div class="card-meta">'+escapeHtml(meta)+'</div>'+
   '</button>';
