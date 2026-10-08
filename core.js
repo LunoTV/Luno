@@ -166,7 +166,7 @@ export async function initLunoCore() {
   }
 
   // Give Core a moment to persist the addons before asking it to build the board.
-  await new Promise((resolve) => setTimeout(resolve, 350));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return core;
 }
