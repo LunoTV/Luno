@@ -15,6 +15,18 @@ const detailPlay=document.querySelector("#detailPlay");
 const continueSection=document.querySelector("#continueSection");
 const moviesSection=document.querySelector("#moviesSection");
 const seriesSection=document.querySelector("#seriesSection");
+const favoritesSection=document.querySelector("#favoritesSection");
+const favoriteCards=document.querySelector("#favoriteCards");
+const favoritesEmpty=document.querySelector("#favoritesEmpty");
+const detailBackdrop=document.querySelector("#detailBackdrop");
+const detailFavorite=document.querySelector("#detailFavorite");
+const heroBackdrop=document.querySelector("#heroBackdrop");
+const heroPoster=document.querySelector("#heroPoster");
+const heroTitle=document.querySelector("#heroTitle");
+const heroDescription=document.querySelector("#heroDescription");
+const heroMeta=document.querySelector("#heroMeta");
+const heroDots=document.querySelector("#heroDots");
+const closeSearch=document.querySelector("#closeSearch");
 
 let currentItem=null;
 let catalogItems=[];
@@ -24,6 +36,8 @@ let movieVisible=18;
 let seriesVisible=18;
 let catalogLoading=false;
 let resumeItems=[];
+let favoriteItems=[];
+let heroItem=null;
 
 function escapeHtml(value=""){
   return String(value).replace(/[&<>"']/g,(char)=>({
@@ -94,9 +108,51 @@ function paintDetail(value){
   if(detailDescription) detailDescription.textContent=value?.description || "Описание пока недоступно.";
 }
 
+function isFavorite(id){
+  return loadFavorites().some(item=>item.id===id);
+}
+
+function loadFavorites(){
+  try{
+    const value=JSON.parse(localStorage.getItem("luno-favorites")||"[]");
+    return Array.isArray(value) ? value.filter(x=>x?.id) : [];
+  }catch{return []}
+}
+
+function saveFavorites(items){
+  try{localStorage.setItem("luno-favorites",JSON.stringify(items.slice(0,100)));}catch{}
+}
+
+function toggleFavorite(item){
+  if(!item?.id) return;
+  const list=loadFavorites();
+  const exists=list.some(x=>x.id===item.id);
+  const next=exists ? list.filter(x=>x.id!==item.id) : [{...item,updatedAt:Date.now()},...list];
+  saveFavorites(next);
+  renderFavorites();
+  paintFavoriteButton(item);
+}
+
+function paintFavoriteButton(item){
+  if(!detailFavorite) return;
+  const active=isFavorite(item?.id);
+  detailFavorite.textContent=active ? "♥ В избранном" : "♡ В избранное";
+  detailFavorite.classList.toggle("is-favorite",active);
+}
+
+function renderFavorites(){
+  favoriteItems=loadFavorites();
+  if(!favoriteCards || !favoritesEmpty) return;
+  favoriteCards.innerHTML=favoriteItems.map(card).join("");
+  favoritesEmpty.style.display=favoriteItems.length ? "none" : "flex";
+  bindCards();
+}
+
 function openDetail(item){
   currentItem=item;
   paintDetail(item);
+  if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
+  paintFavoriteButton(item);
   detail?.classList.remove("hidden");
   detailPlay?.focus();
 }
@@ -111,6 +167,8 @@ detailPlay?.addEventListener("click",()=>{
 });
 document.querySelector("#closeDetail")?.addEventListener("click",closeDetail);
 document.querySelector("#closeDetailSecondary")?.addEventListener("click",closeDetail);
+detailFavorite?.addEventListener("click",()=>{ if(currentItem) toggleFavorite(currentItem); });
+closeSearch?.addEventListener("click",()=>searchPanel.classList.add("hidden"));
 
 function loadResume(){
   try{
@@ -151,9 +209,22 @@ function renderCatalogSections(){
   if(movieCards) movieCards.innerHTML=movieItems.slice(0,movieVisible).map(card).join("");
   if(seriesCards) seriesCards.innerHTML=seriesItems.slice(0,seriesVisible).map(card).join("");
   renderResume();
+  renderFavorites();
   bindCards();
   const eyebrow=document.querySelector(".hero .eyebrow");
   if(eyebrow) eyebrow.textContent="LUNO • TMDB • РУССКИЙ КАТАЛОГ";
+  updateHero(movieItems[0]);
+}
+
+function updateHero(item){
+  if(!item) return;
+  heroItem=item;
+  if(heroBackdrop) heroBackdrop.style.backgroundImage=item.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
+  if(heroPoster) heroPoster.style.backgroundImage=item.poster ? 'url("'+String(item.poster).replace(/"/g,"&quot;")+'")' : "";
+  if(heroTitle) heroTitle.innerHTML=escapeHtml(item.name).replace(/\n/g,"<br>");
+  if(heroDescription) heroDescription.textContent=item.description || "Выбери фильм и начни просмотр в LUNO.";
+  if(heroMeta) heroMeta.textContent=[metaLine(item),Number(item.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : ""].filter(Boolean).join(" • ");
+  if(heroDots) heroDots.innerHTML='<span class="active"></span>';
 }
 
 function renderItems(items,sections={}){
@@ -354,13 +425,15 @@ async function searchDynamic(query){
 }
 
 document.querySelector("#openDemo").onclick=()=>{
-  const first=movieItems[0];
-  if(first) openDetail(first);
+  if(heroItem) openDetail(heroItem);
 };
 document.querySelector("#continueBtn").onclick=()=>{
-  if(resumeItems[0]) openDetail(resumeItems[0]);
-  else moviesSection?.scrollIntoView({behavior:"smooth",block:"start"});
+  if(heroItem) openDetail(heroItem);
+  else if(resumeItems[0]) openDetail(resumeItems[0]);
 };
+document.querySelectorAll(".section-more").forEach(btn=>btn.addEventListener("click",()=>{
+  navigate(btn.dataset.section||"home");
+}));
 document.querySelector("#closePlayer").onclick=closePlayer;
 
 document.querySelector("#searchBtn").onclick=()=>{
@@ -434,6 +507,7 @@ window.LUNOPlayback={
 };
 
 renderResume();
+renderFavorites();
 showCatalogMessage("Загружаем TMDB-каталог…");
 
 const catalogSentinel=document.querySelector("#catalogSentinel");
