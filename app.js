@@ -68,6 +68,8 @@ const detailQualityText=document.querySelector("#detailQualityText");
 const detailTags=document.querySelector("#detailTags");
 const detailFact=document.querySelector("#detailFact");
 const detailCredits=document.querySelector("#detailCredits");
+const detailSimilar=document.querySelector("#detailSimilar");
+const detailSimilarTitle=document.querySelector("#detailSimilarTitle");
 const detailRecommendations=document.querySelector("#detailRecommendations");
 const detailTitle=document.querySelector("#detailTitle");
 const detailMeta=document.querySelector("#detailMeta");
@@ -303,6 +305,7 @@ function paintDetail(value){
 
   if(detailHeroPoster) detailHeroPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
   if(detailPoster) detailPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
+  if(detail) detail.style.setProperty("--luno-poster",image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "none");
   if(detailTitle) detailTitle.textContent=title;
   if(detailMeta) detailMeta.textContent=[
     year!=="—" ? year : "",
@@ -338,22 +341,32 @@ function paintDetail(value){
     detailTags.innerHTML=genreNames.map(g=>'<button type="button"># '+escapeHtml(g)+'</button>').join("") || '<button type="button"># LUNO</button>';
   }
 
-  if(detailFact){
-    const facts=[
-      title+" — один из тайтлов, который LUNO показывает без лишних экранов.",
-      "LUNO объединяет карточку, источник и просмотр в одной логике.",
-      genreNames.length ? "В основе рекомендаций — жанры: "+genreNames.slice(0,3).join(", ")+".": "Для этого тайтла пока нет дополнительных фактов."
-    ];
-    detailFact.textContent=facts[0];
-    detailFact.dataset.factIndex="0";
+  if(detailCredits){
+    const cast=Array.isArray(value?.cast) ? value.cast.slice(0,10) : [];
+    detailCredits.innerHTML=cast.length ? cast.map(actor=>{
+      const portrait=actor?.profile || "";
+      return '<button class="luno-actor-card" type="button">'+
+        '<span class="luno-actor-avatar" style="background-image:url(&quot;'+escapeHtml(portrait)+'&quot;)">'+
+          (!portrait ? escapeHtml(String(actor?.name||"?").slice(0,1)) : "")+
+        '</span>'+
+        '<span class="luno-actor-copy"><strong>'+escapeHtml(actor?.name||"Актёр")+'</strong><small>'+escapeHtml(actor?.character||"В ролях")+'</small></span>'+
+      '</button>';
+    }).join("") : '<div class="luno-actors-empty">Информация об актёрах пока недоступна.</div>';
   }
 
-  if(detailCredits){
-    detailCredits.innerHTML=[
-      '<div class="luno-credit-card"><span class="luno-credit-avatar">L</span><div><strong>LUNO</strong><small>Интерфейс и просмотр</small></div></div>',
-      '<div class="luno-credit-card"><span class="luno-credit-avatar">◈</span><div><strong>Источник</strong><small>Подбирается автоматически</small></div></div>',
-      '<div class="luno-credit-card"><span class="luno-credit-avatar">◎</span><div><strong>Метаданные</strong><small>Информация о тайтле</small></div></div>'
-    ].join("");
+  if(detailSimilar){
+    const pool=(catalogItems||[]).filter(x=>x?.id && x.id!==value?.id);
+    const collectionId=Number(value?.collectionId)||0;
+    const franchise=collectionId ? pool.filter(x=>Number(x?.collectionId)===collectionId) : [];
+    const scored=pool.map(item=>{
+      const shared=(item.genreIds||[]).filter(g=>(value.genreIds||[]).includes(g)).length;
+      const rating=Number(item.rating)||0;
+      return {item,score:shared*20+rating};
+    }).sort((a,b)=>b.score-a.score).map(x=>x.item);
+    const similar=franchise.length ? franchise : scored;
+    if(detailSimilarTitle) detailSimilarTitle.textContent=franchise.length ? "Франшиза" : "Похожие";
+    detailSimilar.innerHTML=similar.slice(0,8).map(item=>card(item)).join("");
+    bindCards();
   }
 
   if(detailRecommendations){
