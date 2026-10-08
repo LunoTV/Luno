@@ -1,6 +1,6 @@
 import {createSourceRegistry} from "./sources/registry.js";
 import {loadSourceDefinitions} from "./sources/loader.js";
-import {normalizeSubtitles as normalizeSubtitle,normalizeStream,streamKind} from "./sources/normalizer.js";
+import {normalizeSubtitles as normalizeSubtitle,normalizeStream,streamKind,normalizeVoice,normalizeEpisodeInfo} from "./sources/normalizer.js";
 import {selectBestUrl as selectBestQualityUrl,qualityNumber} from "./sources/quality.js";
 
 const PROVIDERS_KEY="luno-source-providers";
@@ -286,6 +286,18 @@ async function resolveSource(source,item){
 
 function normalizeResolved(raw,source,item){
   const stream=normalizeStream(raw,source,{path:{resource:"stream",type:item?.type==="series"?"series":"movie",id:item?.id||item?.tmdbId||item?.imdbId||""}});
+  if(!stream)return null;
+  const voice=normalizeVoice(raw?.voice||raw?.voice_name||raw?.translation||raw?.dubbing||raw?.author);
+  const episode=normalizeEpisodeInfo(raw);
+  stream.stream={
+    ...stream.stream,
+    voice:voice.name||voice.id?voice:null,
+    voice_name:voice.name||voice.id||"",
+    season:episode.season,
+    episode:episode.episode,
+    episode_title:episode.title
+  };
+  return stream;
   return stream;
 }
 
@@ -351,7 +363,7 @@ async function resolveProvider(provider,item,videoId,signal){
   });
   const out=(Array.isArray(values)?values:[]).map(v=>v?.stream?{
     ...v,
-    stream:{...v.stream,subtitles:normalizeSubtitle(v.stream.subtitles),url:selectBestQualityUrl(v.stream)},
+    stream:{...v.stream,subtitles:normalizeSubtitle(v.stream.subtitles),url:selectBestQualityUrl(v.stream),voice_name:text(v.stream.voice_name||v.stream.voice?.name||v.stream.translation),season:Number(v.stream.season)||0,episode:Number(v.stream.episode)||0},
     kind:streamKind(v.stream)
   }:normalizeStream(v,provider)).filter(v=>v?.stream&&http(v.stream.url));
   cache.set(key,{expires:Date.now()+CACHE_TTL,value:out});
