@@ -8,9 +8,6 @@ import {
   getPlayerStreamUrl,
   unloadLunoPlayer,
   dispatchLunoPlayerAction,
-  getLunoTransport,
-  installLunoAddon,
-  getLunoAddonUrls
 } from "./core.js";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
@@ -680,64 +677,15 @@ async function loadMoreCatalog(){
   }
 }
 
-function addonManagerUrlLabel(url){
-  try{
-    return new URL(url).hostname.replace(/^www\./,"");
-  }catch{
-    return url;
-  }
-}
-
+function providerLabel(provider){ return String(provider?.name||provider?.id||"LUNO Source"); }
 function renderAddonManager(){
   if(!addonList) return;
-  const urls=getLunoAddonUrls();
-  const demo=new URL("./addons/luno-demo/manifest.json",document.baseURI).href;
-  const all=[demo,...urls.filter(url=>url!==demo)];
-  addonList.innerHTML=all.map((url,index)=>
-    '<div class="addon-row">'+
-      '<div><strong>'+escapeHtml(index===0 ? "LUNO Open Cinema" : addonManagerUrlLabel(url))+'</strong>'+
-      '<span>'+escapeHtml(url)+'</span></div>'+
-      '<em>'+ (index===0 ? "Открытое кино" : "Подключён") +'</em>'+
-    '</div>'
-  ).join("");
+  const providers=window.__LUNO_SOURCE_ENGINE__?.listProviders?.() || [];
+  addonList.innerHTML=providers.map((provider)=>'<div class="addon-row"><div><strong>'+escapeHtml(providerLabel(provider))+'</strong><span>'+escapeHtml(provider?.description||"Встроенный модуль источника LUNO")+'</span></div><em>'+escapeHtml(provider?.enabled===false?"Выключен":"Встроен")+'</em></div>').join("") || '<div class="addon-row"><div><strong>Нет источников</strong><span>Модули источников ещё не подключены.</span></div></div>';
 }
-
-function openAddonManagerPanel(){
-  closeSourceSheetPanel();
-  addonManager?.classList.remove("hidden");
-  renderAddonManager();
-  window.setTimeout(()=>addonUrlInput?.focus(),40);
-}
-
-function closeAddonManagerPanel(){
-  addonManager?.classList.add("hidden");
-}
-
-async function installAddonFromInput(){
-  const url=String(addonUrlInput?.value||"").trim();
-  if(!url) return;
-  if(!/^https:\/\/[^\s]+/i.test(url)){
-    if(addonManagerStatus) addonManagerStatus.textContent="Нужна HTTPS-ссылка на manifest.json.";
-    return;
-  }
-  if(installAddonButton) installAddonButton.disabled=true;
-  if(addonManagerStatus) addonManagerStatus.textContent="Проверяем источник…";
-  try{
-    const manifest=await installLunoAddon(url);
-    if(addonManagerStatus) addonManagerStatus.textContent="Источник «"+(manifest?.name||"Без названия")+"» подключён.";
-    if(addonUrlInput) addonUrlInput.value="";
-    renderAddonManager();
-    if(currentItem && !player.classList.contains("hidden")){
-      playerStreams=[];
-      await resolveLunoStreams(currentItem);
-    }
-  }catch(error){
-    console.error("LUNO addon install failed",error);
-    if(addonManagerStatus) addonManagerStatus.textContent="Не удалось подключить источник. Проверь ссылку на manifest.json.";
-  }finally{
-    if(installAddonButton) installAddonButton.disabled=false;
-  }
-}
+function openAddonManagerPanel(){ closeSourceSheetPanel(); addonManager?.classList.remove("hidden"); renderAddonManager(); }
+function closeAddonManagerPanel(){ addonManager?.classList.add("hidden"); }
+async function installAddonFromInput(){ if(addonManagerStatus) addonManagerStatus.textContent="Источники LUNO встроены в приложение. Внешние manifest-файлы больше не используются."; }
 
 function showCoreStatus(message){
   const eyebrow=document.querySelector(".hero .eyebrow");
@@ -887,10 +835,7 @@ async function resolveLunoStreams(item){
     const directStreams=playerStreams.filter(entry=>streamKind(entry)==="direct");
     const unsupportedStreams=playerStreams.filter(entry=>streamKind(entry)!=="direct");
 
-    // Источники LUNO должны приходить из Stremio Core/addons.
-    // Нестабильные внешние Lampa-плагины не подключаем как псевдо-addons:
-    // они не дают гарантированного прямого HTTPS/HLS/MP4 потока для LUNO Player.
-
+    // Источники LUNO разрешаются встроенным Source Engine.
     renderSourceSheet();
 
     if(!playerStreams.length){
