@@ -45,7 +45,7 @@ function cinemaRequestUrl(item) {
   url = addParam(url, "anime", -1);
   url = addParam(url, "source", "tmdb");
   url = addParam(url, "similar", false);
-  url = addParam(url, "rchtype", "web");
+  url = addParam(url, "rchtype", "cors");
   return url;
 }
 
