@@ -269,13 +269,88 @@ function dynamicSearchUrl(query){
   return (base||"")+"/api/tmdb/search?query="+encodeURIComponent(query);
 }
 
+function normalizeSearchText(value=""){
+  return String(value)
+    .toLocaleLowerCase("ru-RU")
+    .replace(/ё/g,"е")
+    .replace(/[^a-zа-я0-9]+/gi," ")
+    .replace(/\\s+/g," ")
+    .trim();
+}
+
+function searchYear(item){
+  return String(item?.releaseInfo||"").match(/\\d{4}/)?.[0] || "";
+}
+
+function dedupeSearchResults(items){
+  const seen=new Set();
+  const result=[];
+  for(const item of items){
+    const normalizedName=normalizeSearchText(item?.name||item?.originalName||"");
+    const year=searchYear(item);
+    const imdb=String(item?.imdbId||"").trim().toLowerCase();
+    const key=imdb
+      ? "imdb:"+imdb
+      : [item?.type||"movie",normalizedName,year].join("|");
+    if(!normalizedName || seen.has(key)) continue;
+    seen.add(key);
+    result.push(item);
+  }
+  return result;
+}
+
+function rankSearchResults(items,query){
+  const q=normalizeSearchText(query);
+  const qWords=q.split(" ").filter(Boolean);
+  const scored=items.map((item,index)=>{
+    const name=normalizeSearchText(item?.name||"");
+    const original=normalizeSearchText(item?.originalName||"");
+    const year=searchYear(item);
+    let score=0;
+
+    if(name===q) score+=1000;
+    else if(name.startsWith(q)) score+=650;
+    else if(name.includes(q)) score+=450;
+
+    if(original===q) score+=500;
+    else if(original.startsWith(q)) score+=300;
+    else if(original.includes(q)) score+=180;
+
+    const matchedWords=qWords.filter(word=>name.includes(word)||original.includes(word)).length;
+    score+=matchedWords*70;
+
+    // Для названий франшиз сначала показываем полнометражные фильмы,
+    // а сериалы оставляем ниже, если пользователь не ищет сериал явно.
+    if(item?.type==="movie") score+=160;
+    if(item?.type==="series") score-=40;
+
+    const rating=Number(item?.rating)||0;
+    const popularity=Number(item?.popularity)||0;
+    score+=rating*12;
+    score+=Math.min(popularity,100)*0.25;
+
+    // Если год явно указан в запросе — жёстко учитываем его.
+    const queryYear=q.match(/\\b(19\\d{2}|20\\d{2})\\b/)?.[1];
+    if(queryYear) score += year===queryYear ? 900 : -250;
+
+    return {item,score,index};
+  });
+
+  return scored
+    .sort((a,b)=>b.score-a.score || a.index-b.index)
+    .map(entry=>entry.item);
+}
+
 async function searchDynamic(query){
   const response=await fetch(dynamicSearchUrl(query),{headers:{accept:"application/json"},cache:"no-store"});
   if(!response.ok) throw new Error("TMDB search HTTP "+response.status);
   const data=await response.json();
-  const items=Array.isArray(data?.results) ? data.results.map(normalizeItem).filter(x=>x.tmdbId) : [];
-  for(const item of items) window.__LUNO_ITEMS__.set(item.id,item);
-  return items;
+  const items=Array.isArray(data?.results)
+    ? data.results.map(normalizeItem).filter(x=>x.tmdbId)
+    : [];
+  const clean=rankSearchResults(dedupeSearchResults(items),query);
+  for(const item of clean) window.__LUNO_ITEMS__.set(item.id,item);
+  return clean;
 }
 
 document.querySelector("#openDemo").onclick=()=>{
