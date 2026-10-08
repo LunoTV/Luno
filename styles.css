@@ -1743,3 +1743,51 @@ body.detail-open{
   .source-sheet-head strong{font-size:16px}
   .source-option{min-height:56px}
 }
+
+
+/* ---------- LUNO ADDON MANAGER v15 ---------- */
+.addon-manager{
+  width:min(720px,92vw);
+  max-height:min(760px,88vh);
+  overflow:auto;
+  margin:auto;
+  padding:30px;
+  position:relative;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;
+  background:linear-gradient(160deg,rgba(18,20,27,.98),rgba(7,8,12,.98));
+  box-shadow:0 35px 120px rgba(0,0,0,.75);
+}
+.addon-manager h2{margin:7px 0 9px;font-size:30px;letter-spacing:-.04em}
+.addon-manager-copy{max-width:600px;margin:0 0 22px;color:#858b97;font-size:13px;line-height:1.55}
+.addon-manager-form{display:grid;grid-template-columns:1fr auto;gap:9px}
+.addon-manager-form input{
+  min-width:0;height:48px;padding:0 14px;border-radius:13px;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+  color:#fff;outline:none;
+}
+.addon-manager-form input:focus{border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.075)}
+.addon-manager-form .primary{min-width:130px;height:48px;border-radius:13px}
+.addon-manager-status{min-height:22px;padding:11px 2px 5px;color:#9ea4af;font-size:11px}
+.addon-list{display:grid;gap:8px;margin-top:12px}
+.addon-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:13px 14px;border-radius:14px;background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.07)
+}
+.addon-row strong{display:block;font-size:13px}
+.addon-row span{display:block;margin-top:4px;color:#696f7a;font-size:9px;word-break:break-all}
+.addon-row em{font-style:normal;white-space:nowrap;color:#aeb4bf;font-size:9px}
+.source-add-button{
+  width:100%;min-height:46px;margin-top:10px;border-radius:12px;
+  border:1px dashed rgba(255,255,255,.14);background:rgba(255,255,255,.025);
+  color:#b7bcc5;font-size:11px;cursor:pointer
+}
+.source-add-button:hover{background:rgba(255,255,255,.06);color:#fff}
+@media(max-width:700px){
+  .addon-manager{width:100vw;max-height:100dvh;min-height:100dvh;border:0;border-radius:0;padding:24px 16px calc(24px + env(safe-area-inset-bottom))}
+  .addon-manager h2{font-size:27px}
+  .addon-manager-form{grid-template-columns:1fr}
+  .addon-manager-form .primary{width:100%}
+  .addon-row{align-items:flex-start;flex-direction:column;gap:7px}
+}
