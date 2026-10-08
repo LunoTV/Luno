@@ -1773,12 +1773,14 @@ async function searchDynamic(query){
 
 function openSearch(){
   searchPanel?.classList.remove("hidden");
+  document.body.classList.add("search-open");
   renderSearchHistory();
   updateSearchSourceUI();
   window.setTimeout(()=>searchInput?.focus(),40);
 }
 function closeSearchPanel(){
   searchPanel?.classList.add("hidden");
+  document.body.classList.remove("search-open");
 }
 document.querySelector("#searchBack")?.addEventListener("click",closeSearchPanel);
 document.querySelector("#searchClear")?.addEventListener("click",()=>{
