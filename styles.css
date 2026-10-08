@@ -2497,3 +2497,30 @@ main > .section .cards .card-title{font-size:12px}
     flex-shrink:0!important;
   }
 }
+
+/* LUNO FULL-WIDTH BOTTOM STRIP V6 */
+.card-info{
+  position:absolute!important;
+  left:-1px!important;
+  right:-1px!important;
+  bottom:-1px!important;
+  width:auto!important;
+  box-sizing:border-box!important;
+  min-height:38px!important;
+  padding:7px 10px 8px!important;
+  border-radius:0 0 14px 14px!important;
+  background:rgba(5,7,11,.94)!important;
+  background:linear-gradient(180deg,rgba(5,7,11,.72),rgba(5,7,11,.97))!important;
+  backdrop-filter:blur(5px)!important;
+  -webkit-backdrop-filter:blur(5px)!important;
+}
+@media(max-width:700px){
+  .card-info{
+    left:-1px!important;
+    right:-1px!important;
+    bottom:-1px!important;
+    min-height:35px!important;
+    padding:6px 8px 7px!important;
+    border-radius:0 0 14px 14px!important;
+  }
+}
