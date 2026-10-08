@@ -8,3 +8,6 @@
 .source-toggle{border:0;border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.08);color:inherit;cursor:pointer;font:inherit;font-size:11px}
 .source-toggle:hover{background:rgba(255,255,255,.14)}
 .source-manager-source{display:flex;align-items:center;justify-content:space-between;gap:12px}
+
+.player-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.player-actions .player-source{min-width:88px}
