@@ -6,7 +6,7 @@ let bridge = null;
 let initialized = false;
 
 const CINEMETA_URL = "https://v3-cinemeta.strem.io/manifest.json";
-const DEMO_SOURCE_URL = "https://lunotv.github.io/Luno/addons/luno-demo/manifest.json";
+const DEMO_SOURCE_URL = new URL("./addons/luno-demo/manifest.json", document.baseURI).href;
 const LUNO_ADDONS_KEY = "luno-addon-urls";
 
 function ensureTransport() {
