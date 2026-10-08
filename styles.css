@@ -2158,3 +2158,9 @@ main > .section .cards .card{
 }
 main > .section .cards .card-art{height:276px}
 main > .section .cards .card-title{font-size:12px}
+
+@media(max-width:700px){
+  main > .section .cards{gap:10px;padding-right:14px;padding-bottom:10px}
+  main > .section .cards .card{flex:0 0 128px;width:128px;min-width:128px}
+  main > .section .cards .card-art{height:192px}
+}
