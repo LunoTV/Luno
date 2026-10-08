@@ -49,15 +49,22 @@
       </nav>
     </header>
 
-    <nav class="mobile-tabbar" aria-label="Основная навигация">
+    <nav class="mobile-tabbar luno-bottom-dock" aria-label="Основная навигация">
+      <button class="mobile-tab dock-back" type="button" aria-label="Назад"><span class="tab-icon">‹</span><small>Назад</small></button>
       <button class="mobile-tab active" data-section="home"><span class="tab-icon">⌂</span><small>Главная</small></button>
-      <button class="mobile-tab" data-section="movies"><span class="tab-icon">▣</span><small>Фильмы</small></button>
+      <button class="mobile-tab" data-section="movies"><span class="tab-icon">▷</span><small>Фильмы</small></button>
       <button class="mobile-tab" data-section="series"><span class="tab-icon">▤</span><small>Сериалы</small></button>
-      <button class="mobile-tab" data-section="catalog"><span class="tab-icon">⋯</span><small>Каталог</small></button>
       <button class="mobile-tab" data-section="search"><span class="tab-icon">⌕</span><small>Поиск</small></button>
+      <button class="mobile-tab dock-catalog" data-section="catalog" aria-label="Каталог"><span class="tab-icon">☷</span><small>Каталог</small></button>
     </nav>
 
     <main>
+      <div class="luno-home-head" aria-label="Главная">
+        <button class="luno-home-brand" type="button" data-section="home" aria-label="LUNO — Главная">
+          <span class="brand-orbit"><span class="brand-moon"></span></span>
+          <span>Главная</span>
+        </button>
+      </div>
       <section class="hero" id="homeHero" aria-label="Рекомендация">
         <div class="hero-backdrop hero-backdrop-a" id="heroBackdrop"></div>
         <div class="hero-backdrop hero-backdrop-b" id="heroBackdropAlt"></div>
