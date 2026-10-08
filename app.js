@@ -9,7 +9,7 @@ import {
   unloadLunoPlayer,
   dispatchLunoPlayerAction,
 } from "./source-engine.js";
-import {renderSourceManager} from "./ui/source-manager.js";
+import {renderSourceManager,bindSourceManager} from "./ui/source-manager.js";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
 const openCinemaCards=document.querySelector("#openCinemaCards");
@@ -684,7 +684,12 @@ function renderAddonManager(){
   renderSourceManager(addonList,{
     providers:engine?.listProviders?.()||[],
     sources:engine?.listSources?.()||[],
-    status:engine?.getStatus?.()||{}
+    status:engine?.getStatus?.()||{},
+    preferences:engine?.getSourcePreferences?.()||{}
+  });
+  bindSourceManager(addonList,(id,enabled)=>{
+    engine?.setSourceEnabled?.(id,enabled);
+    renderAddonManager();
   });
 }
 function openAddonManagerPanel(){ closeSourceSheetPanel(); addonManager?.classList.remove("hidden"); renderAddonManager(); }
