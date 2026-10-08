@@ -1,4 +1,13 @@
 import tmdbCatalog from "./tmdb-catalog.generated.js";
+import {
+  loadMetaDetails,
+  loadLunoPlayer,
+  getReadyMetaStreams,
+  getPlayerStreamUrl,
+  unloadLunoPlayer,
+  dispatchLunoPlayerAction,
+  getLunoTransport
+} from "./core.js";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
 const seriesCards=document.querySelector("#seriesCards");
@@ -11,6 +20,11 @@ const playerEmpty=document.querySelector("#playerEmpty");
 const playerMessage=document.querySelector("#playerMessage");
 const playerBarTitle=document.querySelector("#playerBarTitle");
 const playerBarMeta=document.querySelector("#playerBarMeta");
+const playerSourceButton=document.querySelector("#playerSourceButton");
+const sourceSheet=document.querySelector("#sourceSheet");
+const sourceList=document.querySelector("#sourceList");
+const sourceEmpty=document.querySelector("#sourceEmpty");
+const closeSourceSheet=document.querySelector("#closeSourceSheet");
 const detail=document.querySelector("#detail");
 const detailPoster=document.querySelector("#detailPoster");
 const detailTitle=document.querySelector("#detailTitle");
@@ -70,6 +84,10 @@ let favoriteItems=[];
 let heroItem=null;
 let splashDone=false;
 let dialogAction=null;
+let playerStreams=[];
+let playerStreamState=null;
+let playerResolving=false;
+let lastCoreTime=-1;
 
 function setSplashProgress(value,status){
   if(splashProgress) splashProgress.style.width=Math.max(0,Math.min(100,value))+"%";
@@ -628,6 +646,150 @@ function showCatalogMessage(message){
   if(seriesCards) seriesCards.innerHTML="";
 }
 
+function streamLabel(entry,index){
+  const stream=entry?.stream||{};
+  const name=stream.name || stream.description || "";
+  const addon=entry?.addon?.manifest?.name || "";
+  const text=[name,addon].filter(Boolean).join(" • ");
+  return text || "Источник "+(index+1);
+}
+
+function streamQuality(entry){
+  const hints=entry?.stream?.behaviorHints||{};
+  const text=[entry?.stream?.name,entry?.stream?.description].filter(Boolean).join(" ");
+  const match=text.match(/(?:2160|1440|1080|720|576|480|360)p?/i);
+  if(match) return match[0].toUpperCase();
+  if(hints.videoSize) return Math.round(Number(hints.videoSize)/1024/1024)+" MB";
+  return "";
+}
+
+function renderSourceSheet(){
+  if(!sourceList || !sourceEmpty) return;
+  sourceList.innerHTML=playerStreams.map((entry,index)=>{
+    const label=escapeHtml(streamLabel(entry,index));
+    const quality=escapeHtml(streamQuality(entry));
+    return '<button class="source-option" type="button" data-source-index="'+index+'">'+
+      '<span><strong>'+label+'</strong><span>'+(entry?.addon?.manifest?.name ? escapeHtml(entry.addon.manifest.name) : "Stremio Core")+'</span></span>'+
+      (quality ? '<span class="source-quality">'+quality+'</span>' : '')+
+    '</button>';
+  }).join("");
+  sourceEmpty.classList.toggle("hidden",playerStreams.length>0);
+  sourceList.querySelectorAll("[data-source-index]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      selectLunoSource(Number(button.dataset.sourceIndex));
+    });
+  });
+}
+
+function openSourceSheet(){
+  renderSourceSheet();
+  sourceSheet?.classList.remove("hidden");
+  sourceList?.querySelector("button")?.focus();
+}
+
+function closeSourceSheetPanel(){
+  sourceSheet?.classList.add("hidden");
+}
+
+function buildMetaRequest(item,entry){
+  const base=entry?.addon?.transportUrl || entry?.request?.base;
+  if(!base || !item?.id) return null;
+  return {
+    base,
+    path:{
+      resource:"meta",
+      type:item.type==="series" ? "series" : "movie",
+      id:String(item.id),
+      extra:[]
+    }
+  };
+}
+
+async function resolveLunoStreams(item){
+  if(playerResolving || !item) return;
+  playerResolving=true;
+  playerStreams=[];
+  renderSourceSheet();
+  playerEmpty?.classList.remove("hidden");
+  if(playerMessage) playerMessage.textContent="Ищем доступные источники…";
+  if(playerSourceButton) playerSourceButton.disabled=true;
+
+  try{
+    let state=await loadMetaDetails(item,item?.videoId||"");
+    let streams=getReadyMetaStreams(state);
+
+    // Для сериала Core сначала получает metadata. Если первый запрос не выбрал
+    // видео, выбираем продолжение из Library или первую доступную серию.
+    if(!streams.length && item.type==="series"){
+      const readyMeta=state?.metaItem?.content?.type==="Ready" ? state.metaItem.content.content : null;
+      const videoId=state?.libraryItem?.state?.videoId ||
+        readyMeta?.videos?.find(video=>!video.watched)?.id ||
+        readyMeta?.videos?.[0]?.id || "";
+      if(videoId){
+        state=await loadMetaDetails(item,videoId);
+        streams=getReadyMetaStreams(state);
+      }
+    }
+
+    playerStreamState=state;
+    playerStreams=streams.filter(entry=>entry?.stream);
+    renderSourceSheet();
+
+    if(!playerStreams.length){
+      if(playerMessage) playerMessage.textContent="Источник для этого контента не найден.";
+      openSourceSheet();
+      return;
+    }
+
+    if(playerStreams.length===1){
+      await selectLunoSource(0);
+    }else{
+      if(playerMessage) playerMessage.textContent="Выберите источник просмотра.";
+      openSourceSheet();
+    }
+  }catch(error){
+    console.error("LUNO stream resolution failed",error);
+    if(playerMessage) playerMessage.textContent="Не удалось получить источники. Попробуйте ещё раз.";
+    openSourceSheet();
+  }finally{
+    playerResolving=false;
+    if(playerSourceButton) playerSourceButton.disabled=false;
+  }
+}
+
+async function selectLunoSource(index){
+  const entry=playerStreams[index];
+  if(!entry?.stream) return;
+  closeSourceSheetPanel();
+  playerEmpty?.classList.remove("hidden");
+  if(playerMessage) playerMessage.textContent="Подготавливаем источник…";
+  if(playerBarMeta) playerBarMeta.textContent=streamLabel(entry,index);
+
+  try{
+    const metaRequest=buildMetaRequest(currentItem,entry);
+    const playerState=await loadLunoPlayer(entry.stream,entry.request,metaRequest,{
+      resource:"subtitles",
+      type:currentItem?.type==="series" ? "series" : "movie",
+      id:entry.request?.path?.id || currentItem?.id || "",
+      extra:[]
+    });
+    const streamUrl=getPlayerStreamUrl(playerState);
+
+    if(!streamUrl){
+      playerEmpty?.classList.remove("hidden");
+      if(lunoVideo) lunoVideo.classList.remove("is-ready");
+      if(playerMessage) playerMessage.textContent="Этот источник не отдаёт прямой поток для LUNO Player.";
+      return;
+    }
+
+    setLunoStream(streamUrl,{label:streamLabel(entry,index),resume:true});
+  }catch(error){
+    console.error("LUNO player load failed",error);
+    if(playerMessage) playerMessage.textContent="Источник не удалось запустить.";
+    playerEmpty?.classList.remove("hidden");
+  }
+}
+
 function openPlayer(id,type,title,streamUrl=""){
   player.classList.remove("hidden");
   if(playerBarTitle) playerBarTitle.textContent=title || "LUNO";
@@ -636,17 +798,18 @@ function openPlayer(id,type,title,streamUrl=""){
     lunoVideo.pause();
     lunoVideo.removeAttribute("src");
     lunoVideo.load();
+    lunoVideo.classList.remove("is-ready");
   }
-  if(streamUrl && lunoVideo){
-    playerEmpty?.classList.add("hidden");
-    lunoVideo.classList.add("is-ready");
-    lunoVideo.src=streamUrl;
-    lunoVideo.play().catch(()=>{});
-    window.LUNOPlayback?.start(currentItem);
+  sourceSheet?.classList.add("hidden");
+  playerStreams=[];
+  playerStreamState=null;
+  lastCoreTime=-1;
+  if(streamUrl){
+    setLunoStream(streamUrl);
   }else{
     playerEmpty?.classList.remove("hidden");
-    if(lunoVideo) lunoVideo.classList.remove("is-ready");
-    if(playerMessage) playerMessage.textContent="Источник просмотра будет подключён через Stremio Core.";
+    if(playerMessage) playerMessage.textContent="Ищем доступные источники…";
+    resolveLunoStreams(currentItem);
   }
   document.querySelector("#closePlayer")?.focus();
 }
@@ -656,7 +819,9 @@ function closePlayer(){
     window.LUNOPlayback?.progress(currentItem,lunoVideo.currentTime,lunoVideo.duration);
   }
   lunoVideo?.pause();
+  sourceSheet?.classList.add("hidden");
   player.classList.add("hidden");
+  unloadLunoPlayer().catch?.(()=>{});
 }
 
 function setLunoStream(streamUrl,streamMeta={}){
@@ -665,6 +830,15 @@ function setLunoStream(streamUrl,streamMeta={}){
   lunoVideo.classList.add("is-ready");
   lunoVideo.src=streamUrl;
   if(playerBarMeta) playerBarMeta.textContent=streamMeta.label || playerBarMeta.textContent || "";
+  const resume=loadResume().find(item=>item.id===currentItem?.id);
+  const startAt=Number(resume?.position)||0;
+  const onMetadata=()=>{
+    if(startAt>5 && Number(lunoVideo.duration)>startAt+5){
+      try{lunoVideo.currentTime=startAt;}catch{}
+    }
+    lunoVideo.removeEventListener("loadedmetadata",onMetadata);
+  };
+  lunoVideo.addEventListener("loadedmetadata",onMetadata);
   lunoVideo.play().catch(()=>{});
   window.LUNOPlayback?.start(currentItem);
   return true;
@@ -798,13 +972,50 @@ document.querySelectorAll(".section-more").forEach(btn=>btn.addEventListener("cl
   navigate(btn.dataset.section||"home");
 }));
 lunoVideo?.addEventListener("timeupdate",()=>{
-  if(currentItem && Number(lunoVideo.duration)>0 && Math.floor(lunoVideo.currentTime)%5===0) window.LUNOPlayback?.progress(currentItem,lunoVideo.currentTime,lunoVideo.duration);
+  if(!currentItem) return;
+  const duration=Number(lunoVideo.duration)||0;
+  const time=Number(lunoVideo.currentTime)||0;
+  if(duration>0) window.LUNOPlayback?.progress(currentItem,time,duration);
+  if(Math.abs(time-lastCoreTime)>=1){
+    lastCoreTime=time;
+    dispatchLunoPlayerAction("TimeChanged",{
+      time:Math.max(0,Math.round(time*1000)),
+      duration:Math.max(0,Math.round(duration*1000)),
+      device:"luno"
+    });
+  }
 });
-lunoVideo?.addEventListener("ended",()=>{ if(currentItem) window.LUNOPlayback?.finish(currentItem); });
+lunoVideo?.addEventListener("play",()=>dispatchLunoPlayerAction("PausedChanged",{paused:false}));
+lunoVideo?.addEventListener("pause",()=>dispatchLunoPlayerAction("PausedChanged",{paused:true}));
+lunoVideo?.addEventListener("seeked",()=>{
+  const duration=Number(lunoVideo.duration)||0;
+  if(duration>0){
+    dispatchLunoPlayerAction("Seek",{
+      time:Math.max(0,Math.round((Number(lunoVideo.currentTime)||0)*1000)),
+      duration:Math.max(0,Math.round(duration*1000)),
+      device:"luno"
+    });
+  }
+});
+lunoVideo?.addEventListener("ended",()=>{
+  dispatchLunoPlayerAction("Ended");
+  if(currentItem) window.LUNOPlayback?.finish(currentItem);
+});
+lunoVideo?.addEventListener("error",()=>{
+  if(playerMessage) playerMessage.textContent="Не удалось воспроизвести этот источник.";
+});
 
 document.querySelector("#closePlayer").onclick=()=>{
   showDialog("Выйти из просмотра?","Прогресс просмотра сохранится на этом устройстве.","Выйти",closePlayer);
 };
+playerSourceButton?.addEventListener("click",()=>{
+  if(playerStreams.length) openSourceSheet();
+  else if(currentItem) resolveLunoStreams(currentItem);
+});
+closeSourceSheet?.addEventListener("click",closeSourceSheetPanel);
+sourceSheet?.addEventListener("click",(event)=>{
+  if(event.target===sourceSheet) closeSourceSheetPanel();
+});
 libraryBack?.addEventListener("click",closeLibrary);
 librarySearch?.addEventListener("click",()=>{
   closeLibrary();
