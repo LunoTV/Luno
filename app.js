@@ -266,8 +266,8 @@ function posterCandidates(item){
   const values=[
     item?.poster,
     item?.posterSource,
-    item?.poster_path ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\\//,"") : "",
-    item?.poster_path ? "https://image.tmdb.org/t/p/original"+String(item.poster_path).replace(/^\\//,"") : "",
+    item?.poster_path ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\//,"") : "",
+    item?.poster_path ? "https://image.tmdb.org/t/p/original"+String(item.poster_path).replace(/^\//,"") : "",
     item?.background
   ];
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
