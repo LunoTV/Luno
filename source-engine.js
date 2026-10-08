@@ -4,6 +4,7 @@ import {normalizeSubtitles as normalizeSubtitle,normalizeStream,streamKind} from
 import {selectBestUrl as selectBestQualityUrl,qualityNumber} from "./sources/quality.js";
 
 const PROVIDERS_KEY="luno-source-providers";
+const SOURCE_PREFS_KEY="luno-source-prefs";
 const DEFAULT_TIMEOUT=15000;
 const SOURCE_TIMEOUT=9000;
 const CACHE_TTL=15000;
@@ -27,6 +28,7 @@ const SOURCE_CATALOG=[
 function text(v){return v==null?"":String(v).trim()}
 function http(v){try{const u=new URL(text(v));return u.protocol==="http:"||u.protocol==="https:"}catch{return false}}
 function unique(list){return [...new Set(list.filter(Boolean))]}
+function sourcePreferences(){try{return JSON.parse(localStorage.getItem(SOURCE_PREFS_KEY)||"{}")||{}}catch{return{}}}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
 
@@ -183,7 +185,8 @@ async function discoverSources(item){
         show:entry.show!==false
       })).filter(x=>x.id&&http(x.url));
 
-      const allowed=mapped.filter(x=>SOURCE_CATALOG.includes(x.id)||!SOURCE_CATALOG.length);
+      const prefs=sourcePreferences();
+      const allowed=mapped.filter(x=>(SOURCE_CATALOG.includes(x.id)||!SOURCE_CATALOG.length)&&prefs[x.id]!==false);
       if(allowed.length){
         cache.set(cacheKey,{expires:Date.now()+CACHE_TTL,value:allowed});
         return allowed;
@@ -355,11 +358,15 @@ async function resolveProvider(provider,item,videoId,signal){
 
 async function resolveItemStreams(item,{videoId="",signal}={}){
   initSourceEngine();
+  const providers=registry.values().filter(provider=>provider.enabled!==false);
+  const results=await Promise.allSettled(providers.map(provider=>{
+    if(signal?.aborted)return Promise.resolve([]);
+    return resolveProvider(provider,item,videoId,signal);
+  }));
   const out=[];
-  for(const provider of registry.values()){
-    if(provider.enabled===false||signal?.aborted)continue;
-    try{out.push(...await resolveProvider(provider,item,videoId,signal))}
-    catch(error){console.warn("[LUNO source]",provider.id,error)}
+  for(const result of results){
+    if(result.status==="fulfilled"&&Array.isArray(result.value))out.push(...result.value);
+    else if(result.status==="rejected")console.warn("[LUNO source]",result.reason);
   }
   const seen=new Set();
   return out.filter(x=>{
@@ -389,15 +396,30 @@ function getSourceRuntimeStatus(){
   };
 }
 
+function setSourceEnabled(id,enabled){
+  const key=text(id).toLowerCase();
+  if(!key)return false;
+  const prefs=sourcePreferences();
+  prefs[key]=enabled!==false;
+  localStorage.setItem(SOURCE_PREFS_KEY,JSON.stringify(prefs));
+  cache.clear();
+  window.dispatchEvent(new CustomEvent("luno-source-state",{detail:{id:key,enabled:prefs[key]}}));
+  return true;
+}
+
+function getSourcePreferences(){
+  return sourcePreferences();
+}
+
 function setSourceProviderEnabled(id,enabled){
   const changed=registry.setEnabled(id,enabled);
   if(changed)window.dispatchEvent(new CustomEvent("luno-source-state",{detail:{id,enabled:enabled!==false}}));
   return changed;
 }
 
-const api={listProviders:listSourceProviders,listSources:listAvailableSources,getStatus:getSourceRuntimeStatus,setProviderEnabled:setSourceProviderEnabled,resolve:resolveItemStreams,registerProvider};
+const api={listProviders:listSourceProviders,listSources:listAvailableSources,getStatus:getSourceRuntimeStatus,getSourcePreferences,setSourceEnabled,setProviderEnabled:setSourceProviderEnabled,resolve:resolveItemStreams,registerProvider};
 
-export {initSourceEngine,listSourceProviders,listAvailableSources,getSourceRuntimeStatus,setSourceProviderEnabled,resolveItemStreams,registerProvider};
+export {initSourceEngine,listSourceProviders,listAvailableSources,getSourceRuntimeStatus,getSourcePreferences,setSourceEnabled,setSourceProviderEnabled,resolveItemStreams,registerProvider};
 
 export async function initLunoCore(){
   initSourceEngine();
