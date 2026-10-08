@@ -807,11 +807,14 @@ function renderCatalogSections(){
   bindCards();
   const eyebrow=document.querySelector(".hero .eyebrow");
   if(eyebrow) eyebrow.textContent="";
-  // Put the current film into the cinematic top banner first; fall back to the most popular movie.\n  updateHero(resumeItems[0] || movieItems[0]);
+  // Put the current film into the cinematic top banner first; fall back to the most popular movie.
+  updateHero(resumeItems[0] || movieItems[0]);
 }
 
 function heroImageUrl(item){
-  return item?.background ? String(item.background) : "";
+  return item?.background
+    ? String(item.background)
+    : (item?.poster ? String(item.poster) : "");
 }
 function preloadHeroImage(item){
   const url=heroImageUrl(item);
@@ -830,17 +833,30 @@ function paintHero(item,index=0){
   const url=heroImageUrl(item);
   const active=heroBackdrop?.classList.contains("is-active") ? heroBackdrop : heroBackdropAlt;
   const next=active===heroBackdrop ? heroBackdropAlt : heroBackdrop;
-  if(next && url){
-    next.style.backgroundImage='url("'+url.replace(/"/g,"&quot;")+'")';
-    next.classList.add("is-ready");
-    window.requestAnimationFrame(()=>{
-      active?.classList.remove("is-active");
-      next.classList.add("is-active");
-    });
-  }else if(heroBackdrop && url){
-    heroBackdrop.style.backgroundImage='url("'+url.replace(/"/g,"&quot;")+'")';
-    heroBackdrop.classList.add("is-active","is-ready");
+
+  const applyImage=()=>{
+    if(next && url){
+      next.style.backgroundImage='url("'+url.replace(/"/g,"&quot;")+'")';
+      next.classList.add("is-ready");
+      window.requestAnimationFrame(()=>{
+        active?.classList.remove("is-active");
+        next.classList.add("is-active");
+      });
+    }
+  };
+
+  if(url){
+    const img=new Image();
+    img.onload=applyImage;
+    img.onerror=()=>{
+      if(item?.poster && item.poster!==url){
+        next.style.backgroundImage='url("'+String(item.poster).replace(/"/g,"&quot;")+'")';
+        next.classList.add("is-ready","is-active");
+      }
+    };
+    img.src=url;
   }
+
   preloadHeroImage(heroRotationItems[(index+1)%Math.max(heroRotationItems.length,1)]);
   if(heroTitle) heroTitle.innerHTML=escapeHtml(item.name).replace(/\n/g,"<br>");
   if(heroDescription) heroDescription.textContent=item.description || "Выбери фильм и начни просмотр в LUNO.";
@@ -1827,6 +1843,7 @@ searchInput.addEventListener("keydown",async(e)=>{
 });
 
 ensureLunoHistory();
+document.body.classList.add("home-mode");
 window.addEventListener("popstate",()=>{
   if(!detail?.classList.contains("hidden")){
     closeDetail(true);
