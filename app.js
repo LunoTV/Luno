@@ -6,7 +6,9 @@ import {
   getPlayerStreamUrl,
   unloadLunoPlayer,
   dispatchLunoPlayerAction,
-  getLunoTransport
+  getLunoTransport,
+  installLunoAddon,
+  getLunoAddonUrls
 } from "./core.js";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
@@ -66,6 +68,14 @@ const dialogTitle=document.querySelector("#dialogTitle");
 const dialogMessage=document.querySelector("#dialogMessage");
 const dialogCancel=document.querySelector("#dialogCancel");
 const dialogConfirm=document.querySelector("#dialogConfirm");
+const addonManager=document.querySelector("#addonManager");
+const addonUrlInput=document.querySelector("#addonUrlInput");
+const installAddonButton=document.querySelector("#installAddonButton");
+const addonManagerStatus=document.querySelector("#addonManagerStatus");
+const addonList=document.querySelector("#addonList");
+const openAddonManager=document.querySelector("#openAddonManager");
+const openAddonManagerFromPlayer=document.querySelector("#openAddonManagerFromPlayer");
+const closeAddonManager=document.querySelector("#closeAddonManager");
 
 let currentItem=null;
 let catalogItems=[];
@@ -636,6 +646,65 @@ async function loadMoreCatalog(){
   }
 }
 
+function addonManagerUrlLabel(url){
+  try{
+    return new URL(url).hostname.replace(/^www\./,"");
+  }catch{
+    return url;
+  }
+}
+
+function renderAddonManager(){
+  if(!addonList) return;
+  const urls=getLunoAddonUrls();
+  const demo="https://lunotv.github.io/Luno/addons/luno-demo/manifest.json";
+  const all=[demo,...urls.filter(url=>url!==demo)];
+  addonList.innerHTML=all.map((url,index)=>
+    '<div class="addon-row">'+
+      '<div><strong>'+escapeHtml(index===0 ? "LUNO Demo Source" : addonManagerUrlLabel(url))+'</strong>'+
+      '<span>'+escapeHtml(url)+'</span></div>'+
+      '<em>'+ (index===0 ? "Тестовый" : "Подключён") +'</em>'+
+    '</div>'
+  ).join("");
+}
+
+function openAddonManagerPanel(){
+  closeSourceSheetPanel();
+  addonManager?.classList.remove("hidden");
+  renderAddonManager();
+  window.setTimeout(()=>addonUrlInput?.focus(),40);
+}
+
+function closeAddonManagerPanel(){
+  addonManager?.classList.add("hidden");
+}
+
+async function installAddonFromInput(){
+  const url=String(addonUrlInput?.value||"").trim();
+  if(!url) return;
+  if(!/^https:\/\/[^\s]+/i.test(url)){
+    if(addonManagerStatus) addonManagerStatus.textContent="Нужна HTTPS-ссылка на manifest.json.";
+    return;
+  }
+  if(installAddonButton) installAddonButton.disabled=true;
+  if(addonManagerStatus) addonManagerStatus.textContent="Проверяем источник…";
+  try{
+    const manifest=await installLunoAddon(url);
+    if(addonManagerStatus) addonManagerStatus.textContent="Источник «"+(manifest?.name||"Без названия")+"» подключён.";
+    if(addonUrlInput) addonUrlInput.value="";
+    renderAddonManager();
+    if(currentItem && !player.classList.contains("hidden")){
+      playerStreams=[];
+      await resolveLunoStreams(currentItem);
+    }
+  }catch(error){
+    console.error("LUNO addon install failed",error);
+    if(addonManagerStatus) addonManagerStatus.textContent="Не удалось подключить источник. Проверь ссылку на manifest.json.";
+  }finally{
+    if(installAddonButton) installAddonButton.disabled=false;
+  }
+}
+
 function showCoreStatus(message){
   const eyebrow=document.querySelector(".hero .eyebrow");
   if(eyebrow) eyebrow.textContent=message;
@@ -1013,6 +1082,17 @@ playerSourceButton?.addEventListener("click",()=>{
   else if(currentItem) resolveLunoStreams(currentItem);
 });
 closeSourceSheet?.addEventListener("click",closeSourceSheetPanel);
+openAddonManager?.addEventListener("click",openAddonManagerPanel);
+openAddonManagerFromPlayer?.addEventListener("click",openAddonManagerPanel);
+closeAddonManager?.addEventListener("click",closeAddonManagerPanel);
+addonManager?.addEventListener("click",(event)=>{
+  if(event.target===addonManager) closeAddonManagerPanel();
+});
+installAddonButton?.addEventListener("click",installAddonFromInput);
+addonUrlInput?.addEventListener("keydown",(event)=>{
+  if(event.key==="Enter") installAddonFromInput();
+  if(event.key==="Escape") closeAddonManagerPanel();
+});
 sourceSheet?.addEventListener("click",(event)=>{
   if(event.target===sourceSheet) closeSourceSheetPanel();
 });
@@ -1077,6 +1157,7 @@ window.addEventListener("popstate",()=>{
 document.addEventListener("keydown",(e)=>{
   if(e.key==="Escape"){
     closePlayer();
+    closeAddonManagerPanel();
     closeDetail();
     searchPanel.classList.add("hidden");
     closeLibrary();
