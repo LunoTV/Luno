@@ -1043,6 +1043,7 @@ async function selectLunoSource(index){
   const entry=playerStreams[index];
   if(!entry?.stream) return;
   closeSourceSheetPanel();
+  playerBrowse?.classList.add("hidden");
   if(playerStreamState) playerStreamState.selectedIndex=index;
   playerEmpty?.classList.remove("hidden");
   if(playerMessage) playerMessage.textContent="Подготавливаем источник…";
@@ -1126,7 +1127,7 @@ function renderPlayerBrowse(){
     const title=x.entry?.stream?.episode_title || x.label;
     const quality=streamQuality(x.entry) || "AUTO";
     return '<button class="player-episode-card" type="button" data-player-episode="'+x.index+'">'+
-      '<div class="player-episode-thumb" style="background-image:url("'+escapeHtml(thumb)+'")">'+
+      '<div class="player-episode-thumb" style="background-image:url(&quot;'+escapeHtml(thumb)+'&quot;)">'+
         '<span class="player-episode-num">'+escapeHtml(x.label)+'</span>'+
         '<span class="player-episode-duration">'+escapeHtml(quality)+'</span>'+
       '</div>'+
