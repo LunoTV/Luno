@@ -25,6 +25,7 @@
         <button class="nav-item active" data-section="home">Главная</button>
         <button class="nav-item" data-section="movies">Фильмы</button>
         <button class="nav-item" data-section="series">Сериалы</button>
+        <button class="nav-item" data-section="cartoons">Мультфильмы</button>
         <button class="nav-item" data-section="favorites">Моё</button>
       </nav>
 
@@ -37,6 +38,7 @@
       <button class="mobile-tab active" data-section="home"><span class="tab-icon">⌂</span><small>Главная</small></button>
       <button class="mobile-tab" data-section="movies"><span class="tab-icon">▣</span><small>Фильмы</small></button>
       <button class="mobile-tab" data-section="series"><span class="tab-icon">▤</span><small>Сериалы</small></button>
+      <button class="mobile-tab" data-section="cartoons"><span class="tab-icon">✦</span><small>Мультфильмы</small></button>
       <button class="mobile-tab" data-section="favorites"><span class="tab-icon">♡</span><small>Моё</small></button>
     </nav>
 
@@ -128,6 +130,20 @@
 
       <div id="catalogSentinel" class="catalog-sentinel" aria-hidden="true"></div>
     </main>
+
+    
+    <div id="libraryView" class="library-view hidden">
+      <div class="library-backdrop"></div>
+      <div class="library-head">
+        <button id="libraryBack" class="library-back" aria-label="Назад">‹</button>
+        <div>
+          <div id="libraryKicker" class="section-kicker">LUNO • КИНО</div>
+          <h2 id="libraryTitle">Фильмы</h2>
+        </div>
+        <button id="librarySearch" class="icon-btn" aria-label="Поиск"><span class="search-icon"></span></button>
+      </div>
+      <div id="libraryContent" class="library-content"></div>
+    </div>
 
     <div id="searchPanel" class="overlay hidden">
       <div class="search-box">
