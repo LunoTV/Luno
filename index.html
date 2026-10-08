@@ -15,10 +15,15 @@
 </head>
 <body>
   <div id="splash" class="splash-screen">
-  <div class="splash-orbit"><span class="splash-moon"></span><i></i></div>
-  <div class="splash-logo">LUNO</div>
-  <div class="splash-status" id="splashStatus">Загрузка LUNO…</div>
-  <div class="splash-progress"><span id="splashProgress"></span></div>
+  <picture class="splash-art">
+    <source media="(max-width: 700px)" srcset="./luno-splash-portrait.svg">
+    <img src="./luno-splash-landscape.svg" alt="LUNO">
+  </picture>
+  <div class="splash-shade"></div>
+  <div class="splash-loading">
+    <div class="splash-status" id="splashStatus">Загрузка LUNO…</div>
+    <div class="splash-progress"><span id="splashProgress"></span></div>
+  </div>
 </div>
 
 <div id="app">
