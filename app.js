@@ -784,7 +784,8 @@ async function resolveLunoStreams(item){
   if(playerSourceButton) playerSourceButton.disabled=true;
 
   try{
-    let state=await loadMetaDetails(item,item?.videoId||"");
+    const streamIdentity = item?.type==="movie" ? (item?.imdbId || item?.videoId || "") : (item?.videoId || "");
+    let state=await loadMetaDetails(item,streamIdentity);
     let streams=getReadyMetaStreams(state);
 
     // Для сериала Core сначала получает metadata. Если первый запрос не выбрал
