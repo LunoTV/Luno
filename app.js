@@ -265,7 +265,7 @@ function searchLocal(query){
 }
 
 function dynamicSearchUrl(query){
-  const base=String(window.__LUNO_API_BASE__||"").replace(/\/$/,"");
+  const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
   return (base||"")+"/api/tmdb/search?query="+encodeURIComponent(query);
 }
 
