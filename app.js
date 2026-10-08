@@ -176,6 +176,10 @@ function renderItems(items,sections={}){
 }
 
 async function loadTmdbCatalog(){
+  const embedded=window.__LUNO_TMDB_CATALOG__;
+  if(embedded && Array.isArray(embedded.items) && embedded.items.length){
+    return {items:embedded.items,sections:embedded.sections||{}};
+  }
   const candidates=[
     new URL("./tmdb-catalog.json?v=3",document.baseURI).href,
     new URL("/Luno/tmdb-catalog.json?v=3",window.location.origin).href
