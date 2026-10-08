@@ -242,6 +242,29 @@
     <div id="player" class="overlay hidden">
       <div class="player-shell">
         <button id="closePlayer" class="close player-close" aria-label="Закрыть">×</button>
+        <div id="playerBrowse" class="player-browse hidden">
+          <div class="player-browse-hero">
+            <div id="playerBrowseBackdrop" class="player-browse-backdrop"></div>
+            <div class="player-browse-vignette"></div>
+            <div class="player-browse-copy">
+              <span id="playerBrowseKicker" class="section-kicker">СЕРИАЛ</span>
+              <h2 id="playerBrowseTitle">LUNO</h2>
+              <div id="playerBrowseMeta" class="player-browse-meta"></div>
+              <p id="playerBrowseDescription"></p>
+            </div>
+          </div>
+          <div class="player-browse-panel">
+            <div class="player-browse-source">
+              <span class="section-kicker">ИСТОЧНИК</span>
+              <div class="player-source-select"><strong id="playerBrowseSource">LUNO</strong><span>⌄</span></div>
+            </div>
+            <div class="player-browse-toolbar">
+              <div class="player-browse-tabs"><button class="active" type="button">Серии</button><button type="button">Сезон 1</button></div>
+              <div class="player-browse-actions"><button id="playerBrowseQuality" type="button">▦</button><button id="playerBrowseVoice" type="button">◉</button><button id="playerBrowseSourceButton" type="button">⌘</button></div>
+            </div>
+            <div id="playerBrowseEpisodes" class="player-browse-episodes"></div>
+          </div>
+        </div>
         <div class="player-stage">
           <video id="lunoVideo" playsinline preload="metadata" controls></video>
           <div id="playerEmpty" class="player-placeholder">
