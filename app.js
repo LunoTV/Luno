@@ -24,6 +24,14 @@ const playerMessage=document.querySelector("#playerMessage");
 const playerBarTitle=document.querySelector("#playerBarTitle");
 const playerBarMeta=document.querySelector("#playerBarMeta");
 const playerSourceButton=document.querySelector("#playerSourceButton");
+const playerQualityButton=document.querySelector("#playerQualityButton");
+const playerSubtitleButton=document.querySelector("#playerSubtitleButton");
+const qualitySheet=document.querySelector("#qualitySheet");
+const qualityList=document.querySelector("#qualityList");
+const closeQualitySheet=document.querySelector("#closeQualitySheet");
+const subtitleSheet=document.querySelector("#subtitleSheet");
+const subtitleList=document.querySelector("#subtitleList");
+const closeSubtitleSheet=document.querySelector("#closeSubtitleSheet");
 const sourceSheet=document.querySelector("#sourceSheet");
 const sourceList=document.querySelector("#sourceList");
 const sourceEmpty=document.querySelector("#sourceEmpty");
@@ -760,6 +768,64 @@ function streamQuality(entry){
   return "";
 }
 
+function currentStreamEntry(){
+  const index=Number(playerStreamState?.selectedIndex);
+  return Number.isInteger(index)&&playerStreams[index] ? playerStreams[index] : playerStreams[0]||null;
+}
+function streamQualities(entry){
+  const map=entry?.stream?.quality||entry?.stream?.qualitys||{};
+  return Object.entries(map).filter(([,url])=>/^https?:\\/\\//i.test(String(url||"")))
+    .map(([label,url])=>({label,url}))
+    .sort((a,b)=>(Number(String(b.label).match(/\\d{3,4}/)?.[0]||0)-Number(String(a.label).match(/\\d{3,4}/)?.[0]||0)));
+}
+function streamSubtitles(entry){
+  return Array.isArray(entry?.stream?.subtitles)?entry.stream.subtitles.filter(x=>/^https?:\\/\\//i.test(String(x?.url||""))):[];
+}
+function renderQualitySheet(){
+  if(!qualityList)return;
+  const entry=currentStreamEntry();
+  const list=streamQualities(entry);
+  qualityList.innerHTML=(list.length?list:[{label:"Авто",url:entry?.stream?.url||""}]).map((q,i)=>
+    '<button class="source-option" type="button" data-quality-index="'+i+'"><span><strong>'+escapeHtml(q.label)+'</strong><span>'+(i===0?"Лучшее доступное":"Поток источника")+'</span></span></button>'
+  ).join("");
+  qualityList.querySelectorAll("[data-quality-index]").forEach(btn=>btn.onclick=()=>{
+    const q=list[Number(btn.dataset.qualityIndex)];
+    if(q?.url){
+      setLunoStream(q.url,{label:(entry?streamLabel(entry,playerStreams.indexOf(entry)):"LUNO")+" • "+q.label,stream:entry.stream,resume:false});
+    }
+    qualitySheet?.classList.add("hidden");
+  });
+}
+function renderSubtitleSheet(){
+  if(!subtitleList)return;
+  const entry=currentStreamEntry();
+  const list=streamSubtitles(entry);
+  subtitleList.innerHTML='<button class="source-option" type="button" data-subtitle="off"><span><strong>Выключить</strong><span>Без субтитров</span></span></button>'+
+    list.map((s,i)=>'<button class="source-option" type="button" data-subtitle-index="'+i+'"><span><strong>'+escapeHtml(s.label||s.lang||("Субтитры "+(i+1)))+'</strong><span>'+escapeHtml(s.lang||"")+'</span></span></button>').join("");
+  subtitleList.querySelector('[data-subtitle="off"]')?.addEventListener("click",()=>{clearTextTracks();subtitleSheet?.classList.add("hidden")});
+  subtitleList.querySelectorAll("[data-subtitle-index]").forEach(btn=>btn.onclick=()=>{
+    const s=list[Number(btn.dataset.subtitleIndex)];
+    if(s) applyTextTrack(s);
+    subtitleSheet?.classList.add("hidden");
+  });
+}
+function clearTextTracks(){
+  if(!lunoVideo)return;
+  [...lunoVideo.querySelectorAll("track[data-luno-subtitle]")].forEach(t=>t.remove());
+}
+function applyTextTrack(subtitle){
+  if(!lunoVideo||!subtitle?.url)return;
+  clearTextTracks();
+  const track=document.createElement("track");
+  track.dataset.lunoSubtitle="1";
+  track.kind="subtitles";
+  track.label=subtitle.label||subtitle.lang||"Subtitles";
+  track.srclang=subtitle.lang||"ru";
+  track.src=subtitle.url;
+  track.default=true;
+  lunoVideo.appendChild(track);
+  [...lunoVideo.textTracks].forEach(t=>t.mode=t.label===track.label?"showing":"disabled");
+}
 function renderSourceSheet(){
   if(!sourceList || !sourceEmpty) return;
   sourceList.innerHTML=playerStreams.map((entry,index)=>{
@@ -880,6 +946,7 @@ async function selectLunoSource(index){
   const entry=playerStreams[index];
   if(!entry?.stream) return;
   closeSourceSheetPanel();
+  if(playerStreamState) playerStreamState.selectedIndex=index;
   playerEmpty?.classList.remove("hidden");
   if(playerMessage) playerMessage.textContent="Подготавливаем источник…";
   if(playerBarMeta) playerBarMeta.textContent=streamLabel(entry,index);
@@ -901,7 +968,7 @@ async function selectLunoSource(index){
     const directStreamUrl=getDirectStreamUrl(entry.stream);
 
     if(directStreamUrl){
-      setLunoStream(directStreamUrl,{label:streamLabel(entry,index),resume:true});
+      setLunoStream(directStreamUrl,{label:streamLabel(entry,index),resume:true,stream:entry.stream});
       return;
     }
 
@@ -922,7 +989,7 @@ async function selectLunoSource(index){
       return;
     }
 
-    setLunoStream(streamUrl,{label:streamLabel(entry,index),resume:true});
+    setLunoStream(streamUrl,{label:streamLabel(entry,index),resume:true,stream:entry.stream});
   }catch(error){
     console.error("LUNO player load failed",error);
     if(playerMessage) playerMessage.textContent="Источник не удалось запустить.";
@@ -959,6 +1026,7 @@ function closePlayer(){
     window.LUNOPlayback?.progress(currentItem,lunoVideo.currentTime,lunoVideo.duration);
   }
   destroyActivePlayback();
+  clearTextTracks();
   lunoVideo?.pause();
   sourceSheet?.classList.add("hidden");
   player.classList.add("hidden");
@@ -1225,6 +1293,10 @@ lunoVideo?.addEventListener("error",()=>{
   if(playerMessage) playerMessage.textContent="Не удалось воспроизвести этот источник.";
 });
 
+playerQualityButton?.addEventListener("click",()=>{renderQualitySheet();qualitySheet?.classList.remove("hidden")});
+playerSubtitleButton?.addEventListener("click",()=>{renderSubtitleSheet();subtitleSheet?.classList.remove("hidden")});
+closeQualitySheet?.addEventListener("click",()=>qualitySheet?.classList.add("hidden"));
+closeSubtitleSheet?.addEventListener("click",()=>subtitleSheet?.classList.add("hidden"));
 document.querySelector("#closePlayer").onclick=()=>{
   showDialog("Выйти из просмотра?","Прогресс просмотра сохранится на этом устройстве.","Выйти",closePlayer);
 };
