@@ -91,6 +91,7 @@ const favoritesEmpty=document.querySelector("#favoritesEmpty");
 const detailBackdrop=document.querySelector("#detailBackdrop");
 const detailFavorite=document.querySelector("#detailFavorite");
 const heroBackdrop=document.querySelector("#heroBackdrop");
+const heroBackdropAlt=document.querySelector("#heroBackdropAlt");
 const heroTitle=document.querySelector("#heroTitle");
 const heroDescription=document.querySelector("#heroDescription");
 const heroMeta=document.querySelector("#heroMeta");
@@ -265,13 +266,25 @@ function card(item){
 }
 
 // Global card click handler: keeps posters/cards clickable even after dynamic rails are re-rendered.
+function resolveCardItem(card){
+  if(!card) return null;
+  const id=card.dataset.id||"";
+  return window.__LUNO_ITEMS__?.get(id)
+    || catalogItems.find(x=>x?.id===id)
+    || movieItems.find(x=>x?.id===id)
+    || seriesItems.find(x=>x?.id===id)
+    || cartoonItems.find(x=>x?.id===id)
+    || animeItems.find(x=>x?.id===id)
+    || showItems.find(x=>x?.id===id)
+    || null;
+}
 document.addEventListener("click",(event)=>{
   const c=event.target?.closest?.(".card");
   if(!c) return;
-  const item=window.__LUNO_ITEMS__?.get(c.dataset.id);
+  const item=resolveCardItem(c);
   if(!item) return;
   event.preventDefault();
-  event.stopPropagation();
+  event.stopImmediatePropagation();
   openDetail(item);
 },true);
 
@@ -767,17 +780,38 @@ function renderCatalogSections(){
   updateHero(movieItems[0]);
 }
 
+function heroImageUrl(item){
+  return item?.background ? String(item.background) : "";
+}
+function preloadHeroImage(item){
+  const url=heroImageUrl(item);
+  if(!url) return Promise.resolve(false);
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>resolve(true);
+    img.onerror=()=>resolve(false);
+    img.src=url;
+  });
+}
 function paintHero(item,index=0){
   if(!item) return;
   heroItem=item;
   heroRotationIndex=index;
-  if(heroBackdrop){
-    heroBackdrop.style.opacity="0";
-    window.setTimeout(()=>{
-      heroBackdrop.style.backgroundImage=item.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
-      heroBackdrop.style.opacity="1";
-    },120);
+  const url=heroImageUrl(item);
+  const active=heroBackdrop?.classList.contains("is-active") ? heroBackdrop : heroBackdropAlt;
+  const next=active===heroBackdrop ? heroBackdropAlt : heroBackdrop;
+  if(next && url){
+    next.style.backgroundImage='url("'+url.replace(/"/g,"&quot;")+'")';
+    next.classList.add("is-ready");
+    window.requestAnimationFrame(()=>{
+      active?.classList.remove("is-active");
+      next.classList.add("is-active");
+    });
+  }else if(heroBackdrop && url){
+    heroBackdrop.style.backgroundImage='url("'+url.replace(/"/g,"&quot;")+'")';
+    heroBackdrop.classList.add("is-active","is-ready");
   }
+  preloadHeroImage(heroRotationItems[(index+1)%Math.max(heroRotationItems.length,1)]);
   if(heroTitle) heroTitle.innerHTML=escapeHtml(item.name).replace(/\n/g,"<br>");
   if(heroDescription) heroDescription.textContent=item.description || "Выбери фильм и начни просмотр в LUNO.";
   if(heroMeta) heroMeta.textContent=[metaLine(item),Number(item.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : ""].filter(Boolean).join(" • ");
@@ -803,7 +837,9 @@ function updateHero(item){
   const pool=(movieItems||[])
     .filter(x=>x?.background && x?.poster)
     .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
-  heroRotationItems=[item,...pool.filter(x=>x.id!==item.id)].filter((x,i,arr)=>arr.findIndex(y=>y.id===x.id)===i).slice(0,8);
+  heroRotationItems=[item,...pool.filter(x=>x.id!==item.id)]
+    .filter((x,i,arr)=>arr.findIndex(y=>y.id===x.id)===i)
+    .slice(0,8);
   paintHero(heroRotationItems[0],0);
   restartHeroRotation();
 }
