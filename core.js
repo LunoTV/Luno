@@ -235,7 +235,11 @@ export async function loadMetaDetails(item, videoId = "") {
   if (!item?.id) throw new Error("Missing media id");
 
   const type = item.type === "series" ? "series" : "movie";
-  const id = String(item.id || "");
+  // Cinemeta/Stremio addons identify movies by IMDb ids (tt...). TMDB ids
+  // are kept by LUNO for metadata, but must not be sent to addon resources.
+  const id = type === "movie"
+    ? String(item.imdbId || item.videoId || item.id || "")
+    : String(item.id || "");
   const selected = {
     metaPath: {
       resource: "meta",
