@@ -371,11 +371,43 @@ function paintDetail(value){
 
   if(detailRecommendations){
     const pool=(catalogItems||[]).filter(x=>x?.id && x.id!==value?.id);
-    const scored=pool.map(item=>{
-      const shared=(item.genreIds||[]).filter(g=>(value.genreIds||[]).includes(g)).length;
-      return {item,score:shared};
-    }).sort((a,b)=>b.score-a.score).slice(0,8).map(x=>x.item);
-    detailRecommendations.innerHTML=scored.length ? scored.map(item=>card(item)).join("") : "";
+    const currentYear=new Date().getFullYear();
+    const getItemYear=item=>Number(String(item?.releaseInfo||"").match(/\\d{4}/)?.[0]||0);
+    const sharedGenres=(item?.genreIds||[]).filter(g=>(value.genreIds||[]).includes(g)).length;
+    const seeded=(item)=>{
+      let n=0;
+      for(const ch of String(item?.id||"")) n=((n*31)+ch.charCodeAt(0))>>>0;
+      return n;
+    };
+    const ranked=pool.map(item=>{
+      const year=getItemYear(item);
+      const age=Math.abs((year||currentYear)-currentYear);
+      const era=year>=2020 ? "2020s" : year>=2010 ? "2010s" : year>=2000 ? "2000s" : "classic";
+      const rating=Number(item?.rating)||0;
+      const popularity=Number(item?.popularity)||0;
+      return {
+        item, year, era,
+        score:sharedGenres*34 + Math.min(rating,10)*3 + Math.min(popularity,100)*0.08 + seeded(item)%37
+      };
+    }).sort((a,b)=>b.score-a.score);
+
+    // Не превращаем рекомендации в ленту новинок: сначала берём разные эпохи,
+    // затем добираем лучшие совпадения. Набор слегка меняется при каждом открытии.
+    const selected=[];
+    const eras=["2020s","2010s","2000s","classic"];
+    for(const era of eras){
+      const candidates=ranked.filter(x=>x.era===era && !selected.some(y=>y.item.id===x.item.id)).slice(0,6);
+      if(candidates.length){
+        const pick=candidates[Math.floor(Math.random()*candidates.length)];
+        selected.push(pick);
+      }
+    }
+    for(const candidate of ranked){
+      if(selected.length>=8) break;
+      if(!selected.some(x=>x.item.id===candidate.item.id)) selected.push(candidate);
+    }
+    const recommendations=selected.slice(0,8).map(x=>x.item);
+    detailRecommendations.innerHTML=recommendations.length ? recommendations.map(item=>card(item)).join("") : "";
     bindCards();
   }
 }
