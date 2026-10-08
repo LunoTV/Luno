@@ -114,19 +114,41 @@ function bindCards(){
   });
 }
 
-function openDetail(item){
+async function openDetail(item){
   currentItem=item;
-  const title=item?.name || "Без названия";
-  const image=item?.poster || item?.background || "";
-  if(detailPoster){
-    detailPoster.style.backgroundImage=image ? `url("${escapeHtml(image)}")` : "";
-    detailPoster.classList.toggle("has-image",!!image);
-  }
-  if(detailTitle) detailTitle.textContent=title;
-  if(detailMeta) detailMeta.textContent=[metaLine(item),Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : ""].filter(Boolean).join(" • ");
-  if(detailDescription) detailDescription.textContent=item?.description || "Описание появится после загрузки полной карточки фильма.";
+  const paint=(value)=>{
+    const title=value?.name || "Без названия";
+    const image=value?.poster || value?.background || "";
+    if(detailPoster){
+      detailPoster.style.backgroundImage=image ? \`url("\${String(image).replace(/"/g,"&quot;")}")\` : "";
+      detailPoster.classList.toggle("has-image",!!image);
+    }
+    if(detailTitle) detailTitle.textContent=title;
+    if(detailMeta) detailMeta.textContent=[metaLine(value),Number(value?.rating)>0 ? "★ "+Number(value.rating).toFixed(1) : ""].filter(Boolean).join(" • ");
+    if(detailDescription) detailDescription.textContent=value?.description || "Описание загружается…";
+  };
+  paint(item);
   detail?.classList.remove("hidden");
   detailPlay?.focus();
+
+  if(item?.id && item?.type){
+    try{
+      const response=await fetch(`https://v3-cinemeta.strem.io/meta/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}.json`,{cache:"no-store",headers:{accept:"application/json"}});
+      if(response.ok){
+        const data=await response.json();
+        const meta=data?.meta || data;
+        if(meta){
+          const full=normalizeItem({...item,...meta},item.type);
+          currentItem=full;
+          paint(full);
+        }
+      }
+    }catch(error){ console.warn("LUNO meta load failed",item.id,error); }
+  }
+
+  if(detailDescription && (!currentItem?.description)){
+    detailDescription.textContent="Описание пока недоступно.";
+  }
 }
 
 function closeDetail(){
