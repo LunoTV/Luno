@@ -108,16 +108,35 @@ button,input{font:inherit}
   .hero-copy{padding-top:30px}
 }
 
-/* LUNO title detail */
-.detail-overlay{position:fixed;inset:0;z-index:40;background:rgba(2,3,6,.92);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;padding:24px}
-.detail-shell{position:relative;width:min(980px,94vw);min-height:560px;display:grid;grid-template-columns:330px 1fr;gap:42px;align-items:center;padding:48px;border:1px solid #ffffff12;border-radius:28px;background:linear-gradient(135deg,#121419,#08090c);overflow:hidden;box-shadow:0 30px 100px #000}
-.detail-poster{width:330px;aspect-ratio:2/3;border-radius:18px;background:#0d0e12 center/cover no-repeat;box-shadow:0 25px 70px #000}
-.detail-copy{position:relative;z-index:1}.detail-copy h2{font-size:48px;line-height:1;margin:8px 0 14px}.detail-meta{color:#aeb1ba;font-size:15px;margin-bottom:20px}.detail-copy p{color:#a4a7b0;font-size:17px;line-height:1.6;max-width:560px}.detail-actions{display:flex;gap:12px;margin-top:30px}
-@media(max-width:700px){
- .detail-overlay{padding:12px;align-items:flex-end}
- .detail-shell{width:100%;min-height:0;grid-template-columns:110px 1fr;gap:18px;padding:24px 18px;border-radius:24px}
- .detail-poster{width:110px;border-radius:12px}
- .detail-copy h2{font-size:27px}.detail-copy p{font-size:14px;line-height:1.45;max-height:130px;overflow:auto}.detail-actions{display:grid;grid-template-columns:1fr;margin-top:18px}.detail-actions .secondary{display:none}
+/* LUNO detail screen — full-screen app-style page, not a modal window */
+.detail-overlay{position:fixed;inset:0;z-index:40;display:flex;align-items:stretch;justify-content:stretch;padding:0;background:#050609;overflow:auto}
+.detail-overlay:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 72% 35%,rgba(255,255,255,.10),transparent 30%),linear-gradient(90deg,#050609 0%,rgba(5,6,9,.92) 42%,rgba(5,6,9,.72) 100%);pointer-events:none}
+.detail-shell{position:relative;width:100%;min-height:100vh;display:grid;grid-template-columns:minmax(280px,34vw) minmax(0,720px);gap:clamp(36px,6vw,90px);align-items:center;padding:90px 8vw 70px;background:linear-gradient(90deg,#050609 0%,#080a0f 55%,#050609 100%);overflow:hidden}
+.detail-shell:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 28% 50%,rgba(255,255,255,.06),transparent 26%);pointer-events:none}
+.detail-poster{position:relative;z-index:1;width:min(34vw,420px);aspect-ratio:2/3;border-radius:20px;background:#0d0e12 center/cover no-repeat;box-shadow:0 35px 100px rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.10)}
+.detail-copy{position:relative;z-index:2;max-width:720px}.detail-copy h2{font-size:clamp(42px,5vw,76px);line-height:.98;margin:8px 0 18px;letter-spacing:-.045em}.detail-meta{color:#c1c4cc;font-size:clamp(15px,1.4vw,19px);line-height:1.5;margin-bottom:24px}.detail-copy p{color:#a4a7b0;font-size:clamp(16px,1.5vw,20px);line-height:1.65;max-width:700px;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}.detail-actions{display:flex;gap:12px;margin-top:34px}.detail-actions .primary{padding:17px 28px;font-size:16px}.detail-actions .secondary{padding:17px 24px}
+.detail-overlay .close{position:fixed;right:32px;top:26px;width:52px;height:52px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12);font-size:34px;z-index:5}
+@media(max-width:900px){
+ .detail-overlay{display:block;padding:0;background:#050609}
+ .detail-overlay:before{background:linear-gradient(180deg,rgba(5,6,9,.15) 0%,rgba(5,6,9,.55) 28%,#050609 48%)}
+ .detail-shell{display:block;width:100%;min-height:100vh;padding:0 20px 42px;background:#050609;overflow:visible}
+ .detail-shell:after{background:linear-gradient(180deg,transparent 20%,rgba(255,255,255,.025) 40%,transparent 55%)}
+ .detail-poster{width:58vw;max-width:250px;margin:74px auto 30px;border-radius:16px;box-shadow:0 28px 70px rgba(0,0,0,.75)}
+ .detail-copy{max-width:680px;margin:0 auto}
+ .detail-copy .eyebrow{margin-bottom:12px}
+ .detail-copy h2{font-size:clamp(34px,9vw,52px);line-height:1.02;margin:0 0 14px}
+ .detail-meta{font-size:15px;margin-bottom:18px}
+ .detail-copy p{font-size:15px;line-height:1.55;-webkit-line-clamp:8}
+ .detail-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:24px}
+ .detail-actions .primary{width:100%;padding:16px 20px}
+ .detail-actions .secondary{display:block;width:100%;padding:14px 20px}
+ .detail-overlay .close{right:16px;top:14px;width:46px;height:46px;font-size:30px;background:rgba(10,11,15,.72);backdrop-filter:blur(10px)}
+}
+@media(max-width:600px){
+ .detail-shell{padding-left:16px;padding-right:16px}
+ .detail-poster{width:56vw;max-width:220px;margin-top:72px;margin-bottom:26px}
+ .detail-copy h2{font-size:36px}
+ .detail-copy p{font-size:14px;-webkit-line-clamp:9}
 }
 
 /* Detail overlay must remain closed until a card is selected */
