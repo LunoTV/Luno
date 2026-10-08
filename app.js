@@ -312,7 +312,7 @@ searchInput.addEventListener("input",()=>{
   },220);
 });
 
-searchInput.addEventListener("keydown",(e)=>{
+searchInput.addEventListener("keydown",async(e)=>{
   if(e.key==="Escape") searchPanel.classList.add("hidden");
   if(e.key==="Enter"){
     const query=searchInput.value.trim();
