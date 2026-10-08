@@ -243,38 +243,53 @@
       <div class="player-shell">
         <button id="closePlayer" class="close player-close" aria-label="Закрыть">×</button>
         <div id="playerBrowse" class="player-browse hidden">
-          <div class="player-browse-head">
-            <div class="player-browse-identity">
-              <span id="playerBrowseKicker" class="section-kicker">СЕРИАЛ</span>
-              <h2 id="playerBrowseTitle">LUNO</h2>
-              <div id="playerBrowseMeta" class="player-browse-meta"></div>
-              <p id="playerBrowseDescription"></p>
-            </div>
-            <div class="player-browse-source-wrap">
-              <span class="section-kicker">ИСТОЧНИК</span>
-              <button id="playerBrowseSource" class="player-source-select" type="button"><strong>LUNO</strong><span>⌄</span></button>
-            </div>
-          </div>
-          <div class="player-browse-toolbar">
-            <div class="player-browse-season-wrap">
-              <span class="section-kicker">СЕЗОН</span>
-              <div id="playerBrowseSeasons" class="player-browse-tabs"></div>
-            </div>
-            <div class="player-browse-actions">
-              <button id="playerBrowseQuality" type="button" title="Качество">▦</button>
-              <button id="playerBrowseVoice" type="button" title="Озвучка">◉</button>
-              <button id="playerBrowseSourceButton" type="button" title="Источник">⌘</button>
-            </div>
-          </div>
-          <div class="player-browse-episodes-head">
-            <div>
-              <span class="section-kicker">ЭПИЗОДЫ</span>
-              <strong>Выбери серию</strong>
-            </div>
-            <span id="playerBrowseEpisodeCount"></span>
-          </div>
-          <div id="playerBrowseEpisodes" class="player-browse-episodes"></div>
-        </div>
+  <div class="watch-topline">
+    <div class="watch-identity">
+      <span class="section-kicker">СЕЙЧАС СМОТРИШЬ</span>
+      <h2 id="playerBrowseTitle">LUNO</h2>
+      <div id="playerBrowseMeta" class="player-browse-meta"></div>
+    </div>
+    <div class="watch-source-area">
+      <span class="section-kicker">ИСТОЧНИК</span>
+      <button id="playerBrowseSource" class="player-source-select" type="button">
+        <strong>LIFE</strong><span>⌄</span>
+      </button>
+      <button id="playerBrowseFilter" class="watch-filter-button" type="button">
+        <span>☷</span> Фильтр
+      </button>
+      <div id="playerBrowseFilterMenu" class="watch-filter-menu hidden">
+        <button type="button" data-quality-filter="all">Все качества</button>
+        <button type="button" data-quality-filter="4k">4K</button>
+        <button type="button" data-quality-filter="1080">1080p</button>
+        <button type="button" data-quality-filter="720">720p</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="watch-description" id="playerBrowseDescription"></div>
+
+  <div class="watch-season-row">
+    <div>
+      <span class="section-kicker">СЕЗОНЫ</span>
+      <div id="playerBrowseSeasons" class="player-browse-tabs"></div>
+    </div>
+    <div class="watch-actions">
+      <button id="playerBrowseQuality" type="button">Качество</button>
+      <button id="playerBrowseVoice" type="button">Озвучка</button>
+      <button id="playerBrowseSourceButton" type="button">Источник</button>
+    </div>
+  </div>
+
+  <div class="watch-episode-row-head">
+    <div>
+      <span class="section-kicker">СЕРИИ</span>
+      <strong id="playerBrowseCurrentEpisode">Выберите серию</strong>
+    </div>
+    <span id="playerBrowseEpisodeCount"></span>
+  </div>
+  <div id="playerBrowseEpisodeNumbers" class="watch-episode-numbers"></div>
+  <div id="playerBrowseEpisodes" class="player-browse-episodes"></div>
+</div>
         <div class="player-stage">
           <video id="lunoVideo" playsinline preload="metadata" controls></video>
           <div id="playerEmpty" class="player-placeholder">
