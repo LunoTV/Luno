@@ -1811,3 +1811,38 @@ body.detail-open{
   .addon-manager-form .primary{width:100%}
   .addon-row{align-items:flex-start;flex-direction:column;gap:7px}
 }
+
+
+/* ---------- LUNO PLAYER — CINEMATIC FULLSCREEN ---------- */
+#player.overlay{
+  align-items:stretch;
+  justify-content:stretch;
+  background:#000;
+  backdrop-filter:none;
+}
+#player .player-shell{
+  width:100vw!important;
+  height:100dvh!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+#player .player-stage{
+  background:#000;
+}
+#player .player-bar{
+  background:linear-gradient(180deg,rgba(8,9,12,.72),rgba(8,9,12,.98));
+}
+#player .player-close{
+  top:20px;
+  right:22px;
+  background:rgba(0,0,0,.42);
+  border-color:rgba(255,255,255,.16);
+  backdrop-filter:blur(14px);
+}
+@media(max-width:700px){
+  #player .player-close{top:14px;right:14px}
+}
