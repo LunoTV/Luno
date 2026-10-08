@@ -7,6 +7,7 @@ let initialized = false;
 
 const CINEMETA_URL = "https://v3-cinemeta.strem.io/manifest.json";
 const DEMO_SOURCE_URL = new URL("./addons/luno-demo/manifest.json", document.baseURI).href;
+const PIRATEBAY_SOURCE_URL = "https://thepiratebay-plus.strem.fun/manifest.json";
 const LUNO_ADDONS_KEY = "luno-addon-urls";
 
 function ensureTransport() {
@@ -109,7 +110,7 @@ async function installDefaultCatalogAddon(core) {
 }
 
 async function installConfiguredAddons(core) {
-  const configured = [...new Set([DEMO_SOURCE_URL, ...readAddonUrls()])];
+  const configured = [...new Set([DEMO_SOURCE_URL, PIRATEBAY_SOURCE_URL, ...readAddonUrls()])];
   const installed = [];
   for (const url of configured) {
     try {
