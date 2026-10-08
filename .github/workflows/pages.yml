@@ -29,6 +29,8 @@ jobs:
       - run: npm install
 
       - run: npm run build
+        env:
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
