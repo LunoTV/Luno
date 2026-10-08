@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=9">
+  <link rel="stylesheet" href="./styles.css?v=10">
 </head>
 <body>
   <div id="splash" class="splash-screen">
@@ -38,19 +38,17 @@
         <button class="nav-item" data-section="movies">Фильмы</button>
         <button class="nav-item" data-section="series">Сериалы</button>
         <button class="nav-item" data-section="cartoons">Мультфильмы</button>
+        <button class="nav-item" data-section="anime">Аниме</button>
+        <button class="nav-item" data-section="shows">Шоу</button>
         <button class="nav-item" data-section="favorites">Моё</button>
       </nav>
-
-      <button id="searchBtn" class="icon-btn" aria-label="Поиск">
-        <span class="search-icon"></span>
-      </button>
     </header>
 
     <nav class="mobile-tabbar" aria-label="Основная навигация">
       <button class="mobile-tab active" data-section="home"><span class="tab-icon">⌂</span><small>Главная</small></button>
       <button class="mobile-tab" data-section="movies"><span class="tab-icon">▣</span><small>Фильмы</small></button>
       <button class="mobile-tab" data-section="series"><span class="tab-icon">▤</span><small>Сериалы</small></button>
-      <button class="mobile-tab" data-section="favorites"><span class="tab-icon">♡</span><small>Моё</small></button>
+      <button class="mobile-tab" data-section="catalog"><span class="tab-icon">⋯</span><small>Каталог</small></button>
       <button class="mobile-tab" data-section="search"><span class="tab-icon">⌕</span><small>Поиск</small></button>
     </nav>
 
@@ -149,10 +147,9 @@
       <div class="library-head">
         <button id="libraryBack" class="library-back" aria-label="Назад">‹</button>
         <div>
-          <div id="libraryKicker" class="section-kicker">LUNO • КИНО</div>
+          <div id="libraryKicker" class="section-kicker">LUNO • КАТАЛОГ</div>
           <h2 id="libraryTitle">Фильмы</h2>
         </div>
-        <button id="librarySearch" class="icon-btn" aria-label="Поиск"><span class="search-icon"></span></button>
       </div>
       <div id="libraryContent" class="library-content"></div>
     </div>
@@ -227,6 +224,6 @@
     </div>
   </div>
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
-  <script type="module" src="./app.js?v=ui9"></script>
+  <script type="module" src="./app.js?v=ui10"></script>
 </body>
 </html>
