@@ -176,12 +176,25 @@ function renderItems(items,sections={}){
 }
 
 async function loadTmdbCatalog(){
-  const response=await fetch("./tmdb-catalog.json?v=1",{cache:"no-store"});
-  if(!response.ok) throw new Error("TMDB catalog HTTP "+response.status);
-  const data=await response.json();
-  const items=Array.isArray(data?.items) ? data.items : [];
-  if(!items.length) throw new Error("TMDB catalog is empty");
-  return {items,sections:data?.sections||{}};
+  const candidates=[
+    new URL("./tmdb-catalog.json?v=3",document.baseURI).href,
+    new URL("/Luno/tmdb-catalog.json?v=3",window.location.origin).href
+  ];
+  let lastError=null;
+  for(const url of [...new Set(candidates)]){
+    try{
+      const response=await fetch(url,{cache:"no-store"});
+      if(!response.ok) throw new Error("HTTP "+response.status);
+      const data=await response.json();
+      const items=Array.isArray(data?.items) ? data.items : [];
+      if(!items.length) throw new Error("empty catalog");
+      return {items,sections:data?.sections||{}};
+    }catch(error){
+      lastError=error;
+      console.warn("LUNO catalog attempt failed:",url,error);
+    }
+  }
+  throw new Error("TMDB catalog unavailable: "+(lastError?.message||"unknown error"));
 }
 
 async function loadMoreCatalog(){
