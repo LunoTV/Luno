@@ -1621,3 +1621,11 @@ body.detail-open{
   .category-hub-card strong{font-size:17px}
   .category-hub-card small{font-size:9px}
 }
+
+
+/* ---------- CLEAN BRANDING v12 ---------- */
+.eyebrow:empty,
+.detail-kicker:empty,
+.library-head .section-kicker:empty{
+  display:none!important;
+}
