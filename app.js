@@ -928,6 +928,8 @@ function closePlayer(){
   if(lunoVideo && currentItem && Number(lunoVideo.duration)>0 && Number(lunoVideo.currentTime)>5){
     window.LUNOPlayback?.progress(currentItem,lunoVideo.currentTime,lunoVideo.duration);
   }
+  activeHls?.destroy?.();
+  activeHls=null;
   lunoVideo?.pause();
   sourceSheet?.classList.add("hidden");
   player.classList.add("hidden");
