@@ -9,6 +9,7 @@ import {
   unloadLunoPlayer,
   dispatchLunoPlayerAction,
 } from "./source-engine.js";
+import {renderSourceManager} from "./ui/source-manager.js";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
 const openCinemaCards=document.querySelector("#openCinemaCards");
@@ -679,8 +680,12 @@ async function loadMoreCatalog(){
 function providerLabel(provider){ return String(provider?.name||provider?.id||"LUNO Source"); }
 function renderAddonManager(){
   if(!addonList) return;
-  const providers=window.__LUNO_SOURCE_ENGINE__?.listProviders?.() || [];
-  addonList.innerHTML=providers.map((provider)=>'<div class="addon-row"><div><strong>'+escapeHtml(providerLabel(provider))+'</strong><span>'+escapeHtml(provider?.description||"Встроенный модуль источника LUNO")+'</span></div><em>'+escapeHtml(provider?.enabled===false?"Выключен":"Встроен")+'</em></div>').join("") || '<div class="addon-row"><div><strong>Нет источников</strong><span>Модули источников ещё не подключены.</span></div></div>';
+  const engine=window.__LUNO_SOURCE_ENGINE__;
+  renderSourceManager(addonList,{
+    providers:engine?.listProviders?.()||[],
+    sources:engine?.listSources?.()||[],
+    status:engine?.getStatus?.()||{}
+  });
 }
 function openAddonManagerPanel(){ closeSourceSheetPanel(); addonManager?.classList.remove("hidden"); renderAddonManager(); }
 function closeAddonManagerPanel(){ addonManager?.classList.add("hidden"); }
