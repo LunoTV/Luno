@@ -340,6 +340,12 @@ function navigate(section){
     favoritesSection?.scrollIntoView({behavior:"smooth",block:"start"});
     return;
   }
+  if(section==="search"){
+    closeLibrary();
+    searchPanel?.classList.remove("hidden");
+    window.setTimeout(()=>searchInput?.focus(),40);
+    return;
+  }
   closeLibrary();
   const target=document.querySelector(".hero");
   target?.scrollIntoView({behavior:"smooth",block:"start"});
