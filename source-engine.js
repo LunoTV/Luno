@@ -107,7 +107,7 @@ async function requestJson(url,options={}){
       "X-Kit-AesGcm":localStorage.getItem("aesgcmkey")||"",
       ...(options.headers||{})
     };
-    const response=await fetch(url,{...options,headers,signal:controller.signal,cache:"no-store"});
+    const response=await fetch(addRuntimeParams(url),{...options,headers,signal:controller.signal,cache:"no-store"});
     if(!response.ok)throw new Error("HTTP "+response.status);
     const type=(response.headers.get("content-type")||"").toLowerCase();
     if(type.includes("json"))return await response.json();
@@ -120,7 +120,7 @@ async function requestText(url,options={}){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),options.timeout||SOURCE_TIMEOUT);
   try{
-    const response=await fetch(url,{
+    const response=await fetch(addRuntimeParams(url),{
       ...options,
       headers:{
         accept:"text/html,application/json,text/plain,*/*",
@@ -143,6 +143,23 @@ function apiBaseCandidates(){
     stored&&stored.replace(/\/$/,""),
     ...API_MIRRORS.map(x=>"https://"+x)
   ]);
+}
+
+function addRuntimeParams(url){
+  try{
+    const u=new URL(url);
+    const email=text(localStorage.getItem("account_email"));
+    const uid=text(localStorage.getItem("online_unic_id"));
+    const token=text(localStorage.getItem("luno_token"));
+    const lang=text(localStorage.getItem("language"))||"ru";
+    const site=text(localStorage.getItem("luno_domain"))||"luno.rip";
+    if(email&&!u.searchParams.has("account_email"))u.searchParams.set("account_email",email);
+    if(uid&&!u.searchParams.has("uid"))u.searchParams.set("uid",uid);
+    if(token&&!u.searchParams.has("luno_token"))u.searchParams.set("luno_token",token);
+    if(lang&&!u.searchParams.has("lang"))u.searchParams.set("lang",lang);
+    if(site&&!u.searchParams.has("luno_site"))u.searchParams.set("luno_site",site);
+    return u.toString();
+  }catch{return url}
 }
 
 function buildMovie(item){
