@@ -1,5 +1,4 @@
 import tmdbCatalog from "./tmdb-catalog.generated.js";
-import { resolveCinemaStreams } from "./cinema-adapter.js";
 import Hls from "hls.js";
 import {
   loadMetaDetails,
@@ -830,16 +829,9 @@ async function resolveLunoStreams(item){
     playerStreamState=state;
     playerStreams=streams.filter(entry=>entry?.stream);
 
-    // Cinema подключается как отдельный источник LUNO. Он получает только
-    // ссылку на поток; сам видеопоток не проходит через сервер LUNO.
-    try{
-      const cinemaStreams=await resolveCinemaStreams(item);
-      if(cinemaStreams.length){
-        playerStreams.push(...cinemaStreams);
-      }
-    }catch(error){
-      console.warn("LUNO Cinema resolution failed",error);
-    }
+    // Источники LUNO должны приходить из Stremio Core/addons.
+    // Нестабильные внешние Lampa-плагины не подключаем как псевдо-addons:
+    // они не дают гарантированного прямого HTTPS/HLS/MP4 потока для LUNO Player.
 
     renderSourceSheet();
 
