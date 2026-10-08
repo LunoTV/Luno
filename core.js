@@ -161,6 +161,94 @@ export async function getLunoModel(modelName) {
   return core.getState(modelName);
 }
 
+export async function loadMetaDetails(item, videoId = "") {
+  const core = getLunoTransport();
+  if (!core) throw new Error("LUNO Core is not initialized");
+  if (!item?.id) throw new Error("Missing media id");
+
+  const type = item.type === "series" ? "series" : "movie";
+  const id = String(item.id || "");
+  const selected = {
+    metaPath: {
+      resource: "meta",
+      type,
+      id,
+      extra: []
+    },
+    streamPath: videoId
+      ? { resource: "stream", type, id: String(videoId), extra: [] }
+      : null,
+    guessStream: true
+  };
+
+  await core.dispatch({
+    action: "Load",
+    args: {
+      model: "MetaDetails",
+      args: selected
+    }
+  }, "meta_details");
+
+  return waitForModel("meta_details", (state) => state);
+}
+
+export async function loadLunoPlayer(stream, streamRequest, metaRequest = null, subtitlesPath = null) {
+  const core = getLunoTransport();
+  if (!core) throw new Error("LUNO Core is not initialized");
+  if (!stream || !streamRequest) throw new Error("Missing stream");
+
+  await core.dispatch({
+    action: "Load",
+    args: {
+      model: "Player",
+      args: {
+        stream,
+        streamRequest,
+        metaRequest,
+        subtitlesPath
+      }
+    }
+  }, "player");
+
+  return waitForModel("player", (state) => {
+    const value = state?.stream;
+    return value?.type === "Ready" ? state : null;
+  }, 12000);
+}
+
+async function waitForModel(model, predicate, timeout = 10000) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    const state = await getLunoModel(model);
+    const result = predicate(state);
+    if (result) return result;
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  }
+  return getLunoModel(model);
+}
+
+export function getReadyMetaStreams(state) {
+  const resources = Array.isArray(state?.streams) && state.streams.length
+    ? state.streams
+    : (Array.isArray(state?.metaStreams) ? state.metaStreams : []);
+
+  return resources.flatMap((resource) => {
+    if (resource?.content?.type !== "Ready" || !Array.isArray(resource.content.value)) return [];
+    return resource.content.value.map((stream) => ({
+      stream,
+      request: resource.request,
+      addon: resource.addon || null
+    }));
+  });
+}
+
+export function getPlayerStreamUrl(state) {
+  const value = state?.stream;
+  if (value?.type !== "Ready") return "";
+  const stream = value.value || {};
+  return stream.url || stream.streamingUrl || stream.externalUrl || stream.webosUrl || "";
+}
+
 export function onLunoState(listener) {
   const core = getLunoTransport();
   if (!core) return () => {};
