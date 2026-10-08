@@ -276,28 +276,35 @@ function card(item){
   '</button>';
 }
 
-// Global card click handler: keeps posters/cards clickable even after dynamic rails are re-rendered.
+// Global card interaction: works with mouse, touch and iOS Safari.
 function resolveCardItem(card){
   if(!card) return null;
-  const id=card.dataset.id||"";
+  const id=String(card.dataset.id||"");
   return window.__LUNO_ITEMS__?.get(id)
-    || catalogItems.find(x=>x?.id===id)
-    || movieItems.find(x=>x?.id===id)
-    || seriesItems.find(x=>x?.id===id)
-    || cartoonItems.find(x=>x?.id===id)
-    || animeItems.find(x=>x?.id===id)
-    || showItems.find(x=>x?.id===id)
+    || catalogItems.find(x=>String(x?.id)===id)
+    || movieItems.find(x=>String(x?.id)===id)
+    || seriesItems.find(x=>String(x?.id)===id)
+    || cartoonItems.find(x=>String(x?.id)===id)
+    || animeItems.find(x=>String(x?.id)===id)
+    || showItems.find(x=>String(x?.id)===id)
     || null;
 }
-document.addEventListener("click",(event)=>{
+let lastCardOpenAt=0;
+function openCardFromEvent(event){
   const c=event.target?.closest?.(".card");
   if(!c) return;
   const item=resolveCardItem(c);
   if(!item) return;
+  const now=Date.now();
+  if(now-lastCardOpenAt<350) return;
+  lastCardOpenAt=now;
   event.preventDefault();
-  event.stopImmediatePropagation();
+  event.stopPropagation();
   openDetail(item);
-},true);
+}
+document.addEventListener("click",openCardFromEvent,true);
+document.addEventListener("pointerup",openCardFromEvent,true);
+document.addEventListener("touchend",openCardFromEvent,true);
 
 function bindCards(){
   document.querySelectorAll(".card").forEach((c)=>{
