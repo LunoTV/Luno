@@ -76,6 +76,7 @@ const installAddonButton=document.querySelector("#installAddonButton");
 const addonManagerStatus=document.querySelector("#addonManagerStatus");
 const addonList=document.querySelector("#addonList");
 const openAddonManager=document.querySelector("#openAddonManager");
+const openAddonManagerTop=document.querySelector("#openAddonManagerTop");
 const openAddonManagerFromPlayer=document.querySelector("#openAddonManagerFromPlayer");
 const openCinemaSources=document.querySelector("#openCinemaSources");
 const closeAddonManager=document.querySelector("#closeAddonManager");
@@ -1249,6 +1250,7 @@ playerSourceButton?.addEventListener("click",()=>{
 });
 closeSourceSheet?.addEventListener("click",closeSourceSheetPanel);
 openAddonManager?.addEventListener("click",openAddonManagerPanel);
+openAddonManagerTop?.addEventListener("click",openAddonManagerPanel);
 openAddonManagerFromPlayer?.addEventListener("click",openAddonManagerPanel);
 openCinemaSources?.addEventListener("click",openAddonManagerPanel);
 closeAddonManager?.addEventListener("click",closeAddonManagerPanel);
