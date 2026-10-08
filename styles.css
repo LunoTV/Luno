@@ -2675,3 +2675,62 @@ body.home-mode .luno-nav-shutter{
 body.home-mode .hero{
   margin-top:0!important;
 }
+
+
+/* LUNO SEARCH — cinematic, fast and thumb-friendly */
+.luno-search-screen{position:relative;max-width:1180px!important}
+.search-close-x{position:absolute;right:18px;top:18px;width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.08);color:#fff;font-size:34px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:4}
+.search-topbar{display:flex;align-items:center;justify-content:center;min-height:54px;margin-bottom:22px}
+.search-back{position:absolute;left:18px;top:20px;width:42px;height:42px;border:0;background:none;color:#fff;font-size:40px;font-weight:300;line-height:1;cursor:pointer}
+.search-page-title{font-size:32px;font-weight:500;letter-spacing:-.04em}
+.search-top-spacer{width:42px}
+.luno-search-field{height:68px!important;max-width:900px;margin:0 auto!important;border-radius:18px!important;background:rgba(32,36,38,.88)!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 12px 35px rgba(0,0,0,.18)}
+.luno-search-field input{font-size:21px!important}
+.search-clear{display:none;width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:22px;cursor:pointer}
+.luno-search-field:focus-within .search-clear{display:grid;place-items:center}
+.search-history-block{max-width:900px;margin:28px auto 0}
+.search-subtitle{font-size:16px;color:#777b84;margin-bottom:12px}
+.search-history{display:flex;gap:9px;overflow:auto;scrollbar-width:none;padding-bottom:2px}
+.search-history::-webkit-scrollbar{display:none}
+.search-history-chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.11);border-radius:22px;background:rgba(255,255,255,.045);color:#d5d6da;font-size:15px;cursor:pointer;white-space:nowrap}
+.search-history-chip:hover{background:rgba(255,255,255,.09)}
+.history-clock{color:#858990;font-size:16px}
+.search-history-empty{color:#555963;font-size:13px}
+.search-sources{max-width:900px;margin:22px auto 0;display:flex;gap:10px;overflow:auto;scrollbar-width:none}
+.search-sources::-webkit-scrollbar{display:none}
+.search-source{height:48px;padding:0 20px;border-radius:24px;border:1px solid rgba(255,255,255,.1);background:#111214;color:#9ea1a8;font-size:17px;white-space:nowrap;cursor:pointer}
+.search-source b{display:inline-flex;min-width:22px;height:22px;align-items:center;justify-content:center;margin-left:5px;padding:0 6px;border-radius:12px;background:rgba(255,255,255,.08);font-size:12px;color:#d6d7da}
+.search-source.active{background:#fff;color:#222;border-color:#fff}
+.search-source.active b{background:#e7e7e7;color:#222}
+.search-source.search-ai{border-color:rgba(46,236,153,.35);color:#48e5a3;background:rgba(15,83,56,.18)}
+.search-results{max-width:1100px;margin:28px auto 0!important}
+.search-results-heading{font-size:16px;color:#858991;margin:0 0 18px}
+.search-result-section{margin:0 0 30px}
+.search-result-section h3{display:flex;align-items:center;gap:9px;margin:0 0 14px;font-size:25px;font-weight:500;letter-spacing:-.03em}
+.search-result-section h3 span{font-size:12px;padding:3px 8px;border-radius:9px;background:rgba(255,255,255,.08);color:#8e929b}
+.search-results-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px!important;overflow:visible!important}
+.search-results-grid .card{min-width:0!important}
+.search-results-grid .card-art{aspect-ratio:2/3!important;height:auto!important}
+.search-results-grid .card-title{font-size:13px!important;line-height:1.25!important}
+.search-empty-modern,.search-discover{padding:60px 15px;text-align:center;display:flex;flex-direction:column;gap:8px;color:#747984}
+.search-empty-modern strong,.search-discover strong{font-size:22px;color:#ddd}
+.search-empty-modern span,.search-discover span{font-size:14px}
+@media(max-width:700px){
+  .luno-search-screen{width:100%!important;min-height:100%;padding:86px 28px 110px!important;background:#000!important}
+  .search-close-x{right:24px;top:74px;width:48px;height:48px}
+  .search-topbar{margin-bottom:24px}
+  .search-back{left:28px;top:76px;font-size:40px}
+  .search-page-title{font-size:32px}
+  .luno-search-field{height:68px!important;margin-top:42px!important;border-radius:18px!important}
+  .luno-search-field input{font-size:20px!important}
+  .search-history-block{margin-top:28px}
+  .search-subtitle{font-size:16px}
+  .search-sources{margin-top:20px}
+  .search-source{height:48px;padding:0 18px;font-size:17px}
+  .search-results{margin-top:30px!important}
+  .search-results-heading{font-size:15px}
+  .search-result-section{margin-bottom:34px}
+  .search-result-section h3{font-size:25px;margin-bottom:14px}
+  .search-results-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:18px 18px!important}
+  .search-results-grid .card-title{font-size:13px!important}
+}
