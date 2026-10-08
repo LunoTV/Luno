@@ -189,14 +189,19 @@
           <button class="luno-detail-brand" type="button" aria-label="LUNO">
             <span class="brand-orbit"><span class="brand-moon"></span></span><span>LUNO</span>
           </button>
-          <nav class="luno-detail-links">
+          <nav class="luno-detail-links" aria-label="Навигация LUNO">
             <button type="button" data-section="home">Главная</button>
             <button type="button" data-section="movies">Фильмы</button>
             <button type="button" data-section="series">Сериалы</button>
             <button type="button" data-section="cartoons">Мультфильмы</button>
+            <button type="button" data-section="anime">Аниме</button>
+            <button type="button" data-section="shows">Шоу</button>
             <button type="button" data-section="favorites">Моё</button>
           </nav>
-          <button class="luno-detail-search" type="button" aria-label="Поиск">⌕</button>
+          <div class="luno-detail-tools">
+            <button id="openAddonManagerDetail" class="luno-detail-tool" type="button">＋ Источники</button>
+            <button class="luno-detail-search" type="button" aria-label="Поиск">⌕</button>
+          </div>
         </header>
 
         <section class="luno-detail-hero">
