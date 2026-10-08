@@ -615,7 +615,7 @@ async function loadTmdbCatalog(){
   }
   const candidates=[
     new URL("./tmdb-catalog.json?v=5",document.baseURI).href,
-    new URL("/Luno/tmdb-catalog.json?v=5",window.location.origin).href
+    new URL("./tmdb-catalog.json?v=6",document.baseURI).href
   ];
   let lastError=null;
   for(const url of [...new Set(candidates)]){
@@ -657,7 +657,7 @@ function addonManagerUrlLabel(url){
 function renderAddonManager(){
   if(!addonList) return;
   const urls=getLunoAddonUrls();
-  const demo="https://lunotv.github.io/Luno/addons/luno-demo/manifest.json";
+  const demo=new URL("./addons/luno-demo/manifest.json",document.baseURI).href;
   const all=[demo,...urls.filter(url=>url!==demo)];
   addonList.innerHTML=all.map((url,index)=>
     '<div class="addon-row">'+
