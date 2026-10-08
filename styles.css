@@ -2577,3 +2577,81 @@ main > .section .cards .card-title{font-size:12px}
 #topSection{
   display:block!important;
 }
+
+/* LUNO NAV SHUTTER V10 — glass floating navigation, hidden on home */
+.luno-nav-shutter{
+  position:fixed!important;
+  top:26px!important;
+  left:50%!important;
+  right:auto!important;
+  width:min(1180px,calc(100% - 72px))!important;
+  height:76px!important;
+  transform:translateX(-50%)!important;
+  padding:8px 14px 8px 20px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:28px!important;
+  border:1px solid rgba(255,255,255,.42)!important;
+  border-radius:42px!important;
+  background:linear-gradient(110deg,rgba(181,224,235,.32),rgba(126,157,169,.22) 46%,rgba(235,229,205,.22))!important;
+  box-shadow:0 12px 42px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.45)!important;
+  backdrop-filter:blur(22px) saturate(125%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(125%)!important;
+  z-index:80!important;
+}
+.luno-nav-shutter .brand{
+  padding:0 12px 0 0!important;
+  font-size:20px!important;
+}
+.luno-nav-shutter .nav{
+  gap:3px!important;
+}
+.luno-nav-shutter .nav-item{
+  padding:12px 18px!important;
+  border-radius:24px!important;
+  color:rgba(255,255,255,.92)!important;
+  font-size:16px!important;
+  font-weight:750!important;
+}
+.luno-nav-shutter .nav-item.active,
+.luno-nav-shutter .nav-item:hover{
+  background:rgba(255,255,255,.15)!important;
+  color:#fff!important;
+}
+.luno-nav-shutter .source-nav-btn{
+  margin-left:auto!important;
+  border:0!important;
+  background:transparent!important;
+  padding:11px 15px!important;
+  color:#fff!important;
+  border-left:1px solid rgba(255,255,255,.32)!important;
+  border-radius:0!important;
+}
+body.home-mode .luno-nav-shutter{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transform:translate(-50%,-18px)!important;
+}
+@media(max-width:900px){
+  .luno-nav-shutter{
+    top:14px!important;
+    width:calc(100% - 28px)!important;
+    height:62px!important;
+    padding:6px 10px!important;
+    gap:10px!important;
+  }
+  .luno-nav-shutter .brand{font-size:16px!important;letter-spacing:.2em!important}
+  .luno-nav-shutter .nav{
+    overflow-x:auto!important;
+    scrollbar-width:none!important;
+    gap:1px!important;
+  }
+  .luno-nav-shutter .nav::-webkit-scrollbar{display:none}
+  .luno-nav-shutter .nav-item{
+    padding:9px 11px!important;
+    font-size:12px!important;
+    white-space:nowrap!important;
+  }
+  .luno-nav-shutter .source-nav-btn{display:none!important}
+}
