@@ -233,28 +233,34 @@ async function discoverSources(item){
 
 function parseDataJsonMarkup(markup){
   if(typeof markup!=="string")return[];
-  const out=[];
-  const re=/<[^>]*class=["'][^"']*(?:videos__item|videos__button)[^"']*["'][^>]*data-json=["']([^"']+)["'][^>]*>([\s\S]*?)<\/[^>]+>/gi;
-  let m;
-  while((m=re.exec(markup))){
+  try{
+    const parsed=JSON.parse(markup);
+    if(parsed&&typeof parsed==="object")return parseSourcePayload(parsed);
+  }catch{}
+  if(typeof DOMParser==="undefined")return[];
+  const doc=new DOMParser().parseFromString(markup,"text/html");
+  return [...doc.querySelectorAll(".videos__item,.videos__button")].map(node=>{
     try{
-      const raw=m[1].replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+      const raw=node.getAttribute("data-json");
+      if(!raw)return null;
       const item=JSON.parse(raw);
-      const tag=m[0];
-      const season=tag.match(/\bs=["'](\d+)/i)?.[1];
-      const episode=tag.match(/\be=["'](\d+)/i)?.[1];
-      const textValue=m[2].replace(/<[^>]+>/g,"").trim();
+      const season=node.getAttribute("s"),episode=node.getAttribute("e"),label=text(node.textContent);
       if(season)item.season=Number(season);
       if(episode)item.episode=Number(episode);
-      if(textValue)item.text=textValue;
-      if(/\bactive\b/i.test(tag))item.active=true;
-      out.push(item);
-    }catch{}
-  }
-  return out;
+      if(label)item.text=label;
+      if(node.classList.contains("active"))item.active=true;
+      return item;
+    }catch{return null}
+  }).filter(Boolean);
 }
-
 function parseSourcePayload(payload){
+  if(typeof payload==="string"){
+    try{
+      const parsed=JSON.parse(payload);
+      if(parsed!==payload)return parseSourcePayload(parsed);
+    }catch{}
+    return parseDataJsonMarkup(payload);
+  }
   if(payload&&typeof payload==="object"){
     if(payload.rch)return[];
     const arrays=[
@@ -264,7 +270,6 @@ function parseSourcePayload(payload){
     for(const arr of arrays)if(Array.isArray(arr))return arr;
     if(payload.url||payload.stream||payload.file)return[payload];
   }
-  if(typeof payload==="string")return parseDataJsonMarkup(payload);
   return[];
 }
 
@@ -410,7 +415,11 @@ async function resolveProvider(provider,item,videoId,signal){
   const cached=cache.get(key);
   if(cached&&cached.expires>Date.now())return cached.value;
   const values=await provider.resolve(item,{videoId,signal});
-  const out=(Array.isArray(values)?values:[]).map(v=>v?.stream?normalizeStream(v,provider):normalizeStream(v,provider)).filter(Boolean);
+  const out=(Array.isArray(values)?values:[]).map(v=>v?.stream?{
+    ...v,
+    stream:{...v.stream,subtitles:normalizeSubtitle(v.stream.subtitles),url:selectBestUrl(v.stream)},
+    kind:streamKind(v.stream)
+  }:normalizeStream(v,provider)).filter(v=>v?.stream&&http(v.stream.url));
   cache.set(key,{expires:Date.now()+CACHE_TTL,value:out});
   return out;
 }
