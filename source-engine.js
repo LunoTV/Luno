@@ -256,14 +256,6 @@ async function resolveFile(raw){
   }
 }
 
-/)?.[0]||0)-Number(String(a[0]).match(/\d{3,4}/)?.[0]||0));
-  if(entries.length){
-    const max=entries[0][1];
-    if(http(max))return max;
-  }
-  return text(stream?.url||stream?.streamingUrl||stream?.externalUrl||stream?.file);
-}
-
 async function resolveSource(source,item){
   const movie=buildMovie(item);
   const params=requestParams({...item,...movie});
