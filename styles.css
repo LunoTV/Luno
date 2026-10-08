@@ -521,3 +521,485 @@ body.library-open .library-content{
   .dialog-card{padding:25px 18px 18px;border-radius:22px}
   .dialog-card h2{font-size:23px}.dialog-actions{grid-template-columns:1fr 1fr}
 }
+
+
+/* =========================================================
+   LUNO MOBILE — cinematic streaming home
+   TV/Desktop layout remains unchanged above 700px.
+   ========================================================= */
+@media (max-width:700px){
+  :root{
+    --luno-mobile-gutter:18px;
+    --luno-mobile-bottom:88px;
+  }
+
+  html,body{
+    background:#050609!important;
+    color:#fff;
+  }
+
+  body{
+    padding-top:0!important;
+    min-height:100dvh;
+    overflow-x:hidden;
+  }
+
+  #app{
+    min-height:100dvh;
+    background:#050609;
+  }
+
+  /* Compact mobile header */
+  .topbar{
+    position:fixed!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    height:72px!important;
+    padding:0 var(--luno-mobile-gutter)!important;
+    z-index:1000!important;
+    background:linear-gradient(180deg,rgba(5,6,9,.98) 0%,rgba(5,6,9,.86) 70%,transparent 100%)!important;
+    border:0!important;
+    box-shadow:none!important;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+  }
+
+  .brand{
+    gap:9px!important;
+    font-size:25px!important;
+    font-weight:800!important;
+    letter-spacing:-.07em!important;
+  }
+  .brand-orbit{
+    width:31px!important;
+    height:31px!important;
+    border:1px solid rgba(255,255,255,.34)!important;
+    box-shadow:0 0 22px rgba(135,174,255,.18);
+  }
+  .brand-moon{
+    width:20px!important;
+    height:20px!important;
+  }
+  .nav{display:none!important}
+
+  #searchBtn{
+    width:42px!important;
+    height:42px!important;
+    border-radius:50%!important;
+    border:1px solid rgba(255,255,255,.11)!important;
+    background:rgba(255,255,255,.07)!important;
+  }
+
+  /* Main starts beneath the fixed header */
+  main{
+    padding-top:0!important;
+    padding-bottom:var(--luno-mobile-bottom)!important;
+  }
+
+  /* Large cinematic hero */
+  .hero{
+    min-height:650px!important;
+    height:calc(100svh - 35px)!important;
+    max-height:790px!important;
+    margin:0!important;
+    border-radius:0!important;
+    overflow:hidden!important;
+    isolation:isolate;
+    background:#080a10!important;
+  }
+
+  .hero-backdrop{
+    position:absolute!important;
+    inset:0!important;
+    background-position:center top!important;
+    background-size:cover!important;
+    transform:none!important;
+    filter:saturate(.92) contrast(1.02);
+  }
+
+  .hero-vignette{
+    position:absolute!important;
+    inset:0!important;
+    background:
+      linear-gradient(180deg,rgba(3,4,7,.18) 0%,rgba(3,4,7,.02) 26%,rgba(3,4,7,.28) 49%,#050609 88%,#050609 100%)!important;
+    z-index:1!important;
+  }
+
+  .hero-copy{
+    position:absolute!important;
+    left:var(--luno-mobile-gutter)!important;
+    right:var(--luno-mobile-gutter)!important;
+    bottom:52px!important;
+    z-index:4!important;
+    padding:0!important;
+    max-width:none!important;
+  }
+
+  .hero-copy .eyebrow{
+    display:inline-flex!important;
+    align-items:center;
+    padding:6px 9px!important;
+    border-radius:7px!important;
+    background:rgba(255,255,255,.09)!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+    color:rgba(255,255,255,.78)!important;
+    font-size:9px!important;
+    letter-spacing:.12em!important;
+    backdrop-filter:blur(12px);
+  }
+
+  .hero-copy h1{
+    margin:12px 0 8px!important;
+    font-size:clamp(37px,11vw,58px)!important;
+    line-height:.94!important;
+    letter-spacing:-.055em!important;
+    max-width:94%!important;
+    text-shadow:0 4px 25px rgba(0,0,0,.7);
+  }
+
+  .hero-copy h1 span{
+    color:#fff!important;
+    opacity:.82;
+  }
+
+  .hero-description{
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+    margin:0 0 10px!important;
+    max-width:92%!important;
+    color:rgba(255,255,255,.76)!important;
+    font-size:13px!important;
+    line-height:1.4!important;
+  }
+
+  .hero-meta{
+    margin:0 0 16px!important;
+    font-size:11px!important;
+    color:rgba(255,255,255,.82)!important;
+  }
+
+  .hero-actions{
+    display:flex!important;
+    gap:9px!important;
+    align-items:center!important;
+  }
+
+  .hero-actions .primary{
+    min-height:52px!important;
+    padding:0 25px!important;
+    border-radius:17px!important;
+    font-size:16px!important;
+    box-shadow:0 10px 35px rgba(255,255,255,.08)!important;
+  }
+
+  .hero-actions .secondary{
+    min-height:52px!important;
+    min-width:52px!important;
+    width:52px!important;
+    padding:0!important;
+    border-radius:17px!important;
+    font-size:0!important;
+  }
+
+  .hero-actions .secondary span{
+    font-size:22px!important;
+  }
+
+  .hero-poster-wrap{display:none!important}
+
+  .hero-dots{
+    left:var(--luno-mobile-gutter)!important;
+    bottom:18px!important;
+    transform:none!important;
+    z-index:5!important;
+  }
+
+  .hero-dots span{
+    width:6px!important;
+    height:6px!important;
+    margin:0 3px!important;
+    opacity:.4;
+  }
+  .hero-dots span.active{
+    width:28px!important;
+    border-radius:99px!important;
+    opacity:1;
+    background:#fff!important;
+  }
+
+  /* Home rails */
+  .section{
+    margin:0!important;
+    padding:26px 0 0!important;
+  }
+
+  .section-head{
+    padding:0 var(--luno-mobile-gutter)!important;
+    margin:0 0 12px!important;
+    align-items:end!important;
+  }
+
+  .section-kicker{
+    font-size:8px!important;
+    letter-spacing:.16em!important;
+    color:#70747e!important;
+  }
+
+  .section-head h2{
+    margin:3px 0 0!important;
+    font-size:22px!important;
+    line-height:1!important;
+    letter-spacing:-.045em!important;
+  }
+
+  .section-more{
+    font-size:11px!important;
+    color:#8d919b!important;
+    white-space:nowrap;
+  }
+
+  .cards{
+    display:flex!important;
+    gap:11px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:1px var(--luno-mobile-gutter) 8px!important;
+    scrollbar-width:none!important;
+    scroll-snap-type:x proximity;
+  }
+
+  .cards::-webkit-scrollbar{display:none!important}
+
+  .cards .card{
+    flex:0 0 128px!important;
+    width:128px!important;
+    min-width:128px!important;
+    scroll-snap-align:start;
+  }
+
+  .cards .card-art{
+    height:192px!important;
+    aspect-ratio:2/3!important;
+    border-radius:12px!important;
+    background:#101218!important;
+    border:1px solid rgba(255,255,255,.07)!important;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+    overflow:hidden!important;
+  }
+
+  .cards .card-art img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+  }
+
+  .cards .card-title{
+    padding:8px 2px 0!important;
+    font-size:12px!important;
+    line-height:1.22!important;
+    font-weight:650!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+
+  .cards .card-meta{
+    padding:4px 2px 0!important;
+    font-size:9px!important;
+    color:#70747e!important;
+  }
+
+  /* The first content after hero gets more breathing room */
+  .resume-section{padding-top:31px!important}
+  .resume-section.resume-empty{display:none!important}
+
+  /* Keep the mobile home clean: dense catalogue sections become rails */
+  #moviesSection,#seriesSection{display:block!important}
+  #favoritesSection{padding-bottom:20px!important}
+
+  /* Genre tiles become compact horizontal chips */
+  .genre-grid{
+    display:flex!important;
+    overflow-x:auto!important;
+    gap:9px!important;
+    padding:0 var(--luno-mobile-gutter) 8px!important;
+    scrollbar-width:none!important;
+  }
+  .genre-grid::-webkit-scrollbar{display:none!important}
+  .genre-tile{
+    flex:0 0 auto!important;
+    min-width:116px!important;
+    height:70px!important;
+    padding:11px 12px!important;
+    border-radius:15px!important;
+    text-align:left!important;
+  }
+  .genre-tile span{font-size:17px!important}
+  .genre-tile strong{font-size:12px!important}
+  .genre-tile small{font-size:8px!important}
+
+  /* Bottom navigation: floating glass dock */
+  .mobile-tabbar{
+    position:fixed!important;
+    left:10px!important;
+    right:10px!important;
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+    height:68px!important;
+    z-index:2000!important;
+    display:grid!important;
+    grid-template-columns:repeat(5,1fr)!important;
+    align-items:center!important;
+    padding:6px 5px!important;
+    border:1px solid rgba(255,255,255,.09)!important;
+    border-radius:22px!important;
+    background:rgba(18,19,24,.88)!important;
+    box-shadow:0 16px 45px rgba(0,0,0,.55)!important;
+    backdrop-filter:blur(22px) saturate(130%)!important;
+    -webkit-backdrop-filter:blur(22px) saturate(130%)!important;
+  }
+
+  .mobile-tab{
+    height:58px!important;
+    border-radius:17px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:3px!important;
+    color:#777b84!important;
+    background:transparent!important;
+    border:0!important;
+    font-size:10px!important;
+    transition:transform .18s ease,color .18s ease,background .18s ease;
+  }
+
+  .mobile-tab .tab-icon{
+    font-size:23px!important;
+    line-height:1!important;
+    font-weight:500!important;
+  }
+
+  .mobile-tab small{
+    font-size:9px!important;
+    font-weight:600!important;
+  }
+
+  .mobile-tab.active{
+    color:#fff!important;
+    background:rgba(255,255,255,.09)!important;
+  }
+
+  .mobile-tab.active .tab-icon{
+    text-shadow:0 0 18px rgba(255,255,255,.28);
+  }
+
+  /* Search is a proper full mobile screen */
+  .search-box{
+    padding:88px var(--luno-mobile-gutter) calc(30px + env(safe-area-inset-bottom))!important;
+    background:
+      radial-gradient(circle at 80% 0%,rgba(112,145,210,.12),transparent 35%),
+      #050609!important;
+  }
+
+  .search-kicker{font-size:9px!important;letter-spacing:.16em!important}
+  .search-title{
+    font-size:34px!important;
+    line-height:.98!important;
+    letter-spacing:-.055em!important;
+    margin:9px 0 20px!important;
+  }
+  .search-field{
+    height:58px!important;
+    border-radius:18px!important;
+    background:rgba(255,255,255,.075)!important;
+    border:1px solid rgba(255,255,255,.1)!important;
+  }
+  .search-field input{font-size:16px!important}
+  .search-results{margin-top:20px!important}
+  .search-results-grid{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:14px 9px!important;
+  }
+  .search-results-grid .card{min-width:0!important}
+  .search-results-grid .card-art{height:auto!important;aspect-ratio:2/3!important}
+  .search-results-grid .card-title{font-size:11px!important}
+  .search-results-grid .card-meta{font-size:8px!important}
+
+  /* Full-screen library on mobile */
+  body.library-open .library-head{
+    height:78px!important;
+    padding:calc(9px + env(safe-area-inset-top)) 14px 8px!important;
+  }
+  body.library-open .library-content{
+    height:calc(100dvh - 78px)!important;
+    padding:16px 0 calc(95px + env(safe-area-inset-bottom))!important;
+  }
+  .library-head h2{font-size:27px!important}
+  .library-toolbar{
+    padding:0 var(--luno-mobile-gutter)!important;
+    font-size:10px!important;
+  }
+  .library-infinite-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:16px 9px!important;
+    padding:0 var(--luno-mobile-gutter)!important;
+  }
+  .library-infinite-grid .card-art{
+    aspect-ratio:2/3!important;
+    height:auto!important;
+    border-radius:11px!important;
+  }
+  .library-infinite-grid .card-title{
+    font-size:11px!important;
+    padding:7px 2px 0!important;
+  }
+  .library-infinite-grid .card-meta{
+    font-size:8px!important;
+    padding:3px 2px 0!important;
+  }
+
+  /* Hide desktop-only home sections that duplicate the rails on a small screen */
+  #moviesSection,#seriesSection{
+    display:none!important;
+  }
+
+  /* Favorites feels like a real mobile page section */
+  .favorites-section .cards{
+    padding-bottom:12px!important;
+  }
+
+  /* Details: cinematic sheet */
+  .detail-shell{
+    min-height:100dvh!important;
+    height:100dvh!important;
+    border-radius:0!important;
+  }
+  .detail-poster{
+    position:absolute!important;
+    top:74px!important;
+    left:var(--luno-mobile-gutter)!important;
+    width:108px!important;
+    height:162px!important;
+    border-radius:12px!important;
+  }
+  .detail-copy{
+    padding:260px var(--luno-mobile-gutter) calc(35px + env(safe-area-inset-bottom))!important;
+  }
+  .detail-copy h2{
+    font-size:33px!important;
+    line-height:1!important;
+  }
+
+  /* Splash keeps the source artwork intact */
+  .splash-art img{object-fit:cover!important}
+
+  /* Don't show the desktop footer over mobile navigation */
+  .tmdb-attribution{
+    display:none!important;
+  }
+}
