@@ -178,6 +178,7 @@ function normalizeItem(item){
     genres:Array.isArray(item?.genres)?item.genres:[],
     originalLanguage:item?.originalLanguage || "",
     originCountry:Array.isArray(item?.originCountry)?item.originCountry:[],
+    openCinema:Boolean(item?.openCinema),
     imdbId:item?.imdbId || (Number(item?.tmdbId)===10378 ? "tt1254207" : "")
   };
 }
