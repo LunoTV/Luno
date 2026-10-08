@@ -12,6 +12,7 @@ import {
 } from "./core.js";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
+const openCinemaCards=document.querySelector("#openCinemaCards");
 const seriesCards=document.querySelector("#seriesCards");
 const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
@@ -75,11 +76,13 @@ const addonManagerStatus=document.querySelector("#addonManagerStatus");
 const addonList=document.querySelector("#addonList");
 const openAddonManager=document.querySelector("#openAddonManager");
 const openAddonManagerFromPlayer=document.querySelector("#openAddonManagerFromPlayer");
+const openCinemaSources=document.querySelector("#openCinemaSources");
 const closeAddonManager=document.querySelector("#closeAddonManager");
 
 let currentItem=null;
 let catalogItems=[];
 let movieItems=[];
+let openCinemaItems=[];
 let seriesItems=[];
 let animationItems=[];
 let cartoonItems=[];
@@ -563,6 +566,7 @@ function renderDiscovery(){
 function renderCatalogSections(){
   renderDiscovery();
   if(movieCards) movieCards.innerHTML=movieItems.slice(0,movieVisible).map(card).join("");
+  if(openCinemaCards) openCinemaCards.innerHTML=openCinemaItems.map(card).join("");
   if(seriesCards) seriesCards.innerHTML=seriesItems.slice(0,seriesVisible).map(card).join("");
   renderResume();
   renderFavorites();
@@ -598,6 +602,7 @@ function renderItems(items,sections={}){
   catalogItems=unique;
   const classify=(items,type)=>items.filter(item=>mediaCategory(item)===type);
   movieItems=classify(unique,"movies");
+  openCinemaItems=unique.filter(item=>item.openCinema);
   seriesItems=classify(unique,"series");
   cartoonItems=classify(unique,"cartoons");
   animeItems=classify(unique,"anime");
@@ -661,9 +666,9 @@ function renderAddonManager(){
   const all=[demo,...urls.filter(url=>url!==demo)];
   addonList.innerHTML=all.map((url,index)=>
     '<div class="addon-row">'+
-      '<div><strong>'+escapeHtml(index===0 ? "LUNO Demo Source" : addonManagerUrlLabel(url))+'</strong>'+
+      '<div><strong>'+escapeHtml(index===0 ? "LUNO Open Cinema" : addonManagerUrlLabel(url))+'</strong>'+
       '<span>'+escapeHtml(url)+'</span></div>'+
-      '<em>'+ (index===0 ? "Тестовый" : "Подключён") +'</em>'+
+      '<em>'+ (index===0 ? "Открытое кино" : "Подключён") +'</em>'+
     '</div>'
   ).join("");
 }
@@ -1105,6 +1110,7 @@ playerSourceButton?.addEventListener("click",()=>{
 closeSourceSheet?.addEventListener("click",closeSourceSheetPanel);
 openAddonManager?.addEventListener("click",openAddonManagerPanel);
 openAddonManagerFromPlayer?.addEventListener("click",openAddonManagerPanel);
+openCinemaSources?.addEventListener("click",openAddonManagerPanel);
 closeAddonManager?.addEventListener("click",closeAddonManagerPanel);
 addonManager?.addEventListener("click",(event)=>{
   if(event.target===addonManager) closeAddonManagerPanel();
