@@ -42,6 +42,7 @@ let currentItem=null;
 let catalogItems=[];
 let movieItems=[];
 let seriesItems=[];
+let animationItems=[];
 let movieVisible=18;
 let seriesVisible=18;
 let catalogLoading=false;
@@ -209,15 +210,14 @@ function renderResume(){
 }
 
 function getLibraryItems(type){
-  if(type==="movies") return movieItems.slice().sort((a,b)=>
+  const source=type==="movies"
+    ? movieItems
+    : type==="series"
+      ? seriesItems
+      : animationItems;
+  return source.slice().sort((a,b)=>
     (Number(b.popularity)||0)-(Number(a.popularity)||0)
   );
-  if(type==="series") return seriesItems.slice().sort((a,b)=>
-    (Number(b.popularity)||0)-(Number(a.popularity)||0)
-  );
-  return catalogItems
-    .filter(item=>item.genres?.includes(16))
-    .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
 }
 
 let libraryType="";
@@ -376,6 +376,10 @@ function renderItems(items,sections={}){
   catalogItems=unique;
   movieItems=fromIds(sections.popularMovies,"movie");
   seriesItems=fromIds(sections.popularSeries,"series");
+  animationItems=fromIds(sections.animation, "movie").concat(
+    (sections.animation||[]).map(id=>map.get(id)).filter(item=>item?.type==="series")
+  );
+  animationItems=[...new Map(animationItems.map(item=>[item.id,item])).values()];
 
   window.__LUNO_ITEMS__=new Map(unique.map(item=>[item.id,item]));
   renderCatalogSections();
