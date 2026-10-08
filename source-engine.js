@@ -1,8 +1,13 @@
+import {createSourceRegistry} from "./sources/registry.js";
+import {loadSourceDefinitions} from "./sources/loader.js";
+import {normalizeSubtitle,normalizeStream,streamKind} from "./sources/normalizer.js";
+import {selectBestUrl as selectBestQualityUrl} from "./sources/quality.js";
+
 const PROVIDERS_KEY="luno-source-providers";
 const DEFAULT_TIMEOUT=15000;
 const SOURCE_TIMEOUT=9000;
 const CACHE_TTL=15000;
-const providers=new Map();
+const registry=createSourceRegistry();
 const cache=new Map();
 let initialized=false;
 let playerState=null;
@@ -23,35 +28,11 @@ function text(v){return v==null?"":String(v).trim()}
 function http(v){try{const u=new URL(text(v));return u.protocol==="http:"||u.protocol==="https:"}catch{return false}}
 function unique(list){return [...new Set(list.filter(Boolean))]}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-function qualityNumber(v){return Number(String(v||"").match(/\d{3,4}/)?.[0]||0)}
 
-function normalizeSubtitle(v){
-  const list=Array.isArray(v)?v:(v?[v]:[]);
-  return list.map((x,i)=>typeof x==="string"
-    ?{label:"Subtitle "+(i+1),url:x}
-    :{label:text(x?.label||x?.name||x?.lang||"Subtitle "+(i+1)),url:text(x?.url||x?.src)})
-    .filter(x=>http(x.url));
-}
 
-function streamKind(s){
-  const u=text(s?.url||s?.streamingUrl||s?.externalUrl||s?.file);
-  const h=text(s?.behaviorHints?.contentType||s?.contentType||s?.type).toLowerCase();
-  if(!http(u))return"unsupported";
-  if(h.includes("mpegurl")||h.includes("hls")||/\.m3u8(?:$|[?#])/i.test(u))return"hls";
-  if(h.includes("dash")||h.includes("mpd")||/\.mpd(?:$|[?#])/i.test(u))return"dash";
-  return"direct";
-}
 
-function normalizeQualityMap(value){
-  if(!value||typeof value!=="object"||Array.isArray(value))return{};
-  const out={};
-  for(const [key,val] of Object.entries(value)){
-    if(typeof val==="string"&&http(val))out[key]=val;
-  }
-  return out;
-}
 
-function normalizeStream(raw,source,request={}){
+){
   const s=raw?.stream||raw||{};
   const quality=normalizeQualityMap(s.quality||s.qualitys);
   let url=text(s.url||s.streamingUrl||s.externalUrl||s.webosUrl||s.file||"");
@@ -313,7 +294,7 @@ async function resolveFile(raw){
 
 function selectBestUrl(stream){
   const quality=normalizeQualityMap(stream?.quality||stream?.qualitys);
-  const entries=Object.entries(quality).sort((a,b)=>qualityNumber(b[0])-qualityNumber(a[0]));
+  const entries=Object.entries(quality).sort((a,b)=>Number(String(b[0]).match(/\d{3,4}/)?.[0]||0)-Number(String(a[0]).match(/\d{3,4}/)?.[0]||0));
   if(entries.length){
     const max=entries[0][1];
     if(http(max))return max;
@@ -335,7 +316,7 @@ async function resolveSource(source,item){
         if(entry?.method==="play"||entry?.method==="call"||entry?.url||entry?.stream||entry?.file){
           const resolved=entry?.method==="play"?entry:await resolveFile(entry);
           const chosen=resolved||entry;
-          const url=selectBestUrl(chosen);
+          const url=selectBestQualityUrl(chosen);
           if(http(url))playable.push({...chosen,url});
           else if(entry?.method==="call"&&http(entry.stream))playable.push({...entry,url:entry.stream});
         }
@@ -369,36 +350,11 @@ async function resolvePrismaSources(item,{videoId="",signal}={}){
   return selected.flat();
 }
 
-function customProviders(){
-  try{
-    const raw=JSON.parse(localStorage.getItem(PROVIDERS_KEY)||"[]");
-    return Array.isArray(raw)?raw:[];
-  }catch{return[]}
-}
 
-function httpProvider(def){
-  const endpoint=text(def?.endpoint);
-  if(!http(endpoint))return null;
-  return {
-    id:text(def.id)||"http-"+btoa(endpoint).replace(/[^a-z0-9]/gi,"").slice(0,12),
-    name:text(def.name)||"Browser Source",
-    description:text(def.description)||"LUNO-compatible HTTP source",
-    enabled:def.enabled!==false,
-    async resolve(item){
-      const u=new URL(endpoint);
-      const movie=buildMovie(item);
-      for(const [k,v] of Object.entries({
-        imdb_id:movie.imdb_id,tmdb_id:movie.tmdb_id,kinopoisk_id:movie.kinopoisk_id,
-        type:movie.type,title:movie.title
-      }))if(v!=null&&v!=="")u.searchParams.set(k,String(v));
-      return parseSourcePayload(await requestJson(u.toString(),{timeout:SOURCE_TIMEOUT}));
-    }
-  };
-}
 
 function registerProvider(provider){
   if(!provider?.id||typeof provider.resolve!=="function")return false;
-  providers.set(provider.id,provider);
+  registry.register(provider);
   return true;
 }
 
@@ -412,17 +368,14 @@ function initSourceEngine(){
     enabled:true,
     async resolve(item,ctx){return resolvePrismaSources(item,ctx)}
   });
-  for(const def of customProviders()){
-    const provider=httpProvider(def);
-    if(provider)registerProvider(provider);
-  }
+  loadSourceDefinitions(registry,JSON.parse(localStorage.getItem(PROVIDERS_KEY)||"[]"));
   window.__LUNO_SOURCE_ENGINE__=api;
   return api;
 }
 
 function listSourceProviders(){
   initSourceEngine();
-  return [...providers.values()].map(p=>({
+  return registry.list().map(p=>({
     id:p.id,name:p.name,description:p.description||"",enabled:p.enabled!==false
   }));
 }
@@ -431,7 +384,12 @@ async function resolveProvider(provider,item,videoId,signal){
   const key=provider.id+"|"+(videoId||item?.imdbId||item?.tmdbId||item?.id||item?.name||"");
   const cached=cache.get(key);
   if(cached&&cached.expires>Date.now())return cached.value;
-  const values=await provider.resolve(item,{videoId,signal});
+  const values=await provider.resolve(item,{
+    videoId,
+    signal,
+    requestJson,
+    parseSourcePayload
+  });
   const out=(Array.isArray(values)?values:[]).map(v=>v?.stream?{
     ...v,
     stream:{...v.stream,subtitles:normalizeSubtitle(v.stream.subtitles),url:selectBestUrl(v.stream)},
@@ -444,7 +402,7 @@ async function resolveProvider(provider,item,videoId,signal){
 async function resolveItemStreams(item,{videoId="",signal}={}){
   initSourceEngine();
   const out=[];
-  for(const provider of providers.values()){
+  for(const provider of registry.values()){
     if(provider.enabled===false||signal?.aborted)continue;
     try{out.push(...await resolveProvider(provider,item,videoId,signal))}
     catch(error){console.warn("[LUNO source]",provider.id,error)}
