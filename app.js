@@ -672,10 +672,6 @@ function setLunoStream(streamUrl,streamMeta={}){
 
 window.LUNOPlayer={openStream:setLunoStream};
 
-function closePlayer(){
-  player.classList.add("hidden");
-}
-
 function showSearchResults(items,query){
   let resultBox=document.querySelector("#searchResults");
   if(!resultBox){
