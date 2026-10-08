@@ -53,6 +53,10 @@ let catalogItems=[];
 let movieItems=[];
 let seriesItems=[];
 let animationItems=[];
+let cartoonItems=[];
+let animeItems=[];
+let showItems=[];
+let detailReturnLibrary="";
 let movieVisible=18;
 let seriesVisible=18;
 let catalogLoading=false;
@@ -101,10 +105,25 @@ function escapeHtml(value=""){
   }[char]));
 }
 
+function mediaCategory(item){
+  const ids=new Set((item?.genreIds||[]).map(Number));
+  const genres=(item?.genres||[]).map(x=>String(x).toLocaleLowerCase("ru-RU"));
+  const animated=ids.has(16) || genres.includes("анимация");
+  const japanese=item?.originalLanguage==="ja" || (item?.originCountry||[]).includes("JP");
+  const show=ids.has(10764)||ids.has(10767)||ids.has(10763)||ids.has(10766) ||
+    genres.some(x=>["реалити-шоу","ток-шоу","новости","мыльная опера"].includes(x));
+  if(animated && japanese) return "anime";
+  if(animated) return "cartoons";
+  if(item?.type==="series" && show) return "shows";
+  if(item?.type==="series") return "series";
+  return "movies";
+}
+function categoryLabel(item){
+  return ({movies:"Фильм",series:"Сериал",cartoons:"Мультфильм",anime:"Аниме",shows:"Шоу"})[mediaCategory(item)] || "Контент";
+}
 function metaLine(item){
   const year=String(item?.releaseInfo || "").match(/\d{4}/)?.[0] || "";
-  const type=item?.type==="series" ? "Сериал" : "Фильм";
-  return [year,type].filter(Boolean).join(" • ");
+  return [year,categoryLabel(item)].filter(Boolean).join(" • ");
 }
 
 function normalizeItem(item){
@@ -119,7 +138,10 @@ function normalizeItem(item){
     releaseInfo:item?.releaseInfo || "",
     description:item?.description || "",
     rating:Number(item?.rating)||0,
+    genreIds:Array.isArray(item?.genreIds) ? item.genreIds.map(Number).filter(Boolean) : [],
     genres:Array.isArray(item?.genres)?item.genres:[],
+    originalLanguage:item?.originalLanguage || "",
+    originCountry:Array.isArray(item?.originCountry)?item.originCountry:[],
     imdbId:item?.imdbId || ""
   };
 }
@@ -240,17 +262,27 @@ function renderFavorites(){
 }
 
 function openDetail(item){
+  if(!item) return;
+  detailReturnLibrary=libraryView && !libraryView.classList.contains("hidden") ? libraryType : "";
+  if(detailReturnLibrary) closeLibrary();
   currentItem=item;
   paintDetail(item);
   if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
   paintFavoriteButton(item);
   detail?.classList.remove("hidden");
+  document.body.classList.add("detail-open");
   detailPlay?.focus();
 }
 
 function closeDetail(){
   detail?.classList.add("hidden");
+  document.body.classList.remove("detail-open");
   currentItem=null;
+  if(detailReturnLibrary){
+    const target=detailReturnLibrary;
+    detailReturnLibrary="";
+    openLibrary(target);
+  }
 }
 
 detailPlay?.addEventListener("click",()=>{
@@ -290,11 +322,13 @@ function renderResume(){
 }
 
 function getLibraryItems(type){
-  const source=type==="movies"
-    ? movieItems
-    : type==="series"
-      ? seriesItems
-      : animationItems;
+  const source={
+    movies:movieItems,
+    series:seriesItems,
+    cartoons:cartoonItems,
+    anime:animeItems,
+    shows:showItems
+  }[type] || [];
   return source.slice().sort((a,b)=>
     (Number(b.popularity)||0)-(Number(a.popularity)||0)
   );
@@ -319,8 +353,10 @@ function renderLibraryBatch(){
 function openLibrary(type){
   const config={
     movies:{title:"Фильмы",kicker:"LUNO • КИНО"},
-    series:{title:"Сериалы",kicker:"LUNO • ЭПИЗОДЫ"},
-    cartoons:{title:"Мультфильмы",kicker:"LUNO • АНИМАЦИЯ"}
+    series:{title:"Сериалы",kicker:"LUNO • СЕРИАЛЫ"},
+    cartoons:{title:"Мультфильмы",kicker:"LUNO • АНИМАЦИЯ"},
+    anime:{title:"Аниме",kicker:"LUNO • ANIME"},
+    shows:{title:"Шоу",kicker:"LUNO • SHOW"}
   }[type];
   if(!config || !libraryView) return;
 
@@ -368,7 +404,7 @@ function closeLibrary(){
 function navigate(section){
   document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll('.nav-item[data-section="'+section+'"],.mobile-tab[data-section="'+section+'"]').forEach(x=>x.classList.add("active"));
-  if(section==="movies" || section==="series" || section==="cartoons"){
+  if(["movies","series","cartoons","anime","shows"].includes(section)){
     openLibrary(section);
     return;
   }
@@ -460,10 +496,13 @@ function renderItems(items,sections={}){
   };
 
   catalogItems=unique;
-  movieItems=fromIds(sections.popularMovies,"movie");
-  seriesItems=fromIds(sections.popularSeries,"series");
-  animationItems=(sections.animation||[]).map(id=>map.get(id)).filter(Boolean);
-  animationItems=[...new Map(animationItems.map(item=>[item.id,item])).values()];
+  const classify=(items,type)=>items.filter(item=>mediaCategory(item)===type);
+  movieItems=classify(unique,"movies");
+  seriesItems=classify(unique,"series");
+  cartoonItems=classify(unique,"cartoons");
+  animeItems=classify(unique,"anime");
+  showItems=classify(unique,"shows");
+  animationItems=[...cartoonItems,...animeItems];
 
   window.__LUNO_ITEMS__=new Map(unique.map(item=>[item.id,item]));
   renderCatalogSections();
