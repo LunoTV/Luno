@@ -166,8 +166,9 @@ function paintDetail(value){
   const genreNames=genres.map(g=>genreMap[g]||g).filter(Boolean).slice(0,4);
 
   if(detailPoster){
-    detailPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
-    detailPoster.classList.toggle("has-image",!!image);
+    const detailImage=value?.background || value?.poster || "";
+    detailPoster.style.backgroundImage=detailImage ? 'url("'+String(detailImage).replace(/"/g,"&quot;")+'")' : "";
+    detailPoster.classList.toggle("has-image",!!detailImage);
   }
   if(detailTitle) detailTitle.textContent=title;
   if(detailMeta) detailMeta.textContent=[
