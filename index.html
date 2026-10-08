@@ -14,7 +14,14 @@
   <link rel="stylesheet" href="./styles.css?v=5">
 </head>
 <body>
-  <div id="app">
+  <div id="splash" class="splash-screen">
+  <div class="splash-orbit"><span class="splash-moon"></span><i></i></div>
+  <div class="splash-logo">LUNO</div>
+  <div class="splash-status" id="splashStatus">Загрузка LUNO…</div>
+  <div class="splash-progress"><span id="splashProgress"></span></div>
+</div>
+
+<div id="app">
     <header class="topbar">
       <button class="brand" data-section="home" aria-label="LUNO — Главная">
         <span class="brand-orbit"><span class="brand-moon"></span></span>
@@ -174,6 +181,18 @@
             <button id="detailPlay" class="primary">▶ Смотреть</button>
             <button id="detailFavorite" class="secondary">♡ В избранное</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="confirmDialog" class="dialog-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <div class="dialog-card">
+        <div class="dialog-icon">◐</div>
+        <h2 id="dialogTitle">Выйти?</h2>
+        <p id="dialogMessage">Вы уверены, что хотите выйти?</p>
+        <div class="dialog-actions">
+          <button id="dialogCancel" class="secondary">Остаться</button>
+          <button id="dialogConfirm" class="primary">Выйти</button>
         </div>
       </div>
     </div>
