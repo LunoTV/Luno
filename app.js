@@ -140,8 +140,8 @@ function renderResume(){
 }
 
 function navigate(section){
-  document.querySelectorAll(".nav-item").forEach(x=>x.classList.remove("active"));
-  document.querySelector('.nav-item[data-section="'+section+'"]')?.classList.add("active");
+  document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll('.nav-item[data-section="'+section+'"],.mobile-tab[data-section="'+section+'"]').forEach(x=>x.classList.add("active"));
   const target=section==="home" ? document.querySelector(".hero") : section==="movies" ? moviesSection : section==="series" ? seriesSection : continueSection;
   target?.scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -309,7 +309,7 @@ document.addEventListener("keydown",(e)=>{
   }
 });
 
-document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
+document.querySelectorAll(".nav-item,.mobile-tab").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
 document.querySelectorAll(".nav-item").forEach((btn,index,buttons)=>btn.addEventListener("keydown",(e)=>{
   if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return;
   e.preventDefault();
