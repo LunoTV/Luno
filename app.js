@@ -351,7 +351,7 @@ function showCoreStatus(message){
 
 function showCatalogMessage(message){
   continueCards.innerHTML=`<div class="catalog-message">${escapeHtml(message)}</div>`;
-  popularCards.innerHTML="";
+  if(popularCards) popularCards.innerHTML="";
 }
 
 function openPlayer(id,type,title){
