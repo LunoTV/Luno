@@ -430,6 +430,19 @@ document.addEventListener("keydown",(e)=>{
 });
 
 document.querySelectorAll(".nav-item").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
+document.querySelectorAll(".nav-item").forEach((btn,index,buttons)=>btn.addEventListener("keydown",(e)=>{
+  if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return;
+  e.preventDefault();
+  const next=e.key==="ArrowRight" ? (index+1)%buttons.length : (index-1+buttons.length)%buttons.length;
+  buttons[next].focus();
+  navigate(buttons[next].dataset.section);
+}));
+
+window.LUNOPlayback={
+  start(item){ if(item?.id) saveResume(item,0,0); },
+  progress(item,position,duration){ if(item?.id && Number(duration)>0 && Number(position)>5) saveResume(item,position,duration); },
+  finish(item){ if(!item?.id) return; const list=loadResume().filter(x=>x.id!==item.id); try{localStorage.setItem("luno-resume",JSON.stringify(list));}catch{} renderResume(); }
+};
 
 renderResume();
 showCatalogMessage("Загружаем каталог LUNO…");
