@@ -262,21 +262,28 @@ function normalizeItem(item){
   };
 }
 
+function posterCandidates(item){
+  const values=[
+    item?.poster,
+    item?.posterSource,
+    item?.poster_path ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\\//,"") : "",
+    item?.poster_path ? "https://image.tmdb.org/t/p/original"+String(item.poster_path).replace(/^\\//,"") : "",
+    item?.background
+  ];
+  return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
+}
 function card(item,eager=false){
   const title=item?.name || "Без названия";
-  const image=item?.poster || item?.posterSource || item?.background || "";
-  const fallbackImage=item?.posterSource && item.posterSource!==image ? item.posterSource : "";
-  const fallbackBackground=item?.background && item.background!==image && item.background!==fallbackImage ? item.background : "";
-  const fallbackTmdb=item?.poster_path
-    ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\//,"")
-    : "";
+  const candidates=posterCandidates(item);
+  const image=candidates[0] || "";
+  const fallbacks=candidates.slice(1,6);
   const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
   const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" data-fallback2="'+escapeHtml(fallbackBackground)+'" data-fallback3="'+escapeHtml(fallbackTmdb)+'" alt="'+escapeHtml(title)+'" loading="'+(eager ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager ? "high" : "low")+'" referrerpolicy="no-referrer">'
-    : '<span class="poster-fallback">◐</span>';
+    ? '<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager ? "high" : "low")+'" referrerpolicy="no-referrer">'
+    : '<span class="poster-fallback poster-fallback-title"><span>'+escapeHtml(title)+'</span></span>';
   const meta='<span class="card-quality">'+quality+'</span>'+
     (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
     (year ? '<span class="card-year">'+year+'</span>' : '');
@@ -329,19 +336,16 @@ function bindCards(){
     if(image && !image.dataset.fallbackBound){
       image.dataset.fallbackBound="1";
       image.addEventListener("error",()=>{
-        const fallback=image.dataset.fallback || "";
-        const fallback2=image.dataset.fallback2 || "";
-        const fallback3=image.dataset.fallback3 || "";
-        if(fallback && image.src!==fallback){
-          image.src=fallback;
-        }else if(fallback2 && image.src!==fallback2){
-          image.src=fallback2;
-        }else if(fallback3 && image.src!==fallback3){
-          image.src=fallback3;
-        }else{
-          image.remove();
-          c.querySelector(".card-art")?.insertAdjacentHTML("afterbegin",'<span class="poster-fallback">◐</span>');
+        let fallbacks=[];
+        try{ fallbacks=JSON.parse(image.dataset.fallbacks||"[]"); }catch{}
+        const next=fallbacks.shift();
+        if(next && image.src!==next){
+          image.dataset.fallbacks=JSON.stringify(fallbacks);
+          image.src=next;
+          return;
         }
+        image.remove();
+        c.querySelector(".card-art")?.insertAdjacentHTML("afterbegin",'<span class="poster-fallback poster-fallback-title"><span>'+escapeHtml(c.dataset.title||"Без названия")+'</span></span>');
       },{once:false});
     }
     c.type="button";
