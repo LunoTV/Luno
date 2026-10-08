@@ -37,6 +37,18 @@ body:before{
 .nav-item{padding:10px 15px;border-radius:11px;color:#9da0aa;font-size:15px;transition:.2s}
 .nav-item:hover{color:#fff;background:rgba(255,255,255,.05)}
 .nav-item.active{color:#fff;background:rgba(255,255,255,.09)}
+.source-nav-btn{
+  margin-left:auto;display:flex;align-items:center;gap:7px;padding:10px 14px;
+  border:1px solid rgba(255,255,255,.12);border-radius:12px;
+  background:rgba(255,255,255,.055);color:#dfe1e7;cursor:pointer;
+  font-size:13px;font-weight:700;white-space:nowrap;transition:.2s;
+}
+.source-nav-btn span{font-size:18px;line-height:1}
+.source-nav-btn:hover{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+@media (max-width:900px){
+  .source-nav-btn b{display:none}
+  .source-nav-btn{padding:10px 12px}
+}
 .icon-btn{
   width:44px;height:44px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.045);
   border-radius:50%;display:grid;place-items:center;cursor:pointer;flex:none;
