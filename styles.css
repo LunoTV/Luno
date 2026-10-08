@@ -382,3 +382,35 @@ body.library-open{overflow:hidden}
   .library-cards .card-meta{font-size:9px}
   .library-head .icon-btn{width:42px;height:42px}
 }
+
+/* ---------- INFINITE VERTICAL LIBRARY FEED ---------- */
+.library-toolbar{
+  display:flex;justify-content:space-between;align-items:center;
+  color:#858995;font-size:12px;margin:0 0 18px;
+}
+.library-toolbar strong{color:#c5c7cd;font-weight:600}
+.library-infinite-grid{
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px 15px;
+}
+.library-loader{
+  min-height:90px;display:flex;align-items:center;justify-content:center;
+  color:#666a75;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+}
+@media(min-width:1400px){
+  .library-infinite-grid{grid-template-columns:repeat(7,minmax(0,1fr));gap:20px 18px}
+}
+@media(max-width:1050px){
+  .library-infinite-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .library-toolbar{padding:0 14px;margin-bottom:14px}
+  .library-infinite-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:14px 10px;padding:0 14px;
+  }
+  .library-infinite-grid .card{width:100%;min-width:0}
+  .library-infinite-grid .card-art{height:auto;aspect-ratio:2/3}
+  .library-infinite-grid .card-title{font-size:12px;padding:8px 7px 2px}
+  .library-infinite-grid .card-meta{font-size:8.5px;padding:0 7px 9px}
+  .library-loader{min-height:100px}
+}
