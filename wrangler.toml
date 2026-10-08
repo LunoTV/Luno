@@ -1,0 +1,3 @@
+name = "luno-api"
+main = "worker/index.js"
+compatibility_date = "2026-10-08"
