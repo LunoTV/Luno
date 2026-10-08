@@ -759,10 +759,10 @@ librarySearch?.addEventListener("click",()=>{
   searchInput.focus();
 });
 
-document.querySelector("#searchBtn").onclick=()=>{
-  searchPanel.classList.remove("hidden");
-  searchInput.focus();
-};
+document.querySelector("#searchBtn")?.addEventListener("click",()=>{
+  searchPanel?.classList.remove("hidden");
+  searchInput?.focus();
+});
 
 let searchTimer=null;
 searchInput.addEventListener("input",()=>{
