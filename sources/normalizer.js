@@ -58,3 +58,22 @@ export function normalizeStream(raw,source,request={}){
 export {selectBestUrl};
 
 export {normalizeSubtitles};
+
+export function normalizeVoice(value={}){
+  if(typeof value==="string") return {id:value,name:value};
+  return {
+    id:text(value?.id||value?.voice_id||value?.voice||value?.name),
+    name:text(value?.name||value?.voice_name||value?.title||value?.label),
+    lang:text(value?.lang||value?.language||"")
+  };
+}
+
+export function normalizeEpisodeInfo(value={}){
+  const season=Number(value?.season??value?.s??0)||0;
+  const episode=Number(value?.episode??value?.e??0)||0;
+  return {
+    season:season>0?Math.floor(season):0,
+    episode:episode>0?Math.floor(episode):0,
+    title:text(value?.episode_title||value?.episodeName||value?.text||value?.title)
+  };
+}
