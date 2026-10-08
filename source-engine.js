@@ -325,7 +325,9 @@ function initSourceEngine(){
     enabled:true,
     async resolve(item,ctx){return resolvePrismaSources(item,ctx)}
   });
-  loadSourceDefinitions(registry,JSON.parse(localStorage.getItem(PROVIDERS_KEY)||"[]"));
+  let definitions=[];
+  try{definitions=JSON.parse(localStorage.getItem(PROVIDERS_KEY)||"[]")}catch{}
+  loadSourceDefinitions(registry,definitions);
   window.__LUNO_SOURCE_ENGINE__=api;
   return api;
 }
