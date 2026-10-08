@@ -2166,20 +2166,22 @@ main > .section .cards .card-title{font-size:12px}
   main > .section .cards .card-info{left:7px;right:7px;bottom:7px;font-size:8.5px}
 }
 
-/* LUNO HERO BANNER V3 */
-.hero{min-height:620px;position:relative;overflow:hidden}
-.hero-backdrop{position:absolute;inset:-2%;background-position:center center;background-size:cover;background-repeat:no-repeat;opacity:1;filter:saturate(.92) contrast(1.04);transition:opacity .7s ease,transform 8s ease;transform:scale(1.035)}
-.hero:hover .hero-backdrop{transform:scale(1.06)}
-.hero-vignette{position:absolute;inset:0;z-index:1;background:
- radial-gradient(circle at 78% 42%,rgba(20,210,195,.09),transparent 27%),
- linear-gradient(90deg,rgba(5,7,11,.98) 0%,rgba(5,7,11,.88) 24%,rgba(5,7,11,.42) 56%,rgba(5,7,11,.16) 76%,rgba(5,7,11,.62) 100%),
- linear-gradient(0deg,#07090d 0%,rgba(7,9,13,.05) 48%,rgba(7,9,13,.65) 100%)}
+/* LUNO HERO BANNER V4 — cinematic, layered, no flash */
+.hero{min-height:clamp(570px,calc(100vh - 92px),760px);position:relative;overflow:hidden;isolation:isolate}
+.hero-backdrop{position:absolute;inset:-1.5%;z-index:0;background-position:center center;background-size:cover;background-repeat:no-repeat;opacity:0;transform:scale(1.025);filter:saturate(.94) contrast(1.035);transition:opacity .85s ease,transform 10s ease;will-change:opacity,transform}
+.hero-backdrop.is-ready{opacity:.01}.hero-backdrop.is-active{opacity:1}
+.hero:hover .hero-backdrop.is-active{transform:scale(1.045)}
+.hero-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:
+ radial-gradient(circle at 72% 38%,rgba(30,225,204,.08),transparent 26%),
+ linear-gradient(90deg,rgba(4,6,10,.99) 0%,rgba(4,6,10,.91) 22%,rgba(4,6,10,.55) 49%,rgba(4,6,10,.16) 73%,rgba(4,6,10,.42) 100%),
+ linear-gradient(0deg,#07090d 0%,rgba(7,9,13,.10) 46%,rgba(7,9,13,.58) 100%)}
 .hero-copy{position:relative;z-index:3;max-width:650px;padding-top:80px}
 .hero-dots{position:absolute;z-index:5;right:clamp(30px,6vw,90px);bottom:32px;display:flex;gap:7px}
-.hero-dots button{width:28px;height:4px;border:0;border-radius:9px;background:rgba(255,255,255,.28);padding:0;cursor:pointer;transition:.25s}
+.hero-dots button{width:28px;height:4px;border:0;border-radius:9px;background:rgba(255,255,255,.28);padding:0;cursor:pointer;transition:width .25s,background .25s,box-shadow .25s}
 .hero-dots button.active{width:48px;background:#fff;box-shadow:0 0 14px rgba(255,255,255,.3)}
 @media(max-width:700px){
- .hero{min-height:560px}
+ .hero{min-height:590px}
+ .hero-backdrop{inset:-3%;transform:scale(1.02)}
  .hero-copy{padding-top:45px}
  .hero-dots{right:20px;bottom:20px}
  .hero-dots button{width:20px}.hero-dots button.active{width:34px}
