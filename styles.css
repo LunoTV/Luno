@@ -2524,3 +2524,34 @@ main > .section .cards .card-title{font-size:12px}
     border-radius:0 0 14px 14px!important;
   }
 }
+
+/* LUNO META EDGE-TO-EDGE V7 — HD/FULLHD/4K, rating and year fill the strip */
+.card-info{
+  left:-1px!important;
+  right:-1px!important;
+  width:auto!important;
+  justify-content:space-between!important;
+  padding-left:11px!important;
+  padding-right:11px!important;
+}
+.card-info .card-quality{
+  margin-left:0!important;
+  margin-right:auto!important;
+  min-width:0!important;
+}
+.card-info .card-rating{
+  margin-left:auto!important;
+  margin-right:auto!important;
+  text-align:center!important;
+}
+.card-info .card-year{
+  margin-left:auto!important;
+  min-width:0!important;
+  text-align:right!important;
+}
+@media(max-width:700px){
+  .card-info{
+    padding-left:9px!important;
+    padding-right:9px!important;
+  }
+}
