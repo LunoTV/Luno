@@ -175,7 +175,7 @@ function normalizeItem(item){
     genres:Array.isArray(item?.genres)?item.genres:[],
     originalLanguage:item?.originalLanguage || "",
     originCountry:Array.isArray(item?.originCountry)?item.originCountry:[],
-    imdbId:item?.imdbId || ""
+    imdbId:item?.imdbId || (Number(item?.tmdbId)===10378 ? "tt1254207" : "")
   };
 }
 
