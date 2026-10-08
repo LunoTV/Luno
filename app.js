@@ -736,6 +736,43 @@ function showCatalogMessage(message){
   if(seriesCards) seriesCards.innerHTML="";
 }
 
+function getDirectStreamUrl(stream){
+  if(!stream || typeof stream!=="object") return "";
+  const candidates=[
+    stream.url,
+    stream.streamingUrl,
+    stream.externalUrl,
+    stream.webosUrl
+  ];
+  for(const candidate of candidates){
+    const value=String(candidate||"").trim();
+    if(!/^https?:\\/\\//i.test(value)) continue;
+    if(/\\.(?:torrent)(?:$|[?#])/i.test(value)) continue;
+    return value;
+  }
+  return "";
+}
+
+function isBrowserPlayableStream(stream){
+  if(!stream || typeof stream!=="object") return false;
+  const direct=getDirectStreamUrl(stream);
+  if(direct) return true;
+  const url=String(stream.url||"").trim();
+  if(/^magnet:/i.test(url)) return false;
+  if(stream.infoHash || stream.infohash || stream.fileIdx!=null) return false;
+  return false;
+}
+
+function streamKind(entry){
+  const stream=entry?.stream||{};
+  if(isBrowserPlayableStream(stream)) return "direct";
+  const url=String(stream.url||"").trim();
+  if(/^magnet:/i.test(url) || stream.infoHash || stream.infohash || stream.fileIdx!=null){
+    return "p2p";
+  }
+  return "unsupported";
+}
+
 function streamLabel(entry,index){
   const stream=entry?.stream||{};
   const name=stream.name || stream.description || "";
@@ -758,13 +795,18 @@ function renderSourceSheet(){
   sourceList.innerHTML=playerStreams.map((entry,index)=>{
     const label=escapeHtml(streamLabel(entry,index));
     const quality=escapeHtml(streamQuality(entry));
-    return '<button class="source-option" type="button" data-source-index="'+index+'">'+
-      '<span><strong>'+label+'</strong><span>'+(entry?.addon?.manifest?.name ? escapeHtml(entry.addon.manifest.name) : "Stremio Core")+'</span></span>'+
+    const kind=streamKind(entry);
+    const disabled=kind!=="direct" ? " disabled aria-disabled=\"true\"" : "";
+    const suffix=kind==="p2p"
+      ? "P2P • браузерный LUNO Player не поддерживает"
+      : (kind==="unsupported" ? "Формат не поддерживается" : (entry?.addon?.manifest?.name ? escapeHtml(entry.addon.manifest.name) : "Stremio Core"));
+    return '<button class="source-option" type="button" data-source-index="'+index+'"'+disabled+'>'+
+      '<span><strong>'+label+'</strong><span>'+suffix+'</span></span>'+
       (quality ? '<span class="source-quality">'+quality+'</span>' : '')+
     '</button>';
   }).join("");
   sourceEmpty.classList.toggle("hidden",playerStreams.length>0);
-  sourceList.querySelectorAll("[data-source-index]").forEach(button=>{
+  sourceList.querySelectorAll("[data-source-index]:not(:disabled)").forEach(button=>{
     button.addEventListener("click",()=>{
       selectLunoSource(Number(button.dataset.sourceIndex));
     });
@@ -829,6 +871,9 @@ async function resolveLunoStreams(item){
     playerStreamState=state;
     playerStreams=streams.filter(entry=>entry?.stream);
 
+    const directStreams=playerStreams.filter(entry=>streamKind(entry)==="direct");
+    const unsupportedStreams=playerStreams.filter(entry=>streamKind(entry)!=="direct");
+
     // Источники LUNO должны приходить из Stremio Core/addons.
     // Нестабильные внешние Lampa-плагины не подключаем как псевдо-addons:
     // они не дают гарантированного прямого HTTPS/HLS/MP4 потока для LUNO Player.
@@ -841,10 +886,17 @@ async function resolveLunoStreams(item){
       return;
     }
 
-    if(playerStreams.length===1){
-      await selectLunoSource(0);
-    }else{
+    if(directStreams.length===1){
+      const directIndex=playerStreams.indexOf(directStreams[0]);
+      await selectLunoSource(directIndex);
+    }else if(directStreams.length>1){
       if(playerMessage) playerMessage.textContent="Выберите источник просмотра.";
+      openSourceSheet();
+    }else{
+      const hasP2P=unsupportedStreams.some(entry=>streamKind(entry)==="p2p");
+      if(playerMessage) playerMessage.textContent=hasP2P
+        ? "Источник найден, но он отдаёт P2P/torrent. LUNO Player в браузере принимает прямые HTTP/HLS/MP4 потоки."
+        : "Источник найден, но его формат не поддерживается LUNO Player.";
       openSourceSheet();
     }
   }catch(error){
@@ -869,12 +921,17 @@ async function selectLunoSource(index){
     // Core уже вернул конкретный stream от addon. Для прямых URL отдаём
     // поток непосредственно нашему LUNO Player — модель Core Player здесь
     // не должна блокировать воспроизведение.
-    const directStreamUrl =
-      entry.stream?.url ||
-      entry.stream?.streamingUrl ||
-      entry.stream?.externalUrl ||
-      entry.stream?.webosUrl ||
-      "";
+    const kind=streamKind(entry);
+    if(kind!=="direct"){
+      playerEmpty?.classList.remove("hidden");
+      if(playerMessage) playerMessage.textContent=kind==="p2p"
+        ? "Этот источник отдаёт P2P/torrent и не может быть воспроизведён напрямую в браузерном LUNO Player."
+        : "Этот источник не отдаёт поддерживаемый прямой поток.";
+      openSourceSheet();
+      return;
+    }
+
+    const directStreamUrl=getDirectStreamUrl(entry.stream);
 
     if(directStreamUrl){
       setLunoStream(directStreamUrl,{label:streamLabel(entry,index),resume:true});
