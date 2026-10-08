@@ -2048,18 +2048,19 @@ body.detail-open{
    LUNO DETAIL V2 — card opens the full cinematic information page
    ========================================================= */
 .luno-detail{min-height:100dvh;background:#07090d;color:#fff;overflow:auto;position:relative}
-.luno-detail-nav{position:absolute;z-index:20;top:0;left:0;right:0;height:74px;display:flex;align-items:center;gap:18px;padding:0 clamp(22px,5vw,70px);background:linear-gradient(180deg,rgba(5,7,10,.92),rgba(5,7,10,.28),transparent)}
-.luno-detail-back,.luno-detail-search{width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:29px;display:grid;place-items:center;cursor:pointer}
-.luno-detail-brand{display:flex;align-items:center;gap:9px;background:none;border:0;color:#fff;font-weight:800;letter-spacing:.22em;font-size:16px;cursor:pointer}
-.luno-detail-brand .brand-orbit{width:30px;height:30px}
-.luno-detail-brand .brand-moon{width:17px;height:17px}
-.luno-detail-links{display:flex;gap:4px;margin:auto;padding:5px;border:1px solid rgba(255,255,255,.11);border-radius:24px;background:rgba(255,255,255,.07);backdrop-filter:blur(18px)}
-.luno-detail-links button{border:0;background:transparent;color:#c9ccd3;padding:9px 13px;border-radius:18px;font-size:12px;cursor:pointer}
-.luno-detail-links button:hover{background:rgba(255,255,255,.1);color:#fff}
-.luno-detail-hero{min-height:690px;position:relative;display:flex;align-items:flex-end;padding:150px clamp(30px,7vw,110px) 78px;overflow:hidden}
-.luno-detail-hero .detail-backdrop{position:absolute;inset:0;opacity:.42;filter:saturate(.72) contrast(1.04);background-position:center;background-size:cover}
+.luno-detail-nav{position:absolute;z-index:20;top:0;left:0;right:0;height:92px;display:flex;align-items:center;gap:20px;padding:0 clamp(24px,5vw,76px);background:linear-gradient(180deg,rgba(5,7,10,.97) 0%,rgba(5,7,10,.78) 55%,transparent 100%)}
+.luno-detail-back,.luno-detail-search{width:46px;height:46px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.09);color:#fff;font-size:31px;display:grid;place-items:center;cursor:pointer}
+.luno-detail-brand{display:flex;align-items:center;gap:11px;background:none;border:0;color:#fff;font-weight:900;letter-spacing:.24em;font-size:19px;cursor:pointer}
+.luno-detail-brand .brand-orbit{width:34px;height:34px}.luno-detail-brand .brand-moon{width:19px;height:19px}
+.luno-detail-links{display:flex;gap:3px;margin:auto;padding:6px;border:1px solid rgba(255,255,255,.13);border-radius:28px;background:rgba(255,255,255,.075);backdrop-filter:blur(22px);box-shadow:0 10px 35px rgba(0,0,0,.18)}
+.luno-detail-links button{border:0;background:transparent;color:#d2d5db;padding:11px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.luno-detail-links button:hover,.luno-detail-links button:focus-visible{background:rgba(255,255,255,.11);color:#fff}
+.luno-detail-tools{display:flex;align-items:center;gap:8px}
+.luno-detail-tool{height:46px;padding:0 14px;border:1px solid rgba(255,255,255,.11);border-radius:23px;background:rgba(255,255,255,.08);color:#e8eaf0;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.luno-detail-hero{min-height:620px;position:relative;display:flex;align-items:flex-end;padding:135px clamp(30px,7vw,110px) 68px;overflow:hidden}
+.luno-detail-hero .detail-backdrop{position:absolute;inset:-2%;opacity:.58;filter:saturate(.84) contrast(1.06);background-position:center 22%;background-size:cover;transform:scale(1.02)}
 .luno-detail-hero::after{content:"";position:absolute;z-index:1;right:4%;top:8%;width:min(39vw,560px);height:78%;background-image:var(--luno-poster);background-position:center;background-size:contain;background-repeat:no-repeat;opacity:.26;filter:saturate(.72) blur(.15px);mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.82) 35%,#000 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.82) 35%,#000 100%);transform:scale(1.04);pointer-events:none}
-.luno-detail-hero-vignette{position:absolute;inset:0;background:linear-gradient(90deg,#07090d 0%,rgba(7,9,13,.84) 32%,rgba(7,9,13,.35) 68%,rgba(7,9,13,.72) 100%),linear-gradient(0deg,#07090d 0%,rgba(7,9,13,.08) 45%,#07090d 100%)}
+.luno-detail-hero-vignette{position:absolute;inset:0;background:radial-gradient(circle at 78% 46%,rgba(17,225,204,.10),transparent 28%),linear-gradient(90deg,#07090d 0%,rgba(7,9,13,.82) 30%,rgba(7,9,13,.22) 65%,rgba(7,9,13,.58) 100%),linear-gradient(0deg,#07090d 0%,rgba(7,9,13,.02) 48%,#07090d 100%)}
 .luno-detail-hero-copy{position:relative;z-index:3;width:min(680px,58vw)}
 .luno-detail-hero-copy h2{font-size:clamp(48px,6.2vw,92px);line-height:.92;letter-spacing:-.065em;margin:10px 0 16px}
 .luno-detail-hero-copy .detail-kicker{color:#aeb5c0;font-size:10px;letter-spacing:.2em}
@@ -2071,7 +2072,7 @@ body.detail-open{
 .luno-detail-actions .primary,.luno-detail-actions .secondary{min-height:48px;padding:0 21px}
 .detail-circle-action{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
 .luno-detail-poster{display:none}
-.luno-detail-ratings{position:absolute;z-index:4;right:clamp(3%,6vw,9%);bottom:83px;display:grid;grid-template-columns:repeat(4,auto);gap:17px;padding:12px 15px;border:1px solid rgba(255,255,255,.1);background:rgba(12,14,19,.68);backdrop-filter:blur(16px);border-radius:15px;transform:translateY(84px)}
+.luno-detail-ratings{position:absolute;z-index:4;right:clamp(3%,6vw,9%);bottom:68px;display:grid;grid-template-columns:repeat(4,auto);gap:17px;padding:12px 15px;border:1px solid rgba(255,255,255,.1);background:rgba(12,14,19,.68);backdrop-filter:blur(16px);border-radius:15px;transform:translateY(84px)}
 .luno-detail-ratings>div{min-width:54px;text-align:center}.luno-detail-ratings strong{display:block;font-size:22px}.luno-detail-ratings span{display:block;color:#858a95;font-size:9px;margin-top:2px;text-transform:uppercase;letter-spacing:.08em}.luno-detail-ratings .luno-score strong{color:#dfff32}
 .luno-detail-section{padding:0 clamp(22px,7vw,110px);margin-top:44px}
 .luno-section-title{display:flex;align-items:end;gap:14px;margin-bottom:17px}
@@ -2116,4 +2117,23 @@ body.detail-open{overflow:hidden}
   .luno-actor-row{display:flex;overflow:auto;gap:9px}.luno-actor-card{flex:0 0 235px}
   .luno-detail-hero::after{top:4%;width:72%;height:55%;right:-8%;opacity:.18;filter:blur(.4px);mask-image:linear-gradient(90deg,transparent,#000);-webkit-mask-image:linear-gradient(90deg,transparent,#000)}
   .luno-recommend-row{display:flex;overflow:auto;gap:10px;padding-bottom:35px}.luno-recommend-row .card{flex:0 0 128px}
+}
+
+/* LUNO GLOBAL NAV V2 */
+.luno-detail-nav .luno-detail-tools{margin-left:auto}
+@media (max-width:1050px){
+  .luno-detail-links{max-width:58vw;overflow-x:auto;scrollbar-width:none}
+  .luno-detail-links::-webkit-scrollbar{display:none}
+  .luno-detail-links button{padding:10px 13px}
+  .luno-detail-tool{display:none}
+}
+@media (max-width:700px){
+  .luno-detail-nav{height:70px;padding:0 14px;gap:8px}
+  .luno-detail-back,.luno-detail-search{width:40px;height:40px;font-size:26px}
+  .luno-detail-brand{font-size:15px;letter-spacing:.2em;gap:7px}
+  .luno-detail-brand .brand-orbit{width:27px;height:27px}.luno-detail-brand .brand-moon{width:15px;height:15px}
+  .luno-detail-links{position:absolute;left:12px;right:12px;top:62px;max-width:none;margin:0;padding:4px;border-radius:22px;background:rgba(8,10,14,.76)}
+  .luno-detail-links button{font-size:11px;padding:8px 11px}
+  .luno-detail-hero{min-height:610px;padding:150px 20px 72px}
+  .luno-detail-hero::after{width:78%;height:52%;top:13%;opacity:.22}
 }
