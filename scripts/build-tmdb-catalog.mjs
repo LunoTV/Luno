@@ -121,7 +121,42 @@ const payload = {
   items: all
 };
 
+await mkdir("public/tmdb-posters", { recursive: true });
+
+async function cachePosters(items) {
+  let cursor = 0;
+  let cached = 0;
+  let failed = 0;
+
+  const worker = async () => {
+    while (true) {
+      const index = cursor++;
+      if (index >= items.length) return;
+
+      const item = items[index];
+      if (!item?.poster || !item.poster.includes("image.tmdb.org")) continue;
+
+      const file = "public/tmdb-posters/" + item.tmdbId + ".jpg";
+      try {
+        const response = await fetch(item.poster);
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const bytes = Buffer.from(await response.arrayBuffer());
+        await writeFile(file, bytes);
+        item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
+        cached++;
+      } catch (error) {
+        failed++;
+        console.warn("TMDB poster cache failed:", item.id, error.message);
+      }
+    }
+  };
+
+  await Promise.all(Array.from({ length: 8 }, worker));
+  console.log("TMDB posters cached:", cached, "failed:", failed);
+}
+
 await mkdir("public", { recursive: true });
+await cachePosters(all);
 await writeFile("public/tmdb-catalog.json", JSON.stringify(payload));
 console.log("LUNO TMDB catalog:", all.length);
 console.log("Movies:", movies.length, "Series:", series.length);
