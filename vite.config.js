@@ -30,7 +30,7 @@ function bundleStremioCoreWorker() {
 }
 
 export default defineConfig({
-  base: "/Luno/",
+  base: "./",
   plugins: [bundleStremioCoreWorker()],
   build: { outDir: "dist", emptyOutDir: true }
 });
