@@ -2884,3 +2884,83 @@ body.home-mode .hero{
   .mobile-tab .tab-icon{font-size:16px!important;line-height:17px!important}
   .mobile-tab small{font-size:7px!important;line-height:8px!important}
 }
+
+
+/* LUNO SEARCH V3 — fixed search viewport + horizontal category rows */
+@media(max-width:700px){
+  html:has(body.search-open),
+  body.search-open{
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+    touch-action:pan-y;
+  }
+  body.search-open .overlay{
+    position:fixed!important;
+    inset:0!important;
+    overflow:hidden!important;
+    align-items:stretch!important;
+    justify-content:stretch!important;
+    overscroll-behavior:none!important;
+  }
+  body.search-open .luno-search-screen{
+    width:100%!important;
+    height:100dvh!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    border:0!important;
+    border-radius:0!important;
+    padding-bottom:100px!important;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* One horizontal strip per category: Movies, then Series. */
+  .search-results-grid{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    gap:12px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:2px 2px 12px!important;
+    margin:0!important;
+    scrollbar-width:none!important;
+    overscroll-behavior-x:contain!important;
+    touch-action:pan-x!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .search-results-grid::-webkit-scrollbar{display:none!important}
+  .search-results-grid .card{
+    flex:0 0 112px!important;
+    width:112px!important;
+    min-width:112px!important;
+    max-width:112px!important;
+  }
+  .search-results-grid .card-art{
+    width:112px!important;
+    height:168px!important;
+    aspect-ratio:auto!important;
+  }
+  .search-results-grid .card-title{
+    font-size:11px!important;
+    line-height:1.2!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+  .search-result-section{
+    margin-bottom:20px!important;
+  }
+  .search-result-section h3{
+    font-size:18px!important;
+    margin-bottom:9px!important;
+  }
+
+  /* Don't let horizontal card rows drag the whole search page. */
+  .search-results-grid,
+  .search-results-grid *{
+    overscroll-behavior-x:contain!important;
+  }
+}
