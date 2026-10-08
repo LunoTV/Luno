@@ -787,7 +787,7 @@ function renderCatalogSections(){
   bindCards();
   const eyebrow=document.querySelector(".hero .eyebrow");
   if(eyebrow) eyebrow.textContent="";
-  updateHero(movieItems[0]);
+  // Put the current film into the cinematic top banner first; fall back to the most popular movie.\n  updateHero(resumeItems[0] || movieItems[0]);
 }
 
 function heroImageUrl(item){
