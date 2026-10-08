@@ -129,6 +129,7 @@
       <section class="section favorites-section" id="favoritesSection">
         <div class="section-head">
           <div><span class="section-kicker">ТВОЁ</span><h2>Избранное</h2></div>
+          <button id="openAddonManager" class="section-more" type="button">Источники <span>›</span></button>
         </div>
         <div class="cards" id="favoriteCards"></div>
         <div class="favorites-empty" id="favoritesEmpty">
@@ -212,6 +213,21 @@
       </div>
     </div>
 
+    <div id="addonManager" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="addonManagerTitle">
+      <div class="addon-manager">
+        <button id="closeAddonManager" class="close" aria-label="Закрыть">×</button>
+        <div class="section-kicker">ИСТОЧНИКИ</div>
+        <h2 id="addonManagerTitle">Источники просмотра</h2>
+        <p class="addon-manager-copy">Подключай совместимые Stremio-источники напрямую к LUNO. LUNO не проксирует поток через свой сервер.</p>
+        <div class="addon-manager-form">
+          <input id="addonUrlInput" type="url" inputmode="url" autocomplete="off" placeholder="https://.../manifest.json">
+          <button id="installAddonButton" class="primary" type="button">Подключить</button>
+        </div>
+        <div id="addonManagerStatus" class="addon-manager-status"></div>
+        <div class="addon-list" id="addonList"></div>
+      </div>
+    </div>
+
     <div id="player" class="overlay hidden">
       <div class="player-shell">
         <button id="closePlayer" class="close player-close" aria-label="Закрыть">×</button>
@@ -240,6 +256,7 @@
           </div>
           <div id="sourceList" class="source-list"></div>
           <div id="sourceEmpty" class="source-empty hidden">Подходящих источников пока нет.</div>
+          <button id="openAddonManagerFromPlayer" class="source-add-button" type="button">＋ Подключить источник</button>
         </div>
       </div>
     </div>
