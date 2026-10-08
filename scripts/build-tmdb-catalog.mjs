@@ -87,12 +87,18 @@ async function enrichExternalIds(items) {
             })).filter(person => person.name)
           : [];
         if (imdbId || collectionId || cast.length) {
-          output[index] = {
-            ...item,
-            ...(imdbId ? { imdbId } : {}),
-            ...(collectionId ? { collectionId } : {}),
-            ...(cast.length ? { cast } : {})
-          };
+          const posterPath = data?.poster_path || item?.posterPath || "";
+        const backdropPath = data?.backdrop_path || item?.backdropPath || "";
+        output[index] = {
+          ...item,
+          ...(imdbId ? { imdbId } : {}),
+          ...(collectionId ? { collectionId } : {}),
+          ...(posterPath ? { posterPath } : {}),
+          ...(backdropPath ? { backdropPath } : {}),
+          ...(posterPath ? { poster: image(posterPath, "w500") } : {}),
+          ...(backdropPath ? { background: image(backdropPath, "w1280") } : {}),
+          ...(cast.length ? { cast } : {})
+        };
         }
       } catch (error) {
         console.warn("TMDB external ids failed:", item.id, error.message);
