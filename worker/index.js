@@ -39,7 +39,10 @@ function normalize(item) {
     releaseInfo: movie ? (item.release_date || "") : (item.first_air_date || ""),
     rating: Number(item.vote_average) || 0,
     popularity: Number(item.popularity) || 0,
+    genreIds: Array.isArray(item.genre_ids) ? item.genre_ids.map(Number).filter(Boolean) : [],
     genres: Array.isArray(item.genre_ids) ? item.genre_ids : [],
+    originalLanguage: item.original_language || "",
+    originCountry: Array.isArray(item.origin_country) ? item.origin_country : [],
     adult: Boolean(item.adult)
   };
 }
