@@ -13,6 +13,7 @@ const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
 const openCinemaCards=document.querySelector("#openCinemaCards");
 const seriesCards=document.querySelector("#seriesCards");
+const cartoonCards=document.querySelector("#cartoonCards");
 const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
@@ -782,6 +783,7 @@ function renderCatalogSections(){
   if(movieCards) movieCards.innerHTML=movieItems.slice(0,movieVisible).map(card).join("");
   if(openCinemaCards) openCinemaCards.innerHTML=openCinemaItems.map(card).join("");
   if(seriesCards) seriesCards.innerHTML=seriesItems.slice(0,seriesVisible).map(card).join("");
+  if(cartoonCards) cartoonCards.innerHTML=cartoonItems.slice(0,18).map(card).join("");
   renderResume();
   renderFavorites();
   renderDiscovery();
