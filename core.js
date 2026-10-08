@@ -331,8 +331,13 @@ export function getReadyMetaStreams(state) {
     : (Array.isArray(state?.metaStreams) ? state.metaStreams : []);
 
   return resources.flatMap((resource) => {
-    if (resource?.content?.type !== "Ready" || !Array.isArray(resource.content.content)) return [];
-    return resource.content.content.map((stream) => ({
+    if (resource?.content?.type !== "Ready") return [];
+    const values = Array.isArray(resource.content?.content)
+      ? resource.content.content
+      : (Array.isArray(resource.content?.value)
+        ? resource.content.value
+        : (Array.isArray(resource.content) ? resource.content : []));
+    return values.map((stream) => ({
       stream,
       request: resource.request,
       addon: resource.addon || null
@@ -343,7 +348,7 @@ export function getReadyMetaStreams(state) {
 export function getPlayerStreamUrl(state) {
   const value = state?.stream;
   if (value?.type !== "Ready") return "";
-  const stream = value.content || {};
+  const stream = value?.content || value?.value || {};
   return stream.url || stream.streamingUrl || stream.externalUrl || stream.webosUrl || "";
 }
 
