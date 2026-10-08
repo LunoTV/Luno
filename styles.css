@@ -2655,3 +2655,23 @@ body.home-mode .luno-nav-shutter{
   }
   .luno-nav-shutter .source-nav-btn{display:none!important}
 }
+
+/* LUNO INTERACTION SAFETY V11 */
+.card{
+  pointer-events:auto!important;
+  position:relative!important;
+  z-index:2!important;
+  cursor:pointer!important;
+}
+.card-art,.card-art img,.card-title,.card-info,.card-type{
+  pointer-events:none;
+}
+.hero{
+  min-height:clamp(570px,calc(100vh - 92px),760px)!important;
+}
+.hero-backdrop{
+  pointer-events:none!important;
+}
+body.home-mode .hero{
+  margin-top:0!important;
+}
