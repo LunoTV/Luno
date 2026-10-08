@@ -197,7 +197,7 @@ async function cachePosters(items) {
 await mkdir("public", { recursive: true });
 await cachePosters(all);
 await writeFile("public/tmdb-catalog.json", JSON.stringify(payload));
-await writeFile("public/tmdb-catalog.js", "window.__LUNO_TMDB_CATALOG__=" + JSON.stringify(payload) + ";");
+await writeFile("tmdb-catalog.generated.js", "export default " + JSON.stringify(payload) + ";");
 console.log("LUNO TMDB catalog:", all.length);
 console.log("Movies:", movies.length, "Series:", series.length);
 console.log("With IMDb IDs:", all.filter(x => x.imdbId).length);
