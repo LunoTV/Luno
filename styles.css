@@ -2964,3 +2964,42 @@ body.home-mode .hero{
     overscroll-behavior-x:contain!important;
   }
 }
+
+
+/* LUNO MOBILE — no floating desktop capsule over the content */
+@media(max-width:700px){
+  .luno-nav-shutter{
+    display:none!important;
+  }
+  main{
+    padding-top:0!important;
+  }
+}
+
+/* LUNO MOBILE — visible poster rails: keep cards fully in the rail */
+@media(max-width:700px){
+  .cards{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    gap:12px!important;
+    padding:2px 14px 10px 0!important;
+    margin:0!important;
+    scrollbar-width:none!important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    touch-action:pan-x;
+  }
+  .cards::-webkit-scrollbar{display:none!important}
+  .cards .card{
+    flex:0 0 128px!important;
+    width:128px!important;
+    min-width:128px!important;
+  }
+  .cards .card-art{
+    width:128px!important;
+    height:192px!important;
+  }
+}
