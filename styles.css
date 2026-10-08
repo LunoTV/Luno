@@ -139,3 +139,7 @@ button,input{font:inherit}
 @media (min-width:1400px){
   .card-art{height:320px}
 }
+
+
+.tmdb-attribution{padding:28px 5vw 42px;text-align:center;color:#626570;font-size:11px;line-height:1.5;letter-spacing:.02em}
+.poster-fallback{font-size:54px;color:#aeb2bd;filter:grayscale(1);opacity:.75}
