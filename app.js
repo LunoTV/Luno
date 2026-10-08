@@ -276,7 +276,7 @@ function card(item){
   '</button>';
 }
 
-// Global card interaction: works with mouse, touch and iOS Safari.
+// Global card interaction — one deterministic path for every device.
 function resolveCardItem(card){
   if(!card) return null;
   const id=String(card.dataset.id||"");
@@ -289,22 +289,25 @@ function resolveCardItem(card){
     || showItems.find(x=>String(x?.id)===id)
     || null;
 }
-let lastCardOpenAt=0;
-function openCardFromEvent(event){
-  const c=event.target?.closest?.(".card");
-  if(!c) return;
-  const item=resolveCardItem(c);
-  if(!item) return;
-  const now=Date.now();
-  if(now-lastCardOpenAt<350) return;
-  lastCardOpenAt=now;
-  event.preventDefault();
-  event.stopPropagation();
-  openDetail(item);
-}
-document.addEventListener("click",openCardFromEvent,true);
-document.addEventListener("pointerup",openCardFromEvent,true);
-document.addEventListener("touchend",openCardFromEvent,true);
+window.__LUNO_OPEN_CARD__=(card)=>{
+  const item=resolveCardItem(card);
+  if(!item) return false;
+  try{
+    openDetail(item);
+    return true;
+  }catch(error){
+    console.error("[LUNO] card open failed",error);
+    return false;
+  }
+};
+document.addEventListener("click",(event)=>{
+  const cardEl=event.target?.closest?.(".card");
+  if(!cardEl) return;
+  if(window.__LUNO_OPEN_CARD__(cardEl)){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+},true);
 
 function bindCards(){
   document.querySelectorAll(".card").forEach((c)=>{
@@ -324,9 +327,11 @@ function bindCards(){
         }
       },{once:false});
     }
-    c.onclick=()=>{
-      const item=window.__LUNO_ITEMS__?.get(c.dataset.id);
-      if(item) openDetail(item);
+    c.type="button";
+    c.onclick=(event)=>{
+      event.preventDefault();
+      event.stopPropagation();
+      window.__LUNO_OPEN_CARD__?.(c);
     };
   });
 }
@@ -523,17 +528,20 @@ function openDetail(item){
   if(!item) return;
   detailReturnLibrary=libraryView && !libraryView.classList.contains("hidden") ? libraryType : "";
   if(detailReturnLibrary) closeLibrary(true);
-  setLunoHistory("detail");
   currentItem=item;
   saveHistoryItem(item);
-  paintDetail(item);
+  try{
+    setLunoHistory("detail");
+    paintDetail(item);
+  }catch(error){
+    console.error("[LUNO] paintDetail failed",error);
+  }
   if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
   paintFavoriteButton(item);
   detail?.classList.remove("hidden");
   document.body.classList.add("detail-open");
   detailPlay?.focus();
 }
-
 function closeDetail(fromHistory=false){
   if(!fromHistory && history.state?.luno==="detail"){
     try{ history.back(); }catch{}
