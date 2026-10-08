@@ -746,8 +746,8 @@ function getDirectStreamUrl(stream){
   ];
   for(const candidate of candidates){
     const value=String(candidate||"").trim();
-    if(!/^https?:\\/\\//i.test(value)) continue;
-    if(/\\.(?:torrent)(?:$|[?#])/i.test(value)) continue;
+    if(!/^https?:\/\//i.test(value)) continue;
+    if(/\.(?:torrent)(?:$|[?#])/i.test(value)) continue;
     return value;
   }
   return "";
