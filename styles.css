@@ -2057,7 +2057,8 @@ body.detail-open{
 .luno-detail-links button{border:0;background:transparent;color:#c9ccd3;padding:9px 13px;border-radius:18px;font-size:12px;cursor:pointer}
 .luno-detail-links button:hover{background:rgba(255,255,255,.1);color:#fff}
 .luno-detail-hero{min-height:690px;position:relative;display:flex;align-items:flex-end;padding:150px clamp(30px,7vw,110px) 78px;overflow:hidden}
-.luno-detail-hero .detail-backdrop{position:absolute;inset:0;opacity:.48;filter:saturate(.72) contrast(1.04);background-position:center;background-size:cover}
+.luno-detail-hero .detail-backdrop{position:absolute;inset:0;opacity:.42;filter:saturate(.72) contrast(1.04);background-position:center;background-size:cover}
+.luno-detail-hero::after{content:"";position:absolute;z-index:1;right:4%;top:8%;width:min(39vw,560px);height:78%;background-image:var(--luno-poster);background-position:center;background-size:contain;background-repeat:no-repeat;opacity:.26;filter:saturate(.72) blur(.15px);mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.82) 35%,#000 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.82) 35%,#000 100%);transform:scale(1.04);pointer-events:none}
 .luno-detail-hero-vignette{position:absolute;inset:0;background:linear-gradient(90deg,#07090d 0%,rgba(7,9,13,.84) 32%,rgba(7,9,13,.35) 68%,rgba(7,9,13,.72) 100%),linear-gradient(0deg,#07090d 0%,rgba(7,9,13,.08) 45%,#07090d 100%)}
 .luno-detail-hero-copy{position:relative;z-index:3;width:min(680px,58vw)}
 .luno-detail-hero-copy h2{font-size:clamp(48px,6.2vw,92px);line-height:.92;letter-spacing:-.065em;margin:10px 0 16px}
@@ -2069,7 +2070,7 @@ body.detail-open{
 .luno-detail-actions{display:flex;gap:9px;margin-top:26px;flex-wrap:wrap}
 .luno-detail-actions .primary,.luno-detail-actions .secondary{min-height:48px;padding:0 21px}
 .detail-circle-action{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
-.luno-detail-poster{position:absolute;z-index:3;right:clamp(8%,12vw,16%);bottom:70px;width:min(255px,20vw);aspect-ratio:2/3;border-radius:18px;background:center/cover no-repeat;border:1px solid rgba(255,255,255,.13);box-shadow:0 30px 90px #000;transform:rotate(2deg)}
+.luno-detail-poster{display:none}
 .luno-detail-ratings{position:absolute;z-index:4;right:clamp(3%,6vw,9%);bottom:83px;display:grid;grid-template-columns:repeat(4,auto);gap:17px;padding:12px 15px;border:1px solid rgba(255,255,255,.1);background:rgba(12,14,19,.68);backdrop-filter:blur(16px);border-radius:15px;transform:translateY(84px)}
 .luno-detail-ratings>div{min-width:54px;text-align:center}.luno-detail-ratings strong{display:block;font-size:22px}.luno-detail-ratings span{display:block;color:#858a95;font-size:9px;margin-top:2px;text-transform:uppercase;letter-spacing:.08em}.luno-detail-ratings .luno-score strong{color:#dfff32}
 .luno-detail-section{padding:0 clamp(22px,7vw,110px);margin-top:44px}
@@ -2089,15 +2090,19 @@ body.detail-open{
 .luno-about-side{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-content:start}
 .luno-info-card,.luno-budget-card{border:1px solid rgba(255,255,255,.1);border-radius:16px;background:rgba(255,255,255,.055);padding:15px}
 .luno-info-card span{display:block;color:#8cff32;font-size:16px;margin-bottom:13px}.luno-info-card small,.luno-budget-card span{display:block;color:#777d87;font-size:9px}.luno-info-card strong{display:block;font-size:13px;margin-top:4px}.luno-budget-card{grid-column:1/-1}.luno-budget-card>div{display:flex;justify-content:space-between;align-items:center;font-size:11px}.luno-quality-track{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin:11px 0}.luno-quality-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#baff35,#18f0c8);border-radius:inherit;transition:width .5s}.luno-budget-card>small{color:#49e9b6;font-size:9px}
-.luno-credit-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.luno-credit-card{display:flex;align-items:center;gap:13px;padding:15px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:rgba(255,255,255,.045)}
-.luno-credit-avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#baff35,#11e4cc 55%,#161a22 56%);color:#08100f;font-weight:900}
-.luno-credit-card strong{display:block;font-size:13px}.luno-credit-card small{display:block;color:#737985;font-size:9px;margin-top:4px}
-.luno-recommend-row{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:13px;padding-bottom:50px}
+.luno-actor-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;overflow:hidden}
+.luno-actor-card{min-width:0;display:flex;align-items:center;gap:12px;padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.025));color:#fff;text-align:left;cursor:pointer}
+.luno-actor-card:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.075);transform:translateY(-2px)}
+.luno-actor-avatar{width:52px;height:52px;flex:0 0 52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#baff35,#11e4cc 55%,#161a22 56%);background-position:center;background-size:cover;display:grid;place-items:center;color:#08100f;font-weight:900;font-size:17px;overflow:hidden}
+.luno-actor-copy{min-width:0}.luno-actor-copy strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.luno-actor-copy small{display:block;color:#737985;font-size:9px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.luno-actors-empty{grid-column:1/-1;color:#777d87;font-size:12px;padding:18px 0}
+.luno-recommend-row{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:13px;padding-bottom:34px}
+.similar-section{margin-top:48px}.recommend-section{margin-top:22px}
+
 .luno-recommend-row .card{min-width:0}.luno-recommend-row .card-art{aspect-ratio:2/3;height:auto}.luno-recommend-row .card-title{font-size:12px}
 body.detail-open{overflow:hidden}
 @media(max-width:1050px){
-  .luno-detail-poster{right:5%;width:190px}.luno-detail-ratings{right:3%;grid-template-columns:repeat(4,1fr);transform:none}.luno-detail-hero-copy{width:65%}
+  .luno-detail-poster{display:none}.luno-detail-hero::after{right:0;width:46%;opacity:.22}.luno-detail-ratings{right:3%;grid-template-columns:repeat(4,1fr);transform:none}.luno-detail-hero-copy{width:65%}
   .luno-review-row{grid-template-columns:170px repeat(3,240px);overflow:auto}.luno-about-grid{grid-template-columns:1fr}.luno-about-side{grid-template-columns:repeat(3,1fr)}.luno-budget-card{grid-column:auto}.luno-recommend-row{grid-template-columns:repeat(6,minmax(0,1fr))}
 }
 @media(max-width:700px){
@@ -2108,6 +2113,7 @@ body.detail-open{overflow:hidden}
   .luno-detail-section{padding:0 15px;margin-top:32px}.luno-section-title h3{font-size:20px}.luno-section-title span{font-size:8px}
   .luno-review-row{display:flex;overflow:auto;gap:9px}.luno-review-add,.luno-review-card{flex:0 0 230px;min-height:125px}
   .luno-about-grid{display:block}.luno-about-main>p{font-size:14px}.luno-about-side{grid-template-columns:1fr 1fr;margin-top:12px}.luno-budget-card{grid-column:1/-1}
-  .luno-credit-row{display:flex;overflow:auto;gap:9px}.luno-credit-card{flex:0 0 230px}
+  .luno-actor-row{display:flex;overflow:auto;gap:9px}.luno-actor-card{flex:0 0 235px}
+  .luno-detail-hero::after{top:4%;width:72%;height:55%;right:-8%;opacity:.18;filter:blur(.4px);mask-image:linear-gradient(90deg,transparent,#000);-webkit-mask-image:linear-gradient(90deg,transparent,#000)}
   .luno-recommend-row{display:flex;overflow:auto;gap:10px;padding-bottom:35px}.luno-recommend-row .card{flex:0 0 128px}
 }
