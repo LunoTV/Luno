@@ -272,7 +272,7 @@ function ensureLunoHistory(){
 function openDetail(item){
   if(!item) return;
   detailReturnLibrary=libraryView && !libraryView.classList.contains("hidden") ? libraryType : "";
-  if(detailReturnLibrary) closeLibrary(false);
+  if(detailReturnLibrary) closeLibrary(true);
   setLunoHistory("detail");
   currentItem=item;
   paintDetail(item);
@@ -284,6 +284,10 @@ function openDetail(item){
 }
 
 function closeDetail(fromHistory=false){
+  if(!fromHistory && history.state?.luno==="detail"){
+    try{ history.back(); }catch{}
+    return;
+  }
   detail?.classList.add("hidden");
   document.body.classList.remove("detail-open");
   currentItem=null;
@@ -291,9 +295,6 @@ function closeDetail(fromHistory=false){
     const target=detailReturnLibrary;
     detailReturnLibrary="";
     openLibrary(target,false);
-  }
-  if(!fromHistory) {
-    try{ if(history.state?.luno==="detail") history.back(); }catch{}
   }
 }
 
