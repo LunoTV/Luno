@@ -617,9 +617,7 @@ document.querySelectorAll(".section-more").forEach(btn=>btn.addEventListener("cl
 document.querySelector("#closePlayer").onclick=()=>{
   showDialog("Выйти из просмотра?","Прогресс просмотра сохранится на этом устройстве.","Выйти",closePlayer);
 };
-libraryBack?.addEventListener("click",()=>{
-  showDialog("Выйти из каталога?","Текущий каталог закроется, а вы вернётесь на главную.","Выйти",closeLibrary);
-});
+libraryBack?.addEventListener("click",closeLibrary);
 librarySearch?.addEventListener("click",()=>{
   closeLibrary();
   searchPanel.classList.remove("hidden");
