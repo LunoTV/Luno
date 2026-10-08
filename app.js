@@ -18,6 +18,16 @@ const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
+const playerBrowse=document.querySelector("#playerBrowse");
+const playerBrowseBackdrop=document.querySelector("#playerBrowseBackdrop");
+const playerBrowseTitle=document.querySelector("#playerBrowseTitle");
+const playerBrowseMeta=document.querySelector("#playerBrowseMeta");
+const playerBrowseDescription=document.querySelector("#playerBrowseDescription");
+const playerBrowseSource=document.querySelector("#playerBrowseSource");
+const playerBrowseEpisodes=document.querySelector("#playerBrowseEpisodes");
+const playerBrowseQuality=document.querySelector("#playerBrowseQuality");
+const playerBrowseVoice=document.querySelector("#playerBrowseVoice");
+const playerBrowseSourceButton=document.querySelector("#playerBrowseSourceButton");
 const lunoVideo=document.querySelector("#lunoVideo");
 const playerEmpty=document.querySelector("#playerEmpty");
 const playerMessage=document.querySelector("#playerMessage");
@@ -987,6 +997,7 @@ async function resolveLunoStreams(item){
 
     playerStreamState=state;
     playerStreams=streams.filter(entry=>entry?.stream);
+    if(item?.type==="series") renderPlayerBrowse();
 
     const directStreams=playerStreams.filter(entry=>streamKind(entry)==="direct");
     const unsupportedStreams=playerStreams.filter(entry=>streamKind(entry)!=="direct");
@@ -1002,7 +1013,12 @@ async function resolveLunoStreams(item){
 
     if(directStreams.length===1){
       const directIndex=playerStreams.indexOf(directStreams[0]);
-      await selectLunoSource(directIndex);
+      if(item?.type==="series"){
+        renderPlayerBrowse();
+        playerEmpty?.classList.add("hidden");
+      }else{
+        await selectLunoSource(directIndex);
+      }
     }else if(directStreams.length>1){
       if(playerMessage) playerMessage.textContent="Выберите источник просмотра.";
       openSourceSheet();
@@ -1078,6 +1094,53 @@ async function selectLunoSource(index){
   }
 }
 
+function renderPlayerBrowse(){
+  if(!playerBrowse || currentItem?.type!=="series") return;
+  const item=currentItem;
+  const image=item?.background || item?.poster || "";
+  if(playerBrowseBackdrop) playerBrowseBackdrop.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
+  if(playerBrowseTitle) playerBrowseTitle.textContent=item?.name || "Сериал";
+  if(playerBrowseMeta) playerBrowseMeta.textContent=[
+    item?.rating ? "★ "+Number(item.rating).toFixed(1) : "",
+    String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "",
+    "Сериал"
+  ].filter(Boolean).join(" • ");
+  if(playerBrowseDescription) playerBrowseDescription.textContent=item?.description || "Выберите серию и источник для просмотра.";
+  if(playerBrowseSource) playerBrowseSource.textContent=playerStreams.length
+    ? (streamVoice(playerStreams[0]) || playerStreams[0]?.addon?.manifest?.name || "LUNO")
+    : "Поиск источника…";
+
+  const items=playerStreams.map((entry,index)=>({entry,index,label:streamEpisode(entry)||("Серия "+(index+1))}));
+  const unique=[]; const seen=new Set();
+  for(const x of items){
+    if(seen.has(x.label)) continue;
+    seen.add(x.label); unique.push(x);
+  }
+  if(!playerBrowseEpisodes) return;
+  if(!unique.length){
+    playerBrowseEpisodes.innerHTML='<div class="player-browse-loading">Ищем доступные серии и источники…</div>';
+    return;
+  }
+  playerBrowseEpisodes.innerHTML=unique.map((x)=>{
+    const thumb=x.entry?.stream?.thumbnail || x.entry?.stream?.poster || image || "";
+    const title=x.entry?.stream?.episode_title || x.label;
+    const quality=streamQuality(x.entry) || "AUTO";
+    return '<button class="player-episode-card" type="button" data-player-episode="'+x.index+'">'+
+      '<div class="player-episode-thumb" style="background-image:url("'+escapeHtml(thumb)+'")">'+
+        '<span class="player-episode-num">'+escapeHtml(x.label)+'</span>'+
+        '<span class="player-episode-duration">'+escapeHtml(quality)+'</span>'+
+      '</div>'+
+      '<div class="player-episode-body"><strong>'+escapeHtml(title)+'</strong><span>Источник готов</span></div>'+
+    '</button>';
+  }).join("");
+  playerBrowseEpisodes.querySelectorAll("[data-player-episode]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const item=unique[Number(btn.dataset.playerEpisode)];
+      if(item) selectLunoSource(item.index);
+    });
+  });
+}
+
 function openPlayer(id,type,title,streamUrl=""){
   player.classList.remove("hidden");
   if(playerBarTitle) playerBarTitle.textContent=title || "LUNO";
@@ -1089,13 +1152,25 @@ function openPlayer(id,type,title,streamUrl=""){
     lunoVideo.classList.remove("is-ready");
   }
   sourceSheet?.classList.add("hidden");
+  episodeSheet?.classList.add("hidden");
+  voiceSheet?.classList.add("hidden");
+  qualitySheet?.classList.add("hidden");
+  subtitleSheet?.classList.add("hidden");
   playerStreams=[];
   playerStreamState=null;
+  playerBrowse?.classList.toggle("hidden",type!=="series");
+  if(type==="series") renderPlayerBrowse();
   lastCoreTime=-1;
   if(streamUrl){
+    playerBrowse?.classList.add("hidden");
     setLunoStream(streamUrl);
   }else{
-    playerEmpty?.classList.remove("hidden");
+    if(type==="series"){
+      playerEmpty?.classList.add("hidden");
+      renderPlayerBrowse();
+    }else{
+      playerEmpty?.classList.remove("hidden");
+    }
     if(playerMessage) playerMessage.textContent="Ищем доступные источники…";
     resolveLunoStreams(currentItem);
   }
@@ -1374,6 +1449,9 @@ lunoVideo?.addEventListener("error",()=>{
   if(playerMessage) playerMessage.textContent="Не удалось воспроизвести этот источник.";
 });
 
+playerBrowseQuality?.addEventListener("click",()=>{renderQualitySheet();qualitySheet?.classList.remove("hidden")});
+playerBrowseVoice?.addEventListener("click",()=>{renderVoiceSheet();voiceSheet?.classList.remove("hidden")});
+playerBrowseSourceButton?.addEventListener("click",()=>{if(playerStreams.length) openSourceSheet();});
 playerEpisodeButton?.addEventListener("click",()=>{renderEpisodeSheet();episodeSheet?.classList.remove("hidden")});
 closeEpisodeSheet?.addEventListener("click",()=>episodeSheet?.classList.add("hidden"));
 playerVoiceButton?.addEventListener("click",()=>{renderVoiceSheet();voiceSheet?.classList.remove("hidden")});
