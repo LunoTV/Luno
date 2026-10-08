@@ -91,7 +91,6 @@ const favoritesEmpty=document.querySelector("#favoritesEmpty");
 const detailBackdrop=document.querySelector("#detailBackdrop");
 const detailFavorite=document.querySelector("#detailFavorite");
 const heroBackdrop=document.querySelector("#heroBackdrop");
-const heroPoster=document.querySelector("#heroPoster");
 const heroTitle=document.querySelector("#heroTitle");
 const heroDescription=document.querySelector("#heroDescription");
 const heroMeta=document.querySelector("#heroMeta");
@@ -138,6 +137,9 @@ let catalogLoading=false;
 let resumeItems=[];
 let favoriteItems=[];
 let heroItem=null;
+let heroRotationItems=[];
+let heroRotationIndex=0;
+let heroRotationTimer=null;
 let splashDone=false;
 let dialogAction=null;
 let playerStreams=[];
@@ -765,15 +767,45 @@ function renderCatalogSections(){
   updateHero(movieItems[0]);
 }
 
-function updateHero(item){
+function paintHero(item,index=0){
   if(!item) return;
   heroItem=item;
-  if(heroBackdrop) heroBackdrop.style.backgroundImage=item.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
-  if(heroPoster) heroPoster.style.backgroundImage=item.poster ? 'url("'+String(item.poster).replace(/"/g,"&quot;")+'")' : "";
+  heroRotationIndex=index;
+  if(heroBackdrop){
+    heroBackdrop.style.opacity="0";
+    window.setTimeout(()=>{
+      heroBackdrop.style.backgroundImage=item.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
+      heroBackdrop.style.opacity="1";
+    },120);
+  }
   if(heroTitle) heroTitle.innerHTML=escapeHtml(item.name).replace(/\n/g,"<br>");
   if(heroDescription) heroDescription.textContent=item.description || "Выбери фильм и начни просмотр в LUNO.";
   if(heroMeta) heroMeta.textContent=[metaLine(item),Number(item.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : ""].filter(Boolean).join(" • ");
-  if(heroDots) heroDots.innerHTML='<span class="active"></span>';
+  if(heroDots){
+    heroDots.innerHTML=heroRotationItems.map((_,i)=>'<button type="button" class="'+(i===index ? "active":"")+'" aria-label="Баннер '+(i+1)+'"></button>').join("");
+    heroDots.querySelectorAll("button").forEach((dot,i)=>dot.addEventListener("click",(event)=>{
+      event.stopPropagation();
+      paintHero(heroRotationItems[i],i);
+      restartHeroRotation();
+    }));
+  }
+}
+function restartHeroRotation(){
+  if(heroRotationTimer) clearInterval(heroRotationTimer);
+  if(heroRotationItems.length<2) return;
+  heroRotationTimer=setInterval(()=>{
+    const next=(heroRotationIndex+1)%heroRotationItems.length;
+    paintHero(heroRotationItems[next],next);
+  },8000);
+}
+function updateHero(item){
+  if(!item) return;
+  const pool=(movieItems||[])
+    .filter(x=>x?.background && x?.poster)
+    .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
+  heroRotationItems=[item,...pool.filter(x=>x.id!==item.id)].filter((x,i,arr)=>arr.findIndex(y=>y.id===x.id)===i).slice(0,8);
+  paintHero(heroRotationItems[0],0);
+  restartHeroRotation();
 }
 
 function renderItems(items,sections={}){
