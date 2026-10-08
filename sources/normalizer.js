@@ -56,3 +56,5 @@ export function normalizeStream(raw,source,request={}){
 }
 
 export {selectBestUrl};
+
+export {normalizeSubtitles};
