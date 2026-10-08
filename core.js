@@ -6,6 +6,8 @@ let bridge = null;
 let initialized = false;
 
 const CINEMETA_URL = "https://v3-cinemeta.strem.io/manifest.json";
+const DEMO_SOURCE_URL = "https://lunotv.github.io/Luno/addons/luno-demo/manifest.json";
+const LUNO_ADDONS_KEY = "luno-addon-urls";
 
 function ensureTransport() {
   if (transport) return transport;
@@ -54,10 +56,22 @@ function ensureTransport() {
   return transport;
 }
 
-async function installDefaultCatalogAddon(core) {
-  const response = await fetch(CINEMETA_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Cinemeta manifest HTTP ${response.status}`);
+async function installAddonUrl(core, url, flags = {}) {
+  const transportUrl = String(url || "").trim();
+  if (!/^https:\/\/[^\s]+/i.test(transportUrl)) {
+    throw new Error("Addon manifest must use HTTPS");
+  }
+
+  const response = await fetch(transportUrl, {
+    cache: "no-store",
+    headers: { accept: "application/json" }
+  });
+  if (!response.ok) throw new Error(`Addon manifest HTTP ${response.status}`);
+
   const manifest = await response.json();
+  if (!manifest?.id || !manifest?.name || !Array.isArray(manifest?.resources) || !Array.isArray(manifest?.types)) {
+    throw new Error("Invalid addon manifest");
+  }
 
   await core.dispatch({
     action: "Ctx",
@@ -65,13 +79,61 @@ async function installDefaultCatalogAddon(core) {
       action: "InstallAddon",
       args: {
         manifest,
-        transportUrl: CINEMETA_URL,
-        flags: { official: true, protected: true }
+        transportUrl,
+        flags
       }
     }
   });
 
+  return { manifest, transportUrl };
+}
+
+function readAddonUrls() {
+  try {
+    const value = JSON.parse(localStorage.getItem(LUNO_ADDONS_KEY) || "[]");
+    return Array.isArray(value) ? value.filter((url) => typeof url === "string" && url) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeAddonUrls(urls) {
+  try {
+    localStorage.setItem(LUNO_ADDONS_KEY, JSON.stringify([...new Set(urls)].slice(0, 20)));
+  } catch {}
+}
+
+async function installDefaultCatalogAddon(core) {
+  await installAddonUrl(core, CINEMETA_URL, { official: true, protected: true });
   await new Promise((resolve) => setTimeout(resolve, 350));
+}
+
+async function installConfiguredAddons(core) {
+  const configured = [...new Set([DEMO_SOURCE_URL, ...readAddonUrls()])];
+  const installed = [];
+  for (const url of configured) {
+    try {
+      const result = await installAddonUrl(core, url);
+      installed.push(result);
+    } catch (error) {
+      console.warn("LUNO addon install warning:", url, error);
+    }
+  }
+  writeAddonUrls(configured);
+  return installed;
+}
+
+export async function installLunoAddon(url) {
+  const core = getLunoTransport();
+  if (!core) throw new Error("LUNO Core is not initialized");
+  const result = await installAddonUrl(core, url);
+  writeAddonUrls([...readAddonUrls(), result.transportUrl]);
+  await new Promise((resolve) => setTimeout(resolve, 350));
+  return result.manifest;
+}
+
+export function getLunoAddonUrls() {
+  return readAddonUrls();
 }
 
 export async function initLunoCore() {
@@ -97,7 +159,13 @@ export async function initLunoCore() {
     console.warn("LUNO Cinemeta install warning", error);
   }
 
-  // Give Core a moment to persist the addon before asking it to build the board.
+  try {
+    await installConfiguredAddons(core);
+  } catch (error) {
+    console.warn("LUNO addon bootstrap warning", error);
+  }
+
+  // Give Core a moment to persist the addons before asking it to build the board.
   await new Promise((resolve) => setTimeout(resolve, 350));
 
   return core;
