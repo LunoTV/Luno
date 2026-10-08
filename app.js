@@ -215,15 +215,23 @@ function card(item){
   const title=item?.name || "Без названия";
   const image=item?.poster || item?.background || "";
   const fallbackImage=item?.posterSource || item?.background || "";
-  const rating=Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : "";
-  const meta=[metaLine(item),rating].filter(Boolean).join(" • ");
+  const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
+  const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
+  const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
+  const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback">◐</span>';
   return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
-    '<div class="card-art">'+imageHtml+'</div>'+
+    '<div class="card-art">'+imageHtml+
+      '<span class="card-type">'+escapeHtml(type)+'</span>'+
+      '<div class="card-info"><span class="card-quality">'+quality+'</span>'+
+        (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
+        (year ? '<span class="card-year">'+year+'</span>' : '')+
+      '</div>'+
+      '<div class="card-gradient"></div>'+
+    '</div>'+
     '<div class="card-title">'+escapeHtml(title)+'</div>'+
-    '<div class="card-meta">'+escapeHtml(meta)+'</div>'+
   '</button>';
 }
 
