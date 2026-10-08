@@ -221,14 +221,22 @@ function metaLine(item){
 }
 
 function normalizeItem(item){
+  const posterValue=String(item?.poster||"");
+  const backgroundValue=String(item?.background||"");
+  const poster=posterValue.startsWith("http")
+    ? posterValue
+    : (posterValue.startsWith("/") ? "https://image.tmdb.org/t/p/w500"+posterValue : (item?.poster_path ? "https://image.tmdb.org/t/p/w500"+item.poster_path : posterValue));
+  const background=backgroundValue.startsWith("http")
+    ? backgroundValue
+    : (backgroundValue.startsWith("/") ? "https://image.tmdb.org/t/p/w1280"+backgroundValue : (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280"+item.backdrop_path : backgroundValue));
   return {
     ...item,
     id:item?.id || (item?.tmdbId ? "tmdb:"+item.tmdbId : ""),
     tmdbId:Number(item?.tmdbId)||0,
     type:item?.type==="tv" ? "series" : (item?.type || "movie"),
     name:item?.name || item?.originalName || "Без названия",
-    poster:item?.poster || "",
-    background:item?.background || "",
+    poster,
+    background,
     releaseInfo:item?.releaseInfo || "",
     description:item?.description || "",
     rating:Number(item?.rating)||0,
@@ -243,30 +251,24 @@ function normalizeItem(item){
 
 function card(item){
   const title=item?.name || "Без названия";
-  // Prefer the original TMDB poster URL. The generated local cache is only a fallback,
-  // so a missing build artifact can never turn the whole rail into blank cards.
-  const image=item?.posterSource || item?.poster || item?.background || "";
-  const fallbackImage=item?.poster && item.poster!==image ? item.poster : (item?.background || "");
-  const fallbackImage2=item?.background && item.background!==fallbackImage && item.background!==image ? item.background : "";
+  const image=item?.poster || item?.posterSource || item?.background || "";
+  const fallbackImage=item?.background && item.background!==image ? item.background : "";
   const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
   const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" data-fallback-2="'+escapeHtml(fallbackImage2)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback">◐</span>';
-  const meta=[
-    '<span class="card-type">'+escapeHtml(type)+'</span>',
-    '<span class="card-quality">'+quality+'</span>',
-    rating ? '<span class="card-rating">★ '+rating+'</span>' : '',
-    year ? '<span class="card-year">'+year+'</span>' : ''
-  ].filter(Boolean).join('<i class="card-meta-dot">•</i>');
+  const meta='<span class="card-quality">'+quality+'</span>'+
+    (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
+    (year ? '<span class="card-year">'+year+'</span>' : '');
   return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
     '<div class="card-art">'+imageHtml+
       '<div class="card-gradient"></div>'+
+      '<div class="card-info"><span class="card-type">'+escapeHtml(type)+'</span>'+meta+'</div>'+
     '</div>'+
     '<div class="card-title">'+escapeHtml(title)+'</div>'+
-    '<div class="card-meta">'+meta+'</div>'+
   '</button>';
 }
 
