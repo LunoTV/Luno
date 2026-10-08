@@ -3,64 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#050609">
+  <meta name="theme-color" content="#06070a">
+  <meta name="color-scheme" content="dark">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=4">
+  <link rel="stylesheet" href="./styles.css?v=5">
 </head>
 <body>
   <div id="app">
     <header class="topbar">
-      <div class="brand"><span class="moon">◐</span><span>LUNO</span></div>
+      <button class="brand" data-section="home" aria-label="LUNO — Главная">
+        <span class="brand-orbit"><span class="brand-moon"></span></span>
+        <span>LUNO</span>
+      </button>
+
       <nav id="nav" class="nav" aria-label="Навигация">
         <button class="nav-item active" data-section="home">Главная</button>
         <button class="nav-item" data-section="movies">Фильмы</button>
         <button class="nav-item" data-section="series">Сериалы</button>
-        <button class="nav-item" data-section="favorites">Избранное</button>
+        <button class="nav-item" data-section="favorites">Моё</button>
       </nav>
-      <button id="searchBtn" class="icon-btn" aria-label="Поиск">⌕</button>
+
+      <button id="searchBtn" class="icon-btn" aria-label="Поиск">
+        <span class="search-icon"></span>
+      </button>
     </header>
 
     <nav class="mobile-tabbar" aria-label="Основная навигация">
-      <button class="mobile-tab active" data-section="home"><span>⌂</span><small>Главная</small></button>
-      <button class="mobile-tab" data-section="movies"><span>▣</span><small>Фильмы</small></button>
-      <button class="mobile-tab" data-section="series"><span>▤</span><small>Сериалы</small></button>
-      <button class="mobile-tab" data-section="favorites"><span>♡</span><small>Моё</small></button>
+      <button class="mobile-tab active" data-section="home"><span class="tab-icon">⌂</span><small>Главная</small></button>
+      <button class="mobile-tab" data-section="movies"><span class="tab-icon">▣</span><small>Фильмы</small></button>
+      <button class="mobile-tab" data-section="series"><span class="tab-icon">▤</span><small>Сериалы</small></button>
+      <button class="mobile-tab" data-section="favorites"><span class="tab-icon">♡</span><small>Моё</small></button>
     </nav>
 
     <main>
-      <section class="hero">
-        <div class="hero-glow"></div>
+      <section class="hero" id="homeHero" aria-label="Рекомендация">
+        <div class="hero-backdrop" id="heroBackdrop"></div>
+        <div class="hero-vignette"></div>
         <div class="hero-copy">
-          <div class="eyebrow">LUNO • ПЕРВАЯ ВЕРСИЯ</div>
-          <h1>Смотри.<br><span>Без лишнего.</span></h1>
-          <p>Чистый телевизионный интерфейс в лунной стилистике. Всё главное — в нескольких нажатиях пульта.</p>
+          <div class="eyebrow" id="heroEyebrow">LUNO • РУССКИЙ КАТАЛОГ</div>
+          <h1 id="heroTitle">Смотри.<br><span>Без лишнего.</span></h1>
+          <p id="heroDescription">Фильмы и сериалы в чистом интерфейсе LUNO. Никаких лишних экранов — только то, что нужно для просмотра.</p>
+          <div class="hero-meta" id="heroMeta"></div>
           <div class="hero-actions">
-            <button class="primary" id="openDemo">Открыть фильм</button>
-            <button class="secondary" id="continueBtn">Продолжить просмотр</button>
+            <button class="primary" id="openDemo"><span>▶</span> Смотреть</button>
+            <button class="secondary" id="continueBtn"><span>＋</span> Подробнее</button>
           </div>
         </div>
-        <div class="hero-poster">
-          <div class="poster-art">
-            <span class="poster-moon">🌕</span>
-            <strong>INTERSTELLAR</strong>
-            <small>LOVE • TIME • SPACE</small>
-          </div>
+        <div class="hero-poster-wrap">
+          <div class="hero-poster" id="heroPoster"></div>
         </div>
+        <div class="hero-dots" id="heroDots" aria-hidden="true"></div>
       </section>
 
       <section class="section resume-section" id="continueSection">
-        <div class="section-head"><h2>Продолжить просмотр</h2><span>›</span></div>
+        <div class="section-head">
+          <div><span class="section-kicker">ВОЗВРАЩАЙСЯ</span><h2>Продолжить просмотр</h2></div>
+          <button class="section-more" data-section="favorites">Все <span>›</span></button>
+        </div>
         <div class="cards" id="continueCards"></div>
       </section>
 
       <section class="section" id="moviesSection">
-        <div class="section-head"><h2>Фильмы</h2><span>›</span></div>
+        <div class="section-head">
+          <div><span class="section-kicker">КИНО</span><h2>Фильмы</h2></div>
+          <button class="section-more" data-section="movies">Смотреть все <span>›</span></button>
+        </div>
         <div class="cards" id="movieCards"></div>
       </section>
 
       <section class="section" id="seriesSection">
-        <div class="section-head"><h2>Сериалы</h2><span>›</span></div>
+        <div class="section-head">
+          <div><span class="section-kicker">ЭПИЗОДЫ</span><h2>Сериалы</h2></div>
+          <button class="section-more" data-section="series">Смотреть все <span>›</span></button>
+        </div>
         <div class="cards" id="seriesCards"></div>
+      </section>
+
+      <section class="section favorites-section" id="favoritesSection">
+        <div class="section-head">
+          <div><span class="section-kicker">ТВОЁ</span><h2>Избранное</h2></div>
+        </div>
+        <div class="cards" id="favoriteCards"></div>
+        <div class="favorites-empty" id="favoritesEmpty">
+          <div class="empty-moon">◐</div>
+          <strong>Здесь будет твоё кино</strong>
+          <span>Открой карточку фильма и добавь его в избранное.</span>
+        </div>
       </section>
 
       <div id="catalogSentinel" class="catalog-sentinel" aria-hidden="true"></div>
@@ -68,14 +96,22 @@
 
     <div id="searchPanel" class="overlay hidden">
       <div class="search-box">
-        <div class="search-title">Поиск</div>
-        <input id="searchInput" autofocus placeholder="Название фильма или сериала">
-        <div class="search-hint">Нажми Enter для открытия · Esc для выхода</div>
+        <button id="closeSearch" class="close" aria-label="Закрыть поиск">×</button>
+        <div class="search-kicker">LUNO SEARCH</div>
+        <div class="search-title">Что будем смотреть?</div>
+        <div class="search-field">
+          <span class="search-icon"></span>
+          <input id="searchInput" autofocus autocomplete="off" placeholder="Название фильма или сериала">
+        </div>
+        <div class="search-hint">Enter — открыть · Esc — закрыть</div>
+        <div id="searchResults" class="search-results"></div>
       </div>
     </div>
 
     <div id="detail" class="detail-overlay hidden">
       <div class="detail-shell">
+        <div id="detailBackdrop" class="detail-backdrop"></div>
+        <div class="detail-vignette"></div>
         <button id="closeDetail" class="close" aria-label="Закрыть">×</button>
         <div id="detailPoster" class="detail-poster"></div>
         <div class="detail-copy">
@@ -85,7 +121,7 @@
           <p id="detailDescription">Описание загружается…</p>
           <div class="detail-actions">
             <button id="detailPlay" class="primary">▶ Смотреть</button>
-            <button id="closeDetailSecondary" class="secondary">Закрыть</button>
+            <button id="detailFavorite" class="secondary">♡ В избранное</button>
           </div>
         </div>
       </div>
@@ -95,14 +131,14 @@
       <div class="player-shell">
         <button id="closePlayer" class="close">×</button>
         <div class="player-placeholder">
-          <div class="big-moon">🌕</div>
-          <h2>LUNO Player</h2>
-          <p>Плеер подключается следующим этапом. Интерфейс уже готов.</p>
+          <div class="big-moon">◐</div>
+          <h2 id="playerTitle">LUNO Player</h2>
+          <p>Карточка готова. Плеер подключается следующим слоем через Stremio Core.</p>
         </div>
       </div>
     </div>
   </div>
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
-  <script type="module" src="./app.js?v=tmdb5"></script>
+  <script type="module" src="./app.js?v=ui6"></script>
 </body>
 </html>
