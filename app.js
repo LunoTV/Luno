@@ -496,6 +496,8 @@ detailEpisodes?.addEventListener("click",()=>{
 });
 document.querySelector("#closeDetail")?.addEventListener("click",closeDetail);
 document.querySelector("#closeDetailSecondary")?.addEventListener("click",closeDetail);
+document.querySelector("#openAddonManagerDetail")?.addEventListener("click",()=>document.querySelector("#openAddonManager")?.click());
+
 detailFavorite?.addEventListener("click",()=>{ if(currentItem) toggleFavorite(currentItem); });
 closeSearch?.addEventListener("click",()=>searchPanel.classList.add("hidden"));
 
