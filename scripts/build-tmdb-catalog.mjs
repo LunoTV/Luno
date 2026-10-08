@@ -242,8 +242,8 @@ async function cachePosters(items) {
       const file = "public/tmdb-posters/" + item.tmdbId + ".jpg";
       const candidates = [
         item?.poster,
-        item?.poster_path ? IMAGE + "/w500" + String(item.poster_path).replace(/^\\//, "") : "",
-        item?.poster_path ? IMAGE + "/original" + String(item.poster_path).replace(/^\\//, "") : ""
+        item?.poster_path ? IMAGE + "/w500" + String(item.poster_path).replace(/^\//, "") : "",
+        item?.poster_path ? IMAGE + "/original" + String(item.poster_path).replace(/^\//, "") : ""
       ].filter(Boolean);
 
       let success = false;
@@ -258,7 +258,7 @@ async function cachePosters(items) {
       }
 
       if (!success && item?.backdrop_path) {
-        const source = IMAGE + "/w1280" + String(item.backdrop_path).replace(/^\\//, "");
+        const source = IMAGE + "/w1280" + String(item.backdrop_path).replace(/^\//, "");
         if (await download(source, file)) {
           item.posterSource = source;
           item.posterFallback = "backdrop";
