@@ -74,14 +74,22 @@ async function enrichExternalIds(items) {
       const item = output[index];
       try {
         const endpoint = item.type === "movie" ? "/movie/" + item.tmdbId : "/tv/" + item.tmdbId;
-        const data = await tmdb(endpoint, { language: "ru-RU", append_to_response: "external_ids" });
+        const data = await tmdb(endpoint, { language: "ru-RU", append_to_response: "external_ids,credits" });
         const imdbId = data?.external_ids?.imdb_id || "";
         const collectionId = Number(data?.belongs_to_collection?.id) || 0;
-        if (imdbId || collectionId) {
+        const cast = Array.isArray(data?.credits?.cast)
+          ? data.credits.cast.slice(0, 10).map(person => ({
+              name: person?.name || "",
+              character: person?.character || "",
+              profile: image(person?.profile_path, "w185")
+            })).filter(person => person.name)
+          : [];
+        if (imdbId || collectionId || cast.length) {
           output[index] = {
             ...item,
             ...(imdbId ? { imdbId } : {}),
-            ...(collectionId ? { collectionId } : {})
+            ...(collectionId ? { collectionId } : {}),
+            ...(cast.length ? { cast } : {})
           };
         }
       } catch (error) {
