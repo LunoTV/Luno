@@ -210,7 +210,7 @@ function navigate(section){
 }
 
 function getYear(item){
-  return Number(String(item?.releaseInfo||"").match(/\\d{4}/)?.[0]||0);
+  return Number(String(item?.releaseInfo||"").match(/\d{4}/)?.[0]||0);
 }
 
 function renderDiscovery(){
@@ -392,7 +392,7 @@ function normalizeSearchText(value=""){
 }
 
 function searchYear(item){
-  return String(item?.releaseInfo||"").match(/\\d{4}/)?.[0] || "";
+  return String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
 }
 
 function dedupeSearchResults(items){
@@ -443,7 +443,7 @@ function rankSearchResults(items,query){
     score+=Math.min(popularity,100)*0.25;
 
     // Если год явно указан в запросе — жёстко учитываем его.
-    const queryYear=q.match(/\\b(19\\d{2}|20\\d{2})\\b/)?.[1];
+    const queryYear=q.match(/\b(19\d{2}|20\d{2})\b/)?.[1];
     if(queryYear) score += year===queryYear ? 900 : -250;
 
     return {item,score,index};
