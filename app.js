@@ -255,13 +255,14 @@ function normalizeItem(item){
 function card(item){
   const title=item?.name || "Без названия";
   const image=item?.poster || item?.posterSource || item?.background || "";
-  const fallbackImage=item?.background && item.background!==image ? item.background : "";
+  const fallbackImage=item?.posterSource && item.posterSource!==image ? item.posterSource : "";
+  const fallbackBackground=item?.background && item.background!==image && item.background!==fallbackImage ? item.background : "";
   const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
   const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" data-fallback2="'+escapeHtml(fallbackBackground)+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback">◐</span>';
   const meta='<span class="card-quality">'+quality+'</span>'+
     (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
