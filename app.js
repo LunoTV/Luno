@@ -587,7 +587,7 @@ document.querySelector("#closeDetailSecondary")?.addEventListener("click",closeD
 document.querySelector("#openAddonManagerDetail")?.addEventListener("click",()=>document.querySelector("#openAddonManager")?.click());
 
 detailFavorite?.addEventListener("click",()=>{ if(currentItem) toggleFavorite(currentItem); });
-closeSearch?.addEventListener("click",()=>searchPanel.classList.add("hidden"));
+closeSearch?.addEventListener("click",closeSearchPanel);
 
 function loadResume(){
   try{
@@ -1615,30 +1615,91 @@ function setLunoStream(streamUrl,streamMeta={}){
 
 window.LUNOPlayer={openStream:setLunoStream};
 
-function showSearchResults(items,query){
-  let resultBox=document.querySelector("#searchResults");
-  if(!resultBox){
-    resultBox=document.createElement("div");
-    resultBox.id="searchResults";
-    resultBox.className="search-results";
-    searchBox.appendChild(resultBox);
-  }
+let searchSource="tmdb";
+let searchResultsState={tmdb:[],luno:[],ai:[]};
 
-  resultBox.innerHTML=items.length
-    ? '<div class="search-results-title">Результаты для «'+escapeHtml(query)+'»</div><div class="search-results-grid">'+items.slice(0,36).map(card).join("")+'</div>'
-    : '<div class="search-empty">Ничего не найдено</div>';
+function loadSearchHistory(){
+  try{
+    const value=JSON.parse(localStorage.getItem("luno-search-history")||"[]");
+    return Array.isArray(value) ? value.filter(Boolean).slice(0,12) : [];
+  }catch{return []}
+}
+function saveSearchQuery(query){
+  const q=String(query||"").trim();
+  if(!q) return;
+  const list=[q,...loadSearchHistory().filter(x=>normalizeSearchText(x)!==normalizeSearchText(q))].slice(0,12);
+  try{localStorage.setItem("luno-search-history",JSON.stringify(list));}catch{}
+  renderSearchHistory();
+}
+function renderSearchHistory(){
+  const box=document.querySelector("#searchHistory");
+  const block=document.querySelector("#searchHistoryBlock");
+  if(!box) return;
+  const history=loadSearchHistory();
+  box.innerHTML=history.length
+    ? history.map(q=>'<button type="button" class="search-history-chip" data-search-history="'+escapeHtml(q)+'"><span class="history-clock">◷</span>'+escapeHtml(q)+'</button>').join("")
+    : '<span class="search-history-empty">Начни поиск — последние запросы появятся здесь</span>';
+  block?.classList.toggle("is-empty",!history.length);
+  box.querySelectorAll("[data-search-history]").forEach(btn=>btn.addEventListener("click",()=>{
+    searchInput.value=btn.dataset.searchHistory||"";
+    searchInput.dispatchEvent(new Event("input",{bubbles:true}));
+    searchInput.focus();
+  }));
+}
+
+function searchSourceItems(source){
+  return dedupeSearchResults(searchResultsState[source]||[]);
+}
+function renderSearchSections(items,query){
+  const resultBox=document.querySelector("#searchResults");
+  if(!resultBox) return;
+  const movies=items.filter(x=>mediaCategory(x)==="movies");
+  const series=items.filter(x=>mediaCategory(x)==="series");
+  const cartoons=items.filter(x=>["cartoons","anime"].includes(mediaCategory(x)));
+  const shows=items.filter(x=>mediaCategory(x)==="shows");
+  const section=(title,list)=>list.length
+    ? '<section class="search-result-section"><h3>'+escapeHtml(title)+'<span>'+list.length+'</span></h3><div class="search-results-grid">'+list.slice(0,18).map(card).join("")+'</div></section>'
+    : "";
+  if(!items.length){
+    resultBox.innerHTML=query
+      ? '<div class="search-empty search-empty-modern"><strong>Ничего не нашли</strong><span>Попробуй другое название или убери год из запроса.</span></div>'
+      : '<div class="search-discover"><strong>Что будем смотреть?</strong><span>Введи название фильма, сериала или франшизы.</span></div>';
+    return;
+  }
+  resultBox.innerHTML=
+    '<div class="search-results-heading">Результаты для «'+escapeHtml(query)+'»</div>'+
+    section("Фильмы",movies)+section("Сериалы",series)+section("Мультфильмы и аниме",cartoons)+section("Шоу",shows);
   bindCards();
+}
+function updateSearchSourceUI(){
+  document.querySelectorAll(".search-source").forEach(btn=>btn.classList.toggle("active",btn.dataset.searchSource===searchSource));
+  const tmdb=document.querySelector("#searchTmdbCount");
+  const luno=document.querySelector("#searchLunoCount");
+  if(tmdb) tmdb.textContent=String(searchResultsState.tmdb.length||0);
+  if(luno) luno.textContent=String(searchResultsState.luno.length||0);
+}
+function renderActiveSearch(query){
+  let items=[];
+  if(searchSource==="tmdb") items=searchSourceItems("tmdb");
+  else if(searchSource==="luno") items=searchSourceItems("luno");
+  else items=rankSearchResults(dedupeSearchResults([...searchResultsState.tmdb,...searchResultsState.luno]),query);
+  renderSearchSections(items,query);
+  updateSearchSourceUI();
+}
+
+function showSearchResults(items,query,source="tmdb"){
+  searchResultsState[source]=items||[];
+  renderActiveSearch(query);
 }
 
 function searchLocal(query){
   const q=query.trim().toLocaleLowerCase("ru-RU");
   if(!q) return [];
-  return catalogItems
+  return rankSearchResults(catalogItems
     .filter(item=>{
       const hay=[item.name,item.originalName,...(item.genres||[])].join(" ").toLocaleLowerCase("ru-RU");
       return hay.includes(q);
-    })
-    .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
+    }),query);
 }
 
 function dynamicSearchUrl(query){
@@ -1651,7 +1712,7 @@ function normalizeSearchText(value=""){
     .toLocaleLowerCase("ru-RU")
     .replace(/ё/g,"е")
     .replace(/[^a-zа-я0-9]+/gi," ")
-    .replace(/\\s+/g," ")
+    .replace(/\s+/g," ")
     .trim();
 }
 
@@ -1666,9 +1727,7 @@ function dedupeSearchResults(items){
     const normalizedName=normalizeSearchText(item?.name||item?.originalName||"");
     const year=searchYear(item);
     const imdb=String(item?.imdbId||"").trim().toLowerCase();
-    const key=imdb
-      ? "imdb:"+imdb
-      : [item?.type||"movie",normalizedName,year].join("|");
+    const key=imdb ? "imdb:"+imdb : [item?.type||"movie",normalizedName,year].join("|");
     if(!normalizedName || seen.has(key)) continue;
     seen.add(key);
     result.push(item);
@@ -1684,51 +1743,57 @@ function rankSearchResults(items,query){
     const original=normalizeSearchText(item?.originalName||"");
     const year=searchYear(item);
     let score=0;
-
     if(name===q) score+=1000;
     else if(name.startsWith(q)) score+=650;
     else if(name.includes(q)) score+=450;
-
     if(original===q) score+=500;
     else if(original.startsWith(q)) score+=300;
     else if(original.includes(q)) score+=180;
-
-    const matchedWords=qWords.filter(word=>name.includes(word)||original.includes(word)).length;
-    score+=matchedWords*70;
-
-    // Для названий франшиз сначала показываем полнометражные фильмы,
-    // а сериалы оставляем ниже, если пользователь не ищет сериал явно.
+    score+=qWords.filter(word=>name.includes(word)||original.includes(word)).length*70;
     if(item?.type==="movie") score+=160;
     if(item?.type==="series") score-=40;
-
-    const rating=Number(item?.rating)||0;
-    const popularity=Number(item?.popularity)||0;
-    score+=rating*12;
-    score+=Math.min(popularity,100)*0.25;
-
-    // Если год явно указан в запросе — жёстко учитываем его.
+    score+=(Number(item?.rating)||0)*12;
+    score+=Math.min(Number(item?.popularity)||0,100)*0.25;
     const queryYear=q.match(/\b(19\d{2}|20\d{2})\b/)?.[1];
-    if(queryYear) score += year===queryYear ? 900 : -250;
-
+    if(queryYear) score+=year===queryYear ? 900 : -250;
     return {item,score,index};
   });
-
-  return scored
-    .sort((a,b)=>b.score-a.score || a.index-b.index)
-    .map(entry=>entry.item);
+  return scored.sort((a,b)=>b.score-a.score||a.index-b.index).map(x=>x.item);
 }
 
 async function searchDynamic(query){
   const response=await fetch(dynamicSearchUrl(query),{headers:{accept:"application/json"},cache:"no-store"});
   if(!response.ok) throw new Error("TMDB search HTTP "+response.status);
   const data=await response.json();
-  const items=Array.isArray(data?.results)
-    ? data.results.map(normalizeItem).filter(x=>x.tmdbId)
-    : [];
+  const items=Array.isArray(data?.results) ? data.results.map(normalizeItem).filter(x=>x.tmdbId) : [];
   const clean=rankSearchResults(dedupeSearchResults(items),query);
   for(const item of clean) window.__LUNO_ITEMS__.set(item.id,item);
   return clean;
 }
+
+function openSearch(){
+  searchPanel?.classList.remove("hidden");
+  renderSearchHistory();
+  updateSearchSourceUI();
+  window.setTimeout(()=>searchInput?.focus(),40);
+}
+function closeSearchPanel(){
+  searchPanel?.classList.add("hidden");
+}
+document.querySelector("#searchBack")?.addEventListener("click",closeSearchPanel);
+document.querySelector("#searchClear")?.addEventListener("click",()=>{
+  searchInput.value="";
+  searchResultsState={tmdb:[],luno:[],ai:[]};
+  renderSearchHistory();
+  renderActiveSearch("");
+  searchInput.focus();
+});
+document.querySelectorAll(".search-source").forEach(btn=>btn.addEventListener("click",()=>{
+  searchSource=btn.dataset.searchSource||"tmdb";
+  renderActiveSearch(searchInput.value.trim());
+}));
+
+renderSearchHistory();
 
 document.querySelector("#openDemo").onclick=()=>{
   if(heroItem) openDetail(heroItem);
@@ -1814,13 +1879,11 @@ sourceSheet?.addEventListener("click",(event)=>{
 libraryBack?.addEventListener("click",closeLibrary);
 librarySearch?.addEventListener("click",()=>{
   closeLibrary();
-  searchPanel.classList.remove("hidden");
-  searchInput.focus();
+  openSearch();
 });
 
 document.querySelector("#searchBtn")?.addEventListener("click",()=>{
-  searchPanel?.classList.remove("hidden");
-  searchInput?.focus();
+  openSearch();
 });
 
 let searchTimer=null;
@@ -1828,16 +1891,22 @@ searchInput.addEventListener("input",()=>{
   clearTimeout(searchTimer);
   const query=searchInput.value.trim();
   if(!query){
-    document.querySelector("#searchResults")?.remove();
+    searchResultsState={tmdb:[],luno:[],ai:[]};
+    renderActiveSearch("");
     return;
   }
   searchTimer=setTimeout(async()=>{
+    const local=searchLocal(query);
+    searchResultsState.luno=local;
+    renderActiveSearch(query);
     try{
       const remote=await searchDynamic(query);
-      showSearchResults(remote.length ? remote : searchLocal(query),query);
+      searchResultsState.tmdb=remote;
+      renderActiveSearch(query);
     }catch(error){
       console.warn("LUNO remote search unavailable, using local catalog:",error);
-      showSearchResults(searchLocal(query),query);
+      searchResultsState.tmdb=[];
+      renderActiveSearch(query);
     }
   },220);
 });
@@ -1846,6 +1915,7 @@ searchInput.addEventListener("keydown",async(e)=>{
   if(e.key==="Escape") searchPanel.classList.add("hidden");
   if(e.key==="Enter"){
     const query=searchInput.value.trim();
+    saveSearchQuery(query);
     let result=searchLocal(query)[0];
     try{
       const remote=await searchDynamic(query);
