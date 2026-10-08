@@ -4,7 +4,7 @@ function escapeHtml(value=""){
   }[char]));
 }
 
-export function renderSourceManager(container,{providers=[],sources=[],status={}}={}){
+export function renderSourceManager(container,{providers=[],sources=[],status={},preferences={},onToggleSource}={}){
   if(!container)return;
   const providerRows=providers.map(provider=>(
     '<div class="addon-row source-manager-provider">'+
@@ -18,7 +18,7 @@ export function renderSourceManager(container,{providers=[],sources=[],status={}
     '<div class="addon-row source-manager-source">'+
       '<div><strong>'+escapeHtml(source.name||source.id)+'</strong>'+
       '<span>Remote source • headless runtime</span></div>'+
-      '<em>Доступен через runtime</em>'+
+      '<button class="source-toggle" type="button" data-source-toggle="${escapeHtml(source.id)}">${preferences[source.id]===false?"Выключен":"Включён"}</button>'+
     '</div>'
   )).join("");
 
@@ -36,4 +36,15 @@ export function renderSourceManager(container,{providers=[],sources=[],status={}
 
 export function sourceManagerStatusText(status={}){
   return "LUNO Source Engine • "+Number(status.catalogSources||0)+" источников";
+}
+
+
+export function bindSourceManager(container,onToggle){
+  container?.querySelectorAll("[data-source-toggle]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const id=button.dataset.sourceToggle;
+      const enabled=button.textContent.trim()!=="Включён";
+      onToggle?.(id,enabled);
+    });
+  });
 }
