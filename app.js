@@ -718,6 +718,7 @@ function closeLibrary(fromHistory=false){
 }
 
 function navigate(section){
+  document.body.classList.toggle("home-mode",section==="home");
   document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll('.nav-item[data-section="'+section+'"],.mobile-tab[data-section="'+section+'"]').forEach(x=>x.classList.add("active"));
   if(["movies","series","cartoons","anime","shows"].includes(section)){
@@ -785,6 +786,7 @@ function renderCatalogSections(){
   if(movieCards) movieCards.innerHTML=movieItems.slice(0,movieVisible).map(card).join("");
   if(openCinemaCards) openCinemaCards.innerHTML=openCinemaItems.map(card).join("");
   if(seriesCards) seriesCards.innerHTML=seriesItems.slice(0,seriesVisible).map(card).join("");
+  const all=catalogItems.slice();
   const picks=all.slice().sort((a,b)=>
     ((Number(b.rating)||0)*0.6+(Number(b.popularity)||0)*0.4)-
     ((Number(a.rating)||0)*0.6+(Number(a.popularity)||0)*0.4)
