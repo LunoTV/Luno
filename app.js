@@ -840,6 +840,22 @@ async function selectLunoSource(index){
   if(playerBarMeta) playerBarMeta.textContent=streamLabel(entry,index);
 
   try{
+    // Core уже вернул конкретный stream от addon. Для прямых URL отдаём
+    // поток непосредственно нашему LUNO Player — модель Core Player здесь
+    // не должна блокировать воспроизведение.
+    const directStreamUrl =
+      entry.stream?.url ||
+      entry.stream?.streamingUrl ||
+      entry.stream?.externalUrl ||
+      entry.stream?.webosUrl ||
+      "";
+
+    if(directStreamUrl){
+      setLunoStream(directStreamUrl,{label:streamLabel(entry,index),resume:true});
+      return;
+    }
+
+    // Для потоков без прямого URL оставляем Core Player как fallback.
     const metaRequest=buildMetaRequest(currentItem,entry);
     const playerState=await loadLunoPlayer(entry.stream,entry.request,metaRequest,{
       resource:"subtitles",
