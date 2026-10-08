@@ -42,7 +42,9 @@ function normalize(item, type, genres) {
     genres: Array.isArray(item.genre_ids) ? item.genre_ids.map(id => genres.get(id)).filter(Boolean) : [],
     originalLanguage: item.original_language || "",
     originCountry: Array.isArray(item.origin_country) ? item.origin_country : [],
-    adult: Boolean(item.adult)
+    adult: Boolean(item.adult),
+    posterPath: item.poster_path || "",
+    backdropPath: item.backdrop_path || ""
   };
 }
 
@@ -191,7 +193,12 @@ movies = await enrichExternalIds(movies);
 movies = unique([...movies, ...animationMoviesClean]);
 series = unique([...series, ...animationSeriesClean]);
 
-const all = [...movies, ...series];
+const all = [...movies, ...series]
+  .sort((a, b) => {
+    const popularityDiff = Number(b?.popularity || 0) - Number(a?.popularity || 0);
+    if (popularityDiff !== 0) return popularityDiff;
+    return Number(b?.rating || 0) - Number(a?.rating || 0);
+  });
 const movieSection = unique([...popularMovies, ...movies]).map(x => x.id).filter(Boolean);
 const seriesSection = unique([...popularSeries, ...series]).map(x => x.id).filter(Boolean);
 const payload = {
@@ -242,8 +249,8 @@ async function cachePosters(items) {
       const file = "public/tmdb-posters/" + item.tmdbId + ".jpg";
       const candidates = [
         item?.poster,
-        item?.poster_path ? IMAGE + "/w500" + String(item.poster_path).replace(/^\//, "") : "",
-        item?.poster_path ? IMAGE + "/original" + String(item.poster_path).replace(/^\//, "") : ""
+        item?.posterPath ? IMAGE + "/w500" + String(item.posterPath).replace(/^\//, "") : "",
+        item?.posterPath ? IMAGE + "/original" + String(item.posterPath).replace(/^\//, "") : ""
       ].filter(Boolean);
 
       let success = false;
@@ -257,11 +264,22 @@ async function cachePosters(items) {
         }
       }
 
-      if (!success && item?.backdrop_path) {
-        const source = IMAGE + "/w1280" + String(item.backdrop_path).replace(/^\//, "");
+      if (!success && item?.backdropPath) {
+        const source = IMAGE + "/w1280" + String(item.backdropPath).replace(/^\//, "");
         if (await download(source, file)) {
           item.posterSource = source;
           item.posterFallback = "backdrop";
+          item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
+          fallbackCached++;
+          success = true;
+        }
+      }
+
+      if (!success && item?.background) {
+        const source = item.background;
+        if (await download(source, file)) {
+          item.posterSource = source;
+          item.posterFallback = "background";
           item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
           fallbackCached++;
           success = true;
