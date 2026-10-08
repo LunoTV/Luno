@@ -15,6 +15,10 @@ const detailPlay=document.querySelector("#detailPlay");
 const continueSection=document.querySelector("#continueSection");
 const moviesSection=document.querySelector("#moviesSection");
 const seriesSection=document.querySelector("#seriesSection");
+const trendingCards=document.querySelector("#trendingCards");
+const newCards=document.querySelector("#newCards");
+const topCards=document.querySelector("#topCards");
+const genreGrid=document.querySelector("#genreGrid");
 const favoritesSection=document.querySelector("#favoritesSection");
 const favoriteCards=document.querySelector("#favoriteCards");
 const favoritesEmpty=document.querySelector("#favoritesEmpty");
@@ -74,7 +78,7 @@ function card(item){
   const rating=Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : "";
   const meta=[metaLine(item),rating].filter(Boolean).join(" • ");
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" alt="" loading="eager" decoding="async" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback">◐</span>';
   return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
     '<div class="card-art">'+imageHtml+'</div>'+
@@ -205,11 +209,49 @@ function navigate(section){
   target?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
+function getYear(item){
+  return Number(String(item?.releaseInfo||"").match(/\\d{4}/)?.[0]||0);
+}
+
+function renderDiscovery(){
+  const all=catalogItems.slice();
+  const trending=all.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,18);
+  const fresh=all.filter(item=>getYear(item)>=new Date().getFullYear()-1)
+    .sort((a,b)=>getYear(b)-getYear(a) || (Number(b.popularity)||0)-(Number(a.popularity)||0))
+    .slice(0,18);
+  const top=all.filter(item=>(Number(item.rating)||0)>0)
+    .sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0) || (Number(b.popularity)||0)-(Number(a.popularity)||0))
+    .slice(0,18);
+
+  if(trendingCards) trendingCards.innerHTML=trending.map(card).join("");
+  if(newCards) newCards.innerHTML=fresh.map(card).join("");
+  if(topCards) topCards.innerHTML=top.map(card).join("");
+
+  const genres=[
+    ["Боевики","⚡"],["Комедии","☻"],["Драмы","◒"],["Фантастика","✦"],
+    ["Триллеры","◉"],["Ужасы","☾"],["Приключения","◆"],["Семейные","◇"]
+  ];
+  if(genreGrid){
+    genreGrid.innerHTML=genres.map(([name,icon])=>
+      '<button class="genre-tile" data-genre="'+escapeHtml(name)+'"><span>'+icon+'</span><strong>'+escapeHtml(name)+'</strong><small>Смотреть подборку</small></button>'
+    ).join("");
+    genreGrid.querySelectorAll(".genre-tile").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        searchPanel?.classList.remove("hidden");
+        if(searchInput){searchInput.value=btn.dataset.genre; searchInput.dispatchEvent(new Event("input"));}
+      });
+    });
+  }
+  bindCards();
+}
+
 function renderCatalogSections(){
+  renderDiscovery();
   if(movieCards) movieCards.innerHTML=movieItems.slice(0,movieVisible).map(card).join("");
   if(seriesCards) seriesCards.innerHTML=seriesItems.slice(0,seriesVisible).map(card).join("");
   renderResume();
   renderFavorites();
+  renderDiscovery();
   bindCards();
   const eyebrow=document.querySelector(".hero .eyebrow");
   if(eyebrow) eyebrow.textContent="LUNO • TMDB • РУССКИЙ КАТАЛОГ";
