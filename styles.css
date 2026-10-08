@@ -474,3 +474,50 @@ body.library-open .library-content{
     padding-bottom:calc(100px + env(safe-area-inset-bottom));
   }
 }
+
+/* ---------- LUNO SPLASH ---------- */
+.splash-screen{
+  position:fixed;inset:0;z-index:2147483647;background:#06070a;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .55s ease,visibility .55s ease;
+}
+.splash-screen.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.splash-orbit{
+  width:86px;height:86px;border:1px solid rgba(255,255,255,.3);border-radius:50%;
+  position:relative;display:grid;place-items:center;animation:splashFloat 2.8s ease-in-out infinite;
+}
+.splash-orbit:after{
+  content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:#fff;
+  right:3px;top:10px;box-shadow:0 0 18px rgba(255,255,255,.5);
+}
+.splash-moon{
+  width:54px;height:54px;border-radius:50%;
+  background:linear-gradient(135deg,#fff 0%,#bfc2ca 48%,#565963 100%);
+  box-shadow:inset -13px -9px 18px rgba(0,0,0,.38),0 0 35px rgba(255,255,255,.08);
+}
+.splash-logo{margin-top:28px;font-size:30px;font-weight:850;letter-spacing:.42em;padding-left:.42em}
+.splash-status{margin-top:12px;color:#777b86;font-size:11px;letter-spacing:.08em}
+.splash-progress{width:120px;height:2px;background:rgba(255,255,255,.08);border-radius:4px;margin-top:22px;overflow:hidden}
+.splash-progress span{display:block;width:0;height:100%;background:#fff;border-radius:4px;transition:width .45s ease}
+@keyframes splashFloat{50%{transform:translateY(-5px) rotate(4deg)}}
+
+/* ---------- DIALOGS ---------- */
+.dialog-overlay{
+  position:fixed;inset:0;z-index:2147483001;background:rgba(2,3,5,.72);
+  backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.dialog-card{
+  width:min(430px,92vw);padding:30px;border:1px solid rgba(255,255,255,.11);
+  border-radius:25px;background:rgba(18,19,25,.97);box-shadow:0 35px 100px rgba(0,0,0,.65);
+  text-align:center;animation:dialogIn .2s ease-out;
+}
+.dialog-icon{width:54px;height:54px;margin:0 auto 15px;border:1px solid rgba(255,255,255,.15);border-radius:50%;display:grid;place-items:center;font-size:27px;color:#ddd}
+.dialog-card h2{margin:0;font-size:25px;letter-spacing:-.035em}
+.dialog-card p{margin:9px auto 0;color:#9296a1;font-size:14px;line-height:1.5;max-width:330px}
+.dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:25px}
+@keyframes dialogIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:700px){
+  .splash-logo{font-size:27px}.splash-orbit{width:76px;height:76px}.splash-moon{width:48px;height:48px}
+  .dialog-card{padding:25px 18px 18px;border-radius:22px}
+  .dialog-card h2{font-size:23px}.dialog-actions{grid-template-columns:1fr 1fr}
+}
