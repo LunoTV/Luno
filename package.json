@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "node scripts/build-tmdb-ru.mjs && vite build"
   },
   "dependencies": {
     "@stremio/stremio-core-web": "0.64.1"
