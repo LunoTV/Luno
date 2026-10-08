@@ -203,7 +203,7 @@ function paintDetail(value){
     detailBadges.innerHTML=[
       year ? '<span class="detail-badge">'+escapeHtml(year)+'</span>' : "",
       '<span class="detail-badge">'+escapeHtml(type)+'</span>',
-      score>0 ? '<span class="detail-badge detail-badge-score">★ '+score.toFixed(1)+' TMDB</span>' : "",
+      score>0 ? '<span class="detail-badge detail-badge-score">★ '+score.toFixed(1)+'</span>' : "",
       ...genreNames.slice(0,2).map(g=>'<span class="detail-badge detail-badge-muted">'+escapeHtml(g)+'</span>')
     ].filter(Boolean).join("");
   }
@@ -212,11 +212,11 @@ function paintDetail(value){
 
   if(detailRatings){
     detailRatings.innerHTML=score>0
-      ? '<div class="detail-rating-main"><strong>★ '+score.toFixed(1)+'</strong><span>TMDB</span></div>'+
+      ? '<div class="detail-rating-main"><strong>★ '+score.toFixed(1)+'</strong><span>Рейтинг</span></div>'+
         '<div class="detail-rating"><strong>'+escapeHtml(year||"—")+'</strong><span>год</span></div>'+
         '<div class="detail-rating"><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>'+
         '<div class="detail-rating"><strong>'+escapeHtml(String(genreNames[0]||"—"))+'</strong><span>жанр</span></div>'
-      : '<div class="detail-rating-main"><strong>—</strong><span>Рейтинг TMDB</span></div>'+
+      : '<div class="detail-rating-main"><strong>—</strong><span>Рейтинг</span></div>'+
         '<div class="detail-rating"><strong>'+escapeHtml(year||"—")+'</strong><span>год</span></div>'+
         '<div class="detail-rating"><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>';
   }
@@ -368,7 +368,7 @@ function openCategoryHub(){
   if(!libraryView || !libraryContent) return;
   libraryType="catalog";
   libraryTitle.textContent="Каталог";
-  libraryKicker.textContent="LUNO • РАЗДЕЛЫ";
+  libraryKicker.textContent="";
   libraryContent.innerHTML=
     '<div class="category-hub">'+
       '<button class="category-hub-card" data-category="movies"><span>🎬</span><strong>Фильмы</strong><small>Полнометражное кино</small></button>'+
@@ -395,11 +395,11 @@ function openCategoryHub(){
 }
 function openLibrary(type,pushHistory=true){
   const config={
-    movies:{title:"Фильмы",kicker:"LUNO • КИНО"},
-    series:{title:"Сериалы",kicker:"LUNO • СЕРИАЛЫ"},
-    cartoons:{title:"Мультфильмы",kicker:"LUNO • АНИМАЦИЯ"},
-    anime:{title:"Аниме",kicker:"LUNO • ANIME"},
-    shows:{title:"Шоу",kicker:"LUNO • SHOW"}
+    movies:{title:"Фильмы",kicker:""},
+    series:{title:"Сериалы",kicker:""},
+    cartoons:{title:"Мультфильмы",kicker:""},
+    anime:{title:"Аниме",kicker:""},
+    shows:{title:"Шоу",kicker:""}
   }[type];
   if(!config || !libraryView) return;
 
@@ -522,7 +522,7 @@ function renderCatalogSections(){
   renderDiscovery();
   bindCards();
   const eyebrow=document.querySelector(".hero .eyebrow");
-  if(eyebrow) eyebrow.textContent="LUNO • TMDB • РУССКИЙ КАТАЛОГ";
+  if(eyebrow) eyebrow.textContent="";
   updateHero(movieItems[0]);
 }
 
@@ -615,7 +615,7 @@ function openPlayer(id,type,title){
   const text=player.querySelector(".player-placeholder p");
   if(heading) heading.textContent=title || "LUNO Player";
   if(text) text.textContent=id
-    ? "Карточка TMDB готова. Подключение stream через Stremio Core — следующий слой."
+    ? "Карточка готова. Подключение просмотра через Stremio Core — следующий слой."
     : "Выберите фильм или сериал.";
   document.querySelector("#closePlayer")?.focus();
 }
@@ -843,7 +843,7 @@ window.LUNOPlayback={
 
 renderResume();
 renderFavorites();
-showCatalogMessage("Загружаем TMDB-каталог…");
+showCatalogMessage("Загружаем каталог…");
 
 const catalogSentinel=document.querySelector("#catalogSentinel");
 if(catalogSentinel && "IntersectionObserver" in window){
@@ -870,13 +870,13 @@ function prefetchPosters(items){
     setSplashProgress(68,"Загружаем фильмы и сериалы…");
     renderItems(catalog.items,catalog.sections);
     prefetchPosters(catalogItems);
-    showCoreStatus("LUNO • TMDB • РУССКИЙ КАТАЛОГ");
+    showCoreStatus("Каталог готов");
     setSplashProgress(88,"Почти готово…");
     console.info("LUNO TMDB catalog loaded",catalogItems.length);
   }catch(error){
     console.error("LUNO TMDB catalog failed",error);
-    showCatalogMessage("Каталог TMDB пока недоступен. Перезапустите приложение позже.");
-    showCoreStatus("LUNO • КАТАЛОГ OFFLINE");
+    showCatalogMessage("Каталог пока недоступен. Перезапустите приложение позже.");
+    showCoreStatus("Каталог офлайн");
   }
 
   try{
