@@ -1,6 +1,6 @@
 import tmdbCatalog from "./tmdb-catalog.generated.js";
 import Hls from "hls.js";
-import dashjs from "dash.js";
+import dashjs from "dashjs";
 import {
   loadMetaDetails,
   loadLunoPlayer,
