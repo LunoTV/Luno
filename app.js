@@ -52,6 +52,7 @@ const detailDescription=document.querySelector("#detailDescription");
 const detailBadges=document.querySelector("#detailBadges");
 const detailRatings=document.querySelector("#detailRatings");
 const detailPlay=document.querySelector("#detailPlay");
+const detailEpisodes=document.querySelector("#detailEpisodes");
 const continueSection=document.querySelector("#continueSection");
 const moviesSection=document.querySelector("#moviesSection");
 const seriesSection=document.querySelector("#seriesSection");
@@ -271,6 +272,7 @@ function paintDetail(value){
     detailPoster.classList.toggle("has-image",!!detailImage);
   }
   if(detailTitle) detailTitle.textContent=title;
+  detailEpisodes?.classList.toggle("hidden", value?.type!=="series");
   if(detailMeta) detailMeta.textContent=[
     year,
     type,
@@ -392,6 +394,20 @@ function closeDetail(fromHistory=false){
 
 detailPlay?.addEventListener("click",()=>{
   if(currentItem) openPlayer(currentItem.id,currentItem.type,currentItem.name);
+});
+detailEpisodes?.addEventListener("click",()=>{
+  if(!currentItem || currentItem.type!=="series") return;
+  openPlayer(currentItem.id,currentItem.type,currentItem.name);
+  const started=Date.now();
+  const waitForEpisodes=()=>{
+    if(!player.classList.contains("hidden") && !playerResolving && playerStreams.length){
+      renderEpisodeSheet();
+      openEpisodeSheet();
+      return;
+    }
+    if(Date.now()-started<15000) window.setTimeout(waitForEpisodes,250);
+  };
+  window.setTimeout(waitForEpisodes,250);
 });
 document.querySelector("#closeDetail")?.addEventListener("click",closeDetail);
 document.querySelector("#closeDetailSecondary")?.addEventListener("click",closeDetail);
