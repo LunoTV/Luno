@@ -157,7 +157,7 @@
     <div id="searchPanel" class="overlay hidden">
       <div class="search-box">
         <button id="closeSearch" class="close" aria-label="Закрыть поиск">×</button>
-        <div class="search-kicker">LUNO SEARCH</div>
+        <div class="search-kicker">ПОИСК</div>
         <div class="search-title">Что будем смотреть?</div>
         <div class="search-field">
           <span class="search-icon"></span>
@@ -214,11 +214,21 @@
 
     <div id="player" class="overlay hidden">
       <div class="player-shell">
-        <button id="closePlayer" class="close">×</button>
-        <div class="player-placeholder">
-          <div class="big-moon">◐</div>
-          <h2 id="playerTitle">LUNO Player</h2>
-          <p>Карточка готова. Плеер подключается следующим слоем через Stremio Core.</p>
+        <button id="closePlayer" class="close player-close" aria-label="Закрыть">×</button>
+        <div class="player-stage">
+          <video id="lunoVideo" playsinline preload="metadata" controls></video>
+          <div id="playerEmpty" class="player-placeholder">
+            <div class="big-moon">◐</div>
+            <h2 id="playerTitle">LUNO Player</h2>
+            <p id="playerMessage">Источник просмотра будет подключён через Stremio Core.</p>
+          </div>
+        </div>
+        <div class="player-bar">
+          <div>
+            <strong id="playerBarTitle">LUNO</strong>
+            <span id="playerBarMeta"></span>
+          </div>
+          <button id="playerSourceButton" class="player-source" type="button">Источник</button>
         </div>
       </div>
     </div>
