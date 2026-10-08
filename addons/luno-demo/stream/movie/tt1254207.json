@@ -1,0 +1,12 @@
+{
+  "streams": [
+    {
+      "name": "Big Buck Bunny",
+      "description": "720p • публичный тестовый MP4",
+      "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4",
+      "behaviorHints": {
+        "bingeGroup": "luno-demo-720p"
+      }
+    }
+  ]
+}
