@@ -2407,3 +2407,36 @@ main > .section .cards .card-title{font-size:12px}
   }
   .hero-dots button.active{width:30px!important}
 }
+
+/* LUNO TOP FEATURE V6 — the current film is the first thing on the home screen */
+#continueSection{
+  display:none!important;
+}
+#homeHero{
+  margin-top:0!important;
+}
+@media(max-width:700px){
+  #homeHero{
+    min-height:500px!important;
+    height:500px!important;
+    margin:0!important;
+    padding:0 20px 26px!important;
+  }
+  #homeHero .hero-copy{
+    padding-bottom:2px!important;
+  }
+  #homeHero .hero-copy h1{
+    font-size:38px!important;
+    text-shadow:0 3px 22px rgba(0,0,0,.6);
+  }
+  #homeHero .hero-meta{
+    padding:7px 10px;
+    border-radius:9px;
+    background:rgba(5,7,11,.62);
+    border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(8px);
+  }
+  #homeHero .hero-actions{
+    margin-top:12px!important;
+  }
+}
