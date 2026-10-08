@@ -258,3 +258,32 @@ main{padding-top:76px;padding-bottom:100px}
   .genre-tile{min-height:105px;border-radius:15px;padding:14px}
   .genre-tile strong{font-size:14px}.genre-tile small{font-size:9px}.genre-tile span{font-size:23px}
 }
+
+/* ---------- MOBILE SAFE-AREA / OVERLAY HARDENING ---------- */
+@media(max-width:700px){
+  .overlay{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw;
+    height:100dvh;
+    min-height:100dvh;
+    z-index:999;
+    background:#06070a!important;
+  }
+  .search-box{
+    width:100vw;
+    height:100dvh;
+    min-height:100dvh;
+    padding-top:calc(70px + env(safe-area-inset-top));
+    background:#06070a!important;
+  }
+  .search-box:before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    background:#06070a;
+  }
+  .detail-overlay{z-index:998}
+  .player-shell{height:100dvh}
+}
