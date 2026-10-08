@@ -1,0 +1,24 @@
+{
+  "id": "tv.luno.demo",
+  "version": "1.0.0",
+  "name": "LUNO Demo Source",
+  "description": "Безопасный тестовый источник LUNO на публичном Big Buck Bunny.",
+  "resources": [
+    {
+      "name": "stream",
+      "types": [
+        "movie"
+      ],
+      "idPrefixes": [
+        "tt"
+      ]
+    }
+  ],
+  "types": [
+    "movie"
+  ],
+  "catalogs": [],
+  "idPrefixes": [
+    "tt"
+  ]
+}
