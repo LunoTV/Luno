@@ -1407,3 +1407,157 @@ body.library-open .library-content{
   /* Reduce visual noise from desktop-only attribution */
   .tmdb-attribution{display:none!important}
 }
+
+
+/* ---------- CINEMATIC DETAIL CARD v8 ---------- */
+.detail-kicker{font-size:9px;letter-spacing:.18em;color:#8b909b;text-transform:uppercase}
+.detail-badges{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px}
+.detail-badge{display:inline-flex;align-items:center;min-height:29px;padding:0 10px;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#f3f4f6;font-size:11px;font-weight:700}
+.detail-badge-score{background:rgba(225,184,72,.13);border-color:rgba(225,184,72,.32);color:#f4d47b}
+.detail-badge-muted{color:#aeb2bb;background:rgba(255,255,255,.045)}
+.detail-ratings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:25px;max-width:720px}
+.detail-rating-main,.detail-rating{min-height:72px;padding:12px 13px;border-radius:14px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;justify-content:center}
+.detail-rating-main strong,.detail-rating strong{font-size:20px;line-height:1.05;color:#fff}
+.detail-rating-main span,.detail-rating span{font-size:9px;color:#747984;margin-top:5px;text-transform:uppercase;letter-spacing:.08em}
+.detail-action-extra{width:48px!important;padding:0!important}
+.detail-action-extra span{font-size:19px}
+.detail-reviews{margin-top:42px;max-width:720px}
+.detail-reviews h3{font-size:24px;font-weight:650;letter-spacing:-.03em;margin:0 0 15px}
+.detail-review-row{display:flex;gap:12px}
+.detail-review-add,.detail-review-empty{min-height:104px;border-radius:17px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018))}
+.detail-review-add{width:190px;color:#aaa;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.detail-review-add span{font-size:27px;color:#eee}.detail-review-add small{font-size:10px}
+.detail-review-empty{flex:1;display:flex;align-items:center;justify-content:center;color:#626771;font-size:13px}
+.detail-mobile-hero{position:relative;z-index:2}
+
+@media(max-width:700px){
+  .detail-overlay{background:#030407!important}
+  .detail-shell{
+    display:block!important;
+    padding:0 0 calc(30px + env(safe-area-inset-bottom))!important;
+    min-height:100dvh!important;
+    height:auto!important;
+    overflow:hidden!important;
+  }
+  .detail-backdrop{
+    height:58svh!important;
+    opacity:.46!important;
+    filter:blur(0)!important;
+    background-position:center top!important;
+    transform:scale(1.01);
+  }
+  .detail-vignette{
+    height:70svh!important;
+    background:
+      linear-gradient(180deg,rgba(3,4,7,.05) 0%,rgba(3,4,7,.10) 28%,rgba(3,4,7,.42) 58%,#030407 82%,#030407 100%)!important;
+  }
+  .detail-mobile-hero{
+    height:51svh!important;
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:center!important;
+    padding-bottom:0!important;
+  }
+  .detail-poster{
+    position:relative!important;
+    width:calc(100vw - 52px)!important;
+    max-width:320px!important;
+    height:calc((100vw - 52px) * 1.5)!important;
+    max-height:480px!important;
+    margin:0 0 -94px!important;
+    aspect-ratio:2/3!important;
+    border-radius:13px!important;
+    box-shadow:0 25px 65px rgba(0,0,0,.72)!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+  }
+  .detail-copy{
+    position:relative!important;
+    z-index:3!important;
+    max-width:none!important;
+    padding:120px var(--luno-mobile-gutter) 40px!important;
+    text-align:center!important;
+  }
+  .detail-kicker{font-size:8px!important;letter-spacing:.17em!important;color:#747984!important}
+  .detail-copy h2{
+    font-size:36px!important;
+    line-height:.98!important;
+    letter-spacing:-.06em!important;
+    margin:8px 0 9px!important;
+  }
+  .detail-meta{
+    margin:0 0 13px!important;
+    color:#a8acb5!important;
+    font-size:11px!important;
+  }
+  .detail-badges{
+    justify-content:center!important;
+    gap:6px!important;
+    margin-bottom:15px!important;
+  }
+  .detail-badge{
+    min-height:26px!important;
+    padding:0 9px!important;
+    border-radius:8px!important;
+    font-size:9px!important;
+  }
+  .detail-copy p{
+    max-width:390px!important;
+    margin:0 auto!important;
+    color:#a7abb4!important;
+    font-size:14px!important;
+    line-height:1.45!important;
+    -webkit-line-clamp:4!important;
+  }
+  .detail-ratings{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:6px!important;
+    margin:20px 0 0!important;
+    max-width:none!important;
+  }
+  .detail-rating-main,.detail-rating{
+    min-height:68px!important;
+    padding:9px 4px!important;
+    border-radius:12px!important;
+    align-items:center!important;
+    text-align:center!important;
+  }
+  .detail-rating-main strong,.detail-rating strong{font-size:15px!important}
+  .detail-rating-main span,.detail-rating span{font-size:7px!important;margin-top:4px!important}
+  .detail-actions{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    margin-top:18px!important;
+  }
+  .detail-actions .primary{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    height:50px!important;
+    border-radius:15px!important;
+    font-size:14px!important;
+    font-weight:750!important;
+  }
+  .detail-actions .secondary{
+    width:50px!important;
+    min-width:50px!important;
+    height:50px!important;
+    padding:0!important;
+    border-radius:50%!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:0!important;
+  }
+  .detail-actions .secondary span{font-size:20px!important}
+  .detail-actions .secondary em{display:none!important}
+  .detail-action-extra{display:flex!important}
+  .detail-reviews{
+    margin:37px 0 0!important;
+    text-align:left!important;
+  }
+  .detail-reviews h3{font-size:24px!important;margin-bottom:13px!important}
+  .detail-review-row{min-width:0!important}
+  .detail-review-add{width:40%!important;min-height:105px!important;border-radius:16px!important}
+  .detail-review-empty{min-height:105px!important;font-size:11px!important}
+}
