@@ -215,17 +215,31 @@ async function cachePosters(items) {
       const item = items[index];
       if (!item?.poster || !item.poster.includes("image.tmdb.org")) continue;
 
+      const source = item.poster;
       const file = "public/tmdb-posters/" + item.tmdbId + ".jpg";
-      try {
-        const response = await fetch(item.poster);
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        const bytes = Buffer.from(await response.arrayBuffer());
-        await writeFile(file, bytes);
-        item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
-        cached++;
-      } catch (error) {
+      let success = false;
+
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const response = await fetch(source, { headers: { accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8" } });
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          const bytes = Buffer.from(await response.arrayBuffer());
+          if (!bytes.length) throw new Error("empty response");
+          await writeFile(file, bytes);
+          item.posterSource = source;
+          item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
+          cached++;
+          success = true;
+          break;
+        } catch (error) {
+          if (attempt === 3) console.warn("TMDB poster cache failed:", item.id, error.message);
+          await new Promise(resolve => setTimeout(resolve, attempt * 300));
+        }
+      }
+
+      if (!success) {
         failed++;
-        console.warn("TMDB poster cache failed:", item.id, error.message);
+        item.posterSource = source;
       }
     }
   };
