@@ -4,6 +4,13 @@ const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
+const detail=document.querySelector("#detail");
+const detailPoster=document.querySelector("#detailPoster");
+const detailTitle=document.querySelector("#detailTitle");
+const detailMeta=document.querySelector("#detailMeta");
+const detailDescription=document.querySelector("#detailDescription");
+const detailPlay=document.querySelector("#detailPlay");
+let currentItem=null;
 
 const CINEMETA_BASES=["https://v3-cinemeta.strem.io","https://cinemeta-catalogs.strem.io/top"];
 const TMDB_BASE="https://api.themoviedb.org/3";
@@ -99,9 +106,38 @@ function card(item){
 }
 function bindCards(){
   document.querySelectorAll(".card").forEach((c)=>{
-    c.onclick=()=>openPlayer(c.dataset.id,c.dataset.type,c.dataset.title);
+    c.onclick=()=>{
+      const item=window.__LUNO_ITEMS__?.get(c.dataset.id);
+      if(item) openDetail(item);
+      else openPlayer(c.dataset.id,c.dataset.type,c.dataset.title);
+    };
   });
 }
+
+function openDetail(item){
+  currentItem=item;
+  const title=item?.name || "Без названия";
+  const image=item?.poster || item?.background || "";
+  if(detailPoster){
+    detailPoster.style.backgroundImage=image ? `url("${escapeHtml(image)}")` : "";
+    detailPoster.classList.toggle("has-image",!!image);
+  }
+  if(detailTitle) detailTitle.textContent=title;
+  if(detailMeta) detailMeta.textContent=[metaLine(item),Number(item?.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : ""].filter(Boolean).join(" • ");
+  if(detailDescription) detailDescription.textContent=item?.description || "Описание появится после загрузки полной карточки фильма.";
+  detail?.classList.remove("hidden");
+  detailPlay?.focus();
+}
+
+function closeDetail(){
+  detail?.classList.add("hidden");
+  currentItem=null;
+}
+
+detailPlay?.addEventListener("click",()=>{
+  if(currentItem) openPlayer(currentItem.id,currentItem.type,currentItem.name);
+});
+document.querySelector("#closeDetail")?.addEventListener("click",closeDetail);
 
 function extractItems(state){
   const catalogs=Array.isArray(state?.catalogs) ? state.catalogs : [];
@@ -114,6 +150,7 @@ function extractItems(state){
 
 function renderItems(items){
   const unique=[...new Map(items.filter((x)=>x?.id).map((item)=>[item.id,item])).values()];
+  window.__LUNO_ITEMS__=new Map(unique.map(item=>[item.id,item]));
   if(!unique.length) return false;
 
   const movies=unique.filter((item)=>item.type==="movie");
@@ -266,6 +303,7 @@ searchInput.addEventListener("keydown",(e)=>{
 document.addEventListener("keydown",(e)=>{
   if(e.key==="Escape"){
     closePlayer();
+    closeDetail();
     searchPanel.classList.add("hidden");
   }
 });
