@@ -2736,3 +2736,120 @@ body.home-mode .hero{
 }
 
 
+
+
+/* LUNO SEARCH COMPACT — reduce oversized mobile search controls */
+@media(max-width:700px){
+  .luno-search-screen{
+    padding:58px 22px 92px!important;
+  }
+  .search-topbar{
+    min-height:42px!important;
+    margin-bottom:16px!important;
+  }
+  .search-page-title{
+    font-size:24px!important;
+    font-weight:500!important;
+  }
+  .search-back{
+    left:20px!important;
+    top:58px!important;
+    width:34px!important;
+    height:34px!important;
+    font-size:32px!important;
+  }
+  .search-close-x{
+    right:20px!important;
+    top:57px!important;
+    width:38px!important;
+    height:38px!important;
+    font-size:27px!important;
+  }
+  .luno-search-field{
+    height:54px!important;
+    margin-top:28px!important;
+    border-radius:15px!important;
+  }
+  .luno-search-field input{
+    font-size:17px!important;
+  }
+  .search-icon{
+    transform:scale(.82);
+  }
+  .search-clear{
+    width:28px!important;
+    height:28px!important;
+    font-size:18px!important;
+  }
+  .search-history-block{
+    margin-top:22px!important;
+  }
+  .search-subtitle{
+    font-size:14px!important;
+    margin-bottom:8px!important;
+  }
+  .search-history-empty{
+    font-size:12px!important;
+  }
+  .search-history-chip{
+    height:34px!important;
+    padding:0 11px!important;
+    font-size:13px!important;
+  }
+  .history-clock{
+    font-size:14px!important;
+  }
+  .search-sources{
+    margin-top:16px!important;
+    gap:8px!important;
+  }
+  .search-source{
+    height:40px!important;
+    padding:0 15px!important;
+    font-size:14px!important;
+  }
+  .search-source b{
+    min-width:18px!important;
+    height:18px!important;
+    font-size:10px!important;
+  }
+  .search-results{
+    margin-top:22px!important;
+  }
+  .search-result-section{
+    margin-bottom:26px!important;
+  }
+  .search-result-section h3{
+    font-size:21px!important;
+    margin-bottom:11px!important;
+  }
+  .search-result-section h3 span{
+    font-size:10px!important;
+  }
+
+  /* compact floating bottom navigation */
+  .mobile-tabbar{
+    height:58px!important;
+    left:16px!important;
+    right:16px!important;
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+    padding:4px!important;
+    border-radius:30px!important;
+  }
+  .mobile-tab{
+    height:50px!important;
+    border-radius:25px!important;
+    gap:2px!important;
+  }
+  .mobile-tab .tab-icon{
+    font-size:19px!important;
+    line-height:21px!important;
+  }
+  .mobile-tab small{
+    font-size:8px!important;
+    line-height:10px!important;
+  }
+  .mobile-tab.active{
+    background:rgba(255,255,255,.10)!important;
+  }
+}
