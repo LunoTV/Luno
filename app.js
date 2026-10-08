@@ -113,6 +113,17 @@ function finishSplash(){
   setSplashProgress(100,"Готово");
   window.setTimeout(()=>splash?.classList.add("is-hidden"),260);
 }
+
+// Never leave the UI permanently behind the splash screen if an external
+// addon/Core request hangs. The application remains usable; playback can
+// initialize later when the Core becomes available.
+const splashSafetyTimer=window.setTimeout(()=>{
+  if(!splashDone){
+    console.warn("LUNO splash safety timeout");
+    setSplashProgress(100,"LUNO готов");
+    finishSplash();
+  }
+},8000);
 function showDialog(title,message,confirmText="Выйти",action=null){
   if(!confirmDialog) return;
   dialogAction=action;
@@ -1382,11 +1393,15 @@ function prefetchPosters(items){
 
   try{
     const {initLunoCore}=await import("./core.js");
-    await initLunoCore();
+    await Promise.race([
+      initLunoCore(),
+      new Promise((_,reject)=>window.setTimeout(()=>reject(new Error("LUNO Core init timeout")),6500))
+    ]);
     console.info("LUNO Core ready");
     setSplashProgress(96,"Запускаем LUNO…");
   }catch(error){
-    console.warn("LUNO Core unavailable",error);
+    console.warn("LUNO Core unavailable during startup:",error);
   }
+  window.clearTimeout(splashSafetyTimer);
   finishSplash();
 })();
