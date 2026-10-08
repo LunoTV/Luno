@@ -208,20 +208,32 @@ function renderResume(){
   bindCards();
 }
 
-function getLibraryRows(type){
-  const source=type==="movies"
-    ? movieItems
-    : type==="series"
-      ? seriesItems
-      : catalogItems.filter(item=>item.genres?.includes(16));
-  const recent=source.slice().sort((a,b)=>getYear(b)-getYear(a) || (Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,24);
-  const popular=source.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,24);
-  const top=source.slice().filter(x=>(Number(x.rating)||0)>0).sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)).slice(0,24);
-  return [
-    {kicker:"СЕЙЧАС СМОТРЯТ",title:"Популярное",items:popular},
-    {kicker:"СВЕЖЕЕ",title:"Новинки",items:recent},
-    {kicker:"ВЫБОР LUNO",title:"Лучшее по рейтингу",items:top}
-  ];
+function getLibraryItems(type){
+  if(type==="movies") return movieItems.slice().sort((a,b)=>
+    (Number(b.popularity)||0)-(Number(a.popularity)||0)
+  );
+  if(type==="series") return seriesItems.slice().sort((a,b)=>
+    (Number(b.popularity)||0)-(Number(a.popularity)||0)
+  );
+  return catalogItems
+    .filter(item=>item.genres?.includes(16))
+    .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
+}
+
+let libraryType="";
+let libraryItems=[];
+let libraryVisible=0;
+const LIBRARY_BATCH=24;
+
+function renderLibraryBatch(){
+  if(!libraryContent) return;
+  const next=libraryItems.slice(libraryVisible,libraryVisible+LIBRARY_BATCH);
+  if(!next.length) return;
+  const grid=libraryContent.querySelector(".library-infinite-grid");
+  if(!grid) return;
+  grid.insertAdjacentHTML("beforeend",next.map(card).join(""));
+  libraryVisible+=next.length;
+  bindCards();
 }
 
 function openLibrary(type){
@@ -231,19 +243,41 @@ function openLibrary(type){
     cartoons:{title:"Мультфильмы",kicker:"LUNO • АНИМАЦИЯ"}
   }[type];
   if(!config || !libraryView) return;
+
+  libraryType=type;
+  libraryItems=getLibraryItems(type);
+  libraryVisible=0;
   libraryTitle.textContent=config.title;
   libraryKicker.textContent=config.kicker;
-  const rows=getLibraryRows(type);
-  libraryContent.innerHTML=rows.map(row=>(
-    '<section class="library-row">'+
-      '<div class="library-row-head"><div><span class="section-kicker">'+escapeHtml(row.kicker)+'</span><h3>'+escapeHtml(row.title)+'</h3></div><span class="library-count">'+row.items.length+'</span></div>'+
-      '<div class="cards library-cards">'+row.items.map(card).join("")+'</div>'+
-    '</section>'
-  )).join("");
-  bindCards();
+
+  libraryContent.innerHTML=
+    '<div class="library-toolbar">'+
+      '<span>Все '+escapeHtml(config.title.toLocaleLowerCase("ru-RU"))+'</span>'+
+      '<strong>'+libraryItems.length+'</strong>'+
+    '</div>'+
+    '<div class="library-infinite-grid"></div>'+
+    '<div class="library-loader" id="libraryLoader">Загрузка…</div>';
+
   libraryView.classList.remove("hidden");
   document.body.classList.add("library-open");
   libraryContent.scrollTop=0;
+  renderLibraryBatch();
+
+  if(libraryContent._observer) libraryContent._observer.disconnect();
+  const loader=document.querySelector("#libraryLoader");
+  if(loader){
+    const observer=new IntersectionObserver(entries=>{
+      if(entries.some(entry=>entry.isIntersecting)){
+        if(libraryVisible<libraryItems.length){
+          renderLibraryBatch();
+        }else{
+          loader.textContent="Вы просмотрели весь каталог";
+        }
+      }
+    },{root:libraryContent,rootMargin:"900px 0px"});
+    observer.observe(loader);
+    libraryContent._observer=observer;
+  }
 }
 
 function closeLibrary(){
