@@ -2312,3 +2312,98 @@ main > .section .cards .card-title{font-size:12px}
  .card-info .card-quality+.card-rating:before,.card-info .card-rating+.card-year:before{margin-right:5px}
  .card-title{font-size:12px!important;padding:8px 1px 2px!important}
 }
+
+/* LUNO MOBILE HERO V5 — featured film is clearly visible at the top */
+@media(max-width:700px){
+  .hero{
+    min-height:540px!important;
+    height:auto!important;
+    margin:0!important;
+    padding:0 18px 24px!important;
+    border-radius:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:flex-end!important;
+    background:#07090d!important;
+    overflow:hidden!important;
+  }
+  .hero-backdrop{
+    inset:0!important;
+    background-position:center top!important;
+    background-size:cover!important;
+    opacity:.42!important;
+    filter:saturate(.88) contrast(1.04)!important;
+  }
+  .hero-vignette{
+    z-index:1!important;
+    background:
+      linear-gradient(180deg,rgba(5,7,11,.18) 0%,rgba(5,7,11,.18) 24%,rgba(5,7,11,.72) 58%,#06070a 88%)!important;
+  }
+  .hero-copy{
+    position:relative!important;
+    z-index:3!important;
+    width:100%!important;
+    max-width:none!important;
+    padding:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:flex-end!important;
+  }
+  .hero-copy .eyebrow{
+    display:block!important;
+    margin-bottom:6px!important;
+    color:#c5c8d0!important;
+    font-size:9px!important;
+    letter-spacing:.2em!important;
+  }
+  .hero-copy h1{
+    font-size:34px!important;
+    line-height:1!important;
+    letter-spacing:-.045em!important;
+    margin:4px 0 10px!important;
+    max-width:95%!important;
+  }
+  .hero-copy p{
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+    max-width:95%!important;
+    margin:0!important;
+    color:#c1c4cc!important;
+    font-size:13px!important;
+    line-height:1.4!important;
+  }
+  .hero-meta{
+    min-height:18px!important;
+    margin-top:9px!important;
+    color:#eef0f4!important;
+    font-size:11px!important;
+    font-weight:750!important;
+  }
+  .hero-actions{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    margin-top:14px!important;
+  }
+  .hero-actions .primary,.hero-actions .secondary{
+    min-height:43px!important;
+    border-radius:12px!important;
+    font-size:12px!important;
+  }
+  .hero-dots{
+    left:auto!important;
+    right:20px!important;
+    bottom:16px!important;
+    z-index:5!important;
+  }
+  .hero-dots button{
+    width:18px!important;
+    height:3px!important;
+  }
+  .hero-dots button.active{width:30px!important}
+}
