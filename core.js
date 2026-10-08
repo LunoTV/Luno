@@ -227,6 +227,21 @@ async function waitForModel(model, predicate, timeout = 10000) {
   return getLunoModel(model);
 }
 
+export async function unloadLunoPlayer() {
+  const core = getLunoTransport();
+  if (!core) return;
+  await core.dispatch({ action: "Unload" }, "player");
+}
+
+export function dispatchLunoPlayerAction(action, args = {}) {
+  const core = getLunoTransport();
+  if (!core) return;
+  return core.dispatch({
+    action: "Player",
+    args: { action, args }
+  }, "player");
+}
+
 export function getReadyMetaStreams(state) {
   const resources = Array.isArray(state?.streams) && state.streams.length
     ? state.streams
