@@ -268,7 +268,7 @@ function card(item,eager=false){
   const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" data-fallback2="'+escapeHtml(fallbackBackground)+'" data-fallback3="'+escapeHtml(fallbackTmdb)+'" alt="'+escapeHtml(title)+'" loading="${eager ? "eager" : "lazy"}" decoding="async" fetchpriority="${eager ? "high" : "low"}" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" data-fallback="'+escapeHtml(fallbackImage)+'" data-fallback2="'+escapeHtml(fallbackBackground)+'" data-fallback3="'+escapeHtml(fallbackTmdb)+'" alt="'+escapeHtml(title)+'" loading="'+(eager ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager ? "high" : "low")+'" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback">◐</span>';
   const meta='<span class="card-quality">'+quality+'</span>'+
     (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
