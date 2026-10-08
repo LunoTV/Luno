@@ -31,6 +31,12 @@ const heroDescription=document.querySelector("#heroDescription");
 const heroMeta=document.querySelector("#heroMeta");
 const heroDots=document.querySelector("#heroDots");
 const closeSearch=document.querySelector("#closeSearch");
+const libraryView=document.querySelector("#libraryView");
+const libraryContent=document.querySelector("#libraryContent");
+const libraryTitle=document.querySelector("#libraryTitle");
+const libraryKicker=document.querySelector("#libraryKicker");
+const libraryBack=document.querySelector("#libraryBack");
+const librarySearch=document.querySelector("#librarySearch");
 
 let currentItem=null;
 let catalogItems=[];
@@ -202,10 +208,63 @@ function renderResume(){
   bindCards();
 }
 
+function getLibraryRows(type){
+  const source=type==="movies"
+    ? movieItems
+    : type==="series"
+      ? seriesItems
+      : catalogItems.filter(item=>item.genres?.includes(16));
+  const recent=source.slice().sort((a,b)=>getYear(b)-getYear(a) || (Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,24);
+  const popular=source.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,24);
+  const top=source.slice().filter(x=>(Number(x.rating)||0)>0).sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)).slice(0,24);
+  return [
+    {kicker:"СЕЙЧАС СМОТРЯТ",title:"Популярное",items:popular},
+    {kicker:"СВЕЖЕЕ",title:"Новинки",items:recent},
+    {kicker:"ВЫБОР LUNO",title:"Лучшее по рейтингу",items:top}
+  ];
+}
+
+function openLibrary(type){
+  const config={
+    movies:{title:"Фильмы",kicker:"LUNO • КИНО"},
+    series:{title:"Сериалы",kicker:"LUNO • ЭПИЗОДЫ"},
+    cartoons:{title:"Мультфильмы",kicker:"LUNO • АНИМАЦИЯ"}
+  }[type];
+  if(!config || !libraryView) return;
+  libraryTitle.textContent=config.title;
+  libraryKicker.textContent=config.kicker;
+  const rows=getLibraryRows(type);
+  libraryContent.innerHTML=rows.map(row=>(
+    '<section class="library-row">'+
+      '<div class="library-row-head"><div><span class="section-kicker">'+escapeHtml(row.kicker)+'</span><h3>'+escapeHtml(row.title)+'</h3></div><span class="library-count">'+row.items.length+'</span></div>'+
+      '<div class="cards library-cards">'+row.items.map(card).join("")+'</div>'+
+    '</section>'
+  )).join("");
+  bindCards();
+  libraryView.classList.remove("hidden");
+  document.body.classList.add("library-open");
+  libraryContent.scrollTop=0;
+}
+
+function closeLibrary(){
+  libraryView?.classList.add("hidden");
+  document.body.classList.remove("library-open");
+}
+
 function navigate(section){
   document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll('.nav-item[data-section="'+section+'"],.mobile-tab[data-section="'+section+'"]').forEach(x=>x.classList.add("active"));
-  const target=section==="home" ? document.querySelector(".hero") : section==="movies" ? moviesSection : section==="series" ? seriesSection : continueSection;
+  if(section==="movies" || section==="series" || section==="cartoons"){
+    openLibrary(section);
+    return;
+  }
+  if(section==="favorites"){
+    closeLibrary();
+    favoritesSection?.scrollIntoView({behavior:"smooth",block:"start"});
+    return;
+  }
+  closeLibrary();
+  const target=document.querySelector(".hero");
   target?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
@@ -477,6 +536,12 @@ document.querySelectorAll(".section-more").forEach(btn=>btn.addEventListener("cl
   navigate(btn.dataset.section||"home");
 }));
 document.querySelector("#closePlayer").onclick=closePlayer;
+libraryBack?.addEventListener("click",closeLibrary);
+librarySearch?.addEventListener("click",()=>{
+  closeLibrary();
+  searchPanel.classList.remove("hidden");
+  searchInput.focus();
+});
 
 document.querySelector("#searchBtn").onclick=()=>{
   searchPanel.classList.remove("hidden");
@@ -523,6 +588,7 @@ document.addEventListener("keydown",(e)=>{
     closePlayer();
     closeDetail();
     searchPanel.classList.add("hidden");
+    closeLibrary();
   }
 });
 
