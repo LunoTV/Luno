@@ -1,9 +1,7 @@
-import { initSourceEngine, getSourceEngine, resolveItemStreams, listSourceProviders } from "./source-engine.js";
+import { initSourceEngine, resolveItemStreams, listSourceProviders } from "./source-engine.js";
 let initialized=false, transport=null, playerState=null;
 export async function initLunoCore(){ if(initialized) return transport; const engine=initSourceEngine(); transport={sourceEngine:engine,getState:name=>name==="player"?playerState:null,dispatch:(action)=>dispatchLunoPlayerAction(action?.args?.action||action?.action||action,action?.args?.args||{})}; initialized=true; window.__LUNO_CORE__=transport; window.__LUNO_SOURCE_ENGINE__=engine; window.dispatchEvent(new CustomEvent("luno-core-ready",{detail:{core:transport,engine}})); return transport; }
 export function getLunoTransport(){return transport;}
-export function getLunoAddonUrls(){return[];}
-export async function installLunoAddon(){throw new Error("External Stremio manifests are not part of LUNO Source Engine");}
 export async function loadMetaDetails(item,videoId=""){ if(!initialized) await initLunoCore(); const streams=await resolveItemStreams(item,{videoId}); playerState={stream:streams.length===1?{type:"Ready",content:streams[0].stream}:null,streams:streams.map(entry=>({content:{type:"Ready",content:[entry.stream]},request:entry.request,addon:entry.addon||null})),metaStreams:streams.map(entry=>({content:{type:"Ready",content:[entry.stream]},request:entry.request,addon:entry.addon||null})),libraryItem:{state:{videoId:videoId||item?.videoId||""}}}; return playerState; }
 export async function loadLunoPlayer(stream){ const value=stream?.url||stream?.streamingUrl||stream?.externalUrl||stream?.webosUrl||""; playerState={stream:value?{type:"Ready",content:{...stream,url:value}}:{type:"Err",content:{message:"No direct stream"}}}; return playerState; }
 export async function unloadLunoPlayer(){playerState=null;}
