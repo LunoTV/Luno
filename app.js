@@ -113,9 +113,8 @@ function finishSplash(){
   window.setTimeout(()=>splash?.classList.add("is-hidden"),260);
 }
 
-// Never leave the UI permanently behind the splash screen if an external
-// addon/Core request hangs. The application remains usable; playback can
-// initialize later when the Core becomes available.
+// Never leave the UI permanently behind the splash screen if a source request hangs.
+// The application remains usable and playback can initialize when the source engine is ready.
 const splashSafetyTimer=window.setTimeout(()=>{
   if(!splashDone){
     console.warn("LUNO splash safety timeout");
@@ -687,7 +686,7 @@ function openAddonManagerPanel(){ closeSourceSheetPanel(); addonManager?.classLi
 function closeAddonManagerPanel(){ addonManager?.classList.add("hidden"); }
 async function installAddonFromInput(){ if(addonManagerStatus) addonManagerStatus.textContent="Источники LUNO встроены в приложение. Внешние manifest-файлы больше не используются."; }
 
-function showCoreStatus(message){
+function showEngineStatus(message){
   const eyebrow=document.querySelector(".hero .eyebrow");
   if(eyebrow) eyebrow.textContent=message;
 }
@@ -760,7 +759,7 @@ function renderSourceSheet(){
     const disabled=kind!=="direct" ? " disabled aria-disabled=\"true\"" : "";
     const suffix=kind==="p2p"
       ? "P2P • браузерный LUNO Player не поддерживает"
-      : (kind==="unsupported" ? "Формат не поддерживается" : (entry?.addon?.manifest?.name ? escapeHtml(entry.addon.manifest.name) : "Stremio Core"));
+      : (kind==="unsupported" ? "Формат не поддерживается" : (entry?.addon?.manifest?.name ? escapeHtml(entry.addon.manifest.name) : "Источник LUNO"));
     return '<button class="source-option" type="button" data-source-index="'+index+'"'+disabled+'>'+
       '<span><strong>'+label+'</strong><span>'+suffix+'</span></span>'+
       (quality ? '<span class="source-quality">'+quality+'</span>' : '')+
@@ -816,7 +815,7 @@ async function resolveLunoStreams(item){
     let state=await loadMetaDetails(item,streamIdentity);
     let streams=getReadyMetaStreams(state);
 
-    // Для сериала Core сначала получает metadata. Если первый запрос не выбрал
+    // Для сериала источник сначала получает metadata. Если первый запрос не выбрал
     // видео, выбираем продолжение из Library или первую доступную серию.
     if(!streams.length && item.type==="series"){
       const readyMeta=state?.metaItem?.content?.type==="Ready" ? state.metaItem.content.content : null;
@@ -876,7 +875,7 @@ async function selectLunoSource(index){
   if(playerBarMeta) playerBarMeta.textContent=streamLabel(entry,index);
 
   try{
-    // Core уже вернул конкретный stream от addon. Для прямых URL отдаём
+    // Source Engine уже вернул конкретный stream. Для прямых URL отдаём
     // поток непосредственно нашему LUNO Player — модель Core Player здесь
     // не должна блокировать воспроизведение.
     const kind=streamKind(entry);
@@ -896,7 +895,7 @@ async function selectLunoSource(index){
       return;
     }
 
-    // Для потоков без прямого URL оставляем Core Player как fallback.
+    // Для потоков без прямого URL используем внутренний player-resolver.
     const metaRequest=buildMetaRequest(currentItem,entry);
     const playerState=await loadLunoPlayer(entry.stream,entry.request,metaRequest,{
       resource:"subtitles",
@@ -1372,12 +1371,12 @@ function prefetchPosters(items){
     const {initLunoCore}=await import("./core.js");
     await Promise.race([
       initLunoCore(),
-      new Promise((_,reject)=>window.setTimeout(()=>reject(new Error("LUNO Core init timeout")),6500))
+      new Promise((_,reject)=>window.setTimeout(()=>reject(new Error("LUNO Source Engine init timeout")),6500))
     ]);
-    console.info("LUNO Core ready");
+    console.info("LUNO Source Engine ready");
     setSplashProgress(96,"Запускаем LUNO…");
   }catch(error){
-    console.warn("LUNO Core unavailable during startup:",error);
+    console.warn("LUNO Source Engine unavailable during startup:",error);
   }
   window.clearTimeout(splashSafetyTimer);
   finishSplash();
