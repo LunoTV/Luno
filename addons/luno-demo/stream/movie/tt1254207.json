@@ -3,7 +3,7 @@
     {
       "name": "Big Buck Bunny • 720p",
       "description": "CC BY 3.0 • MP4 • прямой поток",
-      "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4",
+      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       "behaviorHints": {
         "bingeGroup": "luno-open-bbb"
       }
