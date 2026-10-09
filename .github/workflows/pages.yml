@@ -54,6 +54,7 @@ jobs:
           PY
           cp "${GITHUB_WORKSPACE}/runtime/lampa-headless-entry.js" ./luno-headless-entry.js
           cp "${GITHUB_WORKSPACE}/runtime/lampa-source-headless-entry.js" ./luno-source-headless-entry.js
+          mkdir -p "${GITHUB_WORKSPACE}/dist/js"
           npx --yes rollup ./luno-headless-entry.js --format iife --file "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js" --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs
           npx --yes rollup ./luno-source-headless-entry.js --format iife --file "${GITHUB_WORKSPACE}/dist/js/luno-lampa-source-runtime.js" --plugin @rollup/plugin-node-resolve --plugin @rollup/plugin-commonjs
           test -s "${GITHUB_WORKSPACE}/dist/js/luno-lampa-runtime.js"
