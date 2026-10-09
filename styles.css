@@ -5095,3 +5095,33 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   body.home-mode .home-hero-actions{gap:8px!important}
   body.home-mode .home-hero-actions button{min-height:44px!important;border-radius:12px!important;font-size:13px!important}
 }
+
+
+/* ---------- LUNO HERO BLEED + VERTICAL RHYTHM FIX ---------- */
+@media(max-width:700px){
+  /* Let the cinematic image continue behind the wordmark, as in the approved mockup. */
+  body.home-mode #app main,
+  body.home-mode main{padding-top:0!important;margin-top:0!important}
+  body.home-mode .home-hero{
+    margin-top:-60px!important;
+    padding-top:60px!important;
+    height:min(74svh,590px)!important;
+    min-height:500px!important;
+    max-height:590px!important;
+    margin-bottom:20px!important;
+    box-sizing:border-box!important;
+  }
+  body.home-mode .home-hero-backdrop{
+    inset:0!important;background-position:center 24%!important;background-size:cover!important;
+  }
+  body.home-mode .home-hero:before{
+    background:linear-gradient(180deg,rgba(0,0,0,.14) 0%,rgba(0,0,0,.02) 24%,rgba(0,0,0,.22) 43%,rgba(0,0,0,.82) 72%,#030406 100%)!important;
+  }
+  body.home-mode .home-hero-copy{padding-bottom:0!important}
+  body.home-mode .section{margin-top:0!important;margin-bottom:26px!important}
+  body.home-mode #trendingSection{padding-top:0!important}
+  .topbar.luno-nav-shutter .global-header-settings span{
+    font-family:Arial,sans-serif!important;font-variant-emoji:text!important;
+    filter:grayscale(1)!important;opacity:.9!important;
+  }
+}
