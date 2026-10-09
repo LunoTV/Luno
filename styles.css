@@ -5152,3 +5152,29 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     filter:none!important;opacity:.85!important;
   }
 }
+
+
+/* ---------- LUNO HOME SECTION CLEARANCE FIX ---------- */
+@media(max-width:700px){
+  /* The hero already ends close to the first rail; don't pull its heading over the CTA. */
+  body.home-mode #trendingSection{
+    margin-top:-28px!important;
+    padding-top:0!important;
+    position:relative!important;
+    z-index:1!important;
+  }
+  body.home-mode #trendingSection .section-head{
+    margin-bottom:12px!important;
+    position:relative!important;
+    z-index:2!important;
+  }
+  body.home-mode #trendingSection .section-head>div{
+    min-width:0!important;position:relative!important;z-index:2!important;
+  }
+  body.home-mode #trendingSection .section-more{
+    position:relative!important;z-index:2!important;flex-shrink:0!important;
+    background:rgba(3,4,6,.8)!important;backdrop-filter:blur(12px)!important;
+  }
+  body.home-mode #trendingSection .cards{margin-top:0!important}
+  body.home-mode .home-hero{margin-bottom:0!important}
+}
