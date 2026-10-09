@@ -4844,3 +4844,16 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     box-shadow:0 12px 42px rgba(0,0,0,.5),0 0 17px rgba(107,111,231,.12)!important;
   }
 }
+
+
+/* ---------- THIN LUNO WORDMARK ---------- */
+/* A lighter, elegant wordmark; keep all existing shutter geometry untouched. */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter:after{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;
+    font-size:17px!important;
+    font-weight:300!important;
+    letter-spacing:.32em!important;
+    text-shadow:0 0 10px rgba(107,111,231,.24)!important;
+  }
+}
