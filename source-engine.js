@@ -317,8 +317,27 @@ function normalizeResolved(raw,source,item){
 
 async function resolvePrismaSources(item,{videoId="",signal}={}){
   const enriched=await enrichExternalIds(item||{});
+  if(signal?.aborted)return[];
+
+  // Use the real Lampa adapter as a headless resolver when the bundled runtime is ready.
+  // The adapter returns stream metadata only; LUNO owns all visible UI and playback.
+  let lampaStreams=[];
+  const lampaRuntime=window.LunoLampaRuntime;
+  if(lampaRuntime?.source&&window.LunoLampaSourcesReady){
+    try{
+      const raw=await lampaRuntime.source("videocdn",buildMovie(enriched),[]);
+      if(!signal?.aborted&&raw){
+        const rows=Array.isArray(raw)?raw:[raw];
+        lampaStreams=rows.map(row=>normalizeResolved(row,{id:"lampa-videocdn",name:"VideoCDN"},enriched)).filter(Boolean);
+      }
+    }catch(error){
+      console.debug("[LUNO Lampa adapter] videocdn",error);
+    }
+  }
+
   const sources=await discoverSources(enriched);
-  if(!sources.length)return[];
+  if(signal?.aborted)return[];
+  if(!sources.length)return lampaStreams;
 
   const selected=await Promise.all(sources.filter(s=>s.show!==false).map(async source=>{
     if(signal?.aborted)return[];
@@ -330,7 +349,14 @@ async function resolvePrismaSources(item,{videoId="",signal}={}){
       return[];
     }
   }));
-  return selected.flat();
+  const all=[...lampaStreams,...selected.flat()];
+  const seen=new Set();
+  return all.filter(row=>{
+    const key=(row?.stream?.url||"")+"|"+(row?.stream?.name||"");
+    if(!row?.stream?.url||seen.has(key))return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 
