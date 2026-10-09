@@ -4776,3 +4776,22 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     border-bottom:1px solid #6563B6!important;
   }
 }
+
+
+/* ---------- CENTER LUNO WORDMARK IN MOBILE SHUTTER ---------- */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter,
+  body.home-mode .topbar.luno-nav-shutter{position:fixed!important}
+  .topbar.luno-nav-shutter:after{
+    content:"LUNO"!important;
+    position:absolute!important;
+    left:50%!important;top:50%!important;
+    transform:translate(-50%,-50%)!important;
+    display:block!important;
+    color:#E8ECFF!important;
+    font-size:18px!important;font-weight:800!important;
+    letter-spacing:.24em!important;line-height:1!important;
+    text-shadow:0 0 12px rgba(107,111,231,.3)!important;
+    pointer-events:none!important;white-space:nowrap!important;
+  }
+}
