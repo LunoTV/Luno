@@ -3005,3 +3005,11 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
 .luno-nav-shutter .brand .brand-orbit{display:inline-flex!important;width:30px!important;height:30px!important;align-items:center!important;justify-content:center!important}
 .luno-nav-shutter .brand .brand-moon{display:block!important}
 @media(max-width:900px){.mobile-tabbar{display:flex!important}}
+
+/* Home-only refinements requested after device review. */
+#favoritesSection{display:none!important}
+@media(max-width:700px){
+  .mobile-tabbar{left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:min(420px,calc(100% - 32px))!important;justify-content:space-between!important}
+  .mobile-tab{flex:1 1 0!important;min-width:0!important;padding-left:2px!important;padding-right:2px!important}
+  .mobile-tab small{white-space:nowrap!important}
+}
