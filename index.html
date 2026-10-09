@@ -280,6 +280,14 @@
         <div class="section-kicker">ИСТОЧНИКИ</div>
         <h2 id="addonManagerTitle">Источники просмотра</h2>
         <p class="addon-manager-copy">LUNO работает со встроенными модулями источников. Поток приходит напрямую в LUNO Player.</p>
+        <form id="sourceInstallForm" class="source-install-form">
+          <label for="addonNameInput">Название источника</label>
+          <input id="addonNameInput" type="text" autocomplete="off" placeholder="Например, Мой источник">
+          <label for="addonUrlInput">HTTPS endpoint совместимого источника</label>
+          <input id="addonUrlInput" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com/api/streams" required>
+          <button id="installAddonButton" class="primary" type="submit">＋ Добавить источник</button>
+          <p class="source-install-hint">Endpoint должен возвращать JSON со ссылками на потоки или списком streams/results/items. Данные сохраняются только в этом браузере.</p>
+        </form>
         
         <div id="addonManagerStatus" class="addon-manager-status"></div>
         <div class="addon-list" id="addonList"></div>
