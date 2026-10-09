@@ -933,8 +933,8 @@ async function loadTmdbCatalog(){
     const data=await response.json();
     const items=Array.isArray(data?.results)?data.results.filter(item=>item?.id&&(item?.name||item?.title||item?.original_name||item?.original_title)).map(item=>{
       const mediaType=item?.media_type==="tv"||item?.type==="tv"||(!item?.title&&Boolean(item?.name||item?.first_air_date))?"series":(item?.type||"movie");
-      const posterPath=String(item?.poster_path||item?.posterPath||"").replace(/^\\//,"");
-      const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").replace(/^\\//,"");
+      const posterPath=String(item?.poster_path||item?.posterPath||"").split("/").filter(Boolean).join("/");
+      const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").split("/").filter(Boolean).join("/");
       return {
         ...item,
         id:String(item?.id||"").startsWith("tmdb:")?String(item.id):"tmdb:"+String(item.id),
