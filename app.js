@@ -1968,13 +1968,38 @@ window.addEventListener("popstate",()=>{
     return;
   }
 });
-document.addEventListener("keydown",(e)=>{
-  if(e.key==="Escape"){
-    closePlayer();
-    closeAddonManagerPanel();
-    closeDetail();
-    searchPanel.classList.add("hidden");
-    closeLibrary();
+document.addEventListener("keydown",(event)=>{
+  const backKeys=["Escape","Backspace","BrowserBack","GoBack"];
+  if(backKeys.includes(event.key)||event.keyCode===4){
+    // Close only the topmost layer, like Back on a TV remote.
+    const layers=[
+      [sourceSheet,closeSourceSheetPanel],
+      [subtitleSheet,()=>subtitleSheet?.classList.add("hidden")],
+      [qualitySheet,()=>qualitySheet?.classList.add("hidden")],
+      [voiceSheet,()=>voiceSheet?.classList.add("hidden")],
+      [episodeSheet,()=>episodeSheet?.classList.add("hidden")],
+      [addonManager,closeAddonManagerPanel],
+      [searchPanel,closeSearchPanel],
+      [detail,closeDetail],
+      [libraryView,closeLibrary],
+      [player,closePlayer]
+    ];
+    const layer=layers.find(([element])=>element&&!element.classList.contains("hidden"));
+    if(layer){
+      event.preventDefault();
+      layer[1]();
+      const restore=document.querySelector(".nav-item.active")||document.querySelector(".card.tv-remote-focus")||document.querySelector(".nav-item");
+      window.setTimeout(()=>restore?.focus(),30);
+      return;
+    }
+  }
+  // Some Android TV remotes send DPAD_CENTER as keyCode 23 rather than Enter.
+  if((event.key==="Select"||event.keyCode===23)&&!event.repeat){
+    const active=document.activeElement;
+    if(active?.matches("button:not(:disabled),a[href],[role=button]:not([aria-disabled=true])")){
+      event.preventDefault();
+      active.click();
+    }
   }
 });
 
