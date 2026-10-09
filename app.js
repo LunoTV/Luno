@@ -908,8 +908,10 @@ function renderItems(items,sections={}){
 
 async function loadTmdbCatalog(){
   const candidates=[
-    new URL("./tmdb-catalog.json?v=11",document.baseURI).href,
-    new URL("./tmdb-catalog.json",document.baseURI).href
+    new URL("./tmdb-catalog.json?v=12",document.baseURI).href,
+    new URL("./tmdb-catalog.json",document.baseURI).href,
+    new URL("/Luno/tmdb-catalog.json?v=12",location.origin).href,
+    new URL("/Luno/tmdb-catalog.json",location.origin).href
   ];
   let lastError=null;
   for(const url of [...new Set(candidates)]){
