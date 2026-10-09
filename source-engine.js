@@ -186,7 +186,7 @@ async function discoverSources(item){
       })).filter(x=>x.id&&http(x.url));
 
       const prefs=sourcePreferences();
-      const allowed=mapped.filter(x=>(SOURCE_CATALOG.includes(x.id)||!SOURCE_CATALOG.length)&&prefs[x.id]!==false);
+      const allowed=mapped.filter(x=>prefs[x.id]!==false);
       if(allowed.length){
         cache.set(cacheKey,{expires:Date.now()+CACHE_TTL,value:allowed});
         return allowed;
@@ -297,7 +297,6 @@ function normalizeResolved(raw,source,item){
     episode:episode.episode,
     episode_title:episode.title
   };
-  return stream;
   return stream;
 }
 
