@@ -1009,6 +1009,19 @@ async function loadTmdbCatalog(){
       console.warn("LUNO catalog attempt failed:",url,error);
     }
   }
+  // A static catalog can be absent after a failed Pages build. Keep LUNO usable
+  // by falling back to the same-origin-independent public API instead of empty rows.
+  try{
+    const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
+    const response=await fetch(base+"/api/tmdb/discover?page=1",{cache:"no-store",headers:{accept:"application/json"}});
+    if(!response.ok)throw new Error("Discovery API HTTP "+response.status);
+    const data=await response.json();
+    const items=Array.isArray(data?.results)?data.results.filter(item=>item?.id&&item?.name):[];
+    if(items.length)return {items,sections:{}};
+    throw new Error("Discovery API returned an empty catalog");
+  }catch(error){
+    console.error("LUNO dynamic catalog fallback failed:",error);
+  }
   throw new Error("TMDB catalog unavailable: "+(lastError?.message||"unknown error"));
 }
 
