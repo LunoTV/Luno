@@ -2035,17 +2035,7 @@ document.addEventListener("keydown",(event)=>{
     if(layer){
       event.preventDefault();
       layer[1]();
-      const usesBrowserHistory=(
-        layer[0]===player && history.state?.luno==="player"
-      ) || (
-        layer[0]===detail && history.state?.luno==="detail"
-      ) || (
-        layer[0]===libraryView && history.state?.luno && history.state.luno!=="home" && history.state.luno!=="detail"
-      );
-      if(!usesBrowserHistory){
-        const restore=document.querySelector(".nav-item.active")||document.querySelector(".card.tv-remote-focus")||document.querySelector(".nav-item");
-        window.setTimeout(()=>restore?.focus(),30);
-      }
+      // The navigation manager restores the exact control that opened this layer.
       return;
     }
   }
