@@ -3252,8 +3252,9 @@ html,body{
     width:100%!important; max-width:100%!important; min-width:0!important;
     overflow-x:auto!important; overflow-y:hidden!important;
     padding:4px 8px 15px 4px!important;
-    scroll-snap-type:x proximity; scroll-padding-inline:4px;
-    overscroll-behavior-x:contain; scrollbar-width:none;
+    scroll-snap-type:x proximity; scroll-padding-inline:12px;
+    scroll-behavior:smooth; overscroll-behavior-x:contain; scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
   }
   main > .section .cards::-webkit-scrollbar { display:none; }
   main > .section .cards .card {
@@ -3355,9 +3356,11 @@ html,body{
     width:clamp(150px,10.8vw,208px)!important;
     border-radius:5px!important; overflow:visible!important;
     background:transparent!important; box-shadow:none!important;
+    transition:transform .18s cubic-bezier(.2,.75,.25,1),box-shadow .18s ease!important;
+    transform:translateZ(0);
   }
   main > .section .cards .card-art {
-    position:relative!important; overflow:hidden!important;
+    position:relative!important; overflow:hidden!important; isolation:isolate;
     aspect-ratio:2/3!important; border-radius:5px!important;
     background:#191919!important; box-shadow:0 2px 9px rgba(0,0,0,.3);
   }
@@ -3399,7 +3402,12 @@ html,body{
   main > .section .cards .card:focus-visible,
   main > .section .cards .card.tv-remote-focus {
     outline:3px solid #f3f3f3!important; outline-offset:3px!important;
-    transform:scale(1.035)!important; z-index:6!important;
+    transform:scale(1.035) translateZ(0)!important; z-index:6!important;
+  }
+  @media (prefers-reduced-motion:reduce) {
+    main > .section .cards { scroll-behavior:auto!important; }
+    main > .section .cards .card,
+    main > .section .cards .card-art img { transition:none!important; }
   }
   /* Editorial landscape rail similar to Prisma's trend cards. */
   #lunoPicksSection .cards .card {
