@@ -4444,3 +4444,47 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     color:#c4cbd7!important;font-size:clamp(13px,1.1vw,20px)!important;
   }
 }
+
+
+/* ---------- LUNO SMART TV TOP SHUTTER v26 ---------- */
+.tv-header-tools{display:none}
+.global-header-settings{display:none}
+@media (min-width:1000px) and (hover:none){
+  .topbar{
+    height:82px!important;padding:0 3.2vw!important;gap:clamp(16px,2.1vw,34px)!important;
+    display:flex!important;align-items:center!important;background:rgba(7,10,14,.96)!important;
+    border-bottom:1px solid rgba(255,255,255,.07)!important;backdrop-filter:blur(18px)!important;
+  }
+  .global-header-back{display:none!important}
+  .topbar .brand{display:flex!important;flex:0 0 auto!important;gap:10px!important;min-width:0!important}
+  .topbar .brand-orbit{width:39px!important;height:39px!important;flex:none!important}
+  .topbar .brand-moon{width:27px!important;height:27px!important}
+  .topbar .nav{
+    display:flex!important;flex:1 1 auto!important;min-width:0!important;align-items:center!important;
+    justify-content:space-between!important;gap:clamp(5px,.85vw,14px)!important;overflow:visible!important;
+  }
+  .topbar .nav-item{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    min-height:44px!important;padding:0 clamp(8px,.85vw,15px)!important;border-radius:9px!important;
+    color:#d2dbe4!important;font-size:clamp(14px,1.08vw,19px)!important;white-space:nowrap!important;
+    border:1px solid transparent!important;background:transparent!important;flex:0 0 auto!important;
+  }
+  .topbar .nav-item.active,.topbar .nav-item[aria-current="page"]{
+    color:#72e4cf!important;background:rgba(36,75,72,.34)!important;border-color:rgba(114,228,207,.55)!important;
+  }
+  .topbar .nav-item:focus-visible,.topbar .brand:focus-visible,
+  .tv-header-tools button:focus-visible{
+    outline:3px solid #72e4cf!important;outline-offset:3px!important;
+  }
+  .tv-header-tools{display:flex!important;align-items:center!important;gap:12px!important;flex:0 0 auto!important}
+  .tv-header-tools .global-header-search,.tv-header-tools .global-header-settings{
+    display:grid!important;place-items:center!important;width:44px!important;height:44px!important;
+    max-width:44px!important;max-height:44px!important;min-width:44px!important;min-height:44px!important;
+    padding:0!important;border:1px solid #35414d!important;border-radius:11px!important;
+    background:#171e27!important;color:#f4f7fa!important;flex:none!important;
+  }
+  .tv-header-tools .search-icon{width:17px!important;height:17px!important;border-width:2px!important}
+  .tv-header-tools .search-icon:after{width:7px!important;height:2px!important;right:-6px!important;bottom:-3px!important}
+  .tv-header-tools .global-header-settings{font-size:22px!important;line-height:1!important}
+  .mobile-tabbar{display:none!important}
+}
