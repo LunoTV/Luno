@@ -3690,3 +3690,11 @@ html,body{
 .library-toolbar-count{font-variant-numeric:tabular-nums}
 @media(max-width:600px){.library-sort{gap:7px;padding-bottom:15px}.library-sort button{padding:9px 12px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){.library-sort button{transition:none}}
+
+
+/* Clear focus and selection states for keyboard / TV remote */
+.nav-item:focus-visible,.mobile-tab:focus-visible{outline:2px solid rgba(255,255,255,.92)!important;outline-offset:3px!important}
+.nav-item[aria-current="page"],.mobile-tab[aria-current="page"]{color:#fff}
+.card:focus-visible{outline:2px solid #f5f5f5!important;outline-offset:3px!important;transform:translateY(-3px);box-shadow:0 0 0 5px rgba(255,255,255,.12),0 16px 35px rgba(0,0,0,.35)!important;z-index:2}
+.library-infinite-grid .card:focus-visible{z-index:4}
+@media(prefers-reduced-motion:reduce){.card:focus-visible{transform:none}}
