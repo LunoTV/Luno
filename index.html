@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=73">
+  <link rel="stylesheet" href="./styles.css?v=74">
   <link rel="stylesheet" href="./source-manager.css?v=1">
 </head>
 <body>
@@ -30,6 +30,7 @@
 <script>window.setTimeout(function(){var s=document.getElementById("splash");if(s)s.classList.add("is-hidden");},7000);</script>
 <div id="app">
     <header class="topbar luno-nav-shutter">
+      <button class="global-header-back" id="globalHeaderBack" type="button" aria-label="Назад">‹</button>
       <button class="brand" data-section="home" aria-label="LUNO — Главная">
         <span class="brand-orbit"><span class="brand-moon"></span></span>
         <span>LUNO</span>
@@ -45,6 +46,7 @@
         <button class="nav-item" data-section="search">⌕ Поиск</button>
         <button class="nav-item" data-section="settings">⚙ Настройки</button>
       </nav>
+      <button class="global-header-search" id="globalHeaderSearch" type="button" aria-label="Поиск"><span class="search-icon"></span></button>
     </header>
 
     <nav class="mobile-tabbar" aria-label="Основная навигация">
@@ -386,6 +388,6 @@
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
-  <script type="module" src="./app.js?v=remote78"></script>
+  <script type="module" src="./app.js?v=remote79"></script>
 </body>
 </html>
