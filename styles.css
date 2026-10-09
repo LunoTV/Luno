@@ -4656,3 +4656,61 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .topbar.luno-nav-shutter .global-header-settings span{font-size:16px!important}
   #app main,main{padding-top:calc(56px + env(safe-area-inset-top,0px))!important}
 }
+
+/* ---------- LUNO LUNAR VIOLET THEME ---------- */
+/* Color-only pass: preserve layout, poster dimensions, spacing, and navigation structure. */
+:root{
+  --luno-moon:#6B6FE7;
+  --luno-ice:#7DD3FC;
+  --luno-lavender:#C084FC;
+  --luno-silver:#E8ECFF;
+  --luno-moon-line:rgba(107,111,231,.62);
+  --luno-ice-line:rgba(125,211,252,.42);
+}
+.brand-orbit{border-color:var(--luno-moon-line)}
+.brand-orbit:after{background:var(--luno-ice);box-shadow:0 0 9px rgba(125,211,252,.6)}
+.brand-moon{background:linear-gradient(135deg,var(--luno-silver),var(--luno-moon));box-shadow:inset -5px -3px 7px rgba(0,0,0,.38),0 0 12px rgba(107,111,231,.28)}
+.nav-item.active,.mobile-tab.active{
+  color:var(--luno-silver);
+  background:linear-gradient(135deg,rgba(107,111,231,.22),rgba(125,211,252,.07));
+  box-shadow:inset 0 0 0 1px rgba(107,111,231,.28);
+}
+.icon-btn{border-color:rgba(107,111,231,.3)}
+.icon-btn:hover{border-color:rgba(125,211,252,.65);box-shadow:0 0 16px rgba(107,111,231,.16)}
+.section-kicker,.eyebrow,.search-kicker{color:#a9b3ff}
+.section-more:hover{color:var(--luno-silver)}
+.mobile-tabbar{
+  border-color:rgba(107,111,231,.45);
+  box-shadow:0 12px 45px rgba(0,0,0,.5),0 0 18px rgba(107,111,231,.1);
+}
+.primary{background:var(--luno-silver);color:#08090c}
+.primary:hover{background:#fff;box-shadow:0 0 20px rgba(107,111,231,.2)}
+.secondary:focus-visible,.icon-btn:focus-visible,.mobile-tab:focus-visible{outline-color:var(--luno-ice)}
+.empty-moon{color:var(--luno-lavender)}
+/* Keep the existing compact iPhone shutter geometry; change only its accent colors. */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter,
+  body.home-mode .topbar.luno-nav-shutter{
+    border-color:rgba(107,111,231,.88)!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.35),0 0 14px rgba(107,111,231,.13)!important;
+  }
+  .topbar.luno-nav-shutter .brand{
+    border-color:rgba(107,111,231,.88)!important;
+    box-shadow:inset 0 0 0 1px rgba(125,211,252,.08),0 0 10px rgba(107,111,231,.15)!important;
+  }
+  .topbar.luno-nav-shutter .global-header-search,
+  .topbar.luno-nav-shutter .global-header-settings{
+    border-color:rgba(107,111,231,.8)!important;
+    box-shadow:inset 0 0 0 1px rgba(125,211,252,.08),0 0 8px rgba(107,111,231,.12)!important;
+    color:var(--luno-silver)!important;
+  }
+  .topbar.luno-nav-shutter .brand-moon{
+    background:linear-gradient(135deg,var(--luno-silver),var(--luno-moon))!important;
+    box-shadow:inset -5px -3px 7px rgba(0,0,0,.38),0 0 12px rgba(107,111,231,.35)!important;
+  }
+  .mobile-tabbar{border-color:rgba(107,111,231,.55)!important}
+  .mobile-tab.active{
+    border:1px solid rgba(107,111,231,.55);
+    box-shadow:inset 0 0 16px rgba(107,111,231,.16),0 0 12px rgba(107,111,231,.12);
+  }
+}
