@@ -83,6 +83,9 @@ const detailBadges=document.querySelector("#detailBadges");
 const detailRatings=document.querySelector("#detailRatings");
 const detailPlay=document.querySelector("#detailPlay");
 const detailEpisodes=document.querySelector("#detailEpisodes");
+const detailSeasonsSection=document.querySelector("#detailSeasonsSection");
+const detailOpenEpisodes=document.querySelector("#detailOpenEpisodes");
+const detailSeasonsTitle=document.querySelector("#detailSeasonsTitle");
 const continueSection=document.querySelector("#continueSection");
 const moviesSection=document.querySelector("#moviesSection");
 const seriesSection=document.querySelector("#seriesSection");
@@ -423,6 +426,8 @@ function paintDetail(value){
   if(detailHeroPoster) detailHeroPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
   if(detailPoster) detailPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
   if(detail) detail.style.setProperty("--luno-poster",image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "none");
+  if(detailSeasonsSection) detailSeasonsSection.classList.toggle("hidden",value?.type!=="series");
+  if(detailSeasonsTitle) detailSeasonsTitle.textContent=title+" — сезоны и серии";
   if(detailTitle) detailTitle.textContent=title;
   if(detailMeta) detailMeta.textContent=[
     year!=="—" ? year : "",
@@ -665,6 +670,7 @@ document.querySelectorAll(".luno-detail-links [data-section]").forEach((button)=
 detailPlay?.addEventListener("click",()=>{
   if(currentItem) openPlayer(currentItem.id,currentItem.type,currentItem.name);
 });
+detailOpenEpisodes?.addEventListener("click",()=>detailEpisodes?.click());
 detailEpisodes?.addEventListener("click",()=>{
   if(!currentItem || currentItem.type!=="series") return;
   openPlayer(currentItem.id,currentItem.type,currentItem.name);
