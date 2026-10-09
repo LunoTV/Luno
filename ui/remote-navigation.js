@@ -114,7 +114,7 @@ function move(root, direction) {
     } else if (row && (direction === "up" || direction === "down")) {
       const fromRow = elementRect(row);
       const rows = [...root.querySelectorAll(".cards")].map((element) => ({ element, rect: elementRect(element) }))
-        .filter((entry) => visible(entry.element, entry.rect, true) && entry.element !== row);
+        .filter((entry) => visible(entry.element, entry.rect, false) && entry.element !== row);
       const nextRows = rows.filter((entry) => direction === "up"
         ? entry.rect.bottom <= fromRow.top + 8
         : entry.rect.top >= fromRow.bottom - 8);
@@ -123,7 +123,7 @@ function move(root, direction) {
       const targetRow = nextRows[0]?.element;
       entries = targetRow
         ? [...targetRow.querySelectorAll(".card")].map((element) => ({ element, rect: elementRect(element) }))
-          .filter((entry) => visible(entry.element, entry.rect, true))
+          .filter((entry) => visible(entry.element, entry.rect, false))
         : [];
       if (!entries.length) {
         window.scrollBy({ top: (direction === "up" ? -1 : 1) * Math.max(140, window.innerHeight * 0.48), behavior: "auto" });
