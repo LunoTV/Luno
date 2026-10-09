@@ -3136,3 +3136,32 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
     touch-action:pan-x pan-y!important;
   }
 }
+
+
+/* TV experience: larger cards, full-height drawer, and obvious remote focus. */
+@media(min-width:1000px) and (hover:none), (min-width:1200px){
+  .luno-menu-drawer{
+    width:min(440px,36vw)!important;
+    padding:32px 28px 36px!important;
+    display:flex!important;flex-direction:column!important;
+    height:100dvh!important;box-sizing:border-box!important;
+  }
+  .luno-menu-head{padding:8px 8px 34px!important}
+  .luno-menu-brand{font-size:28px!important;gap:16px!important}
+  .luno-menu-brand .brand-orbit{width:48px!important;height:48px!important}
+  .luno-menu-caption{font-size:14px!important;letter-spacing:.24em!important;margin:0 8px 18px!important}
+  .luno-menu-items{display:flex!important;flex-direction:column!important;gap:8px!important;flex:1 1 auto!important}
+  .luno-menu-item{min-height:64px!important;padding:14px 18px!important;font-size:23px!important;gap:18px!important;border-radius:16px!important}
+  .luno-menu-item>span{width:30px!important;font-size:27px!important}
+  .luno-menu-trigger{width:76px!important;height:76px!important;font-size:34px!important}
+  .luno-menu-backdrop{background:rgba(0,0,0,.72)!important;backdrop-filter:blur(5px)}
+  .card{flex-basis:clamp(190px,15vw,270px)!important;width:clamp(190px,15vw,270px)!important}
+  .card-art{height:auto!important;aspect-ratio:2/3!important}
+  .card-title{font-size:18px!important;line-height:1.3!important}
+  .section-head h2{font-size:clamp(28px,2vw,38px)!important}
+  .cards{gap:24px!important}
+  .tv-remote-focus,button.tv-remote-focus,a.tv-remote-focus,.card.tv-remote-focus{
+    outline:4px solid #c4ff4d!important;outline-offset:5px!important;box-shadow:0 0 0 8px rgba(196,255,77,.2)!important;
+  }
+  .card.tv-remote-focus{transform:scale(1.06)!important;z-index:5!important}
+}
