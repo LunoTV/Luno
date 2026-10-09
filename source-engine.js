@@ -326,8 +326,22 @@ async function resolvePrismaSources(item,{videoId="",signal}={}){
   const movie=buildMovie(enriched);
   let lampaStreams=[];
   if(runtime?.source&&window.LunoLampaSourcesReady&&adapters.length){
-    const attempts=await Promise.allSettled(adapters.map(async name=>{
-      if(signal?.aborted)return[];
+    // The Lampa adapters share one Player callback, so resolve them serially.
+    for(const name of adapters){
+      if(signal?.aborted)break;
+      try{
+        const raw=await runtime.source(name,movie,[],{timeout:10000});
+        if(signal?.aborted)break;
+        if(raw){
+          const rows=Array.isArray(raw)?raw:[raw];
+          lampaStreams.push(...rows.map(row=>normalizeResolved(row,{id:"lampa-"+name,name:name.toUpperCase()},enriched)).filter(Boolean));
+        }
+      }catch(error){
+        console.debug("[LUNO Lampa adapter]",name,error);
+      }
+    }
+  }
+  if(signal?.aborted)return[];
       const raw=await runtime.source(name,movie,[],{timeout:16000});
       if(signal?.aborted||!raw)return[];
       const rows=Array.isArray(raw)?raw:[raw];
