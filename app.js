@@ -339,8 +339,7 @@ function card(item,eager=false){
     '<span class="card-art">'+imageHtml+
       '<span class="card-gradient"></span>'+
       '<span class="card-type card-corner">'+escapeHtml(type)+'</span>'+
-      (rating ? '<span class="poster-rating">★ '+rating+'</span>' : '')+
-      '<span class="poster-quality">'+escapeHtml(quality)+'</span>'+
+      (rating ? '<span class="poster-quality poster-card-rating">★ '+rating+'</span>' : '')+
       (year ? '<span class="poster-year">'+escapeHtml(year)+'</span>' : '')+
       '<span class="card-info">'+meta+'</span>'+
       '<span class="card-hover-panel"><span class="card-hover-meta">'+overlayMeta+'</span><span class="card-hover-title">'+escapeHtml(title)+'</span><span class="card-hover-cta">Подробнее <span aria-hidden="true">↗</span></span></span>'+
