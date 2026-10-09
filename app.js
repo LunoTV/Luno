@@ -877,7 +877,6 @@ function renderCatalogSections(){
   if(classicsCards) classicsCards.innerHTML=classics.map((item,index)=>card(item,index<6)).join("");
   renderResume();
   renderFavorites();
-  renderDiscovery();
   bindCards();
   const eyebrow=document.querySelector(".hero .eyebrow");
   if(eyebrow) eyebrow.textContent="";
@@ -2141,7 +2140,7 @@ if(catalogSentinel && "IntersectionObserver" in window){
 }
 
 function prefetchPosters(items){
-  items.slice(0,36).forEach((item)=>{
+  items.slice(0,8).forEach((item)=>{
     if(item?.poster){
       const image=new Image();
       image.decoding="async";
