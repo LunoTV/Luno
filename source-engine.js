@@ -47,7 +47,11 @@ function sourceUrlCandidates(source){
 
 async function requestJson(url,options={}){
   const controller=new AbortController();
-  const timeout=options.timeout||DEFAULT_TIMEOUT;
+  const timeout=Number(options.timeout)||DEFAULT_TIMEOUT;
+  const externalSignal=options.signal;
+  const abortFromCaller=()=>controller.abort(externalSignal?.reason);
+  if(externalSignal?.aborted)abortFromCaller();
+  else externalSignal?.addEventListener("abort",abortFromCaller,{once:true});
   const timer=setTimeout(()=>controller.abort(),timeout);
   try{
     const headers={
@@ -55,13 +59,17 @@ async function requestJson(url,options={}){
       "X-Kit-AesGcm":localStorage.getItem("aesgcmkey")||"",
       ...(options.headers||{})
     };
-    const response=await fetch(addRuntimeParams(url),{...options,headers,signal:controller.signal,cache:"no-store"});
+    const {timeout:ignoredTimeout,signal:ignoredSignal,...fetchOptions}=options;
+    const response=await fetch(addRuntimeParams(url),{...fetchOptions,headers,signal:controller.signal,cache:"no-store"});
     if(!response.ok)throw new Error("HTTP "+response.status);
     const type=(response.headers.get("content-type")||"").toLowerCase();
     if(type.includes("json"))return await response.json();
     const body=await response.text();
     try{return JSON.parse(body)}catch{return body}
-  }finally{clearTimeout(timer)}
+  }finally{
+    clearTimeout(timer);
+    externalSignal?.removeEventListener("abort",abortFromCaller);
+  }
 }
 
 async function requestText(url,options={}){
