@@ -268,6 +268,12 @@ function posterCandidates(item){
   ];
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
+// Shared device capability check used by poster loading and prefetching.
+function isLowPowerTV(){
+  const ua=String(navigator.userAgent||"");
+  return /web0s|webos|netcast|tizen|smart-tv|smarttv|hbbtv|aftb|android tv|googletv/i.test(ua)
+    || (navigator.hardwareConcurrency>0 && navigator.hardwareConcurrency<=4 && matchMedia("(hover: none)").matches);
+}
 function card(item,eager=false){
   const title=item?.name || "Без названия";
   const candidates=posterCandidates(item);
