@@ -537,13 +537,40 @@ function renderFavorites(){
   bindCards();
 }
 
+function lunoHistorySnapshot(){
+  const active=document.activeElement;
+  return {
+    ...(history.state||{}),
+    scrollY:window.scrollY,
+    focusId:active?.id||"",
+    libraryScrollTop:libraryContent?.scrollTop||0
+  };
+}
 function setLunoHistory(view){
-  try{history.pushState({luno:view},"",view==="home" ? location.pathname+location.search : "#"+view);}catch{}
+  try{
+    const current=history.state?.luno;
+    const snapshot=lunoHistorySnapshot();
+    if(current) history.replaceState(snapshot,"",location.href);
+    const next={luno:view,scrollY:window.scrollY,focusId:document.activeElement?.id||"",libraryScrollTop:libraryContent?.scrollTop||0};
+    const url=view==="home" ? location.pathname+location.search : "#"+view;
+    if(current===view) history.replaceState(next,"",url);
+    else history.pushState(next,"",url);
+  }catch{}
 }
 function ensureLunoHistory(){
   try{
-    if(!history.state?.luno) history.replaceState({luno:"home"},"",location.pathname+location.search);
+    if(!history.state?.luno) history.replaceState({luno:"home",scrollY:window.scrollY,focusId:"",libraryScrollTop:0},"",location.pathname+location.search);
   }catch{}
+}
+function restoreLunoHistoryPosition(state){
+  window.setTimeout(()=>{
+    if(Number.isFinite(Number(state?.scrollY))) window.scrollTo({top:Number(state.scrollY),behavior:"auto"});
+    if(libraryContent && Number.isFinite(Number(state?.libraryScrollTop))) libraryContent.scrollTop=Number(state.libraryScrollTop);
+    const target=state?.focusId ? document.getElementById(state.focusId) : null;
+    if(target && !target.closest(".hidden,[hidden],[aria-hidden=true]")){
+      try{target.focus({preventScroll:true});}catch{target.focus();}
+    }
+  },0);
 }
 function openDetail(item){
   if(!item) return;
@@ -1486,6 +1513,7 @@ function formatDuration(value){
   return minutes+" мин";
 }
 function openPlayer(id,type,title,streamUrl=""){
+  setLunoHistory("player");
   player.classList.remove("hidden");
   if(playerBarTitle) playerBarTitle.textContent=title || "LUNO";
   if(playerBarMeta) playerBarMeta.textContent=type==="series" ? "Сериал" : "Фильм";
@@ -1522,7 +1550,10 @@ function openPlayer(id,type,title,streamUrl=""){
   document.querySelector("#closePlayer")?.focus();
 }
 
-function closePlayer(){
+function closePlayer(fromHistory=false){
+  if(!fromHistory && history.state?.luno==="player"){
+    try{history.back();return;}catch{}
+  }
   if(lunoVideo && currentItem && Number(lunoVideo.duration)>0 && Number(lunoVideo.currentTime)>5){
     window.LUNOPlayback?.progress(currentItem,lunoVideo.currentTime,lunoVideo.duration);
   }
@@ -1958,15 +1989,24 @@ searchInput.addEventListener("keydown",async(e)=>{
 
 ensureLunoHistory();
 document.body.classList.add("home-mode");
-window.addEventListener("popstate",()=>{
+window.addEventListener("popstate",(event)=>{
+  const state=event.state||{};
+  if(!player?.classList.contains("hidden")){
+    closePlayer(true);
+    restoreLunoHistoryPosition(state);
+    return;
+  }
   if(!detail?.classList.contains("hidden")){
     closeDetail(true);
+    restoreLunoHistoryPosition(state);
     return;
   }
   if(!libraryView?.classList.contains("hidden")){
     closeLibrary(true);
+    restoreLunoHistoryPosition(state);
     return;
   }
+  restoreLunoHistoryPosition(state);
 });
 document.addEventListener("keydown",(event)=>{
   const backKeys=["Escape","Backspace","BrowserBack","GoBack"];
