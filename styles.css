@@ -2577,7 +2577,8 @@ body.home-mode .hero{
     scrollbar-width:none!important;
     -webkit-overflow-scrolling:touch;
     overscroll-behavior-x:contain;
-    touch-action:pan-x;
+    /* Keep horizontal poster swipes, but allow vertical page scrolling when a gesture starts on a poster. */
+    touch-action:pan-x pan-y;
   }
   .cards::-webkit-scrollbar{display:none!important}
   .cards .card{
