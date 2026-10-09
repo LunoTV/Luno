@@ -18,7 +18,7 @@ export function renderSourceManager(container,{providers=[],sources=[],status={}
     '<div class="addon-row source-manager-source">'+
       '<div><strong>'+escapeHtml(source.name||source.id)+'</strong>'+
       '<span>Remote source • headless runtime</span></div>'+
-      '<button class="source-toggle" type="button" data-source-toggle="${escapeHtml(source.id)}">${preferences[source.id]===false?"Выключен":"Включён"}</button>'+
+      '<button class="source-toggle" type="button" data-source-toggle="'+escapeHtml(source.id)+'">'+(preferences[source.id]===false?"Выключен":"Включён")+'</button>'+
     '</div>'
   )).join("");
 
