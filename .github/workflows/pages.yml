@@ -31,6 +31,14 @@ jobs:
         env:
           TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
 
+      - name: Verify TMDB catalog is included in Pages artifact
+        run: |
+          set -euo pipefail
+          test -s public/tmdb-catalog.json
+          mkdir -p dist
+          cp public/tmdb-catalog.json dist/tmdb-catalog.json
+          node -e 'const fs=require("node:fs"); const c=JSON.parse(fs.readFileSync("dist/tmdb-catalog.json","utf8")); if(!Array.isArray(c.items)||c.items.length<100) throw new Error("TMDB catalog missing or too small: "+(c.items?.length||0)); console.log("Pages catalog verified:",c.items.length,"items")'
+
       - name: Build pinned headless Lampa runtime
         run: |
           set -euo pipefail
