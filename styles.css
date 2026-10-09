@@ -3713,3 +3713,24 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 .library-loader{padding:24px 12px calc(36px + env(safe-area-inset-bottom));text-align:center;letter-spacing:.02em;text-transform:none}
 @media(max-width:700px){body.library-open .library-content{scroll-padding-top:12px}.library-infinite-grid{row-gap:16px}}
 @media(prefers-reduced-motion:reduce){.card-art img{transition:none}}
+
+
+/* Restrained cinematic entrance for detail pages */
+.detail-overlay.is-entering .luno-detail-hero-copy,
+.detail-overlay.is-entering .luno-detail-ratings,
+.detail-overlay.is-entering .luno-detail-section{
+  opacity:0;
+  transform:translateY(12px);
+}
+.detail-overlay .luno-detail-hero-copy,
+.detail-overlay .luno-detail-ratings,
+.detail-overlay .luno-detail-section{
+  transition:opacity .32s ease,transform .38s cubic-bezier(.2,.7,.2,1);
+}
+.detail-overlay .luno-detail-ratings{transition-delay:.04s}
+.detail-overlay .luno-detail-section{transition-delay:.07s}
+.detail-overlay .luno-detail-hero .detail-backdrop{transition:transform .65s cubic-bezier(.2,.7,.2,1),opacity .35s ease}
+.detail-overlay.is-entering .detail-backdrop{transform:scale(1.045)!important}
+@media(prefers-reduced-motion:reduce){
+  .detail-overlay .luno-detail-hero-copy,.detail-overlay .luno-detail-ratings,.detail-overlay .luno-detail-section,.detail-overlay .detail-backdrop{transition:none!important;transform:none!important;opacity:1!important}
+}
