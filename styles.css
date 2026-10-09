@@ -3582,3 +3582,34 @@ html,body{
  .home-hero-poster-wrap{width:100%;align-self:end;margin-bottom:54px;border-radius:7px}
 }
 @media(max-width:390px){.home-hero{grid-template-columns:minmax(0,1fr) 82px;min-height:365px;gap:10px}.home-hero-title{font-size:27px}.home-hero-poster-wrap{margin-bottom:70px}}
+
+
+/* Rich poster cards: information appears in-context without changing the card action. */
+.card{position:relative;overflow:visible!important;text-align:left;isolation:isolate}
+.card-art{position:relative;display:block;overflow:hidden;border-radius:inherit;background:#15161a;isolation:isolate}
+.card-art img{z-index:0}
+.card-art .poster-fallback{z-index:1}
+.card-gradient{position:absolute;z-index:2;inset:0;display:block;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.26) 0%,transparent 28%,rgba(0,0,0,.05) 42%,rgba(0,0,0,.92) 100%);opacity:.8;transition:opacity .22s ease}
+.card-hover-panel{position:absolute;z-index:4;inset:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:8px;padding:13px 11px 14px;overflow:hidden;pointer-events:none;text-align:left;opacity:0;transform:translateY(7px);transition:opacity .2s ease,transform .2s ease;background:linear-gradient(180deg,transparent 8%,rgba(0,0,0,.2) 36%,rgba(0,0,0,.94) 100%)}
+.card-hover-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px;color:#ddd;font-size:9px;font-weight:750;letter-spacing:.025em}
+.card-hover-meta>span{padding:4px 6px;border:1px solid rgba(255,255,255,.2);border-radius:4px;background:rgba(15,15,15,.58);backdrop-filter:blur(5px)}
+.card-hover-meta .card-hover-rating{border-color:rgba(255,255,255,.45);color:#fff}
+.card-hover-title{display:-webkit-box;width:100%;overflow:hidden;color:#fff;font-size:clamp(12px,1vw,15px);font-weight:800;line-height:1.18;letter-spacing:-.02em;text-wrap:balance;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card-hover-cta{display:flex;align-items:center;justify-content:space-between;gap:7px;width:100%;margin-top:2px;padding-top:9px;border-top:1px solid rgba(255,255,255,.25);color:#fff;font-size:10px;font-weight:800;letter-spacing:.02em}
+.card-hover-cta>span{display:grid;place-items:center;width:22px;height:22px;border:1px solid rgba(255,255,255,.45);border-radius:50%;font-size:12px}
+.card:hover .card-hover-panel,.card:focus-visible .card-hover-panel,.card.tv-remote-focus .card-hover-panel{opacity:1;transform:translateY(0)}
+.card:hover .card-gradient,.card:focus-visible .card-gradient,.card.tv-remote-focus .card-gradient{opacity:1}
+.card:hover .card-art img,.card:focus-visible .card-art img,.card.tv-remote-focus .card-art img{transform:scale(1.055)}
+.card:focus-visible{outline:2px solid #f5f5f5;outline-offset:4px}
+.card-title{transition:color .18s ease}
+.card:hover .card-title,.card:focus-visible .card-title,.card.tv-remote-focus .card-title{color:#fff}
+@media(hover:none){
+ .card-hover-panel{inset:auto 0 0;min-height:38%;padding:9px 8px 10px;gap:5px;opacity:1;transform:none;background:linear-gradient(180deg,transparent,rgba(0,0,0,.88))}
+ .card-hover-meta{font-size:8px;gap:4px}
+ .card-hover-meta>span{padding:3px 4px}
+ .card-hover-title{font-size:11px}
+ .card-hover-cta{font-size:9px;padding-top:6px}
+ .card-hover-cta>span{width:18px;height:18px}
+ .card:hover .card-art img,.card:focus-visible .card-art img{transform:none}
+}
+@media(prefers-reduced-motion:reduce){.card-hover-panel,.card-gradient,.card-art img,.card-title{transition:none!important}}
