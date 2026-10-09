@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=99">
+  <link rel="stylesheet" href="./styles.css?v=100">
   <link rel="stylesheet" href="./source-manager.css?v=1">
 </head>
 <body>
@@ -52,7 +52,6 @@
     <nav class="mobile-tabbar" aria-label="Основная навигация">
       <button class="mobile-tab active" data-section="home"><span class="tab-icon">⌂</span><small>Главная</small></button>
       <button class="mobile-tab" data-section="movies"><span class="tab-icon">▣</span><small>Фильмы</small></button>
-      <button class="mobile-tab" data-section="series"><span class="tab-icon">▤</span><small>Сериалы</small></button>
       <button class="mobile-tab" data-section="catalog"><span class="tab-icon">⋯</span><small>Каталог</small></button>
       <button class="mobile-tab" id="globalHeaderSettings" data-section="settings" type="button" aria-label="Настройки"><span class="tab-icon">⚙</span><small>Настройки</small></button>
     </nav>
@@ -80,20 +79,20 @@
         <div class="home-hero-poster-wrap"><img class="home-hero-poster" alt="" loading="eager" hidden></div>
       </section>
 
-      <section class="section resume-section" id="continueSection">
-        <div class="section-head">
-          <div><span class="section-kicker">ВОЗВРАЩАЙСЯ</span><h2>Продолжить просмотр</h2></div>
-          <button class="section-more" data-section="favorites">Все <span>›</span></button>
-        </div>
-        <div class="cards" id="continueCards"></div>
-      </section>
-
       <section class="section discovery-section" id="trendingSection">
         <div class="section-head">
           <div><span class="section-kicker">СЕЙЧАС СМОТРЯТ</span><h2>Популярное</h2></div>
           <button class="section-more" data-section="movies">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="trendingCards"></div>
+      </section>
+
+      <section class="section resume-section" id="continueSection">
+        <div class="section-head">
+          <div><span class="section-kicker">ВОЗВРАЩАЙСЯ</span><h2>Продолжить просмотр</h2></div>
+          <button class="section-more" data-section="favorites">Все <span>›</span></button>
+        </div>
+        <div class="cards" id="continueCards"></div>
       </section>
 
       <section class="section discovery-section" id="openCinemaSection">
