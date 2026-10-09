@@ -316,14 +316,14 @@ function card(item,eager=false){
   const fallbacks=candidates.slice(1,6);
   const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
-  const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const posterPlaceholder='<span class="poster-fallback poster-fallback-title" aria-hidden="true"><span>'+escapeHtml(title)+'</span></span>';
   const imageHtml=image
     ? posterPlaceholder+'<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager && !isLowPowerTV() ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager && !isLowPowerTV() ? "high" : "low")+'" referrerpolicy="no-referrer">'
     : posterPlaceholder;
-  const meta='<span class="card-quality">'+quality+'</span>'+
-    (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
+  // Show only real metadata on the poster. A rating must never be presented
+  // as a fake 4K/FULLHD source-quality claim.
+  const meta=(rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
     (year ? '<span class="card-year">'+year+'</span>' : '');
   return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
     '<div class="card-art">'+imageHtml+
