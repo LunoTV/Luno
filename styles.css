@@ -3321,8 +3321,9 @@ html,body{
 
 
 /* Prisma TV-inspired browsing layout for LUNO: clean black canvas, poster rail,
-   rating/year corner labels and a wider editorial trend rail. Keep LUNO branding/player. */
-@media (min-width:1000px) and (hover:none) {
+   rating/year corner labels and a wider editorial trend rail. Keep LUNO branding/player.
+   Apply the same desktop browsing model to TV remotes and mouse/keyboard users. */
+@media (min-width:1000px) {
   :root { --bg:#050505; --panel:#101010; --panel2:#171717; }
   html,body { background:#050505!important; }
   body { background:#050505!important; }
