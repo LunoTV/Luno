@@ -3013,3 +3013,34 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
   .mobile-tab{flex:1 1 0!important;min-width:0!important;padding-left:2px!important;padding-right:2px!important}
   .mobile-tab small{white-space:nowrap!important}
 }
+
+
+/* Match the compact edge spacing from the reference video; spacing only. */
+@media(max-width:700px){
+  main{padding-left:0!important;padding-right:0!important}
+  main > .section{
+    margin-left:8px!important;
+    margin-right:0!important;
+    padding-left:0!important;
+  }
+  main > .section .section-head{
+    padding-left:0!important;
+    padding-right:8px!important;
+    margin-bottom:10px!important;
+  }
+  main > .section .cards{
+    gap:6px!important;
+    padding-left:0!important;
+    padding-right:8px!important;
+    padding-bottom:7px!important;
+    scroll-padding-left:0!important;
+  }
+  main > .section .cards .card{
+    flex-basis:calc((100vw - 28px)/2.65)!important;
+    width:calc((100vw - 28px)/2.65)!important;
+    min-width:calc((100vw - 28px)/2.65)!important;
+  }
+  main > .section .cards .card .card-title{margin-top:5px!important}
+  main > .section{margin-top:28px!important}
+  main > .section .section-head h2{margin-top:3px!important}
+}
