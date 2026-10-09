@@ -2935,3 +2935,28 @@ body.luno-menu-open .luno-menu-backdrop{pointer-events:auto}
   .luno-menu-drawer{width:min(340px,86vw)!important}
   .luno-menu-item{min-height:46px}
 }
+
+
+/* Poster stability: never hide a loaded poster while async image events/classes settle. */
+.card-art{background-color:#101218!important}
+.card-art img{
+  opacity:1!important;
+  visibility:visible;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transform:translateZ(0);
+}
+.card-art img.is-poster-ready{opacity:1!important}
+@media(hover:none){
+  .card-art img,
+  .card:hover .card-art img,
+  .card:active .card-art img{
+    opacity:1!important;
+    transform:none!important;
+    filter:none!important;
+    transition:none!important;
+    animation:none!important;
+    will-change:auto!important;
+  }
+  .card,.card-art{transform:none!important;transition:none!important}
+}
