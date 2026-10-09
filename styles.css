@@ -4188,3 +4188,40 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-hero{padding-left:16px!important;padding-right:16px!important}
   .luno-detail-actions .primary,.luno-detail-actions .secondary{font-size:12px!important;padding:0 8px!important}
 }
+
+
+/* ---------- POSTER CORNER METADATA v20 ---------- */
+.card-art .card-type.card-corner{
+  position:absolute!important;z-index:5!important;
+  top:9px!important;left:9px!important;right:auto!important;bottom:auto!important;
+  max-width:calc(100% - 82px);padding:5px 8px!important;
+  border:1px solid rgba(255,255,255,.22)!important;border-radius:7px!important;
+  background:rgba(7,9,13,.78)!important;color:#fff!important;
+  font-size:9px!important;font-weight:850!important;letter-spacing:.07em!important;
+  line-height:1.1!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  backdrop-filter:blur(12px);
+}
+.card-art .poster-rating,
+.card-art .poster-quality,
+.card-art .poster-year{
+  position:absolute;z-index:5;display:inline-flex;align-items:center;justify-content:center;
+  min-height:25px;padding:5px 7px;border:1px solid rgba(255,255,255,.19);
+  border-radius:7px;background:rgba(7,9,13,.78);backdrop-filter:blur(12px);
+  color:#fff;font-size:10px;font-weight:850;line-height:1;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.card-art .poster-rating{top:9px;right:9px}
+.card-art .poster-quality{left:9px;bottom:9px;color:#e9edf4}
+.card-art .poster-year{right:9px;bottom:9px;color:#e9edf4}
+.card-art .card-info{display:none!important}
+.card-art .card-hover-panel{display:none!important}
+.card-art .card-gradient{
+  background:linear-gradient(180deg,rgba(0,0,0,.18),transparent 23%,transparent 68%,rgba(0,0,0,.24))!important;
+}
+@media(max-width:600px){
+  .card-art .card-type.card-corner{top:7px!important;left:7px!important;padding:4px 6px!important;font-size:7px!important;max-width:calc(100% - 66px)}
+  .card-art .poster-rating{top:7px;right:7px}
+  .card-art .poster-quality{left:7px;bottom:7px}
+  .card-art .poster-year{right:7px;bottom:7px}
+  .card-art .poster-rating,.card-art .poster-quality,.card-art .poster-year{min-height:22px;padding:4px 6px;font-size:9px}
+}
