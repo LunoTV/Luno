@@ -23,6 +23,7 @@ const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
 const player=document.querySelector("#player");
 const playerBrowse=document.querySelector("#playerBrowse");
+const playerBrowseToggle=document.querySelector("#playerBrowseToggle");
 const playerBrowseBackdrop=document.querySelector("#playerBrowseBackdrop");
 const playerBrowseTitle=document.querySelector("#playerBrowseTitle");
 const playerBrowseMeta=document.querySelector("#playerBrowseMeta");
@@ -1609,6 +1610,12 @@ function openPlayer(id,type,title,streamUrl=""){
   if(playerSourceButton) playerSourceButton.disabled=false;
   setLunoHistory("player");
   player.classList.remove("hidden");
+  player.classList.remove("is-playing","player-browse-pinned");
+  if(playerBrowseToggle){
+    playerBrowseToggle.hidden=type!=="series";
+    playerBrowseToggle.setAttribute("aria-expanded","false");
+    playerBrowseToggle.textContent="☷ Серии";
+  }
   if(playerBarTitle) playerBarTitle.textContent=title || "LUNO";
   if(playerBarMeta) playerBarMeta.textContent=type==="series" ? "Сериал" : "Фильм";
   if(lunoVideo){
@@ -1978,8 +1985,21 @@ lunoVideo?.addEventListener("timeupdate",()=>{
     });
   }
 });
-lunoVideo?.addEventListener("play",()=>dispatchLunoPlayerAction("PausedChanged",{paused:false}));
-lunoVideo?.addEventListener("pause",()=>dispatchLunoPlayerAction("PausedChanged",{paused:true}));
+lunoVideo?.addEventListener("play",()=>{
+  player?.classList.add("is-playing");
+  dispatchLunoPlayerAction("PausedChanged",{paused:false});
+});
+lunoVideo?.addEventListener("pause",()=>{
+  player?.classList.remove("is-playing");
+  dispatchLunoPlayerAction("PausedChanged",{paused:true});
+});
+playerBrowseToggle?.addEventListener("click",()=>{
+  if(!player) return;
+  const pinned=!player.classList.contains("player-browse-pinned");
+  player.classList.toggle("player-browse-pinned",pinned);
+  playerBrowseToggle.setAttribute("aria-expanded",String(pinned));
+  playerBrowseToggle.textContent=pinned?"× Скрыть серии":"☷ Серии";
+});
 lunoVideo?.addEventListener("seeked",()=>{
   const duration=Number(lunoVideo.duration)||0;
   if(duration>0){
