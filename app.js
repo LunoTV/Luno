@@ -901,8 +901,14 @@ function closeLibrary(fromHistory=false){
 
 function navigate(section){
   document.body.classList.toggle("home-mode",section==="home");
-  document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>x.classList.remove("active"));
-  document.querySelectorAll('.nav-item[data-section="'+section+'"],.mobile-tab[data-section="'+section+'"]').forEach(x=>x.classList.add("active"));
+  document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>{
+    x.classList.remove("active");
+    x.removeAttribute("aria-current");
+  });
+  document.querySelectorAll('.nav-item[data-section="'+section+'"],.mobile-tab[data-section="'+section+'"]').forEach(x=>{
+    x.classList.add("active");
+    x.setAttribute("aria-current","page");
+  });
   if(["movies","series","cartoons","anime","shows"].includes(section)){
     openLibrary(section);
     return;
@@ -2235,6 +2241,28 @@ document.addEventListener("keydown",(event)=>{
       active.click();
     }
   }
+});
+
+document.addEventListener("keydown",(event)=>{
+  const current=document.activeElement;
+  if(!current?.matches(".card")||event.altKey||event.ctrlKey||event.metaKey) return;
+  if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].includes(event.key)) return;
+  const grid=current.closest(".library-infinite-grid,.cards");
+  if(!grid) return;
+  const cards=Array.from(grid.querySelectorAll(".card")).filter(card=>!card.disabled);
+  const index=cards.indexOf(current);
+  if(index<0||!cards.length) return;
+  let next=index;
+  if(event.key==="Home") next=0;
+  else if(event.key==="End") next=cards.length-1;
+  else{
+    const columns=Math.max(1,Math.round(grid.getBoundingClientRect().width/Math.max(1,cards[0].getBoundingClientRect().width+12)));
+    if(event.key==="ArrowLeft") next=Math.max(0,index-1);
+    if(event.key==="ArrowRight") next=Math.min(cards.length-1,index+1);
+    if(event.key==="ArrowUp") next=Math.max(0,index-columns);
+    if(event.key==="ArrowDown") next=Math.min(cards.length-1,index+columns);
+  }
+  if(next!==index){event.preventDefault();cards[next].focus({preventScroll:true});cards[next].scrollIntoView({block:"nearest",inline:"nearest",behavior:"smooth"});}
 });
 
 document.querySelectorAll(".nav-item,.mobile-tab").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
