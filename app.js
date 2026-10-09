@@ -262,10 +262,25 @@ function posterCandidates(item){
   const values=[
     item?.poster,
     item?.posterSource,
-    item?.poster_path ? "https://image.tmdb.org/t/p/w500/"+String(item.poster_path).replace(/^\//,"") : "",
-    item?.poster_path ? "https://image.tmdb.org/t/p/original/"+String(item.poster_path).replace(/^\//,"") : "",
+    item?.poster_path ? "https://image.tmdb.org/t/p/w500/"+String(item.poster_path).replace(/^\\//,"") : "",
+    item?.poster_path ? "https://image.tmdb.org/t/p/original/"+String(item.poster_path).replace(/^\\//,"") : "",
     item?.background
   ];
+  // Use a working LUNO catalog poster only when title/type/year match.
+  const targetName=normalizeSearchText(item?.name||item?.originalName||"");
+  const targetYear=searchYear(item);
+  if(targetName){
+    const localMatches=(Array.isArray(catalogItems)?catalogItems:[]).filter(candidate=>{
+      if(!candidate?.poster || candidate.id===item?.id) return false;
+      if(normalizeSearchText(candidate?.name||candidate?.originalName||"")!==targetName) return false;
+      const candidateType=candidate?.type==="tv"?"series":(candidate?.type||"movie");
+      const targetType=item?.type==="tv"?"series":(item?.type||"movie");
+      if(candidateType!==targetType) return false;
+      const candidateYear=searchYear(candidate);
+      return !targetYear || !candidateYear || targetYear===candidateYear;
+    });
+    for(const candidate of localMatches) values.push(candidate.poster);
+  }
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
 // Shared device capability check used by poster loading and prefetching.
