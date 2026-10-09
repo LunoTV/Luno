@@ -97,10 +97,41 @@ function directionScore(from, to, direction) {
 }
 
 function move(root, direction) {
-  const entries = getFocusable(root, true);
+  const active = document.activeElement;
+  let entries;
+
+  // Catalog rows contain many cards. Never measure the entire page for every
+  // DPAD press: horizontal moves inspect one row; vertical moves inspect row
+  // containers first and then measure only the cards in the nearest row.
+  if (active?.matches?.(".card")) {
+    const row = active.closest(".cards");
+    if (row && (direction === "left" || direction === "right")) {
+      entries = [...row.querySelectorAll(".card")].map((element) => ({ element, rect: elementRect(element) }))
+        .filter((entry) => visible(entry.element, entry.rect, true));
+    } else if (row && (direction === "up" || direction === "down")) {
+      const fromRow = elementRect(row);
+      const rows = [...root.querySelectorAll(".cards")].map((element) => ({ element, rect: elementRect(element) }))
+        .filter((entry) => visible(entry.element, entry.rect, true) && entry.element !== row);
+      const nextRows = rows.filter((entry) => direction === "up"
+        ? entry.rect.bottom <= fromRow.top + 8
+        : entry.rect.top >= fromRow.bottom - 8);
+      nextRows.sort((a,b) => Math.abs((direction === "up" ? fromRow.top - a.rect.bottom : a.rect.top - fromRow.bottom))
+        - Math.abs((direction === "up" ? fromRow.top - b.rect.bottom : b.rect.top - fromRow.bottom)));
+      const targetRow = nextRows[0]?.element;
+      entries = targetRow
+        ? [...targetRow.querySelectorAll(".card")].map((element) => ({ element, rect: elementRect(element) }))
+          .filter((entry) => visible(entry.element, entry.rect, true))
+        : [];
+      if (!entries.length) {
+        window.scrollBy({ top: (direction === "up" ? -1 : 1) * Math.max(140, window.innerHeight * 0.48), behavior: "auto" });
+        return true;
+      }
+    }
+  }
+
+  if (!entries) entries = getFocusable(root, true);
   if (!entries.length) return false;
   const all = entries.map((entry) => entry.element);
-  const active = document.activeElement;
   const activeEntry = entries.find((entry) => entry.element === active);
 
   if (!activeEntry) {
