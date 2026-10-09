@@ -829,6 +829,9 @@ function getYear(item){
   return Number(String(item?.releaseInfo||"").match(/\d{4}/)?.[0]||0);
 }
 
+function setHTMLIfChanged(node,html){
+  if(node && node.innerHTML!==html) node.innerHTML=html;
+}
 function renderDiscovery(){
   const all=catalogItems.slice();
   const trending=all.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,18);
@@ -839,9 +842,9 @@ function renderDiscovery(){
     .sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0) || (Number(b.popularity)||0)-(Number(a.popularity)||0))
     .slice(0,18);
 
-  if(trendingCards) trendingCards.innerHTML=trending.map(card).join("");
-  if(newCards) newCards.innerHTML=fresh.map(card).join("");
-  if(topCards) topCards.innerHTML=top.map(card).join("");
+  if(trendingCards) setHTMLIfChanged(trendingCards,trending.map(card).join(""));
+  if(newCards) setHTMLIfChanged(newCards,fresh.map(card).join(""));
+  if(topCards) setHTMLIfChanged(topCards,top.map(card).join(""));
 
   const genres=[
     ["Боевики","⚡"],["Комедии","☻"],["Драмы","◒"],["Фантастика","✦"],
@@ -872,9 +875,9 @@ function renderCatalogSections(){
     const html=fallback.map((item,index)=>card(item,index<6)).join("");
     [trendingCards,newCards,topCards].forEach(node=>{if(node && !node.children.length)node.innerHTML=html;});
   }
-  if(movieCards) movieCards.innerHTML=movieItems.slice(0,movieVisible).map((item,index)=>card(item,index<6)).join("");
-  if(openCinemaCards) openCinemaCards.innerHTML=openCinemaItems.map((item,index)=>card(item,index<6)).join("");
-  if(seriesCards) seriesCards.innerHTML=seriesItems.slice(0,seriesVisible).map((item,index)=>card(item,index<6)).join("");
+  if(movieCards) setHTMLIfChanged(movieCards,movieItems.slice(0,movieVisible).map((item,index)=>card(item,index<6)).join(""));
+  if(openCinemaCards) setHTMLIfChanged(openCinemaCards,openCinemaItems.map((item,index)=>card(item,index<6)).join(""));
+  if(seriesCards) setHTMLIfChanged(seriesCards,seriesItems.slice(0,seriesVisible).map((item,index)=>card(item,index<6)).join(""));
   const all=catalogItems.slice();
   const picks=all.slice().sort((a,b)=>
     ((Number(b.rating)||0)*0.6+(Number(b.popularity)||0)*0.4)-
@@ -887,9 +890,9 @@ function renderCatalogSections(){
   const classics=all.filter(item=>getYear(item)>0 && getYear(item)<=2010)
     .sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0) || (Number(b.popularity)||0)-(Number(a.popularity)||0))
     .slice(0,18);
-  if(lunoPicksCards) lunoPicksCards.innerHTML=picks.map((item,index)=>card(item,index<6)).join("");
-  if(eveningCards) eveningCards.innerHTML=evening.map((item,index)=>card(item,index<6)).join("");
-  if(classicsCards) classicsCards.innerHTML=classics.map((item,index)=>card(item,index<6)).join("");
+  if(lunoPicksCards) setHTMLIfChanged(lunoPicksCards,picks.map((item,index)=>card(item,index<6)).join(""));
+  if(eveningCards) setHTMLIfChanged(eveningCards,evening.map((item,index)=>card(item,index<6)).join(""));
+  if(classicsCards) setHTMLIfChanged(classicsCards,classics.map((item,index)=>card(item,index<6)).join(""));
   renderResume();
   renderFavorites();
   bindCards();
