@@ -317,22 +317,26 @@ function card(item,eager=false){
   const fallbacks=candidates.slice(1,6);
   const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
-  const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
+  const type=item?.type==="series" ? "СЕРИАЛ" : "ФИЛЬМ";
+  const genres=Array.isArray(item?.genres)?item.genres.map(g=>typeof g==="string"?g:(g?.name||"")).filter(Boolean):[];
+  const genreLabel=genres[0]||type;
   const posterPlaceholder='<span class="poster-fallback poster-fallback-title" aria-hidden="true"><span>'+escapeHtml(title)+'</span></span>';
   const imageHtml=image
     ? posterPlaceholder+'<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager && !isLowPowerTV() ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager && !isLowPowerTV() ? "high" : "low")+'" referrerpolicy="no-referrer">'
     : posterPlaceholder;
-  // Show only real metadata on the poster. A rating must never be presented
-  // as a fake 4K/FULLHD source-quality claim.
   const meta=(rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
     (year ? '<span class="card-year">'+year+'</span>' : '');
-  return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="'+escapeHtml(title)+'">'+
-    '<div class="card-art">'+imageHtml+
-      '<div class="card-gradient"></div>'+
+  const overlayMeta=(rating ? '<span class="card-hover-rating">★ '+rating+'</span>' : '')+
+    (year ? '<span>'+year+'</span>' : '')+
+    '<span>'+escapeHtml(genreLabel)+'</span>';
+  return '<button class="card" data-id="'+escapeHtml(item?.id||"")+'" data-type="'+escapeHtml(item?.type||"movie")+'" data-title="'+escapeHtml(title)+'" aria-label="Открыть '+escapeHtml(title)+'">'+
+    '<span class="card-art">'+imageHtml+
+      '<span class="card-gradient"></span>'+
       '<span class="card-type card-corner">'+escapeHtml(type)+'</span>'+
-      '<div class="card-info">'+meta+'</div>'+
-    '</div>'+
-    '<div class="card-title">'+escapeHtml(title)+'</div>'+
+      '<span class="card-info">'+meta+'</span>'+
+      '<span class="card-hover-panel"><span class="card-hover-meta">'+overlayMeta+'</span><span class="card-hover-title">'+escapeHtml(title)+'</span><span class="card-hover-cta">Подробнее <span aria-hidden="true">↗</span></span></span>'+
+    '</span>'+
+    '<span class="card-title">'+escapeHtml(title)+'</span>'+
   '</button>';
 }
 
