@@ -153,7 +153,7 @@ export function installRemoteNavigation() {
     // Keep keyboard focus inside modal dialogs; background controls must not receive TV input.
     const root = activeLayer();
     if (event.key === "Tab" && root?.matches("#confirmDialog,[aria-modal=true]")) {
-      const items = getFocusable(root);
+      const items = getFocusable(root).map((entry) => entry.element);
       if (!items.length) { event.preventDefault(); return; }
       const first = items[0];
       const last = items[items.length - 1];
