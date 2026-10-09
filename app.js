@@ -318,9 +318,10 @@ function card(item,eager=false){
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
   const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
+  const posterPlaceholder='<span class="poster-fallback poster-fallback-title" aria-hidden="true"><span>'+escapeHtml(title)+'</span></span>';
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager && !isLowPowerTV() ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager && !isLowPowerTV() ? "high" : "low")+'" referrerpolicy="no-referrer">'
-    : '<span class="poster-fallback poster-fallback-title"><span>'+escapeHtml(title)+'</span></span>';
+    ? posterPlaceholder+'<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager && !isLowPowerTV() ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager && !isLowPowerTV() ? "high" : "low")+'" referrerpolicy="no-referrer">'
+    : posterPlaceholder;
   const meta='<span class="card-quality">'+quality+'</span>'+
     (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
     (year ? '<span class="card-year">'+year+'</span>' : '');
@@ -371,7 +372,10 @@ function bindCards(){
   document.querySelectorAll(".card-art img").forEach((img)=>{
     if(img.dataset.posterReadyBound==="1") return;
     img.dataset.posterReadyBound="1";
-    const reveal=()=>img.classList.add("is-poster-ready");
+    const reveal=()=>{
+      img.classList.add("is-poster-ready");
+      img.closest(".card-art")?.querySelector(".poster-fallback")?.remove();
+    };
     if(img.complete && img.naturalWidth>0) reveal();
     else {
       img.addEventListener("load",reveal,{once:true});
@@ -392,7 +396,10 @@ function bindCards(){
           return;
         }
         image.remove();
-        c.querySelector(".card-art")?.insertAdjacentHTML("afterbegin",'<span class="poster-fallback poster-fallback-title"><span>'+escapeHtml(c.dataset.title||"Без названия")+'</span></span>');
+        const art=c.querySelector(".card-art");
+        if(art && !art.querySelector(".poster-fallback")){
+          art.insertAdjacentHTML("afterbegin",'<span class="poster-fallback poster-fallback-title"><span>'+escapeHtml(c.dataset.title||"Без названия")+'</span></span>');
+        }
       },{once:false});
     }
     c.type="button";
