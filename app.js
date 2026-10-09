@@ -945,8 +945,7 @@ function renderHomeHero(item){
   const type=mediaCategory(item)==="series"?"Сериал":"Фильм";
   const description=String(item.description||item.overview||"").trim();
   const backdrop=hero.querySelector(".home-hero-backdrop");
-  if(backdrop)backdrop.style.backgroundImage=background?'url("'+background.replace(/["\\\\]/g,"\\\\
-function renderCatalogSections(){")+'")':"none";
+  if(backdrop)backdrop.style.backgroundImage=background ? `url("${background.replace(/"/g, "%22")}")` : "none";
   const art=hero.querySelector(".home-hero-poster");
   if(art){art.src=poster;art.alt=title;art.hidden=!poster;}
   const heading=hero.querySelector(".home-hero-title");if(heading)heading.textContent=title;
