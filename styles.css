@@ -3154,3 +3154,60 @@ img{backface-visibility:hidden}
   font-size:11px;
   line-height:1.5;
 }
+
+/* ---------- TV browser performance mode ---------- */
+/* LUNO remains a web app, but TV browsers have weak compositing/GPU budgets.
+   Keep the interface responsive and hide only scrollbar chrome, not scrolling. */
+@media (min-width:701px) and (hover:none) {
+  html {
+    scroll-behavior:auto!important;
+    scrollbar-width:none;
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  #app::-webkit-scrollbar {
+    width:0!important;
+    height:0!important;
+    display:none!important;
+  }
+  .topbar,
+  .overlay,
+  .secondary,
+  .hero-copy .eyebrow,
+  .library-toolbar,
+  .source-sheet,
+  .player-browse-panel {
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+  .hero-backdrop,
+  .detail-backdrop {
+    filter:none!important;
+  }
+  .card,
+  .card-art img,
+  .nav-item,
+  .primary,
+  .secondary,
+  .source-nav-btn,
+  .genre-tile {
+    transition:none!important;
+    animation:none!important;
+  }
+  .card:hover,
+  .card:focus-visible,
+  .card:hover .card-art img,
+  .hero-poster-wrap:hover .hero-poster,
+  .genre-tile:hover,
+  .genre-tile:focus-visible {
+    transform:none!important;
+    box-shadow:none!important;
+  }
+  .card:focus-visible,
+  .card.tv-remote-focus,
+  button.tv-remote-focus,
+  a.tv-remote-focus {
+    outline:3px solid #fff!important;
+    outline-offset:3px!important;
+  }
+}
