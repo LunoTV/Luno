@@ -34,7 +34,7 @@ export function loadSourceDefinitions(registry,definitions=readSourceDefinitions
     if(!source)continue;
     registry.register({
       ...source,
-      async resolve(item,{requestJson,parseSourcePayload}={}){
+      async resolve(item,{requestJson,parseSourcePayload,signal,sourceTimeout}={}){
         if(typeof requestJson!=="function")return[];
         const u=new URL(source.endpoint);
         const fields={
@@ -47,7 +47,11 @@ export function loadSourceDefinitions(registry,definitions=readSourceDefinitions
         for(const [key,value] of Object.entries(fields)){
           if(value!=null&&value!=="")u.searchParams.set(key,String(value));
         }
-        const data=await requestJson(u.toString());
+        if(signal?.aborted)return[];
+        const data=await requestJson(u.toString(),{
+          signal,
+          timeout:Number(sourceTimeout)||9000
+        });
         return typeof parseSourcePayload==="function"?parseSourcePayload(data):data;
       }
     });
