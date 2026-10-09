@@ -321,8 +321,11 @@ function card(item,eager=false){
   const genres=Array.isArray(item?.genres)?item.genres.map(g=>typeof g==="string"?g:(g?.name||"")).filter(Boolean):[];
   const genreLabel=genres[0]||type;
   const posterPlaceholder='<span class="poster-fallback poster-fallback-title" aria-hidden="true"><span>'+escapeHtml(title)+'</span></span>';
+  // Smart-TV browsers often defer lazy images inside horizontal rails indefinitely.
+  // Load the first visible posters eagerly on TVs; keep the rest lazy to protect memory.
+  const tvPosterPriority=isLowPowerTV() && eager;
   const imageHtml=image
-    ? posterPlaceholder+'<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager && !isLowPowerTV() ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager && !isLowPowerTV() ? "high" : "low")+'" referrerpolicy="no-referrer">'
+    ? posterPlaceholder+'<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager && !isLowPowerTV() ? "high" : "auto")+'" referrerpolicy="no-referrer"'+(tvPosterPriority?' data-tv-poster="priority"':'')+'>'
     : posterPlaceholder;
   const meta=(rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
     (year ? '<span class="card-year">'+year+'</span>' : '');
