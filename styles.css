@@ -3021,3 +3021,92 @@ textarea.tv-remote-focus,
 }
 .card.tv-remote-focus{transform:translateY(-4px) scale(1.025)!important}
 .nav-item.tv-remote-focus,.mobile-tab.tv-remote-focus{background:rgba(255,255,255,.16)!important;color:#fff!important}
+
+
+/* ---------- LUNO APP FEEL / MOTION SYSTEM ---------- */
+/* Keep transitions deliberate and compositor-friendly: avoid animating layout. */
+:root{
+  --luno-motion-fast:150ms;
+  --luno-motion:240ms;
+  --luno-motion-slow:420ms;
+  --luno-ease:cubic-bezier(.22,1,.36,1);
+}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{
+  -webkit-tap-highlight-color:transparent;
+  text-rendering:optimizeLegibility;
+}
+button,a,[role="button"]{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{transition:background-color var(--luno-motion-fast) ease,border-color var(--luno-motion-fast) ease,color var(--luno-motion-fast) ease,opacity var(--luno-motion-fast) ease,transform var(--luno-motion-fast) var(--luno-ease)}
+button:active{transform:scale(.975)}
+img{backface-visibility:hidden}
+.cards,.search-results,.library-content,.library-infinite-grid,.player-browse-episodes{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+}
+.card{
+  border-radius:16px;
+  transform:translateZ(0);
+  transition:transform 260ms var(--luno-ease),box-shadow 260ms ease,background-color 200ms ease;
+}
+.card-art img{transition:transform 520ms var(--luno-ease),filter 350ms ease;will-change:transform}
+@media(hover:hover) and (pointer:fine){
+  .card:hover .card-art img{transform:scale(1.045);filter:saturate(1.06)}
+  .card:hover{transform:translateY(-4px) translateZ(0)}
+}
+.card:active{transform:scale(.975) translateZ(0)}
+.nav-item,.mobile-tab,.section-more,.icon-btn,.source-nav-btn,.secondary,.primary{
+  transition:transform 180ms var(--luno-ease),background-color 180ms ease,border-color 180ms ease,color 180ms ease,box-shadow 180ms ease;
+}
+.nav-item:active,.mobile-tab:active,.section-more:active,.icon-btn:active,.source-nav-btn:active,.secondary:active,.primary:active{transform:scale(.96)}
+.hero-backdrop,.detail-backdrop{will-change:opacity,transform}
+.hero-copy,.hero-poster-wrap{animation:lunoContentIn 680ms var(--luno-ease) both}
+.hero-poster-wrap{animation-delay:80ms}
+.detail-overlay:not(.hidden),.overlay:not(.hidden),.library-view:not(.hidden){
+  animation:lunoScreenIn 280ms var(--luno-ease) both;
+}
+.detail-overlay:not(.hidden) .luno-detail-hero-copy,
+.detail-overlay:not(.hidden) .detail-shell{
+  animation:lunoContentIn 420ms var(--luno-ease) both;
+}
+.overlay:not(.hidden) .luno-search-screen,
+.overlay:not(.hidden) .addon-manager,
+.library-view:not(.hidden) .library-head{
+  animation:lunoContentIn 320ms var(--luno-ease) both;
+}
+.source-sheet:not(.hidden){
+  animation:lunoSheetIn 260ms var(--luno-ease) both;
+  transform-origin:bottom center;
+}
+.splash-screen{transition:opacity 420ms ease,visibility 420ms ease}
+.splash-screen.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+@keyframes lunoScreenIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes lunoContentIn{
+  from{opacity:0;transform:translate3d(0,12px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes lunoSheetIn{
+  from{opacity:0;transform:translate3d(0,18px,0) scale(.99)}
+  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+@media(max-width:700px){
+  html{scroll-padding-top:68px}
+  .topbar{transition:background-color 220ms ease,backdrop-filter 220ms ease}
+  .section{scroll-margin-top:76px}
+  .card{border-radius:13px}
+  .card-art img{transition:transform 360ms var(--luno-ease)}
+  .detail-overlay,.library-view,.overlay{overscroll-behavior:contain}
+  .luno-detail-hero-copy{animation:lunoContentIn 360ms var(--luno-ease) both}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+  }
+}
