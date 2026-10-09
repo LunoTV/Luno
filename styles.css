@@ -4552,40 +4552,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 }
 
 
-/* MOBILE TITLE FIX: wrap long Russian titles beneath posters, never run into neighbors. */
-@media(max-width:700px){
-  main>.section .cards>.card{
-    flex:0 0  min(72vw, 205px)!important;
-    width:min(72vw,205px)!important;
-    min-width:0!important;
-    max-width:min(72vw,205px)!important;
-  }
-  main>.section .cards>.card .card-art{
-    width:100%!important;
-    height:auto!important;
-    aspect-ratio:2/3!important;
-  }
-  main>.section .cards>.card .card-title{
-    display:-webkit-box!important;
-    width:100%!important;
-    max-width:100%!important;
-    min-width:0!important;
-    white-space:normal!important;
-    overflow:hidden!important;
-    overflow-wrap:anywhere!important;
-    word-break:normal!important;
-    text-overflow:ellipsis!important;
-    -webkit-box-orient:vertical!important;
-    -webkit-line-clamp:2!important;
-    line-height:1.28!important;
-    min-height:2.56em!important;
-    font-size:14px!important;
-    padding:9px 3px 2px!important;
-    box-sizing:border-box!important;
-  }
-}
-
-
 /* iPhone Safari: keep the mobile shutter as an opaque clipping edge while scrolling. */
 @media(max-width:700px){
   html,body,#app{max-width:100%!important;overflow-x:clip!important}
@@ -4611,4 +4577,37 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   }
   .topbar.luno-nav-shutter .global-header-settings span{font-size:17px!important}
   main{padding-top:0!important}
+}
+
+
+/* Mobile titles only: restore original poster size; truncate long names cleanly. */
+@media(max-width:700px){
+  main>.section .cards>.card{
+    flex:0 0 128px!important;
+    width:128px!important;
+    min-width:128px!important;
+    max-width:128px!important;
+  }
+  main>.section .cards>.card .card-art{
+    width:128px!important;
+    height:192px!important;
+    aspect-ratio:auto!important;
+  }
+  main>.section .cards>.card .card-title{
+    display:block!important;
+    width:128px!important;
+    max-width:128px!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+    line-height:1.25!important;
+    font-size:12px!important;
+    padding:8px 2px 2px!important;
+    box-sizing:border-box!important;
+  }
 }
