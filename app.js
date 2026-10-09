@@ -427,8 +427,9 @@ function paintDetail(value){
     10767:"Ток-шоу",10768:"Война"
   };
   const genreNames=genres.map(g=>genreMap[g]||g).filter(Boolean).slice(0,5);
-  const quality=score>=8.2 ? "4K" : score>=6.8 ? "FULLHD" : "HD";
-  const qualityPct=quality==="4K" ? 96 : quality==="FULLHD" ? 78 : 55;
+  // TMDB ratings describe audience reception, not video resolution.
+  // Never claim 4K/Full HD until the selected stream provides that metadata.
+  const quality="По источнику";
 
   if(detailHeroPoster) detailHeroPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
   if(detailPoster) detailPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
@@ -444,7 +445,6 @@ function paintDetail(value){
 
   if(detailBadges){
     detailBadges.innerHTML=[
-      quality ? '<span class="detail-badge detail-quality">'+escapeHtml(quality)+'</span>' : "",
       score>0 ? '<span class="detail-badge detail-badge-score">★ '+score.toFixed(1)+'</span>' : "",
       ...genreNames.slice(0,3).map(g=>'<span class="detail-badge detail-badge-muted">'+escapeHtml(g)+'</span>')
     ].filter(Boolean).join("");
@@ -454,15 +454,15 @@ function paintDetail(value){
   if(detailReleaseInfo) detailReleaseInfo.textContent=year;
   if(detailTypeInfo) detailTypeInfo.textContent=type;
   if(detailQualityInfo) detailQualityInfo.textContent=quality;
-  if(detailQualityBar) detailQualityBar.style.width=qualityPct+"%";
-  if(detailQualityText) detailQualityText.textContent=quality==="4K" ? "Максимальное доступное качество" : "Оптимально для просмотра";
+  if(detailQualityBar) detailQualityBar.style.width="0%";
+  if(detailQualityText) detailQualityText.textContent="Качество определяется выбранным потоком";
 
   if(detailRatings){
     detailRatings.innerHTML=[
       '<div class="luno-score"><strong>'+ (score>0 ? score.toFixed(1) : "—") +'</strong><span>LUNO</span></div>',
       '<div><strong>'+escapeHtml(year)+'</strong><span>год</span></div>',
       '<div><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>',
-      '<div><strong>'+escapeHtml(quality)+'</strong><span>качество</span></div>'
+      '<div><strong>'+escapeHtml(quality)+'</strong><span>источник</span></div>'
     ].join("");
   }
 
