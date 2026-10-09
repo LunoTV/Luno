@@ -2266,14 +2266,46 @@ document.addEventListener("keydown",(event)=>{
   const index=cards.indexOf(current);
   if(index<0||!cards.length) return;
   let next=index;
+  const rail=getComputedStyle(grid).gridAutoFlow.includes("column") && grid.scrollWidth>grid.clientWidth+8;
+  if(rail && (event.key==="ArrowUp"||event.key==="ArrowDown")){
+    const sections=Array.from(document.querySelectorAll("main>.section"))
+      .filter(section=>!section.hidden && getComputedStyle(section).display!=="none")
+      .map(section=>({section,rail:section.querySelector(":scope > .cards")}))
+      .filter(entry=>entry.rail && entry.rail.scrollWidth>entry.rail.clientWidth+8);
+    const position=sections.findIndex(entry=>entry.rail===grid);
+    const direction=event.key==="ArrowUp"?-1:1;
+    const adjacent=sections[position+direction];
+    if(adjacent){
+      const sourceRect=current.getBoundingClientRect();
+      const sourceCenter=sourceRect.left+sourceRect.width/2;
+      const candidates=Array.from(adjacent.rail.querySelectorAll(".card")).filter(card=>!card.disabled);
+      if(candidates.length){
+        next=index;
+        const target=candidates[Math.min(index,candidates.length-1)];
+        const targetRect=target.getBoundingClientRect();
+        const targetCenter=targetRect.left+targetRect.width/2;
+        let best=target,bestDistance=Math.abs(targetCenter-sourceCenter);
+        for(const candidate of candidates){
+          const rect=candidate.getBoundingClientRect();
+          const distance=Math.abs(rect.left+rect.width/2-sourceCenter);
+          if(distance<bestDistance){best=candidate;bestDistance=distance;}
+        }
+        event.preventDefault();
+        best.focus({preventScroll:true});
+        best.scrollIntoView({block:"nearest",inline:"nearest",behavior:"smooth"});
+        return;
+      }
+    }
+    return;
+  }
   if(event.key==="Home") next=0;
   else if(event.key==="End") next=cards.length-1;
   else{
-    const columns=Math.max(1,Math.round(grid.getBoundingClientRect().width/Math.max(1,cards[0].getBoundingClientRect().width+12)));
+    const columns=rail?1:Math.max(1,Math.round(grid.getBoundingClientRect().width/Math.max(1,cards[0].getBoundingClientRect().width+12)));
     if(event.key==="ArrowLeft") next=Math.max(0,index-1);
     if(event.key==="ArrowRight") next=Math.min(cards.length-1,index+1);
-    if(event.key==="ArrowUp") next=Math.max(0,index-columns);
-    if(event.key==="ArrowDown") next=Math.min(cards.length-1,index+columns);
+    if(!rail && event.key==="ArrowUp") next=Math.max(0,index-columns);
+    if(!rail && event.key==="ArrowDown") next=Math.min(cards.length-1,index+columns);
   }
   if(next!==index){event.preventDefault();cards[next].focus({preventScroll:true});cards[next].scrollIntoView({block:"nearest",inline:"nearest",behavior:"smooth"});}
 });
