@@ -4714,3 +4714,27 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     box-shadow:inset 0 0 16px rgba(107,111,231,.16),0 0 12px rgba(107,111,231,.12);
   }
 }
+
+
+/* ---------- LUNO CRESCENT MOON MARK ---------- */
+/* Turn the existing lunar orb into a crescent; keep its ring and dimensions unchanged. */
+.brand-moon{
+  position:relative!important;
+  overflow:visible!important;
+  background:linear-gradient(145deg,#F1F0FF 0%,#B9B8FF 42%,#6B6FE7 100%)!important;
+  border-radius:50%!important;
+  box-shadow:0 0 12px rgba(107,111,231,.42),inset -3px -2px 5px rgba(36,31,95,.2)!important;
+}
+.brand-moon:after{
+  content:""!important;
+  position:absolute!important;
+  display:block!important;
+  width:78%!important;height:78%!important;
+  top:-9%!important;left:40%!important;
+  border-radius:50%!important;
+  background:#000!important;
+  box-shadow:2px 1px 5px rgba(0,0,0,.22)!important;
+}
+.topbar.luno-nav-shutter .brand-moon:after{
+  background:#080808!important;
+}
