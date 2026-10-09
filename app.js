@@ -2116,11 +2116,29 @@ function prefetchPosters(items){
     setSplashProgress(25,"Подключаем каталог…");
     const catalog=await loadTmdbCatalog();
     setSplashProgress(68,"Загружаем фильмы и сериалы…");
-    renderItems(catalog.items,catalog.sections);
+    const rendered=renderItems(catalog.items,catalog.sections);
+    if(!rendered || !catalogItems.length){
+      console.error("[LUNO] Catalog payload received but no valid items rendered", {
+        payloadItems:Array.isArray(catalog.items)?catalog.items.length:0,
+        bundledItems:Array.isArray(bundledTmdbCatalog?.items)?bundledTmdbCatalog.items.length:0
+      });
+      const backup=Array.isArray(bundledTmdbCatalog?.items)?bundledTmdbCatalog.items:[];
+      if(backup.length && renderItems(backup,bundledTmdbCatalog.sections||{})){
+        console.warn("[LUNO] Recovered home catalog from bundled payload",catalogItems.length);
+      }else{
+        throw new Error("Catalog payload contained no renderable items");
+      }
+    }
     prefetchPosters(catalogItems);
     showCoreStatus("Каталог готов");
     setSplashProgress(88,"Почти готово…");
-    console.info("LUNO TMDB catalog loaded",catalogItems.length);
+    console.info("LUNO TMDB catalog loaded", {
+      total:catalogItems.length,
+      movies:movieItems.length,
+      series:seriesItems.length,
+      trendingCards:trendingCards?.children.length||0,
+      picksCards:lunoPicksCards?.children.length||0
+    });
   }catch(error){
     console.error("LUNO TMDB catalog failed",error);
     showCatalogMessage("Каталог пока недоступен. Перезапустите приложение позже.");
