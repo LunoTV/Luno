@@ -3679,3 +3679,14 @@ html,body{
  .luno-detail-section{padding-inline:17px!important}
 }
 @media(prefers-reduced-motion:reduce){.luno-detail-hero .detail-backdrop,.luno-detail-links button:after,.luno-detail-actions button,.luno-actor-card{transition:none!important}}
+
+
+/* LUNO catalogue sorting */
+.library-sort{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 20px}
+.library-sort button{appearance:none;border:1px solid rgba(255,255,255,.13);border-radius:999px;background:#121318;color:#aeb0b8;padding:10px 15px;font:600 12px/1.1 inherit;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease}
+.library-sort button:hover,.library-sort button:focus-visible{border-color:rgba(255,255,255,.55);color:#fff;outline:none}
+.library-sort button.active{background:#f4f4f5;border-color:#f4f4f5;color:#08090b;box-shadow:0 4px 18px rgba(255,255,255,.08)}
+.library-sort button:active{transform:scale(.97)}
+.library-toolbar-count{font-variant-numeric:tabular-nums}
+@media(max-width:600px){.library-sort{gap:7px;padding-bottom:15px}.library-sort button{padding:9px 12px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.library-sort button{transition:none}}
