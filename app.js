@@ -2197,6 +2197,13 @@ document.querySelectorAll(".luno-menu-item[data-section]").forEach(btn=>btn.addE
 document.querySelector("#lunoMenuSources")?.addEventListener("click",()=>{closeLunoMenu();(document.querySelector("#openAddonManagerTop")||document.querySelector("#openAddonManager"))?.click();});
 document.addEventListener("keydown",event=>{if(event.key==="Escape")closeLunoMenu();});
 
+document.querySelector("#homeHero")?.addEventListener("click",event=>{
+  const button=event.target.closest("[data-hero-action]");
+  if(!button)return;
+  const item=window.__LUNO_ITEMS__?.get(document.querySelector("#homeHero")?.dataset.itemId);
+  if(item)openDetail(item);
+});
+
 // TV navigation follows the active screen/sheet, with per-screen focus memory.
 installRemoteNavigation();
 
