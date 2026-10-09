@@ -2524,3 +2524,21 @@ function prefetchPosters(items){
   window.clearTimeout(splashSafetyTimer);
   finishSplash();
 })();
+
+
+/* Keep the fixed LUNO tab bar inside Safari's currently visible viewport.
+   iOS Safari changes the visual viewport when its bottom toolbar expands/collapses. */
+(function(){
+  const updateLunoViewportBottom=()=>{
+    const vv=window.visualViewport;
+    const gap=vv ? Math.max(0,window.innerHeight-(vv.height+vv.offsetTop)) : 0;
+    document.documentElement.style.setProperty("--luno-vv-bottom",gap+"px");
+  };
+  updateLunoViewportBottom();
+  window.addEventListener("resize",updateLunoViewportBottom,{passive:true});
+  window.addEventListener("orientationchange",updateLunoViewportBottom,{passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize",updateLunoViewportBottom,{passive:true});
+    window.visualViewport.addEventListener("scroll",updateLunoViewportBottom,{passive:true});
+  }
+})();
