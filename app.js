@@ -543,6 +543,7 @@ function lunoHistorySnapshot(){
     ...(history.state||{}),
     scrollY:window.scrollY,
     focusId:active?.id||"",
+    focusCardDataId:active?.closest?.(".card")?.dataset?.id||"",
     libraryScrollTop:libraryContent?.scrollTop||0
   };
 }
@@ -551,7 +552,8 @@ function setLunoHistory(view){
     const current=history.state?.luno;
     const snapshot=lunoHistorySnapshot();
     if(current) history.replaceState(snapshot,"",location.href);
-    const next={luno:view,scrollY:window.scrollY,focusId:document.activeElement?.id||"",libraryScrollTop:libraryContent?.scrollTop||0};
+    const active=document.activeElement;
+    const next={luno:view,scrollY:window.scrollY,focusId:active?.id||"",focusCardDataId:active?.closest?.(".card")?.dataset?.id||"",libraryScrollTop:libraryContent?.scrollTop||0};
     const url=view==="home" ? location.pathname+location.search : "#"+view;
     if(current===view) history.replaceState(next,"",url);
     else history.pushState(next,"",url);
@@ -566,9 +568,13 @@ function restoreLunoHistoryPosition(state){
   window.setTimeout(()=>{
     if(Number.isFinite(Number(state?.scrollY))) window.scrollTo({top:Number(state.scrollY),behavior:"auto"});
     if(libraryContent && Number.isFinite(Number(state?.libraryScrollTop))) libraryContent.scrollTop=Number(state.libraryScrollTop);
-    const target=state?.focusId ? document.getElementById(state.focusId) : null;
+    let target=state?.focusId ? document.getElementById(state.focusId) : null;
+    if(!target && state?.focusCardDataId){
+      target=[...document.querySelectorAll(".card")].find(card=>card.dataset.id===state.focusCardDataId)||null;
+    }
     if(target && !target.closest(".hidden,[hidden],[aria-hidden=true]")){
       try{target.focus({preventScroll:true});}catch{target.focus();}
+      target.classList.add("tv-remote-focus");
     }
   },0);
 }
@@ -2028,8 +2034,17 @@ document.addEventListener("keydown",(event)=>{
     if(layer){
       event.preventDefault();
       layer[1]();
-      const restore=document.querySelector(".nav-item.active")||document.querySelector(".card.tv-remote-focus")||document.querySelector(".nav-item");
-      window.setTimeout(()=>restore?.focus(),30);
+      const usesBrowserHistory=(
+        layer[0]===player && history.state?.luno==="player"
+      ) || (
+        layer[0]===detail && history.state?.luno==="detail"
+      ) || (
+        layer[0]===libraryView && history.state?.luno && history.state.luno!=="home" && history.state.luno!=="detail"
+      );
+      if(!usesBrowserHistory){
+        const restore=document.querySelector(".nav-item.active")||document.querySelector(".card.tv-remote-focus")||document.querySelector(".nav-item");
+        window.setTimeout(()=>restore?.focus(),30);
+      }
       return;
     }
   }
