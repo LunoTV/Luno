@@ -1082,23 +1082,26 @@ function renderCatalogSections(){
   if(openCinemaCards) setHTMLIfChanged(openCinemaCards,openCinemaItems.map((item,index)=>card(item,index<6)).join(""));
   if(seriesCards) setHTMLIfChanged(seriesCards,seriesItems.slice(0,seriesVisible).map((item,index)=>card(item,index<6)).join(""));
   const all=[...new Map(catalogItems.filter(item=>item?.id).map(item=>[item.id,item])).values()];
-  // Give the LUNO picks rail a fresh mix on each page load and avoid repeating
-  // the first visible titles from "Популярное" whenever the catalog has enough items.
+  // Keep LUNO recommendations stable while scrolling or re-rendering the catalog.
+  // Deterministic ID hash gives a varied order without reshuffling on every render.
   const popularIds=new Set(all.slice().sort((a,b)=>
     (Number(b.popularity)||0)-(Number(a.popularity)||0)
   ).slice(0,6).map(item=>item.id));
-  const shuffleItems=items=>{
-    const shuffled=items.slice();
-    for(let i=shuffled.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+  const stablePickKey=item=>{
+    const value=String(item.id||item.name||item.title||"");
+    let hash=2166136261;
+    for(let i=0;i<value.length;i++){
+      hash^=value.charCodeAt(i);
+      hash=Math.imul(hash,16777619);
     }
-    return shuffled;
+    return hash>>>0;
   };
-  let pickPool=shuffleItems(all.filter(item=>!popularIds.has(item.id)));
+  let pickPool=all.filter(item=>!popularIds.has(item.id))
+    .sort((a,b)=>stablePickKey(a)-stablePickKey(b));
   if(pickPool.length<18){
     const used=new Set(pickPool.map(item=>item.id));
-    pickPool=pickPool.concat(shuffleItems(all.filter(item=>!used.has(item.id))));
+    pickPool=pickPool.concat(all.filter(item=>!used.has(item.id))
+      .sort((a,b)=>stablePickKey(a)-stablePickKey(b)));
   }
   const picks=pickPool.slice(0,18);
   const evening=all.filter(item=>{
