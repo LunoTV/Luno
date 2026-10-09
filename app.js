@@ -795,12 +795,18 @@ function applyLibrarySort(sort){
 function renderLibraryBatch(){
   if(!libraryContent) return;
   const next=libraryItems.slice(libraryVisible,libraryVisible+LIBRARY_BATCH);
-  if(!next.length) return;
   const grid=libraryContent.querySelector(".library-infinite-grid");
   if(!grid) return;
+  if(!next.length){
+    const loader=libraryContent.querySelector("#libraryLoader");
+    if(loader) loader.textContent=libraryItems.length?"Вы просмотрели весь каталог":"В этой категории пока нет фильмов";
+    return;
+  }
   grid.insertAdjacentHTML("beforeend",next.map(card).join(""));
   libraryVisible+=next.length;
   bindCards();
+  const loader=libraryContent.querySelector("#libraryLoader");
+  if(loader) loader.textContent=libraryVisible>=libraryItems.length?"Вы просмотрели весь каталог":"Прокрути вниз для продолжения";
 }
 
 function openCategoryHub(){
