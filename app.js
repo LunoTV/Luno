@@ -951,6 +951,7 @@ function closeLibrary(fromHistory=false){
 
 function navigate(section){
   document.body.classList.toggle("home-mode",section==="home");
+  document.body.classList.toggle("show-global-back",section!=="home");
   document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>{
     x.classList.remove("active");
     x.removeAttribute("aria-current");
