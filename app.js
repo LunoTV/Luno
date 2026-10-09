@@ -117,6 +117,8 @@ const dialogCancel=document.querySelector("#dialogCancel");
 const dialogConfirm=document.querySelector("#dialogConfirm");
 const addonManager=document.querySelector("#addonManager");
 const addonUrlInput=document.querySelector("#addonUrlInput");
+const addonNameInput=document.querySelector("#addonNameInput");
+const sourceInstallForm=document.querySelector("#sourceInstallForm");
 const installAddonButton=document.querySelector("#installAddonButton");
 const addonManagerStatus=document.querySelector("#addonManagerStatus");
 const addonList=document.querySelector("#addonList");
@@ -1037,7 +1039,28 @@ function renderAddonManager(){
 }
 function openAddonManagerPanel(){ closeSourceSheetPanel(); addonManager?.classList.remove("hidden"); renderAddonManager(); }
 function closeAddonManagerPanel(){ addonManager?.classList.add("hidden"); }
-async function installAddonFromInput(){ if(addonManagerStatus) addonManagerStatus.textContent="Источники LUNO встроены в приложение. Внешние manifest-файлы больше не используются."; }
+async function installAddonFromInput(){
+  const endpoint=String(addonUrlInput?.value||"").trim();
+  const name=String(addonNameInput?.value||"").trim();
+  const engine=window.__LUNO_SOURCE_ENGINE__;
+  if(!endpoint){
+    if(addonManagerStatus) addonManagerStatus.textContent="Введи адрес endpoint источника.";
+    addonUrlInput?.focus();
+    return;
+  }
+  if(!engine?.addSourceDefinition){
+    if(addonManagerStatus) addonManagerStatus.textContent="Движок источников ещё запускается. Попробуй через несколько секунд.";
+    return;
+  }
+  const result=engine.addSourceDefinition({name:name||new URL(endpoint).hostname,endpoint});
+  if(!result?.ok){
+    if(addonManagerStatus) addonManagerStatus.textContent=result?.error||"Не удалось добавить источник.";
+    return;
+  }
+  if(addonManagerStatus) addonManagerStatus.textContent="Источник «"+result.source.name+"» добавлен.";
+  if(sourceInstallForm) sourceInstallForm.reset();
+  renderAddonManager();
+}
 
 function showEngineStatus(message){
   const eyebrow=document.querySelector(".hero .eyebrow");
@@ -1934,7 +1957,8 @@ closeAddonManager?.addEventListener("click",closeAddonManagerPanel);
 addonManager?.addEventListener("click",(event)=>{
   if(event.target===addonManager) closeAddonManagerPanel();
 });
-installAddonButton?.addEventListener("click",installAddonFromInput);
+sourceInstallForm?.addEventListener("submit",(event)=>{event.preventDefault();installAddonFromInput();});
+installAddonButton?.addEventListener("click",(event)=>{if(sourceInstallForm){event.preventDefault();installAddonFromInput();}});
 addonUrlInput?.addEventListener("keydown",(event)=>{
   if(event.key==="Enter") installAddonFromInput();
   if(event.key==="Escape") closeAddonManagerPanel();
