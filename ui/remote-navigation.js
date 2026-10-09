@@ -28,20 +28,36 @@ let installed = false;
 let currentRoot = null;
 let pendingFocus = null;
 
-function visible(element) {
+function elementRect(element) {
+  const rect = element.getBoundingClientRect();
+  return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom,
+    width: rect.width, height: rect.height, x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2 };
+}
+
+function visible(element, rect = null, viewportOnly = false) {
   if (!element || !element.isConnected || element.closest("[hidden],[inert],.hidden,[aria-hidden=true]")) return false;
   const style = getComputedStyle(element);
   if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return false;
-  const rect = element.getBoundingClientRect();
-  return rect.width > 0 && rect.height > 0;
+  const box = rect || elementRect(element);
+  if (box.width <= 0 || box.height <= 0) return false;
+  // The home page can contain hundreds of cards. Only include elements near the
+  // viewport in directional search; off-screen rows are reached by scrolling,
+  // rather than measuring every card on every remote key press.
+  if (viewportOnly && (box.right < -24 || box.left > window.innerWidth + 24 ||
+      box.bottom < -24 || box.top > window.innerHeight + 24)) return false;
+  return true;
 }
 
-function getFocusable(root) {
-  return [...root.querySelectorAll(FOCUSABLE)].filter((element) => {
-    if (!visible(element) || element.tabIndex < 0) return false;
-    if (element.matches("input[type=hidden]")) return false;
-    return true;
-  });
+function getFocusable(root, viewportOnly = false) {
+  const elements = root.querySelectorAll(FOCUSABLE);
+  const result = [];
+  for (const element of elements) {
+    if (element.tabIndex < 0 || element.matches("input[type=hidden]")) continue;
+    const rect = elementRect(element);
+    if (visible(element, rect, viewportOnly)) result.push({ element, rect });
+  }
+  return result;
 }
 
 function activeLayer() {
@@ -81,29 +97,29 @@ function directionScore(from, to, direction) {
 }
 
 function move(root, direction) {
-  const all = getFocusable(root);
-  if (!all.length) return false;
-
+  const entries = getFocusable(root, true);
+  if (!entries.length) return false;
+  const all = entries.map((entry) => entry.element);
   const active = document.activeElement;
-  if (!all.includes(active)) {
+  const activeEntry = entries.find((entry) => entry.element === active);
+
+  if (!activeEntry) {
     const remembered = lastFocused.get(root);
-    if (remembered && visible(remembered) && all.includes(remembered)) return focusElement(remembered, root);
+    if (remembered && visible(remembered, null, true) && all.includes(remembered)) return focusElement(remembered, root);
     const preferred = all.find((element) => element.matches(".nav-item.active,.mobile-tab.active"))
       || all.find((element) => element.matches(".card"))
       || all[0];
     return focusElement(preferred, root);
   }
 
-  const currentRect = active.getBoundingClientRect();
-  const from = { ...currentRect, ...center(currentRect) };
+  const from = activeEntry.rect;
   let best = null;
   let bestScore = Infinity;
 
-  for (const candidate of all) {
+  for (const entry of entries) {
+    const candidate = entry.element;
     if (candidate === active) continue;
-    const rect = candidate.getBoundingClientRect();
-    const to = { ...rect, ...center(rect) };
-    const score = directionScore(from, to, direction);
+    const score = directionScore(from, entry.rect, direction);
     if (score < bestScore) {
       best = candidate;
       bestScore = score;
@@ -211,7 +227,7 @@ export function installRemoteNavigation() {
     currentRoot = nextRoot;
     pendingFocus = null;
     requestAnimationFrame(() => {
-      const candidates = getFocusable(nextRoot);
+      const candidates = getFocusable(nextRoot).map((entry) => entry.element);
       if (!candidates.length) return;
       const remembered = lastFocused.get(nextRoot);
       if (remembered && candidates.includes(remembered)) {
@@ -243,7 +259,7 @@ export function installRemoteNavigation() {
     const layer = document.querySelector(selector);
     if (!layer) return;
     requestAnimationFrame(() => {
-      const candidates = getFocusable(layer);
+      const candidates = getFocusable(layer).map((entry) => entry.element);
       const target = lastFocused.get(layer);
       focusElement(target && candidates.includes(target) ? target : candidates[0], layer);
     });
