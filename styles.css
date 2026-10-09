@@ -4079,3 +4079,32 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     transition:none!important;scroll-behavior:auto!important
   }
 }
+
+
+/* ---------- POSTER CLEAN ARTWORK v18 ---------- */
+/* Keep artwork uncluttered: title is already shown below every poster. */
+.card-hover-title,
+.card-hover-cta,
+.card-hover-panel .card-hover-meta span:not(.card-hover-rating){
+  display:none!important;
+}
+.card-hover-panel{
+  background:linear-gradient(180deg,transparent 25%,rgba(0,0,0,.08) 100%)!important;
+  pointer-events:none;
+}
+.card-info .card-year,
+.card-info .card-quality,
+.card-info .card-rating{
+  display:none!important;
+}
+.card-info{display:none!important}
+.card-gradient{
+  background:linear-gradient(180deg,rgba(0,0,0,.10) 0%,transparent 34%,rgba(0,0,0,.08) 100%)!important;
+  box-shadow:none!important;
+}
+.card-type{
+  opacity:.92;
+}
+.card-title{
+  display:block!important;
+}
