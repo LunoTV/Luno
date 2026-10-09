@@ -5,6 +5,7 @@ import {selectBestUrl as selectBestQualityUrl,qualityNumber} from "./sources/qua
 
 const PROVIDERS_KEY="luno-source-providers";
 const SOURCE_PREFS_KEY="luno-source-prefs";
+const DISCOVERED_SOURCES_KEY="luno-discovered-sources";
 const DEFAULT_TIMEOUT=15000;
 const SOURCE_TIMEOUT=9000;
 const CACHE_TTL=15000;
@@ -185,6 +186,12 @@ async function discoverSources(item){
         show:entry.show!==false
       })).filter(x=>x.id&&http(x.url));
 
+      try{
+        const previous=JSON.parse(localStorage.getItem(DISCOVERED_SOURCES_KEY)||"[]");
+        const discovered=new Map((Array.isArray(previous)?previous:[]).map(source=>[source.id,source]));
+        mapped.forEach(source=>discovered.set(source.id,{id:source.id,name:source.name,type:"remote"}));
+        localStorage.setItem(DISCOVERED_SOURCES_KEY,JSON.stringify([...discovered.values()]));
+      }catch{}
       const prefs=sourcePreferences();
       const allowed=mapped.filter(x=>prefs[x.id]!==false);
       if(allowed.length){
@@ -391,12 +398,17 @@ async function resolveItemStreams(item,{videoId="",signal}={}){
 }
 
 function listAvailableSources(){
-  return SOURCE_CATALOG.map(id=>({
-    id,
-    name:id,
-    type:"remote",
-    enabled:true
-  }));
+  let discovered=[];
+  try{
+    const stored=JSON.parse(localStorage.getItem(DISCOVERED_SOURCES_KEY)||"[]");
+    discovered=Array.isArray(stored)?stored:[];
+  }catch{}
+  const byId=new Map(SOURCE_CATALOG.map(id=>[id,{id,name:id,type:"remote"}]));
+  discovered.forEach(source=>{
+    if(source?.id)byId.set(String(source.id),{id:String(source.id),name:text(source.name)||String(source.id),type:"remote"});
+  });
+  const prefs=sourcePreferences();
+  return [...byId.values()].map(source=>({...source,enabled:prefs[source.id]!==false}));
 }
 
 function getSourceRuntimeStatus(){
