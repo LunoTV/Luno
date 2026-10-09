@@ -4738,3 +4738,28 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 .topbar.luno-nav-shutter .brand-moon:after{
   background:#080808!important;
 }
+
+
+/* ---------- LUNO SHUTTER LINE COLOR MATCH ---------- */
+/* Match the screenshot's muted lunar-violet outline instead of the brighter accent. */
+:root{--luno-moon-line:#6563B6}
+@media(max-width:700px){
+  .topbar.luno-nav-shutter,
+  body.home-mode .topbar.luno-nav-shutter{
+    border-color:#6563B6!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.35),0 0 12px rgba(101,99,182,.12)!important;
+  }
+  .topbar.luno-nav-shutter .brand,
+  .topbar.luno-nav-shutter .global-header-search,
+  .topbar.luno-nav-shutter .global-header-settings{
+    border-color:#6563B6!important;
+  }
+  .topbar.luno-nav-shutter .brand{
+    box-shadow:inset 0 0 0 1px rgba(125,211,252,.05),0 0 8px rgba(101,99,182,.12)!important;
+  }
+  .topbar.luno-nav-shutter .global-header-search,
+  .topbar.luno-nav-shutter .global-header-settings{
+    box-shadow:inset 0 0 0 1px rgba(125,211,252,.05),0 0 7px rgba(101,99,182,.1)!important;
+  }
+  .mobile-tabbar{border-color:#6563B6!important}
+}
