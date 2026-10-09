@@ -920,7 +920,31 @@ function renderDiscovery(){
   bindCards();
 }
 
+function renderHomeHero(item){
+  const hero=document.querySelector("#homeHero");
+  if(!hero||!item)return;
+  const title=String(item.name||item.title||"Открой новое кино");
+  const background=String(item.background||item.backdrop||item.poster||"");
+  const poster=String(item.poster||background);
+  const year=getYear(item);
+  const rating=Number(item.rating)||0;
+  const type=mediaCategory(item)==="series"?"Сериал":"Фильм";
+  const description=String(item.description||item.overview||"").trim();
+  const backdrop=hero.querySelector(".home-hero-backdrop");
+  if(backdrop)backdrop.style.backgroundImage=background?'url("'+background.replace(/["\\\\]/g,"\\\\
+function renderCatalogSections(){")+'")':"none";
+  const art=hero.querySelector(".home-hero-poster");
+  if(art){art.src=poster;art.alt=title;art.hidden=!poster;}
+  const heading=hero.querySelector(".home-hero-title");if(heading)heading.textContent=title;
+  const meta=hero.querySelector(".home-hero-meta");if(meta)meta.textContent=[type,year||"",rating?"TMDB ★ "+rating.toFixed(1):""].filter(Boolean).join("  ·  ");
+  const summary=hero.querySelector(".home-hero-description");if(summary)summary.textContent=description||"Выбери фильм и погрузись в историю. Открой карточку, чтобы посмотреть доступные источники.";
+  hero.dataset.itemId=String(item.id||"");
+  hero.classList.add("is-ready");
+}
+
 function renderCatalogSections(){
+  const heroPick=catalogItems.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0))[0];
+  renderHomeHero(heroPick);
   // Discovery is an enhancement, not a dependency for the primary poster rails.
   // A malformed discovery field must never prevent the home rows from rendering.
   try{
