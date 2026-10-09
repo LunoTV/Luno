@@ -116,7 +116,7 @@ const resolveSource=async(name,movie,searchData,options={})=>{
   if(['rezka','kinobase','collaps'].includes(name)&&!data.length)data=await searchKinopoisk(movie)
   if(!data.length)throw new Error('No matching catalog entry for Lampa source: '+name)
   return await new Promise((resolve,reject)=>{
-    let capturedPlayer=null,settled=false
+    let capturedPlayer=null,settled=false,instance=null
     const originalPlay=window.Lampa.Player.play
     const timeoutMs=Math.min(Math.max(Number(options.timeout)||20000,1000),30000)
     const finish=error=>{
@@ -124,14 +124,14 @@ const resolveSource=async(name,movie,searchData,options={})=>{
       settled=true
       clearTimeout(timeout)
       window.Lampa.Player.play=originalPlay
-      if(error)return reject(error)
+      if(error){try{instance?.destroy?.()}catch{};return reject(error)}
       if(capturedPlayer)resolve(capturedPlayer)
       else reject(new Error('Lampa source returned no stream: '+name))
     }
     const timeout=setTimeout(()=>finish(new Error('Lampa source timeout: '+name)),timeoutMs)
     try{
       window.Lampa.Player.play=item=>{capturedPlayer=item;finish()}
-      const instance=new Source(bridgeComponent,{movie})
+      instance=new Source(bridgeComponent,{movie})
       if(['videocdn','cdnmovies','filmix'].includes(name))instance.search({movie},data)
       else{
         const candidate=data.find(x=>x.kp_id||x.filmId||x.film_id)||data[0]
