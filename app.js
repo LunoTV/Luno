@@ -1032,8 +1032,9 @@ function renderAddonManager(){
     status:engine?.getStatus?.()||{},
     preferences:engine?.getSourcePreferences?.()||{}
   });
-  bindSourceManager(addonList,(id,enabled)=>{
-    engine?.setSourceEnabled?.(id,enabled);
+  bindSourceManager(addonList,(id,enabled,kind)=>{
+    if(kind==="provider") engine?.setProviderEnabled?.(id,enabled);
+    else engine?.setSourceEnabled?.(id,enabled);
     renderAddonManager();
   });
 }
@@ -1052,7 +1053,7 @@ async function installAddonFromInput(){
     if(addonManagerStatus) addonManagerStatus.textContent="Движок источников ещё запускается. Попробуй через несколько секунд.";
     return;
   }
-  const result=engine.addSourceDefinition({name:name||new URL(endpoint).hostname,endpoint});
+  const result=engine.addSourceDefinition({name,endpoint});
   if(!result?.ok){
     if(addonManagerStatus) addonManagerStatus.textContent=result?.error||"Не удалось добавить источник.";
     return;
