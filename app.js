@@ -659,6 +659,13 @@ function openDetail(item){
   paintFavoriteButton(item);
   detail?.classList.remove("hidden");
   document.body.classList.add("detail-open");
+  if(detail){
+    detail.classList.remove("is-entering");
+    requestAnimationFrame(()=>detail.classList.add("is-entering"));
+    const finishEntry=()=>detail?.classList.remove("is-entering");
+    detail.addEventListener("transitionend",finishEntry,{once:true});
+    window.setTimeout(finishEntry,420);
+  }
   detailPlay?.focus();
 }
 function closeDetail(fromHistory=false){
