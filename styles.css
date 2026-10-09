@@ -4414,3 +4414,11 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .topbar .brand-moon,.luno-detail-brand .brand-moon{width:30px!important;height:30px!important}
   .topbar .brand-orbit:after,.luno-detail-brand .brand-orbit:after{width:7px!important;height:7px!important}
 }
+
+
+/* Back control is contextual: never show it on the home screen. */
+@media(max-width:700px){
+  body:not(.show-global-back) .global-header-back{display:none!important}
+  body:not(.show-global-back) .topbar{gap:0!important}
+  body:not(.show-global-back) .topbar .brand{margin-right:auto!important}
+}
