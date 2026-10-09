@@ -31,7 +31,10 @@ function jqueryLike(selector,context){
       const nodes=[...parsed.body.children]
       return wrapNodes(nodes)
     }
-    try{return wrapNodes([...scope.querySelectorAll(selector)])}catch{return wrapNodes([])}
+    try{
+      if(context?.nodes)return wrapNodes(context.nodes.flatMap(node=>[...node.querySelectorAll(selector)]))
+      return wrapNodes([...scope.querySelectorAll(selector)])
+    }catch{return wrapNodes([])}
   }
   if(selector?.nodeType)return wrapNodes([selector])
   if(selector?.nodes)return selector
