@@ -3866,3 +3866,61 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   main>.section .section-more,main>.section .section-more span{transition:none!important}
 }
 
+/* LUNO title screen refinement: stronger action hierarchy and readable metadata */
+.luno-detail-hero{min-height:min(760px,82vh)!important;display:flex!important;align-items:flex-end!important;padding:clamp(90px,10vw,142px) clamp(24px,7vw,110px) clamp(100px,11vw,145px)!important}
+.luno-detail-hero .detail-backdrop{background-size:cover!important;background-position:center 30%!important}
+.luno-detail-hero-copy{position:relative!important;z-index:3!important;width:min(780px,72%)!important;padding-bottom:8px!important}
+.luno-detail-hero-copy h2{font-size:clamp(42px,6.4vw,88px)!important;line-height:.96!important;text-wrap:balance!important}
+.luno-detail-hero-copy .detail-meta{font-size:13px!important;line-height:1.5!important}
+.luno-detail-actions .primary,.luno-detail-actions .secondary{min-height:50px!important;padding:0 20px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;font-size:13px!important;letter-spacing:-.01em!important;cursor:pointer!important;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease!important}
+.luno-detail-actions .primary{min-width:150px!important;box-shadow:0 9px 28px rgba(255,255,255,.12),0 12px 35px rgba(0,0,0,.28)!important}
+.luno-detail-actions .primary:hover{transform:translateY(-2px)!important;box-shadow:0 12px 34px rgba(255,255,255,.16),0 15px 38px rgba(0,0,0,.32)!important}
+.luno-detail-actions .primary span,.luno-detail-actions .secondary span{font-size:14px!important;line-height:1!important}
+.luno-detail-actions .secondary{background:rgba(8,9,12,.48)!important}
+.luno-detail-actions .secondary:hover{transform:translateY(-1px)!important;background:rgba(255,255,255,.14)!important}
+.luno-detail-actions .secondary em{font-style:normal!important}
+.luno-detail-ratings{right:clamp(22px,6vw,88px)!important;bottom:clamp(28px,4vw,56px)!important;transform:none!important;z-index:4!important;gap:0!important;padding:13px 8px!important}
+.luno-detail-ratings>div{min-width:80px!important;padding:0 12px!important}
+.luno-detail-ratings>div+div{border-left:1px solid rgba(255,255,255,.1)!important}
+.luno-detail-ratings strong{font-size:21px!important;white-space:nowrap!important}
+.luno-detail-ratings .luno-score strong{color:#fff!important}
+.luno-detail-ratings span{margin-top:5px!important}
+.luno-detail-section{padding-top:3px!important}
+.luno-detail-section+.luno-detail-section{margin-top:clamp(38px,5vw,62px)!important}
+.luno-section-title{margin-bottom:20px!important}
+.luno-section-title h3{font-size:clamp(21px,2.3vw,28px)!important}
+.luno-detail-seasons-panel{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:24px!important}
+.luno-detail-seasons-copy{max-width:620px!important}
+.luno-detail-seasons-copy>strong{display:block!important;margin-top:10px!important;font-size:clamp(18px,2vw,25px)!important;letter-spacing:-.03em!important}
+#detailOpenEpisodes{flex:none!important;min-height:46px!important;padding:0 18px!important;border-radius:6px!important}
+.luno-actor-row,.luno-recommend-row{scrollbar-width:thin!important;scrollbar-color:rgba(255,255,255,.2) transparent!important}
+.luno-actor-row{gap:12px!important}
+.luno-actor-card{min-width:0!important;transition:transform .18s ease,border-color .18s ease,background .18s ease!important}
+.luno-actor-card:hover{background:#17181e!important}
+.luno-recommend-row>.card{border-radius:9px!important}
+.luno-recommend-row>.card .card-art{border-radius:9px!important}
+.luno-detail-section button:focus-visible{outline-offset:4px!important}
+@media(max-width:900px){
+  .luno-detail-hero-copy{width:min(720px,82%)!important}
+  .luno-detail-ratings>div{min-width:68px!important;padding:0 8px!important}
+}
+@media(max-width:700px){
+  .luno-detail-hero{min-height:82dvh!important;padding:112px 18px 148px!important;align-items:flex-end!important}
+  .luno-detail-hero-copy{width:100%!important;padding-bottom:0!important}
+  .luno-detail-hero-copy h2{font-size:clamp(38px,10.5vw,56px)!important;max-width:100%!important}
+  .luno-detail-hero-copy .detail-meta{font-size:11px!important;gap:6px!important}
+  .luno-detail-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .luno-detail-actions .primary{grid-column:1/-1!important;min-height:49px!important}
+  .luno-detail-actions .secondary{min-width:0!important;min-height:43px!important;padding:0 10px!important;font-size:11px!important}
+  .luno-detail-ratings{left:18px!important;right:18px!important;bottom:17px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;padding:10px 3px!important}
+  .luno-detail-ratings>div{min-width:0!important;padding:0 3px!important}
+  .luno-detail-ratings strong{font-size:clamp(13px,4vw,18px)!important}
+  .luno-detail-ratings span{font-size:7px!important;letter-spacing:.07em!important}
+  .luno-detail-seasons-panel{align-items:stretch!important;flex-direction:column!important;gap:18px!important;padding:20px!important}
+  #detailOpenEpisodes{width:100%!important}
+  .luno-detail-section+.luno-detail-section{margin-top:36px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .luno-detail-actions .primary,.luno-detail-actions .secondary,.luno-actor-card{transition:none!important}
+}
+
