@@ -57,18 +57,20 @@ export default {
 
     const url = new URL(request.url);
 
-    if (url.pathname !== "/api/tmdb/search" || request.method !== "GET") {
+    const isSearch = url.pathname === "/api/tmdb/search";
+    const isDiscover = url.pathname === "/api/tmdb/discover";
+    if ((!isSearch && !isDiscover) || request.method !== "GET") {
       return json({ error: "Not found" }, 404, origin);
     }
 
     const query = String(url.searchParams.get("query") || "").trim();
-    if (!query) return json({ error: "query is required" }, 400, origin);
+    if (isSearch && !query) return json({ error: "query is required" }, 400, origin);
 
     const token = env.TMDB_API_TOKEN;
     if (!token) return json({ error: "TMDB_API_TOKEN is not configured" }, 500, origin);
 
-    const tmdb = new URL(TMDB_BASE + "/search/multi");
-    tmdb.searchParams.set("query", query);
+    const tmdb = new URL(TMDB_BASE + (isSearch ? "/search/multi" : "/trending/all/week"));
+    if (isSearch) tmdb.searchParams.set("query", query);
     tmdb.searchParams.set("language", "ru-RU");
     tmdb.searchParams.set("include_adult", "false");
     tmdb.searchParams.set("page", url.searchParams.get("page") || "1");
