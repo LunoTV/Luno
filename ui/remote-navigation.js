@@ -149,8 +149,23 @@ export function installRemoteNavigation() {
       return;
     }
 
-    const direction = ({ ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" })[event.key];
-    if (!direction) return;
+    const direction = ({
+      ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down",
+      Left: "left", Right: "right", Up: "up", Down: "down"
+    })[event.key] || ({
+      37: "left", 39: "right", 38: "up", 40: "down"
+    })[event.keyCode];
+    if (!direction) {
+      // Older TV browsers sometimes report the remote's OK key only by keyCode.
+      if ([13, 23, keyCodeEnter].includes(event.keyCode) && !event.repeat) {
+        const target = document.activeElement;
+        if (target?.matches("button:not(:disabled),a[href],[role=button]:not([aria-disabled=true])")) {
+          event.preventDefault();
+          target.click();
+        }
+      }
+      return;
+    }
 
     const active = document.activeElement;
     const editing = active?.matches("input,textarea,[contenteditable=true]");
