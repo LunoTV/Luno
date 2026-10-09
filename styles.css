@@ -5050,3 +5050,48 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   body.home-mode main{padding-top:0!important}
   body.home-mode .home-hero{margin-top:0!important}
 }
+
+
+/* ---------- LUNO REFERENCE MATCH: HERO + HEADER ---------- */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter,
+  body.home-mode .topbar.luno-nav-shutter{
+    height:60px!important;min-height:60px!important;max-height:60px!important;
+    padding:0 18px!important;background:linear-gradient(180deg,rgba(4,5,8,.72),rgba(4,5,8,.08))!important;
+    backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;
+  }
+  .topbar.luno-nav-shutter .brand,
+  body.home-mode .topbar.luno-nav-shutter .brand{
+    font-size:28px!important;letter-spacing:.25em!important;
+  }
+  .topbar.luno-nav-shutter .tv-header-tools{gap:8px!important}
+  .topbar.luno-nav-shutter .global-header-search,
+  .topbar.luno-nav-shutter .global-header-settings{
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    flex:0 0 36px!important;width:36px!important;min-width:36px!important;max-width:36px!important;
+    height:36px!important;min-height:36px!important;max-height:36px!important;
+    border:0!important;border-radius:50%!important;background:transparent!important;
+    color:#f2f2f6!important;box-shadow:none!important;padding:0!important;margin:0!important;
+  }
+  .topbar.luno-nav-shutter .global-header-settings span{font-size:23px!important;font-weight:300!important;line-height:1!important}
+  .topbar.luno-nav-shutter .global-header-search .search-icon{filter:none!important}
+  body.home-mode #app main,body.home-mode main{padding-top:0!important}
+  body.home-mode .home-hero{
+    height:min(66svh,510px)!important;min-height:420px!important;max-height:510px!important;
+    margin-top:0!important;margin-bottom:24px!important;padding:0 18px 22px!important;
+    justify-content:flex-start!important;align-items:flex-end!important;
+  }
+  body.home-mode .home-hero-backdrop{
+    background-position:center 24%!important;background-size:cover!important;
+  }
+  body.home-mode .home-hero:before{
+    background:linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,.05) 20%,rgba(0,0,0,.24) 40%,rgba(0,0,0,.78) 70%,#030406 100%)!important;
+  }
+  body.home-mode .home-hero-copy{margin:0!important;padding:0!important;max-width:100%!important}
+  body.home-mode .home-hero-eyebrow{margin-bottom:8px!important;font-size:9px!important}
+  body.home-mode .home-hero-title{font-size:clamp(30px,8vw,38px)!important;line-height:.99!important;margin-bottom:8px!important}
+  body.home-mode .home-hero-meta{font-size:11px!important;margin-bottom:8px!important}
+  body.home-mode .home-hero-description{font-size:12px!important;line-height:1.38!important;-webkit-line-clamp:2!important;margin-bottom:12px!important}
+  body.home-mode .home-hero-actions{gap:8px!important}
+  body.home-mode .home-hero-actions button{min-height:44px!important;border-radius:12px!important;font-size:13px!important}
+}
