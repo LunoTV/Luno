@@ -2195,6 +2195,18 @@ document.querySelector("#searchBtn")?.addEventListener("click",()=>{
   openSearch();
 });
 
+document.querySelector("#globalHeaderSearch")?.addEventListener("click",()=>{
+  if(!detail?.classList.contains("hidden")) closeDetail();
+  openSearch();
+});
+document.querySelector("#globalHeaderBack")?.addEventListener("click",()=>{
+  if(!detail?.classList.contains("hidden")){ closeDetail(); return; }
+  if(!searchPanel?.classList.contains("hidden")){ closeSearch(); return; }
+  if(!libraryPanel?.classList.contains("hidden")){ closeLibrary(); return; }
+  navigate("home");
+});
+
+
 let searchTimer=null;
 searchInput.addEventListener("input",()=>{
   clearTimeout(searchTimer);
