@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=53">
+  <link rel="stylesheet" href="./styles.css?v=54">
   <link rel="stylesheet" href="./source-manager.css?v=1">
 </head>
 <body>
@@ -63,6 +63,21 @@
 <button class="luno-menu-item active" data-section="home"><span>⌂</span>Главная</button><button class="luno-menu-item" data-section="history"><span>◷</span>История</button><button class="luno-menu-item" data-section="movies"><span>▣</span>Фильмы</button><button class="luno-menu-item" data-section="series"><span>▤</span>Сериалы</button><button class="luno-menu-item" data-section="cartoons"><span>▧</span>Мультфильмы</button><button class="luno-menu-item" data-section="anime"><span>✧</span>Аниме</button><button class="luno-menu-item" data-section="shows"><span>▦</span>Шоу</button>
 </nav></aside>
     <main>
+      <section id="homeHero" class="home-hero" aria-label="Рекомендуем посмотреть">
+        <div class="home-hero-backdrop" aria-hidden="true"></div>
+        <div class="home-hero-copy">
+          <div class="home-hero-eyebrow">В центре внимания · LUNO</div>
+          <h1 class="home-hero-title">Открой новое кино</h1>
+          <div class="home-hero-meta">Фильмы и сериалы · Подборка LUNO</div>
+          <p class="home-hero-description">Подбираем для тебя истории, к которым хочется возвращаться.</p>
+          <div class="home-hero-actions">
+            <button class="home-hero-primary" type="button" data-hero-action="detail">Смотреть</button>
+            <button type="button" data-hero-action="detail">Подробнее</button>
+          </div>
+        </div>
+        <div class="home-hero-poster-wrap"><img class="home-hero-poster" alt="" loading="eager" hidden></div>
+      </section>
+
       <section class="section resume-section" id="continueSection">
         <div class="section-head">
           <div><span class="section-kicker">ВОЗВРАЩАЙСЯ</span><h2>Продолжить просмотр</h2></div>
@@ -377,6 +392,6 @@
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
-  <script type="module" src="./app.js?v=remote62"></script>
+  <script type="module" src="./app.js?v=remote63"></script>
 </body>
 </html>
