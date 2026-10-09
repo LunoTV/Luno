@@ -5178,3 +5178,24 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   body.home-mode #trendingSection .cards{margin-top:0!important}
   body.home-mode .home-hero{margin-bottom:0!important}
 }
+
+
+/* ---------- LUNO POSTER RAIL CLEARANCE ---------- */
+@media(max-width:700px){
+  /* Preserve poster dimensions; give the rail breathing room above the fixed bottom navigation. */
+  body.home-mode #trendingSection .cards{
+    padding-bottom:82px!important;
+    scroll-padding-bottom:82px!important;
+  }
+  body.home-mode #trendingSection .cards>.card{
+    margin-bottom:0!important;
+  }
+  body.home-mode #trendingSection{
+    margin-bottom:8px!important;
+  }
+  body.home-mode .mobile-tabbar{
+    background:rgba(8,9,14,.94)!important;
+    -webkit-backdrop-filter:blur(24px)!important;
+    backdrop-filter:blur(24px)!important;
+  }
+}
