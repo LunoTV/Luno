@@ -10,7 +10,7 @@ import {
   dispatchLunoPlayerAction,
 } from "./source-engine.js?v=source28";
 import {renderSourceManager,bindSourceManager} from "./ui/source-manager.js";
-import {installRemoteNavigation} from "./ui/remote-navigation.js?v=remote31";
+import {installRemoteNavigation} from "./ui/remote-navigation.js?v=remote32";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
 const openCinemaCards=document.querySelector("#openCinemaCards");
