@@ -1,5 +1,5 @@
 import {createSourceRegistry} from "./sources/registry.js";
-import {loadSourceDefinitions} from "./sources/loader.js";
+import {loadSourceDefinitions,sourceDefinition} from "./sources/loader.js";
 import {normalizeSubtitles as normalizeSubtitle,normalizeStream,streamKind,normalizeVoice,normalizeEpisodeInfo} from "./sources/normalizer.js";
 import {selectBestUrl as selectBestQualityUrl,qualityNumber} from "./sources/quality.js";
 
@@ -424,15 +424,32 @@ function getSourcePreferences(){
   return sourcePreferences();
 }
 
+function addSourceDefinition(definition={}){
+  const source=sourceDefinition(definition);
+  if(!source)return {ok:false,error:"Укажи корректный HTTP(S) endpoint."};
+  let definitions=[];
+  try{definitions=JSON.parse(localStorage.getItem(PROVIDERS_KEY)||"[]")}catch{}
+  if(!Array.isArray(definitions))definitions=[];
+  if(definitions.some(item=>text(item?.endpoint)===source.endpoint)){
+    return {ok:false,error:"Этот адрес уже добавлен."};
+  }
+  definitions.push({id:source.id,name:source.name,description:source.description,endpoint:source.endpoint,enabled:true});
+  try{localStorage.setItem(PROVIDERS_KEY,JSON.stringify(definitions));}
+  catch{return {ok:false,error:"Не удалось сохранить источник на этом устройстве."};}
+  loadSourceDefinitions(registry,[definitions[definitions.length-1]]);
+  cache.clear();
+  return {ok:true,source:{id:source.id,name:source.name,endpoint:source.endpoint}};
+}
+
 function setSourceProviderEnabled(id,enabled){
   const changed=registry.setEnabled(id,enabled);
   if(changed)window.dispatchEvent(new CustomEvent("luno-source-state",{detail:{id,enabled:enabled!==false}}));
   return changed;
 }
 
-const api={listProviders:listSourceProviders,listSources:listAvailableSources,getStatus:getSourceRuntimeStatus,getSourcePreferences,setSourceEnabled,setProviderEnabled:setSourceProviderEnabled,resolve:resolveItemStreams,registerProvider};
+const api={listProviders:listSourceProviders,listSources:listAvailableSources,getStatus:getSourceRuntimeStatus,getSourcePreferences,setSourceEnabled,setProviderEnabled:setSourceProviderEnabled,addSourceDefinition,resolve:resolveItemStreams,registerProvider};
 
-export {initSourceEngine,listSourceProviders,listAvailableSources,getSourceRuntimeStatus,getSourcePreferences,setSourceEnabled,setSourceProviderEnabled,resolveItemStreams,registerProvider};
+export {initSourceEngine,listSourceProviders,listAvailableSources,getSourceRuntimeStatus,getSourcePreferences,setSourceEnabled,setSourceProviderEnabled,addSourceDefinition,resolveItemStreams,registerProvider};
 
 export async function initLunoCore(){
   initSourceEngine();
