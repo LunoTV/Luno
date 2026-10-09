@@ -4795,3 +4795,52 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     pointer-events:none!important;white-space:nowrap!important;
   }
 }
+
+
+/* ---------- LUNO NEBULA + ECLIPSE FINISH ---------- */
+/* Refine the existing lunar palette: cleaner violet, restrained glow, premium eclipse feel. */
+:root{
+  --luno-moon:#6B6FE7;
+  --luno-ice:#7DD3FC;
+  --luno-lavender:#C084FC;
+  --luno-silver:#E8ECFF;
+  --luno-moon-line:#6563B6;
+}
+.brand-orbit{
+  border-color:rgba(107,111,231,.78)!important;
+  box-shadow:0 0 12px rgba(107,111,231,.16),inset 0 0 9px rgba(107,111,231,.05);
+}
+.brand-moon{
+  background:linear-gradient(140deg,#F1F0FF 0%,#B9B8FF 44%,#6B6FE7 100%)!important;
+  box-shadow:inset -5px -3px 7px rgba(0,0,0,.3),0 0 13px rgba(107,111,231,.35)!important;
+}
+.nav-item.active,.mobile-tab.active{
+  color:var(--luno-silver)!important;
+  background:linear-gradient(145deg,rgba(107,111,231,.22),rgba(192,132,252,.08))!important;
+  box-shadow:inset 0 0 0 1px rgba(107,111,231,.28),0 0 14px rgba(107,111,231,.08)!important;
+}
+@media(max-width:700px){
+  .topbar.luno-nav-shutter,
+  body.home-mode .topbar.luno-nav-shutter{
+    border-color:#6563B6!important;
+    background:#000!important;
+    box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 15px rgba(107,111,231,.1)!important;
+  }
+  .topbar.luno-nav-shutter:after{
+    color:#E8ECFF!important;
+    text-shadow:0 0 14px rgba(107,111,231,.38)!important;
+    letter-spacing:.28em!important;
+  }
+  .topbar.luno-nav-shutter .brand,
+  .topbar.luno-nav-shutter .global-header-search{
+    border-color:#6563B6!important;
+  }
+  .topbar.luno-nav-shutter .global-header-search{
+    color:#E8ECFF!important;
+    box-shadow:inset 0 0 0 1px rgba(125,211,252,.05),0 0 12px rgba(107,111,231,.12)!important;
+  }
+  .mobile-tabbar{
+    border-color:#6563B6!important;
+    box-shadow:0 12px 42px rgba(0,0,0,.5),0 0 17px rgba(107,111,231,.12)!important;
+  }
+}
