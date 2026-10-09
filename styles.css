@@ -4334,3 +4334,16 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 .luno-detail .luno-review-row,
 .luno-detail .luno-review-add,
 .luno-detail .luno-review-card{display:none!important}
+
+
+/* ---------- POSTER RATING LOWER-LEFT v24 ---------- */
+.card-art .poster-rating{display:none!important}
+.card-art .poster-quality{display:none!important}
+.card-art .poster-quality.poster-card-rating{
+  display:inline-flex!important;left:9px!important;right:auto!important;top:auto!important;bottom:9px!important;
+  color:#76e5ce!important;border-color:rgba(98,229,208,.35)!important;
+  background:rgba(7,25,23,.88)!important;font-size:11px!important;
+}
+@media(max-width:600px){
+  .card-art .poster-quality.poster-card-rating{left:7px!important;bottom:7px!important;font-size:10px!important}
+}
