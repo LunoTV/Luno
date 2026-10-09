@@ -931,7 +931,28 @@ async function loadTmdbCatalog(){
     const response=await fetch(base+"/api/tmdb/discover?page=1",{cache:"no-store",headers:{accept:"application/json"}});
     if(!response.ok)throw new Error("Discovery API HTTP "+response.status);
     const data=await response.json();
-    const items=Array.isArray(data?.results)?data.results.filter(item=>item?.id&&item?.name):[];
+    const items=Array.isArray(data?.results)?data.results.filter(item=>item?.id&&(item?.name||item?.title||item?.original_name||item?.original_title)).map(item=>{
+      const mediaType=item?.media_type==="tv"||item?.type==="tv"||(!item?.title&&Boolean(item?.name||item?.first_air_date))?"series":(item?.type||"movie");
+      const posterPath=String(item?.poster_path||item?.posterPath||"").replace(/^\\//,"");
+      const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").replace(/^\\//,"");
+      return {
+        ...item,
+        id:String(item?.id||"").startsWith("tmdb:")?String(item.id):"tmdb:"+String(item.id),
+        tmdbId:Number(item?.tmdbId||item?.id)||0,
+        type:mediaType,
+        name:item?.name||item?.title||item?.original_name||item?.original_title||"Без названия",
+        poster:item?.poster||(posterPath?"https://image.tmdb.org/t/p/w500/"+posterPath:""),
+        background:item?.background||(backdropPath?"https://image.tmdb.org/t/p/w1280/"+backdropPath:""),
+        description:item?.description||item?.overview||"",
+        releaseInfo:item?.releaseInfo||item?.release_date||item?.first_air_date||"",
+        rating:Number(item?.rating??item?.vote_average)||0,
+        popularity:Number(item?.popularity)||0,
+        genreIds:Array.isArray(item?.genreIds)?item.genreIds:(Array.isArray(item?.genre_ids)?item.genre_ids:[]),
+        genres:Array.isArray(item?.genres)?item.genres:[],
+        originalLanguage:item?.originalLanguage||item?.original_language||"",
+        originCountry:Array.isArray(item?.originCountry)?item.originCountry:(Array.isArray(item?.origin_country)?item.origin_country:[])
+      };
+    }):[];
     if(items.length)return {items,sections:{}};
     throw new Error("Discovery API returned an empty catalog");
   }catch(error){
