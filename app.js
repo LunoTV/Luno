@@ -453,16 +453,17 @@ function paintDetail(value){
   const detailKicker=document.querySelector(".luno-detail-hero-copy .detail-kicker");
   if(detailKicker) detailKicker.textContent="LUNO  •  "+(value?.type==="series"?"СЕРИАЛ":"ФИЛЬМ");
   if(detailTitle) detailTitle.textContent=title;
-  if(detailMeta) detailMeta.textContent=[
-    year!=="—" ? year : "",
-    value?.runtime ? value.runtime+" мин" : "",
-    type
-  ].filter(Boolean).join(" • ");
+  if(detailMeta) detailMeta.innerHTML=[
+    score>0 ? '<span class="detail-meta-rating">★ '+score.toFixed(1)+' <small>TMDB</small></span>' : "",
+    year!=="—" ? escapeHtml(year) : "",
+    value?.runtime ? escapeHtml(value.runtime+" мин") : "",
+    escapeHtml(type)
+  ].filter(Boolean).join('<span class="detail-meta-separator">•</span>');
 
   if(detailBadges){
     detailBadges.innerHTML=[
-      score>0 ? '<span class="detail-badge detail-badge-score">★ '+score.toFixed(1)+'</span>' : "",
-      ...genreNames.slice(0,3).map(g=>'<span class="detail-badge detail-badge-muted">'+escapeHtml(g)+'</span>')
+      ...genreNames.slice(0,3).map(g=>'<span class="detail-badge detail-badge-muted">'+escapeHtml(g)+'</span>'),
+      '<span class="detail-badge detail-quality">По источнику</span>'
     ].filter(Boolean).join("");
   }
 
@@ -473,14 +474,7 @@ function paintDetail(value){
   if(detailQualityBar) detailQualityBar.style.width="0%";
   if(detailQualityText) detailQualityText.textContent="Качество определяется выбранным потоком";
 
-  if(detailRatings){
-    detailRatings.innerHTML=[
-      '<div class="luno-score"><strong>'+ (score>0 ? score.toFixed(1) : "—") +'</strong><span>TMDB</span></div>',
-      '<div><strong>'+escapeHtml(year)+'</strong><span>год</span></div>',
-      '<div><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>',
-      '<div><strong>'+escapeHtml(quality)+'</strong><span>источник</span></div>'
-    ].join("");
-  }
+  if(detailRatings){ detailRatings.innerHTML=""; detailRatings.hidden=true; }
 
   if(detailTags){
     detailTags.innerHTML=genreNames.map(g=>'<button type="button" data-detail-genre="'+escapeHtml(g)+'"># '+escapeHtml(g)+'</button>').join("") || '<button type="button" data-detail-genre="Кино"># LUNO</button>';
@@ -665,6 +659,35 @@ function openDetail(item){
     console.error("[LUNO] paintDetail failed",error);
   }
   if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
+  const trailerVideo=document.querySelector("#detailTrailerVideo");
+  const trailerSound=document.querySelector("#detailTrailerSound");
+  const trailerUrl=String(item?.trailerUrl||item?.trailer||"").trim();
+  if(trailerVideo){
+    trailerVideo.pause();
+    trailerVideo.removeAttribute("src");
+    trailerVideo.load();
+    trailerVideo.classList.remove("is-ready");
+    if(trailerUrl && /^(https?:)?\/\//i.test(trailerUrl) && /\.(mp4|webm|m3u8)(\?|$)/i.test(trailerUrl)){
+      trailerVideo.src=trailerUrl;
+      trailerVideo.muted=true;
+      trailerVideo.playsInline=true;
+      trailerVideo.load();
+      const playTrailer=()=>trailerVideo.play().then(()=>trailerVideo.classList.add("is-ready")).catch(()=>{});
+      trailerVideo.oncanplay=playTrailer;
+      playTrailer();
+    }
+  }
+  if(trailerSound){
+    trailerSound.classList.remove("is-on");
+    trailerSound.onclick=()=>{
+      if(!trailerVideo || !trailerVideo.src) return;
+      trailerVideo.muted=!trailerVideo.muted;
+      trailerSound.classList.toggle("is-on",!trailerVideo.muted);
+      trailerSound.setAttribute("aria-label",trailerVideo.muted?"Включить звук трейлера":"Выключить звук трейлера");
+      if(!trailerVideo.paused) return;
+      trailerVideo.play().catch(()=>{});
+    };
+  }
   paintFavoriteButton(item);
   detail?.classList.remove("hidden");
   document.body.classList.add("detail-open");
