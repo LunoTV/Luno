@@ -929,7 +929,9 @@ async function loadTmdbCatalog(){
   const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
   const providers=[
     {name:"LUNO API",url:base+"/api/tmdb/discover?page=1"},
-    {name:"CUB TMDB",url:"https://apitmdb.cub.red/3/trending/all/week?language=ru-RU&page=1&include_adult=false"}
+    {name:"CUB TMDB (cub.best)",url:"https://apitmdb.cub.best/3/trending/all/week?language=ru-RU&page=1&include_adult=false"},
+    {name:"CUB TMDB (cub.black)",url:"https://apitmdb.cub.black/3/trending/all/week?language=ru-RU&page=1&include_adult=false"},
+    {name:"CUB TMDB (durex.monster)",url:"https://apitmdb.durex.monster/3/trending/all/week?language=ru-RU&page=1&include_adult=false"}
   ];
   let fallbackError=null;
   for(const provider of providers){
