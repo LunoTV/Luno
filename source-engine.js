@@ -319,26 +319,32 @@ async function resolvePrismaSources(item,{videoId="",signal}={}){
   const enriched=await enrichExternalIds(item||{});
   if(signal?.aborted)return[];
 
-  // Use the real Lampa adapter as a headless resolver when the bundled runtime is ready.
-  // The adapter returns stream metadata only; LUNO owns all visible UI and playback.
+  // Lampa resolves sources headlessly; LUNO remains the only UI/player.
+  const runtime=window.LunoLampaRuntime;
+  const sourceRuntime=window.LunoLampaSourceRuntime;
+  const adapters=sourceRuntime?.adapters||[];
+  const movie=buildMovie(enriched);
   let lampaStreams=[];
-  const lampaRuntime=window.LunoLampaRuntime;
-  if(lampaRuntime?.source&&window.LunoLampaSourcesReady){
-    try{
-      const raw=await lampaRuntime.source("videocdn",buildMovie(enriched),[]);
-      if(!signal?.aborted&&raw){
-        const rows=Array.isArray(raw)?raw:[raw];
-        lampaStreams=rows.map(row=>normalizeResolved(row,{id:"lampa-videocdn",name:"VideoCDN"},enriched)).filter(Boolean);
-      }
-    }catch(error){
-      console.debug("[LUNO Lampa adapter] videocdn",error);
+  if(runtime?.source&&window.LunoLampaSourcesReady&&adapters.length){
+    const attempts=await Promise.allSettled(adapters.map(async name=>{
+      if(signal?.aborted)return[];
+      const raw=await runtime.source(name,movie,[],{timeout:16000});
+      if(signal?.aborted||!raw)return[];
+      const rows=Array.isArray(raw)?raw:[raw];
+      return rows.map(row=>normalizeResolved(row,{id:"lampa-"+name,name:name.toUpperCase()},enriched)).filter(Boolean);
+    }));
+    lampaStreams=attempts.flatMap(result=>result.status==="fulfilled"&&Array.isArray(result.value)?result.value:[]);
+    if(!signal?.aborted&&attempts.some(result=>result.status==="rejected")){
+      attempts.forEach((result,index)=>{
+        if(result.status==="rejected")console.debug("[LUNO Lampa adapter]",adapters[index],result.reason);
+      });
     }
   }
+  if(signal?.aborted)return[];
 
+  // Keep user-configured LUNO providers available as additional fallbacks.
   const sources=await discoverSources(enriched);
   if(signal?.aborted)return[];
-  if(!sources.length)return lampaStreams;
-
   const selected=await Promise.all(sources.filter(s=>s.show!==false).map(async source=>{
     if(signal?.aborted)return[];
     try{
@@ -358,7 +364,6 @@ async function resolvePrismaSources(item,{videoId="",signal}={}){
     return true;
   });
 }
-
 
 
 function registerProvider(provider){
