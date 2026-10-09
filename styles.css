@@ -2974,6 +2974,8 @@ body.luno-menu-open .luno-menu-backdrop{pointer-events:auto}
 }
 body.home-mode .luno-nav-shutter{opacity:1!important;visibility:visible!important;pointer-events:auto!important;transform:translateX(-50%)!important}
 .luno-menu-trigger{display:none!important}
+.mobile-tabbar{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!important;pointer-events:none!important}
 .mobile-tabbar{display:none!important}
 #app main{padding-top:104px!important}
 @media(max-width:900px){
@@ -2996,3 +2998,10 @@ body.home-mode .luno-nav-shutter{opacity:1!important;visibility:visible!importan
 .card-art img{transform:none!important;filter:none!important;will-change:auto!important}
 .card:hover .card-art img,.card:active .card-art img{transform:none!important;filter:none!important}
 .card-art{isolation:isolate;background:#101218!important}
+
+/* Keep LUNO's bottom navigation; use the existing LUNO mark as the top-left home icon. */
+.luno-nav-shutter .brand{flex:0 0 auto!important;min-width:48px!important;width:48px!important;height:48px!important;justify-content:center!important;padding:0!important;font-size:0!important;letter-spacing:0!important}
+.luno-nav-shutter .brand>span:last-child{display:none!important}
+.luno-nav-shutter .brand .brand-orbit{display:inline-flex!important;width:30px!important;height:30px!important;align-items:center!important;justify-content:center!important}
+.luno-nav-shutter .brand .brand-moon{display:block!important}
+@media(max-width:900px){.mobile-tabbar{display:flex!important}}
