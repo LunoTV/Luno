@@ -889,7 +889,12 @@ function heroImageUrl(item){
     ? String(item.background)
     : (item?.poster ? String(item.poster) : "");
 }
+function isLowPowerTV(){
+  return window.matchMedia?.("(min-width: 701px) and (hover: none)").matches === true;
+}
 function preloadHeroImage(item){
+  // Do not decode a second large backdrop in parallel on low-power TV browsers.
+  if(isLowPowerTV()) return Promise.resolve(false);
   const url=heroImageUrl(item);
   if(!url) return Promise.resolve(false);
   return new Promise(resolve=>{
@@ -930,7 +935,7 @@ function paintHero(item,index=0){
     img.src=url;
   }
 
-  preloadHeroImage(heroRotationItems[(index+1)%Math.max(heroRotationItems.length,1)]);
+  if(!isLowPowerTV()) preloadHeroImage(heroRotationItems[(index+1)%Math.max(heroRotationItems.length,1)]);
   if(heroTitle) heroTitle.innerHTML=escapeHtml(item.name).replace(/\n/g,"<br>");
   if(heroDescription) heroDescription.textContent=item.description || "Выбери фильм и начни просмотр в LUNO.";
   if(heroMeta) heroMeta.textContent=[metaLine(item),Number(item.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : ""].filter(Boolean).join(" • ");
@@ -958,7 +963,7 @@ function updateHero(item){
     .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
   heroRotationItems=[item,...pool.filter(x=>x.id!==item.id)]
     .filter((x,i,arr)=>arr.findIndex(y=>y.id===x.id)===i)
-    .slice(0,8);
+    .slice(0,isLowPowerTV()?1:8);
   paintHero(heroRotationItems[0],0);
   restartHeroRotation();
 }
