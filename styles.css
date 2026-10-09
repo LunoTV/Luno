@@ -5125,3 +5125,30 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     filter:grayscale(1)!important;opacity:.9!important;
   }
 }
+
+
+/* ---------- LUNO FINAL SPACING + FLOATING HEADER POLISH ---------- */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter,
+  body.home-mode .topbar.luno-nav-shutter{
+    background:linear-gradient(180deg,rgba(3,4,6,.3),rgba(3,4,6,0))!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  }
+  body.home-mode .home-hero{
+    margin-bottom:0!important;
+    height:min(70svh,550px)!important;min-height:480px!important;max-height:550px!important;
+  }
+  body.home-mode #trendingSection{
+    margin-top:-72px!important;
+    padding-top:0!important;
+    position:relative!important;z-index:1!important;
+  }
+  body.home-mode #trendingSection .section-head{margin-bottom:12px!important}
+  body.home-mode .mobile-tabbar{bottom:max(8px,env(safe-area-inset-bottom,8px))!important}
+  .topbar.luno-nav-shutter .global-header-settings span{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;
+    font-size:24px!important;font-weight:300!important;
+    -webkit-text-stroke:.35px currentColor!important;
+    filter:none!important;opacity:.85!important;
+  }
+}
