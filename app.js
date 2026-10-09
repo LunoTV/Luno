@@ -1980,13 +1980,88 @@ document.addEventListener("keydown",(e)=>{
 
 document.querySelectorAll(".nav-item,.mobile-tab").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
 
-document.querySelectorAll(".nav-item").forEach((btn,index,buttons)=>btn.addEventListener("keydown",(e)=>{
-  if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return;
-  e.preventDefault();
-  const next=e.key==="ArrowRight" ? (index+1)%buttons.length : (index-1+buttons.length)%buttons.length;
-  buttons[next].focus();
-  navigate(buttons[next].dataset.section);
-}));
+// LUNO TV navigation: a real spatial focus system for D-pad remotes, keyboards and controllers.
+// Arrows move focus; OK/Enter activates the focused control. Touch devices keep their normal behavior.
+const remoteFocusableSelector=[
+  "button:not(:disabled)","a[href]","input:not(:disabled)","select:not(:disabled)",
+  "textarea:not(:disabled)","video[controls]","[role=button]:not([aria-disabled=true])",
+  "[tabindex]:not([tabindex='-1'])"
+].join(",");
+function remoteFocusableElements(){
+  return [...document.querySelectorAll(remoteFocusableSelector)].filter((element)=>{
+    if(!element.isConnected || element.tabIndex<0 || element.closest("[hidden],[inert],.hidden,[aria-hidden=true]")) return false;
+    const style=window.getComputedStyle(element);
+    if(style.display==="none" || style.visibility==="hidden" || Number(style.opacity)===0) return false;
+    const rect=element.getBoundingClientRect();
+    return rect.width>0 && rect.height>0;
+  });
+}
+function focusRemoteElement(element){
+  if(!element) return false;
+  document.querySelectorAll(".tv-remote-focus").forEach((node)=>node.classList.remove("tv-remote-focus"));
+  element.classList.add("tv-remote-focus");
+  try{element.focus({preventScroll:true});}catch{element.focus();}
+  element.scrollIntoView({behavior:"smooth",block:"nearest",inline:"nearest"});
+  return true;
+}
+function moveRemoteFocus(direction){
+  const all=remoteFocusableElements();
+  const active=document.activeElement;
+  if(!all.length) return false;
+  if(!all.includes(active)){
+    const first=all.find((element)=>element.matches(".nav-item,.mobile-tab"))||all[0];
+    return focusRemoteElement(first);
+  }
+  const current=active.getBoundingClientRect();
+  const cx=current.left+current.width/2, cy=current.top+current.height/2;
+  let best=null, bestScore=Infinity;
+  for(const candidate of all){
+    if(candidate===active) continue;
+    const rect=candidate.getBoundingClientRect();
+    const x=rect.left+rect.width/2, y=rect.top+rect.height/2;
+    const dx=x-cx, dy=y-cy;
+    const primary=direction==="left"?-dx:direction==="right"?dx:direction==="up"?-dy:dy;
+    if(primary<=2) continue;
+    const secondary=(direction==="left"||direction==="right")?Math.abs(dy):Math.abs(dx);
+    const score=primary+secondary*2.15+(secondary>primary?secondary*.25:0);
+    if(score<bestScore){best=candidate;bestScore=score;}
+  }
+  if(best) return focusRemoteElement(best);
+  // At the edge of a horizontal carousel, scroll that row instead of losing the remote input.
+  if(direction==="left"||direction==="right"){
+    let parent=active.parentElement;
+    while(parent && parent!==document.body){
+      const style=window.getComputedStyle(parent);
+      if(/auto|scroll/.test(style.overflowX) && parent.scrollWidth>parent.clientWidth+4){
+        parent.scrollBy({left:(direction==="left"?-1:1)*Math.max(180,parent.clientWidth*.72),behavior:"smooth"});
+        return true;
+      }
+      parent=parent.parentElement;
+    }
+  }else{
+    window.scrollBy({top:(direction==="up"?-1:1)*Math.max(180,window.innerHeight*.65),behavior:"smooth"});
+    return true;
+  }
+  return false;
+}
+document.addEventListener("keydown",(event)=>{
+  const key=event.key;
+  const direction=({ArrowLeft:"left",ArrowRight:"right",ArrowUp:"up",ArrowDown:"down"})[key];
+  if(!direction) return;
+  const active=document.activeElement;
+  const editing=active?.matches("input,textarea,[contenteditable=true]");
+  // Keep arrow-key text editing and native video seeking intact.
+  if(editing && (direction==="left"||direction==="right")) return;
+  if(active?.matches("video")) return;
+  if(moveRemoteFocus(direction)) event.preventDefault();
+},true);
+document.addEventListener("focusin",(event)=>{
+  if(event.target?.matches?.(remoteFocusableSelector)){
+    document.querySelectorAll(".tv-remote-focus").forEach((node)=>{if(node!==event.target)node.classList.remove("tv-remote-focus");});
+    event.target.classList.add("tv-remote-focus");
+  }
+});
+document.addEventListener("focusout",(event)=>event.target?.classList?.remove("tv-remote-focus"));
 
 window.LUNOPlayback={
   start(item){ if(item?.id) saveResume(item,0,0); },
