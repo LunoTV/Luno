@@ -3317,3 +3317,106 @@ html,body{
   .luno-detail-seasons-panel{align-items:stretch;flex-direction:column;gap:16px;padding:18px}
   #detailOpenEpisodes{width:100%;white-space:normal}
 }
+
+
+/* Prisma TV-inspired browsing layout for LUNO: clean black canvas, poster rail,
+   rating/year corner labels and a wider editorial trend rail. Keep LUNO branding/player. */
+@media (min-width:1000px) and (hover:none) {
+  :root { --bg:#050505; --panel:#101010; --panel2:#171717; }
+  html,body { background:#050505!important; }
+  body { background:#050505!important; }
+  main { padding-top:clamp(88px,10vh,128px)!important; }
+  .topbar {
+    left:clamp(28px,3.2vw,62px)!important; right:clamp(28px,3.2vw,62px)!important;
+    transform:none!important; width:auto!important; max-width:none!important;
+    top:clamp(12px,2vh,24px)!important; justify-content:flex-start!important;
+    min-height:52px!important; border:0!important; border-radius:0!important;
+    background:linear-gradient(180deg,rgba(8,8,8,.98),rgba(8,8,8,.84))!important;
+    box-shadow:none!important; backdrop-filter:none!important; padding:0!important;
+  }
+  .nav { gap:clamp(8px,.8vw,16px)!important; }
+  .nav-item { border-radius:5px!important; background:transparent!important; }
+  .nav-item.active,.nav-item[aria-current="page"] { background:#252525!important; }
+  main > .section {
+    margin-left:clamp(28px,3.2vw,62px)!important;
+    margin-right:clamp(28px,3.2vw,62px)!important;
+    margin-top:clamp(26px,4vh,46px)!important;
+  }
+  .section-head { margin-bottom:clamp(10px,1.5vh,18px)!important; }
+  .section-head h2 { font-size:clamp(21px,1.65vw,31px)!important; font-weight:650!important; letter-spacing:-.025em; }
+  .section-kicker { display:none!important; }
+  .section-more { opacity:.82; font-size:clamp(12px,.8vw,15px)!important; }
+  main > .section .cards {
+    gap:clamp(9px,.85vw,17px)!important;
+    padding:3px 5px 12px 3px!important;
+  }
+  main > .section .cards .card {
+    flex-basis:clamp(150px,10.8vw,208px)!important;
+    width:clamp(150px,10.8vw,208px)!important;
+    border-radius:5px!important; overflow:visible!important;
+    background:transparent!important; box-shadow:none!important;
+  }
+  main > .section .cards .card-art {
+    position:relative!important; overflow:hidden!important;
+    aspect-ratio:2/3!important; border-radius:5px!important;
+    background:#191919!important; box-shadow:0 2px 9px rgba(0,0,0,.3);
+  }
+  main > .section .cards .card-art img {
+    position:absolute!important; inset:0!important; width:100%!important; height:100%!important;
+    object-fit:cover!important; transition:transform .18s ease,opacity .2s ease;
+  }
+  main > .section .cards .card-gradient {
+    position:absolute!important; inset:35% 0 0!important;
+    background:linear-gradient(180deg,transparent,rgba(0,0,0,.62))!important;
+    opacity:.65!important;
+  }
+  main > .section .cards .card-type { display:none!important; }
+  main > .section .cards .card-info {
+    position:absolute!important; inset:7px 7px auto auto!important;
+    display:flex!important; flex-direction:column!important; align-items:flex-end!important;
+    gap:4px!important; z-index:2;
+  }
+  main > .section .cards .card-quality,
+  main > .section .cards .card-rating {
+    background:#159447!important; color:#fff!important;
+    border-radius:2px!important; padding:3px 5px!important;
+    font-size:clamp(10px,.68vw,13px)!important; font-weight:750!important;
+    line-height:1.15!important; box-shadow:0 1px 4px rgba(0,0,0,.3);
+  }
+  main > .section .cards .card-quality { display:none!important; }
+  main > .section .cards .card-year {
+    position:absolute!important; right:0!important; bottom:0!important;
+    padding:3px 5px!important; background:rgba(0,0,0,.7)!important;
+    color:#fff!important; font-size:clamp(10px,.68vw,13px)!important;
+  }
+  main > .section .cards .card-title {
+    font-size:clamp(12px,.82vw,16px)!important; font-weight:500!important;
+    line-height:1.25!important; padding:7px 1px 2px!important;
+    white-space:normal!important; display:-webkit-box!important;
+    -webkit-box-orient:vertical!important; -webkit-line-clamp:2!important;
+    overflow:hidden!important; min-height:2.6em;
+  }
+  main > .section .cards .card:focus-visible,
+  main > .section .cards .card.tv-remote-focus {
+    outline:3px solid #f3f3f3!important; outline-offset:3px!important;
+    transform:scale(1.035)!important; z-index:6!important;
+  }
+  /* Editorial landscape rail similar to Prisma's trend cards. */
+  #lunoPicksSection .cards .card {
+    flex-basis:clamp(270px,23vw,440px)!important;
+    width:clamp(270px,23vw,440px)!important;
+  }
+  #lunoPicksSection .cards .card-art { aspect-ratio:16/9!important; }
+  #lunoPicksSection .cards .card-title {
+    position:absolute!important; left:12px!important; right:12px!important; bottom:12px!important;
+    z-index:3; color:#fff!important; font-size:clamp(15px,1.1vw,21px)!important;
+    font-weight:700!important; text-shadow:0 2px 8px #000;
+    min-height:0!important; padding:0!important; pointer-events:none;
+  }
+  #lunoPicksSection .cards .card-gradient {
+    inset:35% 0 0!important; opacity:1!important;
+    background:linear-gradient(180deg,transparent,rgba(0,0,0,.9))!important;
+  }
+  #lunoPicksSection .cards .card-info { top:8px!important; right:8px!important; }
+  #continueSection:has(.cards:empty) { display:none!important; }
+}
