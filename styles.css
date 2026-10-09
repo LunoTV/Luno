@@ -4422,3 +4422,25 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   body:not(.show-global-back) .topbar{gap:0!important}
   body:not(.show-global-back) .topbar .brand{margin-right:auto!important}
 }
+
+
+/* Smart TV poster fallback visibility and fixed artwork geometry */
+@media(min-width:1000px) and (hover:none){
+  main > .section .cards .card-art{
+    position:relative!important;display:block!important;overflow:hidden!important;
+    width:100%!important;aspect-ratio:2/3!important;height:auto!important;
+    min-height:clamp(170px,19vw,310px)!important;
+    background:linear-gradient(145deg,#202532 0%,#11151d 52%,#080a0f 100%)!important;
+  }
+  main > .section .cards .card-art img{
+    position:absolute!important;inset:0!important;display:block!important;
+    width:100%!important;height:100%!important;min-height:100%!important;
+    object-fit:cover!important;opacity:1!important;visibility:visible!important;
+  }
+  main > .section .cards .card-art .poster-fallback{
+    position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;
+    padding:12px!important;text-align:center!important;
+    background:linear-gradient(145deg,#252b38,#11151d 60%,#090b10)!important;
+    color:#c4cbd7!important;font-size:clamp(13px,1.1vw,20px)!important;
+  }
+}
