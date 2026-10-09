@@ -9,6 +9,7 @@ const FOCUSABLE = [
 ].join(",");
 
 const LAYERS = [
+  "#confirmDialog",
   "#sourceSheet",
   "#subtitleSheet",
   "#qualitySheet",
@@ -133,6 +134,21 @@ export function installRemoteNavigation() {
   installed = true;
 
   document.addEventListener("keydown", (event) => {
+    // Keep keyboard focus inside modal dialogs; background controls must not receive TV input.
+    const root = activeLayer();
+    if (event.key === "Tab" && root?.matches("#confirmDialog,[aria-modal=true]")) {
+      const items = getFocusable(root);
+      if (!items.length) { event.preventDefault(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !root.contains(document.activeElement))) {
+        event.preventDefault(); focusElement(last, root);
+      } else if (!event.shiftKey && (document.activeElement === last || !root.contains(document.activeElement))) {
+        event.preventDefault(); focusElement(first, root);
+      }
+      return;
+    }
+
     const direction = ({ ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" })[event.key];
     if (!direction) return;
 
@@ -141,7 +157,6 @@ export function installRemoteNavigation() {
     if (editing && (direction === "left" || direction === "right")) return;
     if (active?.matches("video,audio")) return;
 
-    const root = activeLayer();
     if (move(root, direction)) event.preventDefault();
   }, true);
 
