@@ -4977,3 +4977,25 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   }
   #app main{padding-top:calc(56px + env(safe-area-inset-top,0px))!important}
 }
+
+
+/* ---------- LUNO CINEMATIC HERO HEIGHT REFINEMENT ---------- */
+/* Shorter first-screen feature so the Popular rail appears sooner, like the approved reference. */
+@media(max-width:700px){
+  .home-hero{
+    height:min(70svh,560px)!important;
+    min-height:460px!important;
+    max-height:560px!important;
+    padding:0 20px 24px!important;
+    margin-bottom:20px!important;
+  }
+  .home-hero-backdrop{background-position:center 22%!important}
+  .home-hero-description{
+    -webkit-line-clamp:2!important;
+    margin-bottom:16px!important;
+    font-size:13px!important;
+    line-height:1.42!important;
+  }
+  .home-hero-title{font-size:clamp(30px,7.7vw,40px)!important}
+  .home-hero-actions button{min-height:48px!important}
+}
