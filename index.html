@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=68">
+  <link rel="stylesheet" href="./styles.css?v=69">
   <link rel="stylesheet" href="./source-manager.css?v=1">
 </head>
 <body>
@@ -203,6 +203,8 @@
 
         <section class="luno-detail-hero">
           <div id="detailBackdrop" class="detail-backdrop"></div>
+          <video id="detailTrailerVideo" class="detail-trailer-video" autoplay muted playsinline loop preload="none" aria-label="Трейлер фильма"></video>
+          <button id="detailTrailerSound" class="detail-trailer-sound" type="button" aria-label="Включить звук трейлера"><span>⌁</span></button>
           <div class="luno-detail-hero-vignette"></div>
           <div class="luno-detail-hero-copy">
             <div class="detail-kicker">LUNO • ПРЕМЬЕРА</div>
@@ -216,7 +218,7 @@
               <button id="detailFavorite" class="secondary"><span>♡</span><em>В избранное</em></button>
             </div>
           </div>
-          <div id="detailRatings" class="luno-detail-ratings"></div>
+          <div id="detailRatings" class="luno-detail-ratings" hidden></div>
         </section>
 
         <section id="detailSeasonsSection" class="luno-detail-section detail-seasons-section hidden">
@@ -393,6 +395,6 @@
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
-  <script type="module" src="./app.js?v=remote76"></script>
+  <script type="module" src="./app.js?v=remote77"></script>
 </body>
 </html>
