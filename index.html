@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=30">
+  <link rel="stylesheet" href="./styles.css?v=31">
   <link rel="stylesheet" href="./source-manager.css?v=1">
 </head>
 <body>
@@ -57,6 +57,13 @@
       <button class="mobile-tab" data-section="search"><span class="tab-icon">⌕</span><small>Поиск</small></button>
     </nav>
 
+<button id="lunoMenuTrigger" class="luno-menu-trigger" type="button" aria-label="Открыть меню" aria-expanded="false"><span class="luno-menu-glyph" aria-hidden="true">☰</span><span class="luno-menu-trigger-label">Меню</span></button>
+<div id="lunoMenuBackdrop" class="luno-menu-backdrop" hidden></div>
+<aside id="lunoMenuDrawer" class="luno-menu-drawer" aria-label="Главная навигация" aria-hidden="true">
+<div class="luno-menu-head"><div class="luno-menu-brand"><span class="brand-orbit"><span class="brand-moon"></span></span><b>LUNO</b></div><button id="lunoMenuClose" class="luno-menu-close" type="button" aria-label="Закрыть меню">×</button></div>
+<div class="luno-menu-caption">НАВИГАЦИЯ</div><nav class="luno-menu-items">
+<button class="luno-menu-item active" data-section="home"><span>⌂</span>Главная</button><button class="luno-menu-item" data-section="movies"><span>▣</span>Фильмы</button><button class="luno-menu-item" data-section="series"><span>▤</span>Сериалы</button><button class="luno-menu-item" data-section="cartoons"><span>▧</span>Мультфильмы</button><button class="luno-menu-item" data-section="anime"><span>✧</span>Аниме</button><button class="luno-menu-item" data-section="shows"><span>▦</span>Шоу</button><button class="luno-menu-item" data-section="catalog"><span>☷</span>Каталог</button><button class="luno-menu-item" data-section="search"><span>⌕</span>Поиск</button><button class="luno-menu-item" data-section="favorites"><span>♡</span>Избранное</button><button class="luno-menu-item" data-section="settings"><span>⚙</span>Настройки</button>
+</nav><div class="luno-menu-divider"></div><button id="lunoMenuSources" class="luno-menu-item luno-menu-source"><span>＋</span>Источники</button></aside>
     <main>
       <section class="home-intro" aria-label="LUNO">
         <div class="home-intro-copy">
@@ -369,6 +376,6 @@
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
-  <script type="module" src="./app.js?v=remote47"></script>
+  <script type="module" src="./app.js?v=remote48"></script>
 </body>
 </html>
