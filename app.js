@@ -233,11 +233,11 @@ function normalizeItem(item){
   const posterValue=String(item?.poster||"");
   const backgroundValue=String(item?.background||"");
   const tmdbPoster=item?.poster_path
-    ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\//,"")
+    ? "https://image.tmdb.org/t/p/w500/"+String(item.poster_path).replace(/^\//,"")
     : "";
   const poster=normalizeImageValue(posterValue,"w500") || tmdbPoster;
   const background=normalizeImageValue(backgroundValue,"w1280") ||
-    (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280"+String(item.backdrop_path).replace(/^\//,"") : "");
+    (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280/"+String(item.backdrop_path).replace(/^\//,"") : "");
   return {
     ...item,
     id:item?.id || (item?.tmdbId ? "tmdb:"+item.tmdbId : ""),
@@ -262,8 +262,8 @@ function posterCandidates(item){
   const values=[
     item?.poster,
     item?.posterSource,
-    item?.poster_path ? "https://image.tmdb.org/t/p/w500"+String(item.poster_path).replace(/^\//,"") : "",
-    item?.poster_path ? "https://image.tmdb.org/t/p/original"+String(item.poster_path).replace(/^\//,"") : "",
+    item?.poster_path ? "https://image.tmdb.org/t/p/w500/"+String(item.poster_path).replace(/^\//,"") : "",
+    item?.poster_path ? "https://image.tmdb.org/t/p/original/"+String(item.poster_path).replace(/^\//,"") : "",
     item?.background
   ];
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
