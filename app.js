@@ -83,6 +83,7 @@ const detailDescription=document.querySelector("#detailDescription");
 const detailBadges=document.querySelector("#detailBadges");
 const detailRatings=document.querySelector("#detailRatings");
 const detailPlay=document.querySelector("#detailPlay");
+const detailTrailer=document.querySelector("#detailTrailer");
 const detailEpisodes=document.querySelector("#detailEpisodes");
 const detailSeasonsSection=document.querySelector("#detailSeasonsSection");
 const detailOpenEpisodes=document.querySelector("#detailOpenEpisodes");
@@ -695,6 +696,12 @@ document.querySelectorAll(".luno-detail-links [data-section]").forEach((button)=
 });
 detailPlay?.addEventListener("click",()=>{
   if(currentItem) openPlayer(currentItem.id,currentItem.type,currentItem.name);
+});
+detailTrailer?.addEventListener("click",()=>{
+  if(!currentItem) return;
+  const title=String(currentItem.name||"").trim();
+  if(!title) return;
+  window.open("https://www.youtube.com/results?search_query="+encodeURIComponent(title+" трейлер"),"_blank","noopener,noreferrer");
 });
 detailOpenEpisodes?.addEventListener("click",()=>detailEpisodes?.click());
 detailEpisodes?.addEventListener("click",()=>{
