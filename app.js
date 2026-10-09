@@ -763,7 +763,34 @@ function getLibraryItems(type){
 let libraryType="";
 let libraryItems=[];
 let libraryVisible=0;
+let librarySort="popular";
 const LIBRARY_BATCH=24;
+
+function sortLibraryItems(items,sort=librarySort){
+  const list=items.slice();
+  if(sort==="rating") return list.sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0));
+  if(sort==="newest") return list.sort((a,b)=>getYear(b)-getYear(a)||(Number(b.popularity)||0)-(Number(a.popularity)||0));
+  return list.sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
+}
+
+function applyLibrarySort(sort){
+  if(!["popular","rating","newest"].includes(sort)) return;
+  librarySort=sort;
+  libraryItems=sortLibraryItems(getLibraryItems(libraryType),sort);
+  libraryVisible=0;
+  const grid=libraryContent?.querySelector(".library-infinite-grid");
+  if(grid) grid.innerHTML="";
+  libraryContent?.querySelectorAll("[data-library-sort]").forEach(button=>{
+    const active=button.dataset.librarySort===sort;
+    button.classList.toggle("active",active);
+    button.setAttribute("aria-pressed",String(active));
+  });
+  const count=libraryContent?.querySelector(".library-toolbar-count");
+  if(count) count.textContent=String(libraryItems.length);
+  const loader=libraryContent?.querySelector("#libraryLoader");
+  if(loader) loader.textContent=libraryItems.length?"Прокрути вниз для продолжения":"В этой категории пока нет фильмов";
+  renderLibraryBatch();
+}
 
 function renderLibraryBatch(){
   if(!libraryContent) return;
@@ -818,7 +845,8 @@ function openLibrary(type,pushHistory=true){
 
   if(pushHistory) setLunoHistory(type);
   libraryType=type;
-  libraryItems=getLibraryItems(type);
+  librarySort="popular";
+  libraryItems=sortLibraryItems(getLibraryItems(type),"popular");
   libraryVisible=0;
   libraryTitle.textContent=config.title;
   libraryKicker.textContent=config.kicker;
@@ -826,7 +854,12 @@ function openLibrary(type,pushHistory=true){
   libraryContent.innerHTML=
     '<div class="library-toolbar">'+
       '<span>Все '+escapeHtml(config.title.toLocaleLowerCase("ru-RU"))+'</span>'+
-      '<strong>'+libraryItems.length+'</strong>'+
+      '<strong class="library-toolbar-count">'+libraryItems.length+'</strong>'+
+    '</div>'+
+    '<div class="library-sort" role="group" aria-label="Сортировка каталога">'+
+      '<button type="button" class="active" data-library-sort="popular" aria-pressed="true">Популярное</button>'+
+      '<button type="button" data-library-sort="rating" aria-pressed="false">По рейтингу</button>'+
+      '<button type="button" data-library-sort="newest" aria-pressed="false">Новинки</button>'+
     '</div>'+
     '<div class="library-infinite-grid"></div>'+
     '<div class="library-loader" id="libraryLoader">Загрузка…</div>';
@@ -834,6 +867,9 @@ function openLibrary(type,pushHistory=true){
   libraryView.classList.remove("hidden");
   document.body.classList.add("library-open");
   libraryContent.scrollTop=0;
+  libraryContent.querySelectorAll("[data-library-sort]").forEach(button=>{
+    button.addEventListener("click",()=>applyLibrarySort(button.dataset.librarySort));
+  });
   renderLibraryBatch();
 
   if(libraryContent._observer) libraryContent._observer.disconnect();
