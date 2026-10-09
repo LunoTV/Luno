@@ -1,0 +1,22 @@
+name: Navigation branch check
+
+on:
+  push:
+    branches: [lampa-prisma-navigation]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npx vite build
