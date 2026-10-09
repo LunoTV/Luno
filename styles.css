@@ -4611,3 +4611,33 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     box-sizing:border-box!important;
   }
 }
+
+
+/* Restore compact mobile shutter; make its entire strip solid black. */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter{
+    position:sticky!important;top:0!important;z-index:1000!important;
+    height:52px!important;min-height:52px!important;
+    width:100%!important;max-width:100vw!important;
+    box-sizing:border-box!important;overflow:hidden!important;
+    background:#000!important;
+    border:0!important;border-radius:0!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    padding-left:max(12px,env(safe-area-inset-left))!important;
+    padding-right:max(12px,env(safe-area-inset-right))!important;
+  }
+  .topbar.luno-nav-shutter .tv-header-tools{
+    display:flex!important;flex:0 0 auto!important;
+    gap:8px!important;max-width:72px!important;
+  }
+  .topbar.luno-nav-shutter .global-header-search,
+  .topbar.luno-nav-shutter .global-header-settings{
+    width:30px!important;min-width:30px!important;max-width:30px!important;
+    height:30px!important;min-height:30px!important;max-height:30px!important;
+    flex:0 0 30px!important;border-radius:50%!important;
+    background:#191a1f!important;border:0!important;box-shadow:none!important;
+  }
+  .topbar.luno-nav-shutter .global-header-settings span{font-size:16px!important}
+  main{padding-top:0!important}
+}
