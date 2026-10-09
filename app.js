@@ -2017,9 +2017,10 @@ window.addEventListener("popstate",(event)=>{
 });
 document.addEventListener("keydown",(event)=>{
   const backKeys=["Escape","Backspace","BrowserBack","GoBack"];
-  if(backKeys.includes(event.key)||event.keyCode===4){
+  if(backKeys.includes(event.key)||[4,166,461,10009].includes(event.keyCode)){
     // Close only the topmost layer, like Back on a TV remote.
     const layers=[
+      [confirmDialog,closeDialog],
       [sourceSheet,closeSourceSheetPanel],
       [subtitleSheet,()=>subtitleSheet?.classList.add("hidden")],
       [qualitySheet,()=>qualitySheet?.classList.add("hidden")],
