@@ -157,7 +157,7 @@ export function installRemoteNavigation() {
     })[event.keyCode];
     if (!direction) {
       // Older TV browsers sometimes report the remote's OK key only by keyCode.
-      if ([13, 23, keyCodeEnter].includes(event.keyCode) && !event.repeat) {
+      if ([13, 23].includes(event.keyCode) && !event.repeat) {
         const target = document.activeElement;
         if (target?.matches("button:not(:disabled),a[href],[role=button]:not([aria-disabled=true])")) {
           event.preventDefault();
