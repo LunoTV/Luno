@@ -4763,3 +4763,16 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   }
   .mobile-tabbar{border-color:#6563B6!important}
 }
+
+
+/* ---------- LUNO SHUTTER TOP EDGE FIX ---------- */
+/* Restore the missing top horizontal stroke on the mobile shutter. */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter,
+  body.home-mode .topbar.luno-nav-shutter{
+    border-top:1px solid #6563B6!important;
+    border-left:1px solid #6563B6!important;
+    border-right:1px solid #6563B6!important;
+    border-bottom:1px solid #6563B6!important;
+  }
+}
