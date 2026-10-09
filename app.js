@@ -287,7 +287,7 @@ function card(item,eager=false){
   const quality=Number(item?.rating)>=8 ? "4K" : (Number(item?.rating)>=7 ? "FULLHD" : "HD");
   const type=item?.type==="series" ? "СЕРИАЛЫ" : "ФИЛЬМЫ";
   const imageHtml=image
-    ? '<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager ? "high" : "low")+'" referrerpolicy="no-referrer">'
+    ? '<img src="'+escapeHtml(image)+'" data-fallbacks="'+escapeHtml(JSON.stringify(fallbacks))+'" alt="'+escapeHtml(title)+'" loading="'+(eager && !isLowPowerTV() ? "eager" : "lazy")+'" decoding="async" fetchpriority="'+(eager && !isLowPowerTV() ? "high" : "low")+'" referrerpolicy="no-referrer">'
     : '<span class="poster-fallback poster-fallback-title"><span>'+escapeHtml(title)+'</span></span>';
   const meta='<span class="card-quality">'+quality+'</span>'+
     (rating ? '<span class="card-rating">★ '+rating+'</span>' : '')+
@@ -336,6 +336,16 @@ document.addEventListener("click",(event)=>{
 },true);
 
 function bindCards(){
+  document.querySelectorAll(".card-art img").forEach((img)=>{
+    if(img.dataset.posterReadyBound==="1") return;
+    img.dataset.posterReadyBound="1";
+    const reveal=()=>img.classList.add("is-poster-ready");
+    if(img.complete && img.naturalWidth>0) reveal();
+    else {
+      img.addEventListener("load",reveal,{once:true});
+      img.addEventListener("error",()=>img.classList.remove("is-poster-ready"),{once:true});
+    }
+  });
   document.querySelectorAll(".card").forEach((c)=>{
     const image=c.querySelector(".card-art img");
     if(image && !image.dataset.fallbackBound){
@@ -2143,6 +2153,8 @@ if(catalogSentinel && "IntersectionObserver" in window){
 }
 
 function prefetchPosters(items){
+  // On TV, avoid competing with visible posters for network and image decode time.
+  if(isLowPowerTV()) return;
   items.slice(0,8).forEach((item)=>{
     if(item?.poster){
       const image=new Image();
