@@ -856,7 +856,16 @@ function renderDiscovery(){
 }
 
 function renderCatalogSections(){
-  renderDiscovery();
+  // Discovery is an enhancement, not a dependency for the primary poster rails.
+  // A malformed discovery field must never prevent the home rows from rendering.
+  try{
+    renderDiscovery();
+  }catch(error){
+    console.error("[LUNO] Discovery rows failed; continuing with primary catalog rows",error);
+    const fallback=catalogItems.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,18);
+    const html=fallback.map((item,index)=>card(item,index<6)).join("");
+    [trendingCards,newCards,topCards].forEach(node=>{if(node && !node.children.length)node.innerHTML=html;});
+  }
   if(movieCards) movieCards.innerHTML=movieItems.slice(0,movieVisible).map((item,index)=>card(item,index<6)).join("");
   if(openCinemaCards) openCinemaCards.innerHTML=openCinemaItems.map((item,index)=>card(item,index<6)).join("");
   if(seriesCards) seriesCards.innerHTML=seriesItems.slice(0,seriesVisible).map((item,index)=>card(item,index<6)).join("");
