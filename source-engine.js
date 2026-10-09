@@ -498,9 +498,10 @@ export async function initLunoCore(){
 
 export function getLunoTransport(){return window.__LUNO_CORE__||null}
 
-export async function loadMetaDetails(item,videoId=""){
+export async function loadMetaDetails(item,videoId="",{signal}={}){
   await initLunoCore();
-  const streams=await resolveItemStreams(item,{videoId});
+  if(signal?.aborted)return {streams:[],metaStreams:[],libraryItem:{state:{videoId:videoId||item?.videoId||item?.imdbId||item?.id||""}}};
+  const streams=await resolveItemStreams(item,{videoId,signal});
   playerState={
     stream:streams.length===1?{type:"Ready",content:streams[0].stream}:null,
     streams:streams.map(e=>({content:{type:"Ready",content:[e.stream]},request:e.request,addon:e.addon})),
