@@ -3044,3 +3044,19 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
   main > .section{margin-top:28px!important}
   main > .section .section-head h2{margin-top:3px!important}
 }
+
+
+/* iOS Safari safe-area framing: match the reference's dark app canvas between browser chrome. */
+html,body{background:#050b1b!important}
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#app{background:#050b1b!important;min-height:100dvh}
+@supports(height:100svh){
+  body,#app{min-height:100svh}
+}
+@media(max-width:700px){
+  body{background:#050b1b!important}
+  #app{background:#050b1b!important}
+  .luno-nav-shutter{top:calc(env(safe-area-inset-top,0px) + 8px)!important}
+  #app main{padding-top:calc(88px + env(safe-area-inset-top,0px))!important;padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))!important}
+  .mobile-tabbar{bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}
+}
