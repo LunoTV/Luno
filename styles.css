@@ -3734,3 +3734,37 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 @media(prefers-reduced-motion:reduce){
   .detail-overlay .luno-detail-hero-copy,.detail-overlay .luno-detail-ratings,.detail-overlay .luno-detail-section,.detail-overlay .detail-backdrop{transition:none!important;transform:none!important;opacity:1!important}
 }
+
+
+/* Detail-page recommendations: cinematic horizontal rails */
+.luno-recommend-row{
+  display:grid!important;
+  grid-auto-flow:column!important;
+  grid-auto-columns:minmax(145px,17%)!important;
+  grid-template-columns:none!important;
+  gap:14px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:3px 3px 18px!important;
+  scroll-snap-type:x proximity;
+  overscroll-behavior-x:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.24) transparent;
+}
+.luno-recommend-row>.card{scroll-snap-align:start;min-width:0}
+.luno-recommend-row>.card .card-title{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:42px;line-height:1.35}
+.luno-detail-section{content-visibility:auto;contain-intrinsic-size:auto 420px}
+.luno-detail-actions .primary:focus-visible,.luno-detail-actions .secondary:focus-visible,
+.luno-detail-nav button:focus-visible,.luno-detail-section button:focus-visible{
+  outline:2px solid #fff!important;outline-offset:3px!important
+}
+.luno-detail-actions .primary{box-shadow:0 7px 28px rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.28)!important}
+.luno-detail-actions .primary span{display:inline-block;margin-right:7px;transition:transform .18s ease}
+.luno-detail-actions .primary:hover span{transform:translateX(2px)}
+@media(max-width:700px){
+  .luno-recommend-row{grid-auto-columns:minmax(126px,38%)!important;gap:11px!important;padding-bottom:14px!important}
+  .luno-detail-section{content-visibility:visible}
+}
+@media(prefers-reduced-motion:reduce){
+  .luno-detail-actions .primary span{transition:none!important}
+}
