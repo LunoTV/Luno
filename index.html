@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=77">
+  <link rel="stylesheet" href="./styles.css?v=78">
   <link rel="stylesheet" href="./source-manager.css?v=1">
 </head>
 <body>
@@ -43,10 +43,9 @@
         <button class="nav-item" data-section="cartoons">Мультфильмы</button>
         <button class="nav-item" data-section="anime">Аниме</button>
         <button class="nav-item" data-section="shows">Шоу</button>
-        <button class="nav-item" data-section="search">⌕ Поиск</button>
-        <button class="nav-item" data-section="settings">⚙ Настройки</button>
+
       </nav>
-      <button class="global-header-search" id="globalHeaderSearch" type="button" aria-label="Поиск"><span class="search-icon"></span></button>
+      <div class="tv-header-tools"><button class="global-header-search" id="globalHeaderSearch" type="button" aria-label="Поиск"><span class="search-icon"></span></button><button class="global-header-settings" id="globalHeaderSettings" type="button" aria-label="Настройки"><span>⚙</span></button></div>
     </header>
 
     <nav class="mobile-tabbar" aria-label="Основная навигация">
@@ -388,6 +387,6 @@
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
-  <script type="module" src="./app.js?v=remote84"></script>
+  <script type="module" src="./app.js?v=remote85"></script>
 </body>
 </html>
