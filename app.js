@@ -293,7 +293,7 @@ function posterCandidates(item){
   values.push(item?.poster,item?.posterSource);
   const path=String(item?.poster_path||item?.posterPath||"").trim();
   if(path){
-    const clean=path.replace(/^\\/+/, "");
+    const clean=path.replace(/^\/+/, "");
     values.push("https://image.tmdb.org/t/p/w500/"+clean);
     values.push("https://image.tmdb.org/t/p/original/"+clean);
   }
