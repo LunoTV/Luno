@@ -3698,3 +3698,18 @@ html,body{
 .card:focus-visible{outline:2px solid #f5f5f5!important;outline-offset:3px!important;transform:translateY(-3px);box-shadow:0 0 0 5px rgba(255,255,255,.12),0 16px 35px rgba(0,0,0,.35)!important;z-index:2}
 .library-infinite-grid .card:focus-visible{z-index:4}
 @media(prefers-reduced-motion:reduce){.card:focus-visible{transform:none}}
+
+
+/* Smooth, lightweight catalog scrolling and poster reveal */
+body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable}
+.library-infinite-grid{align-items:start}
+.library-infinite-grid .card{contain:layout style;will-change:transform}
+.card-art{isolation:isolate}
+.card-art img{opacity:0;transition:opacity .24s ease,transform .35s}
+.card-art img.is-poster-ready{opacity:1}
+.card-art .poster-fallback{z-index:0}
+.card-art img{z-index:1}
+.card-art .card-gradient,.card-art .card-type,.card-art .card-info,.card-art .card-hover-panel{z-index:2}
+.library-loader{padding:24px 12px calc(36px + env(safe-area-inset-bottom));text-align:center;letter-spacing:.02em;text-transform:none}
+@media(max-width:700px){body.library-open .library-content{scroll-padding-top:12px}.library-infinite-grid{row-gap:16px}}
+@media(prefers-reduced-motion:reduce){.card-art img{transition:none}}
