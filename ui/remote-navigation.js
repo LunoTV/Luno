@@ -24,6 +24,8 @@ const LAYERS = [
 
 const lastFocused = new Map();
 let installed = false;
+let currentRoot = null;
+let pendingFocus = null;
 
 function visible(element) {
   if (!element || !element.isConnected || element.closest("[hidden],[inert],.hidden,[aria-hidden=true]")) return false;
@@ -156,6 +158,44 @@ export function installRemoteNavigation() {
   document.addEventListener("focusout", (event) => {
     event.target?.classList?.remove("tv-remote-focus");
   });
+
+  currentRoot = activeLayer();
+
+  // Remember the control that opened a new screen, then restore it on Back.
+  document.addEventListener("click", (event) => {
+    pendingFocus = { element: document.activeElement, root: activeLayer(), at: Date.now() };
+  }, true);
+
+  const layerObserver = new MutationObserver(() => {
+    const nextRoot = activeLayer();
+    if (nextRoot === currentRoot) return;
+
+    if (currentRoot) {
+      const active = document.activeElement;
+      if (active && currentRoot.contains(active)) lastFocused.set(currentRoot, active);
+      if (pendingFocus && pendingFocus.root === currentRoot && Date.now() - pendingFocus.at < 900) {
+        lastFocused.set(currentRoot, pendingFocus.element);
+      }
+    }
+
+    currentRoot = nextRoot;
+    pendingFocus = null;
+    requestAnimationFrame(() => {
+      const candidates = getFocusable(nextRoot);
+      if (!candidates.length) return;
+      const remembered = lastFocused.get(nextRoot);
+      if (remembered && candidates.includes(remembered)) {
+        focusElement(remembered, nextRoot);
+      } else if (!nextRoot.contains(document.activeElement)) {
+        const preferred = candidates.find((element) => element.matches(".nav-item.active,.mobile-tab.active"))
+          || candidates.find((element) => element.matches(".card"))
+          || candidates[0];
+        focusElement(preferred, nextRoot);
+      }
+    });
+  });
+
+  layerObserver.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "hidden", "inert", "aria-hidden"] });
 
   // Restore the last control in a layer when a sheet or screen is reopened.
   document.addEventListener("click", (event) => {
