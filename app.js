@@ -842,9 +842,14 @@ function navigate(section){
     openCategoryHub();
     return;
   }
-  if(section==="favorites"){
+  if(section==="history"){
     closeLibrary();
-    favoritesSection?.scrollIntoView({behavior:"smooth",block:"start"});
+    openLibrary("history");
+    return;
+  }
+  if(section==="settings"){
+    closeLibrary();
+    document.querySelector("#settingsBtn")?.click();
     return;
   }
   if(section==="search"){
