@@ -3211,3 +3211,56 @@ img{backface-visibility:hidden}
     outline-offset:3px!important;
   }
 }
+
+/* Low-power TV rendering profile: avoid full-screen compositing and per-card
+   GPU effects. Keep LUNO's layout and visual identity; simplify only costly paint. */
+@media (min-width:701px) and (hover:none) {
+  html, body {
+    scroll-behavior:auto!important;
+    scrollbar-width:none!important;
+  }
+  body::before, body::after, #app::before, #app::after {
+    animation:none!important;
+    filter:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .topbar, .secondary, .overlay, .source-sheet, .library-toolbar,
+  .player-browse-panel, .luno-detail-links, .luno-detail-ratings,
+  .card-type, .genre-tile, .mobile-tabbar {
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .overlay, .source-sheet, .library-toolbar, .player-browse-panel,
+  .mobile-tabbar, .card-art, .card-type, .genre-tile {
+    box-shadow:none!important;
+  }
+  .hero-backdrop, .detail-backdrop, .player-browse-backdrop,
+  .luno-detail-hero .detail-backdrop {
+    filter:none!important;
+  }
+  .card, .card-art img, .nav-item, .primary, .secondary,
+  .source-nav-btn, .genre-tile, .player-episode-card, #player .player-bar {
+    transition:none!important;
+    animation:none!important;
+  }
+  .card, .card:hover, .card:focus-visible,
+  .card:hover .card-art img, .hero-poster-wrap:hover .hero-poster,
+  .genre-tile:hover, .genre-tile:focus-visible,
+  .player-episode-card:hover, #player .player-bar {
+    transform:none!important;
+  }
+  .card-art { isolation:auto!important; }
+  .card-gradient { box-shadow:none!important; }
+  .card-type { background:rgba(7,8,12,.92)!important; }
+  .hero-poster { transform:none!important; box-shadow:none!important; }
+  .topbar::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar,
+  #app::-webkit-scrollbar, .cards::-webkit-scrollbar {
+    width:0!important;height:0!important;display:none!important;
+  }
+  .card:focus-visible, .card.tv-remote-focus, button.tv-remote-focus,
+  a.tv-remote-focus, .nav-item.tv-remote-focus {
+    outline:3px solid #fff!important;
+    outline-offset:3px!important;
+  }
+}
