@@ -1,3 +1,4 @@
+import bundledTmdbCatalog from "./tmdb-catalog.generated.js";
 import Hls from "hls.js";
 import dashjs from "dashjs";
 import {
@@ -974,6 +975,16 @@ async function loadTmdbCatalog(){
     }
   }
 
+  // The build creates this module from the same verified catalog. It is bundled
+  // into app.js so the home screen still has data if Pages JSON fetches fail.
+  const bundledItems=Array.isArray(bundledTmdbCatalog?.items)?bundledTmdbCatalog.items:[];
+  if(bundledItems.length){
+    console.warn("[LUNO] Using bundled TMDB catalog after network fetch failure", {
+      count: bundledItems.length,
+      fetchError: String(fallbackError?.message||lastError?.message||"unknown error")
+    });
+    return {items:bundledItems,sections:bundledTmdbCatalog.sections||{}};
+  }
   throw new Error("TMDB catalog unavailable: "+(lastError?.message||"unknown error"));
 }
 
