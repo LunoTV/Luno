@@ -4327,3 +4327,10 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-actions #detailEpisodes,
   .luno-detail-actions #detailFavorite{width:39px!important;min-width:39px!important}
 }
+
+
+/* ---------- REMOVE REVIEWS FROM TITLE PAGE v23 ---------- */
+.luno-detail .reviews-section,
+.luno-detail .luno-review-row,
+.luno-detail .luno-review-add,
+.luno-detail .luno-review-card{display:none!important}
