@@ -106,8 +106,11 @@ function move(root, direction) {
   if (active?.matches?.(".card")) {
     const row = active.closest(".cards");
     if (row && (direction === "left" || direction === "right")) {
+      // Include off-screen cards in this rail. Focus scrolls the next card into
+      // view, so one DPAD press advances exactly one poster instead of jumping
+      // an entire viewport and requiring a second press.
       entries = [...row.querySelectorAll(".card")].map((element) => ({ element, rect: elementRect(element) }))
-        .filter((entry) => visible(entry.element, entry.rect, true));
+        .filter((entry) => visible(entry.element, entry.rect, false));
     } else if (row && (direction === "up" || direction === "down")) {
       const fromRow = elementRect(row);
       const rows = [...root.querySelectorAll(".cards")].map((element) => ({ element, rect: elementRect(element) }))
