@@ -4108,3 +4108,83 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 .card-title{
   display:block!important;
 }
+
+
+/* ---------- MOBILE TITLE PAGE: SPACED CONTENT FLOW v19 ---------- */
+@media(max-width:700px){
+  .luno-detail-hero{
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    padding:104px 20px 34px!important;
+    overflow:visible!important;
+  }
+  .luno-detail-hero-copy{
+    width:100%!important;
+    min-width:0!important;
+  }
+  .luno-detail-hero-copy h2{
+    max-width:100%!important;
+    font-size:clamp(34px,9.5vw,48px)!important;
+    line-height:.99!important;
+    margin:12px 0 0!important;
+    overflow-wrap:anywhere;
+  }
+  .luno-detail-hero-copy .detail-meta{
+    margin-top:12px!important;
+    font-size:13px!important;
+  }
+  .luno-detail-hero-copy .detail-badges{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:7px!important;
+    margin-top:13px!important;
+  }
+  .luno-detail-hero-copy .detail-badge{
+    min-height:34px;display:inline-flex;align-items:center;
+    padding:0 11px!important;border-radius:8px!important;
+    font-size:12px!important;
+  }
+  .luno-detail-actions{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:9px!important;
+    margin-top:22px!important;
+  }
+  .luno-detail-actions .primary,
+  .luno-detail-actions .secondary{
+    min-height:48px!important;width:100%!important;
+    padding:0 12px!important;font-size:13px!important;
+    justify-content:center;
+  }
+  .luno-detail-actions #detailPlay{grid-column:1}
+  .luno-detail-actions #detailTrailer{grid-column:2}
+  .luno-detail-actions #detailEpisodes,
+  .luno-detail-actions #detailFavorite{grid-row:2}
+  .luno-detail-ratings{
+    position:relative!important;left:auto!important;right:auto!important;
+    top:auto!important;bottom:auto!important;transform:none!important;
+    width:100%!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    margin:18px 0 0!important;padding:12px 8px!important;gap:5px!important;
+    order:initial!important;
+  }
+  .luno-detail-ratings>div{min-width:0!important}
+  .luno-detail-ratings strong{
+    font-size:clamp(14px,4.2vw,18px)!important;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .luno-detail-ratings span{font-size:7px!important;letter-spacing:.08em!important}
+  .luno-detail-hero::after{
+    top:6%!important;right:-8%!important;width:58%!important;height:38%!important;
+    opacity:.15!important;mask-image:linear-gradient(180deg,#000,transparent)!important;
+    -webkit-mask-image:linear-gradient(180deg,#000,transparent)!important;
+  }
+  .luno-detail-hero-vignette{
+    background:linear-gradient(180deg,rgba(7,9,13,.34) 0%,rgba(7,9,13,.68) 32%,#07090d 76%)!important;
+  }
+}
+@media(max-width:380px){
+  .luno-detail-hero{padding-left:16px!important;padding-right:16px!important}
+  .luno-detail-actions .primary,.luno-detail-actions .secondary{font-size:12px!important;padding:0 8px!important}
+}
