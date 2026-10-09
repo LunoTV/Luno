@@ -441,6 +441,8 @@ function paintDetail(value){
   if(detail) detail.style.setProperty("--luno-poster",image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "none");
   if(detailSeasonsSection) detailSeasonsSection.classList.toggle("hidden",value?.type!=="series");
   if(detailSeasonsTitle) detailSeasonsTitle.textContent=title+" — сезоны и серии";
+  const detailKicker=document.querySelector(".luno-detail-hero-copy .detail-kicker");
+  if(detailKicker) detailKicker.textContent="LUNO  •  "+(value?.type==="series"?"СЕРИАЛ":"ФИЛЬМ");
   if(detailTitle) detailTitle.textContent=title;
   if(detailMeta) detailMeta.textContent=[
     year!=="—" ? year : "",
@@ -472,7 +474,7 @@ function paintDetail(value){
   }
 
   if(detailTags){
-    detailTags.innerHTML=genreNames.map(g=>'<button type="button"># '+escapeHtml(g)+'</button>').join("") || '<button type="button"># LUNO</button>';
+    detailTags.innerHTML=genreNames.map(g=>'<button type="button" data-detail-genre="'+escapeHtml(g)+'"># '+escapeHtml(g)+'</button>').join("") || '<button type="button" data-detail-genre="Кино"># LUNO</button>';
   }
 
   if(detailCredits){
@@ -706,6 +708,14 @@ document.querySelector(".luno-detail-search")?.addEventListener("click",()=>{ cl
 document.querySelector(".luno-detail-brand")?.addEventListener("click",()=>{ closeDetail(); navigate("home"); });
 document.querySelectorAll(".luno-detail-links [data-section]").forEach(btn=>btn.addEventListener("click",()=>{ const section=btn.dataset.section; closeDetail(); navigate(section); }));
 
+document.querySelector("#detailTags")?.addEventListener("click",event=>{
+  const tag=event.target.closest("[data-detail-genre]");
+  if(!tag)return;
+  const query=tag.dataset.detailGenre||"";
+  closeDetail();
+  openSearch();
+  if(searchInput){searchInput.value=query;searchInput.dispatchEvent(new Event("input"));}
+});
 detailFavorite?.addEventListener("click",()=>{ if(currentItem) toggleFavorite(currentItem); });
 closeSearch?.addEventListener("click",closeSearchPanel);
 
