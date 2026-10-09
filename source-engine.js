@@ -454,9 +454,21 @@ function addSourceDefinition(definition={}){
 }
 
 function setSourceProviderEnabled(id,enabled){
-  const changed=registry.setEnabled(id,enabled);
-  if(changed)window.dispatchEvent(new CustomEvent("luno-source-state",{detail:{id,enabled:enabled!==false}}));
-  return changed;
+  const key=text(id);
+  const changed=registry.setEnabled(key,enabled);
+  if(!changed)return false;
+  const provider=registry.get(key);
+  if(provider?.type==="http"){
+    try{
+      const definitions=JSON.parse(localStorage.getItem(PROVIDERS_KEY)||"[]");
+      if(Array.isArray(definitions)){
+        const next=definitions.map(def=>def.id===key?{...def,enabled:enabled!==false}:def);
+        localStorage.setItem(PROVIDERS_KEY,JSON.stringify(next));
+      }
+    }catch{}
+  }
+  window.dispatchEvent(new CustomEvent("luno-source-state",{detail:{id:key,enabled:enabled!==false}}));
+  return true;
 }
 
 const api={listProviders:listSourceProviders,listSources:listAvailableSources,getStatus:getSourceRuntimeStatus,getSourcePreferences,setSourceEnabled,setProviderEnabled:setSourceProviderEnabled,addSourceDefinition,resolve:resolveItemStreams,registerProvider};
