@@ -459,7 +459,7 @@ function paintDetail(value){
 
   if(detailRatings){
     detailRatings.innerHTML=[
-      '<div class="luno-score"><strong>'+ (score>0 ? score.toFixed(1) : "—") +'</strong><span>LUNO</span></div>',
+      '<div class="luno-score"><strong>'+ (score>0 ? score.toFixed(1) : "—") +'</strong><span>TMDB</span></div>',
       '<div><strong>'+escapeHtml(year)+'</strong><span>год</span></div>',
       '<div><strong>'+escapeHtml(type)+'</strong><span>формат</span></div>',
       '<div><strong>'+escapeHtml(quality)+'</strong><span>источник</span></div>'
