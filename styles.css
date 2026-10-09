@@ -3045,3 +3045,44 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
   main > .section .section-head h2{margin-top:3px!important}
 }
 
+
+
+/* Lock the document to the viewport on iPhone; only poster rails may scroll sideways. */
+@media(max-width:700px){
+  html,body{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:clip!important;
+    overscroll-behavior-x:none!important;
+  }
+  body,#app,main{
+    position:relative;
+    left:auto!important;
+    right:auto!important;
+    max-width:100%!important;
+  }
+  main{
+    width:100%!important;
+    overflow-x:clip!important;
+  }
+  main > .section{
+    width:auto!important;
+    max-width:calc(100% - 8px)!important;
+    margin-left:8px!important;
+    margin-right:0!important;
+    transform:none!important;
+  }
+  main > .section .section-head{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  main > .section .cards{
+    width:calc(100vw - 8px)!important;
+    max-width:calc(100vw - 8px)!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    overscroll-behavior-x:contain!important;
+    touch-action:pan-x pan-y!important;
+    -webkit-overflow-scrolling:touch;
+  }
+}
