@@ -2542,3 +2542,33 @@ function prefetchPosters(items){
     window.visualViewport.addEventListener("scroll",updateLunoViewportBottom,{passive:true});
   }
 })();
+
+
+/* Reveal the LUNO header on upward scroll; hide it on downward scroll to avoid
+   the fixed wordmark overlapping the cinematic hero title in compact Safari. */
+(function(){
+  let lastY=window.scrollY||0;
+  let accumulated=0;
+  let lastDirection="";
+  const threshold=12;
+  const onScroll=()=>{
+    const y=window.scrollY||0;
+    const delta=y-lastY;
+    lastY=y;
+    if(y<90){
+      document.body.classList.remove("luno-scroll-down","luno-scroll-up");
+      accumulated=0;lastDirection="";
+      return;
+    }
+    const direction=delta>0?"down":delta<0?"up":"";
+    if(!direction)return;
+    if(direction!==lastDirection){accumulated=0;lastDirection=direction;}
+    accumulated+=Math.abs(delta);
+    if(accumulated>=threshold){
+      document.body.classList.toggle("luno-scroll-down",direction==="down");
+      document.body.classList.toggle("luno-scroll-up",direction==="up");
+      accumulated=0;
+    }
+  };
+  window.addEventListener("scroll",onScroll,{passive:true});
+})();
