@@ -5239,3 +5239,13 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   }
   body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))!important}
 }
+
+
+/* iOS Safari toolbar-aware bottom navigation positioning */
+@media(max-width:700px){
+  .mobile-tabbar,
+  body .mobile-tabbar,
+  body.home-mode .mobile-tabbar{
+    bottom:calc(var(--luno-vv-bottom,0px) + env(safe-area-inset-bottom,0px))!important;
+  }
+}
