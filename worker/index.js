@@ -105,37 +105,44 @@ export default {
       }
     }
 
-    // Server-side CUB fallback avoids browser CORS restrictions on the public proxy.
-    try {
-      const cub = new URL("https://apitmdb.cub.red/3/" + (isSearch ? "search/multi" : "trending/all/week"));
-      if (isSearch) cub.searchParams.set("query", query);
-      cub.searchParams.set("language", "ru-RU");
-      cub.searchParams.set("include_adult", "false");
-      cub.searchParams.set("page", page);
-      const response = await fetch(cub, { headers: { accept: "application/json" } });
-      if (!response.ok) throw new Error("CUB HTTP " + response.status);
-      const data = await response.json();
-      const raw = Array.isArray(data?.results) ? data.results : [];
-      const results = raw
-        .filter(item => item?.id && (item?.title || item?.name || item?.original_title || item?.original_name))
-        .map(item => {
-          const inferredType = item.media_type || item.type ||
-            ((!item.title && (item.name || item.first_air_date)) ? "tv" : "movie");
-          return normalize({ ...item, media_type: inferredType === "series" ? "tv" : inferredType });
-        });
-      if (!results.length) throw new Error("CUB returned no results");
-      return json({
-        query, page: Number(data.page) || Number(page),
-        totalPages: Number(data.total_pages) || 1,
-        totalResults: Number(data.total_results) || results.length,
-        results, source: "CUB", fallbackFrom: primaryError
-      }, 200, origin);
-    } catch (error) {
-      return json({
-        error: "TMDB and CUB catalog unavailable",
-        detail: String(error?.message || error),
-        primary: primaryError
-      }, 502, origin);
+    // Match Lampa's TMDB proxy strategy: use the current CUB mirror list,
+    // trying each host server-side so browser CORS does not block catalog loading.
+    const cubMirrors = ["cub.best", "cub.black", "durex.monster", "cubnotrip.top", "cub.red"];
+    let cubError = "";
+    for (const domain of cubMirrors) {
+      try {
+        const cub = new URL("https://apitmdb." + domain + "/3/" + (isSearch ? "search/multi" : "trending/all/week"));
+        if (isSearch) cub.searchParams.set("query", query);
+        cub.searchParams.set("language", "ru-RU");
+        cub.searchParams.set("include_adult", "false");
+        cub.searchParams.set("page", page);
+        const response = await fetch(cub, { headers: { accept: "application/json" } });
+        if (!response.ok) throw new Error(domain + " HTTP " + response.status);
+        const data = await response.json();
+        const raw = Array.isArray(data?.results) ? data.results : [];
+        const results = raw
+          .filter(item => item?.id && (item?.title || item?.name || item?.original_title || item?.original_name))
+          .map(item => {
+            const inferredType = item.media_type || item.type ||
+              ((!item.title && (item.name || item.first_air_date)) ? "tv" : "movie");
+            return normalize({ ...item, media_type: inferredType === "series" ? "tv" : inferredType });
+          });
+        if (!results.length) throw new Error(domain + " returned no results");
+        return json({
+          query, page: Number(data.page) || Number(page),
+          totalPages: Number(data.total_pages) || 1,
+          totalResults: Number(data.total_results) || results.length,
+          results, source: "Lampa-compatible CUB mirror (" + domain + ")",
+          fallbackFrom: primaryError
+        }, 200, origin);
+      } catch (error) {
+        cubError = String(error?.message || error);
+      }
     }
+    return json({
+      error: "TMDB and CUB catalog unavailable",
+      detail: cubError || "All CUB mirrors failed",
+      primary: primaryError
+    }, 502, origin);
   }
 };
