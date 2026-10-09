@@ -1081,11 +1081,26 @@ function renderCatalogSections(){
   if(movieCards) setHTMLIfChanged(movieCards,movieItems.slice(0,movieVisible).map((item,index)=>card(item,index<6)).join(""));
   if(openCinemaCards) setHTMLIfChanged(openCinemaCards,openCinemaItems.map((item,index)=>card(item,index<6)).join(""));
   if(seriesCards) setHTMLIfChanged(seriesCards,seriesItems.slice(0,seriesVisible).map((item,index)=>card(item,index<6)).join(""));
-  const all=catalogItems.slice();
-  const picks=all.slice().sort((a,b)=>
-    ((Number(b.rating)||0)*0.6+(Number(b.popularity)||0)*0.4)-
-    ((Number(a.rating)||0)*0.6+(Number(a.popularity)||0)*0.4)
-  ).slice(0,18);
+  const all=[...new Map(catalogItems.filter(item=>item?.id).map(item=>[item.id,item])).values()];
+  // Give the LUNO picks rail a fresh mix on each page load and avoid repeating
+  // the first visible titles from "Популярное" whenever the catalog has enough items.
+  const popularIds=new Set(all.slice().sort((a,b)=>
+    (Number(b.popularity)||0)-(Number(a.popularity)||0)
+  ).slice(0,6).map(item=>item.id));
+  const shuffleItems=items=>{
+    const shuffled=items.slice();
+    for(let i=shuffled.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+    }
+    return shuffled;
+  };
+  let pickPool=shuffleItems(all.filter(item=>!popularIds.has(item.id)));
+  if(pickPool.length<18){
+    const used=new Set(pickPool.map(item=>item.id));
+    pickPool=pickPool.concat(shuffleItems(all.filter(item=>!used.has(item.id))));
+  }
+  const picks=pickPool.slice(0,18);
   const evening=all.filter(item=>{
     const genres=Array.isArray(item.genres)?item.genres.map(x=>String(x).toLowerCase()):[];
     return genres.some(g=>/комеди|роман|приключ|семейн|фэнтези|мелодрам/.test(g));
