@@ -4488,3 +4488,72 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .tv-header-tools .global-header-settings{font-size:22px!important;line-height:1!important}
   .mobile-tabbar{display:none!important}
 }
+
+
+/* LUNO MOBILE APPROVED CONCEPT — compact header, poster grid, four-tab navigation.
+   All changes are phone-only; Smart TV layout remains independent. */
+@media(max-width:700px){
+  .luno-nav-shutter{
+    display:grid!important;
+    height:62px!important;
+    padding:8px 16px!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:"brand tools"!important;
+    gap:12px!important;
+    background:rgba(6,7,10,.94)!important;
+    border-bottom:1px solid rgba(255,255,255,.07);
+    backdrop-filter:blur(18px);
+  }
+  .luno-nav-shutter .brand{grid-area:brand;justify-self:start}
+  .luno-nav-shutter .nav,
+  .luno-nav-shutter .global-header-back{display:none!important}
+  .luno-nav-shutter .tv-header-tools{
+    grid-area:tools;display:flex!important;align-items:center;gap:8px;
+  }
+  .luno-nav-shutter .global-header-search,
+  .luno-nav-shutter .global-header-settings{
+    width:38px;height:38px;display:grid;place-items:center;
+    border:1px solid rgba(255,255,255,.09);border-radius:50%;
+    background:rgba(255,255,255,.045);color:#f5f6f8;padding:0;
+  }
+  .luno-nav-shutter .global-header-search .search-icon{width:16px;height:16px}
+  .luno-nav-shutter .global-header-settings span{font-size:19px;line-height:1}
+  main{padding-top:62px!important}
+  #homeHero{display:none!important}
+  .section{margin-top:23px!important;padding-left:14px!important}
+  .section-head{margin-bottom:11px!important}
+  .section-head h2{font-size:19px!important}
+  .section-kicker{display:none!important}
+  .cards{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:12px 9px!important;
+    overflow:visible!important;
+    padding:0 14px 0 0!important;
+    touch-action:pan-y!important;
+  }
+  .cards .card{
+    min-width:0!important;width:auto!important;max-width:none!important;
+    flex:initial!important;border-radius:12px!important;
+  }
+  .cards .card-art{
+    width:100%!important;height:auto!important;aspect-ratio:2/3!important;
+  }
+  .cards .card-title{font-size:11px!important;line-height:1.25!important;padding:7px 6px 2px!important}
+  .cards .card-meta{font-size:9px!important;padding:0 6px 8px!important}
+  .resume-section .cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .resume-section .card{width:auto!important;flex:initial!important}
+  .resume-section .card-art{height:auto!important;aspect-ratio:2/3!important}
+  .mobile-tabbar{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    left:12px!important;right:12px!important;bottom:max(8px,env(safe-area-inset-bottom))!important;
+    height:64px!important;padding:5px!important;border-radius:19px!important;
+    background:rgba(13,16,21,.96)!important;border-color:rgba(255,255,255,.1)!important;
+  }
+  .mobile-tab{gap:4px!important;border-radius:14px!important}
+  .mobile-tab .tab-icon{font-size:21px!important;line-height:1.05!important}
+  .mobile-tab small{font-size:10px!important;font-weight:600!important}
+  .mobile-tab.active{color:#45e0cf!important;background:rgba(69,224,207,.09)!important}
+  .mobile-tab.active .tab-icon{color:#45e0cf!important}
+  body{padding-bottom:88px!important}
+}
