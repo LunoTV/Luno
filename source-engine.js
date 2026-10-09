@@ -373,7 +373,8 @@ async function resolveProvider(provider,item,videoId,signal){
     videoId,
     signal,
     requestJson,
-    parseSourcePayload
+    parseSourcePayload,
+    sourceTimeout:SOURCE_TIMEOUT
   });
   const out=(Array.isArray(values)?values:[]).map(v=>v?.stream?{
     ...v,
