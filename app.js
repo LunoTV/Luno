@@ -924,40 +924,54 @@ async function loadTmdbCatalog(){
       console.warn("LUNO catalog attempt failed:",url,error);
     }
   }
-  // A static catalog can be absent after a failed Pages build. Keep LUNO usable
-  // by falling back to the same-origin-independent public API instead of empty rows.
-  try{
-    const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
-    const response=await fetch(base+"/api/tmdb/discover?page=1",{cache:"no-store",headers:{accept:"application/json"}});
-    if(!response.ok)throw new Error("Discovery API HTTP "+response.status);
-    const data=await response.json();
-    const items=Array.isArray(data?.results)?data.results.filter(item=>item?.id&&(item?.name||item?.title||item?.original_name||item?.original_title)).map(item=>{
-      const mediaType=item?.media_type==="tv"||item?.type==="tv"||(!item?.title&&Boolean(item?.name||item?.first_air_date))?"series":(item?.type||"movie");
-      const posterPath=String(item?.poster_path||item?.posterPath||"").split("/").filter(Boolean).join("/");
-      const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").split("/").filter(Boolean).join("/");
-      return {
-        ...item,
-        id:String(item?.id||"").startsWith("tmdb:")?String(item.id):"tmdb:"+String(item.id),
-        tmdbId:Number(item?.tmdbId||item?.id)||0,
-        type:mediaType,
-        name:item?.name||item?.title||item?.original_name||item?.original_title||"Без названия",
-        poster:item?.poster||(posterPath?"https://image.tmdb.org/t/p/w500/"+posterPath:""),
-        background:item?.background||(backdropPath?"https://image.tmdb.org/t/p/w1280/"+backdropPath:""),
-        description:item?.description||item?.overview||"",
-        releaseInfo:item?.releaseInfo||item?.release_date||item?.first_air_date||"",
-        rating:Number(item?.rating??item?.vote_average)||0,
-        popularity:Number(item?.popularity)||0,
-        genreIds:Array.isArray(item?.genreIds)?item.genreIds:(Array.isArray(item?.genre_ids)?item.genre_ids:[]),
-        genres:Array.isArray(item?.genres)?item.genres:[],
-        originalLanguage:item?.originalLanguage||item?.original_language||"",
-        originCountry:Array.isArray(item?.originCountry)?item.originCountry:(Array.isArray(item?.origin_country)?item.origin_country:[])
-      };
-    }):[];
-    if(items.length)return {items,sections:{}};
-    throw new Error("Discovery API returned an empty catalog");
-  }catch(error){
-    console.error("LUNO dynamic catalog fallback failed:",error);
+  // Fallback providers: try LUNO's Worker first, then the CUB TMDB proxy.
+  // Both return TMDB-shaped results; normalize them into LUNO's own catalog format.
+  const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
+  const providers=[
+    {name:"LUNO API",url:base+"/api/tmdb/discover?page=1"},
+    {name:"CUB TMDB",url:"https://apitmdb.cub.red/3/trending/all/week?language=ru-RU&page=1&include_adult=false"}
+  ];
+  let fallbackError=null;
+  for(const provider of providers){
+    try{
+      const response=await fetch(provider.url,{cache:"no-store",headers:{accept:"application/json"}});
+      if(!response.ok)throw new Error(provider.name+" HTTP "+response.status);
+      const data=await response.json();
+      const raw=Array.isArray(data?.results)?data.results:[];
+      const items=raw.filter(item=>item?.id&&(item?.name||item?.title||item?.original_name||item?.original_title)).map(item=>{
+        const isSeries=item?.media_type==="tv"||item?.type==="tv"||item?.type==="series"||(!item?.title&&Boolean(item?.name||item?.first_air_date));
+        const posterPath=String(item?.poster_path||item?.posterPath||"").split("/").filter(Boolean).join("/");
+        const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").split("/").filter(Boolean).join("/");
+        const rawId=String(item?.id||"");
+        return {
+          ...item,
+          id:rawId.startsWith("tmdb:")?rawId:"tmdb:"+rawId,
+          tmdbId:Number(item?.tmdbId||rawId.replace(/^tmdb:/,""))||0,
+          type:isSeries?"series":"movie",
+          name:item?.name||item?.title||item?.original_name||item?.original_title||"Без названия",
+          poster:item?.poster||(posterPath?"https://image.tmdb.org/t/p/w500/"+posterPath:""),
+          background:item?.background||(backdropPath?"https://image.tmdb.org/t/p/w1280/"+backdropPath:""),
+          description:item?.description||item?.overview||"",
+          releaseInfo:item?.releaseInfo||item?.release_date||item?.first_air_date||"",
+          rating:Number(item?.rating??item?.vote_average)||0,
+          popularity:Number(item?.popularity)||0,
+          genreIds:Array.isArray(item?.genreIds)?item.genreIds:(Array.isArray(item?.genre_ids)?item.genre_ids:[]),
+          genres:Array.isArray(item?.genres)?item.genres:[],
+          originalLanguage:item?.originalLanguage||item?.original_language||"",
+          originCountry:Array.isArray(item?.originCountry)?item.originCountry:(Array.isArray(item?.origin_country)?item.origin_country:[])
+        };
+      });
+      if(items.length){
+        console.warn("LUNO catalog loaded through fallback:",provider.name,items.length);
+        return {items,sections:{}};
+      }
+      throw new Error(provider.name+" returned no results");
+    }catch(error){
+      fallbackError=error;
+      console.warn("LUNO catalog fallback failed:",provider.name,error);
+    }
   }
+
   throw new Error("TMDB catalog unavailable: "+(lastError?.message||"unknown error"));
 }
 
