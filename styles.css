@@ -4488,3 +4488,65 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .tv-header-tools .global-header-settings{font-size:22px!important;line-height:1!important}
   .mobile-tabbar{display:none!important}
 }
+
+
+/* Mobile top shutter: moon-only brand, edge-aligned compact tools. TV untouched. */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter{
+    display:flex!important;
+    height:52px!important;
+    min-height:52px!important;
+    padding:0 10px!important;
+    gap:0!important;
+    justify-content:space-between!important;
+    align-items:center!important;
+    background:rgba(6,7,10,.94)!important;
+    border-bottom:1px solid rgba(255,255,255,.06);
+    backdrop-filter:blur(18px);
+  }
+  .topbar.luno-nav-shutter .brand{
+    display:flex!important;
+    grid-area:auto!important;
+    padding:0!important;
+    margin:0!important;
+    width:32px!important;
+    min-width:32px!important;
+    justify-content:flex-start!important;
+    gap:0!important;
+    font-size:0!important;
+    letter-spacing:0!important;
+  }
+  .topbar.luno-nav-shutter .brand>span:not(.brand-orbit){display:none!important}
+  .topbar.luno-nav-shutter .brand-orbit{
+    width:25px!important;height:25px!important;
+    border:0!important;border-radius:50%!important;
+    display:grid!important;place-items:center!important;
+  }
+  .topbar.luno-nav-shutter .brand-orbit:after{display:none!important;content:none!important}
+  .topbar.luno-nav-shutter .brand-moon{
+    width:23px!important;height:23px!important;
+    background:linear-gradient(135deg,#fff 0%,#d9dce4 55%,#858b98 100%)!important;
+    box-shadow:inset -5px -2px 7px rgba(0,0,0,.28)!important;
+  }
+  .topbar.luno-nav-shutter .nav,
+  .topbar.luno-nav-shutter .global-header-back{display:none!important}
+  .topbar.luno-nav-shutter .tv-header-tools{
+    display:flex!important;align-items:center!important;gap:7px!important;
+    margin:0!important;padding:0!important;
+  }
+  .topbar.luno-nav-shutter .global-header-search,
+  .topbar.luno-nav-shutter .global-header-settings{
+    width:32px!important;height:32px!important;min-width:32px!important;
+    display:grid!important;place-items:center!important;
+    padding:0!important;margin:0!important;border-radius:50%!important;
+    border:0!important;background:rgba(255,255,255,.07)!important;
+    color:#f5f6f8!important;
+  }
+  .topbar.luno-nav-shutter .global-header-search .search-icon{
+    width:14px!important;height:14px!important;
+  }
+  .topbar.luno-nav-shutter .global-header-settings span{
+    font-size:16px!important;line-height:1!important;
+  }
+  main{padding-top:52px!important}
+}
