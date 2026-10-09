@@ -2361,6 +2361,30 @@ document.addEventListener("keydown",(event)=>{
 });
 
 document.querySelectorAll(".nav-item,.mobile-tab").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
+
+function syncLunoActiveNavigation(){
+  const detailOpen=!!detail && !detail.classList.contains("hidden");
+  const libraryOpen=!!libraryView && !libraryView.classList.contains("hidden");
+  const searchOpen=!!searchPanel && !searchPanel.classList.contains("hidden");
+  let section="home";
+  if(detailOpen) section="home";
+  else if(searchOpen) section="search";
+  else if(libraryOpen){
+    const title=(libraryTitle?.textContent||"").toLowerCase();
+    section=title.includes("сериал")?"series":title.includes("фильм")?"movies":title.includes("мульт")?"cartoons":title.includes("аниме")?"anime":title.includes("истори")?"history":"catalog";
+  }
+  document.body.classList.toggle("home-mode",section==="home");
+  document.body.classList.toggle("show-global-back",section!=="home" || detailOpen);
+  document.querySelectorAll(".nav-item,.mobile-tab").forEach(btn=>{
+    const active=btn.dataset.section===section;
+    btn.classList.toggle("active",active);
+    if(active) btn.setAttribute("aria-current","page");
+    else btn.removeAttribute("aria-current");
+  });
+}
+window.addEventListener("pageshow",syncLunoActiveNavigation);
+window.addEventListener("load",syncLunoActiveNavigation);
+
 const lunoMenuTrigger=document.querySelector("#lunoMenuTrigger"),lunoMenuDrawer=document.querySelector("#lunoMenuDrawer"),lunoMenuBackdrop=document.querySelector("#lunoMenuBackdrop");
 const closeLunoMenu=()=>{lunoMenuDrawer?.classList.remove("is-open");lunoMenuDrawer?.setAttribute("aria-hidden","true");lunoMenuTrigger?.setAttribute("aria-expanded","false");lunoMenuBackdrop?.setAttribute("hidden","");document.body.classList.remove("luno-menu-open");};
 const openLunoMenu=()=>{lunoMenuDrawer?.classList.add("is-open");lunoMenuDrawer?.setAttribute("aria-hidden","false");lunoMenuTrigger?.setAttribute("aria-expanded","true");lunoMenuBackdrop?.removeAttribute("hidden");document.body.classList.add("luno-menu-open");};
