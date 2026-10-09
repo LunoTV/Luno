@@ -3429,3 +3429,100 @@ html,body{
   #lunoPicksSection .cards .card-info { top:8px!important; right:8px!important; }
   #continueSection:has(.cards:empty) { display:none!important; }
 }
+
+
+/* ---------- PRISMA-INSPIRED LUNO CINEMA + PLAYER ---------- */
+/* Keep LUNO branding and playback engine; change only the presentation layer. */
+@media (min-width: 701px) {
+  #player.overlay {
+    align-items:stretch!important;justify-content:stretch!important;
+    padding:0!important;background:#030303!important;backdrop-filter:none!important;
+  }
+  #player .player-shell {
+    width:100vw!important;max-width:none!important;height:100dvh!important;max-height:none!important;
+    min-height:0!important;margin:0!important;border:0!important;border-radius:0!important;
+    display:flex!important;flex-direction:column!important;overflow:hidden!important;
+    background:#050505!important;box-shadow:none!important;
+  }
+  #player .player-stage {
+    order:1!important;flex:1 1 58dvh!important;min-height:42dvh!important;max-height:62dvh!important;
+    width:100%!important;border:0!important;border-radius:0!important;background:#000!important;
+    position:relative!important;isolation:isolate;
+  }
+  #lunoVideo { width:100%!important;height:100%!important;object-fit:contain!important;background:#000!important; }
+  #player .player-placeholder { color:#f4f4f4!important; }
+  #player .player-placeholder .big-moon { color:#f4f4f4!important;opacity:.8; }
+  #player .player-placeholder p { color:#a3a3a3!important; }
+  #player .player-browse {
+    order:2!important;position:relative!important;inset:auto!important;flex:1 1 auto!important;
+    min-height:0!important;max-height:42dvh!important;overflow:auto!important;
+    padding:0 clamp(24px,4vw,72px) 24px!important;border-top:1px solid #202020!important;
+    background:linear-gradient(180deg,#101010 0%,#080808 100%)!important;
+    scrollbar-width:thin;scrollbar-color:#414141 transparent;
+  }
+  #player .watch-topline { padding:22px 0 12px!important;align-items:flex-start!important;gap:28px!important; }
+  #player .watch-identity h2 { font-size:clamp(25px,2.2vw,38px)!important;letter-spacing:-.035em!important;line-height:1.08!important; }
+  #player .watch-identity .section-kicker,
+  #player .watch-source-area>.section-kicker,
+  #player .watch-season-row .section-kicker,
+  #player .watch-episode-row-head .section-kicker { color:#8d8d8d!important;letter-spacing:.13em!important;font-size:10px!important; }
+  #player .player-browse-meta { color:#bdbdbd!important;font-size:12px!important; }
+  #player .watch-description { max-width:900px!important;margin:0 0 18px!important;color:#aaa!important;font-size:12px!important;line-height:1.5!important; }
+  #player .player-source-select,
+  #player .watch-filter-button,
+  #player .watch-actions button {
+    border:1px solid #333!important;border-radius:6px!important;background:#191919!important;
+    color:#f2f2f2!important;box-shadow:none!important;
+  }
+  #player .player-source-select { height:38px!important; }
+  #player .watch-filter-button { height:38px!important; }
+  #player .watch-season-row { display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:24px!important;padding:4px 0 16px!important;border-bottom:1px solid #242424!important; }
+  #player .player-browse-tabs button { min-width:38px!important;height:34px!important;border:1px solid #333!important;border-radius:5px!important;background:#191919!important;color:#bdbdbd!important; }
+  #player .player-browse-tabs button.active { background:#f0f0f0!important;color:#090909!important;border-color:#f0f0f0!important; }
+  #player .watch-actions button { height:34px!important;padding:0 13px!important;font-size:11px!important; }
+  #player .watch-episode-row-head { padding:17px 0 9px!important; }
+  #player .watch-episode-row-head strong { color:#f2f2f2!important;font-size:14px!important; }
+  #player .watch-episode-row-head>span { color:#858585!important;font-size:11px!important; }
+  #player .watch-episode-numbers { padding-bottom:13px!important; }
+  #player .watch-episode-numbers button { flex-basis:38px!important;height:34px!important;border:1px solid #333!important;border-radius:5px!important;background:#171717!important;color:#c8c8c8!important; }
+  #player .watch-episode-numbers button.active { background:#f0f0f0!important;color:#090909!important;border-color:#f0f0f0!important;box-shadow:none!important; }
+  #player .player-browse-episodes { grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:12px!important;padding-bottom:8px!important; }
+  #player .player-episode-card { min-height:0!important;border:1px solid #292929!important;border-radius:7px!important;background:#151515!important;transition:border-color .16s ease,transform .16s ease!important; }
+  #player .player-episode-card:hover,#player .player-episode-card.active { border-color:#eee!important;background:#1b1b1b!important;transform:translateY(-2px)!important; }
+  #player .player-episode-thumb { height:clamp(80px,8vw,130px)!important;background-color:#202020!important; }
+  #player .player-episode-body { padding:10px 11px 12px!important; }
+  #player .player-episode-body strong { color:#f2f2f2!important;font-size:12px!important; }
+  #player .player-episode-body span { color:#8c8c8c!important;font-size:10px!important; }
+  #player .player-close { top:20px!important;right:24px!important;width:42px!important;height:42px!important;border:1px solid rgba(255,255,255,.28)!important;border-radius:50%!important;background:rgba(0,0,0,.65)!important;color:#fff!important; }
+  #player .player-bar { position:absolute!important;left:0!important;right:0!important;bottom:auto!important;top:0!important;z-index:14!important;min-height:0!important;padding:18px 82px 18px 28px!important;border:0!important;background:linear-gradient(180deg,rgba(0,0,0,.76),transparent)!important;opacity:0!important;pointer-events:none!important;transition:opacity .18s ease!important; }
+  #player:focus-within .player-bar,#player:hover .player-bar { opacity:1!important;pointer-events:auto!important; }
+  #player .player-bar strong { font-size:14px!important;color:#fff!important; }
+  #player .player-bar span { color:#c1c1c1!important;font-size:11px!important; }
+  #player .player-actions { gap:7px!important; }
+  #player .player-source { border:1px solid rgba(255,255,255,.22)!important;border-radius:5px!important;background:rgba(15,15,15,.76)!important;color:#f1f1f1!important; }
+}
+@media (max-width:700px) {
+  #player.overlay { align-items:stretch!important;justify-content:stretch!important;padding:0!important;background:#030303!important;backdrop-filter:none!important; }
+  #player .player-shell { width:100vw!important;max-width:none!important;height:100dvh!important;max-height:none!important;border:0!important;border-radius:0!important;background:#050505!important; }
+  #player .player-stage { min-height:38dvh!important;max-height:44dvh!important;background:#000!important; }
+  #player .player-browse { padding:0 15px 22px!important;background:#0a0a0a!important;border-top:1px solid #242424!important; }
+  #player .watch-topline { padding-top:15px!important; }
+  #player .watch-identity h2 { font-size:25px!important; }
+  #player .watch-description { color:#aaa!important; }
+  #player .player-source-select,#player .watch-filter-button,#player .watch-actions button { background:#171717!important;border-color:#333!important;border-radius:6px!important;color:#f2f2f2!important; }
+  #player .player-browse-tabs button.active,#player .watch-episode-numbers button.active { background:#f0f0f0!important;color:#090909!important;border-color:#f0f0f0!important; }
+  #player .player-episode-card { border-color:#292929!important;border-radius:6px!important;background:#151515!important; }
+  #player .player-episode-card.active { border-color:#eee!important; }
+  #player .player-close { top:10px!important;right:10px!important;background:rgba(0,0,0,.72)!important; }
+}
+
+/* Prisma-inspired catalogue polish: restrained monochrome chrome, poster-first rails. */
+@media (min-width:701px) {
+  main > .section .cards .card-art { box-shadow:0 3px 12px rgba(0,0,0,.28)!important; }
+  main > .section .cards .card:hover .card-art img,
+  main > .section .cards .card:focus-visible .card-art img,
+  main > .section .cards .card.tv-remote-focus .card-art img { transform:scale(1.045)!important; }
+  main > .section .cards .card-rating { background:rgba(0,0,0,.82)!important;border:1px solid rgba(255,255,255,.14)!important;color:#f4f4f4!important; }
+  .section-more { color:#c5c5c5!important; }
+  .section-more:hover { color:#fff!important; }
+}
