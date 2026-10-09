@@ -583,6 +583,8 @@ function paintFavoriteButton(item){
   const active=isFavorite(item?.id);
   detailFavorite.textContent=active ? "♥ В избранном" : "♡ В избранное";
   detailFavorite.classList.toggle("is-favorite",active);
+  detailFavorite.setAttribute("aria-pressed",String(active));
+  detailFavorite.setAttribute("aria-label",active ? "Убрать из избранного" : "Добавить в избранное");
 }
 
 function renderFavorites(){
