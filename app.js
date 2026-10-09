@@ -94,12 +94,6 @@ const favoriteCards=document.querySelector("#favoriteCards");
 const favoritesEmpty=document.querySelector("#favoritesEmpty");
 const detailBackdrop=document.querySelector("#detailBackdrop");
 const detailFavorite=document.querySelector("#detailFavorite");
-const heroBackdrop=document.querySelector("#heroBackdrop");
-const heroBackdropAlt=document.querySelector("#heroBackdropAlt");
-const heroTitle=document.querySelector("#heroTitle");
-const heroDescription=document.querySelector("#heroDescription");
-const heroMeta=document.querySelector("#heroMeta");
-const heroDots=document.querySelector("#heroDots");
 const closeSearch=document.querySelector("#closeSearch");
 const libraryView=document.querySelector("#libraryView");
 const libraryContent=document.querySelector("#libraryContent");
@@ -143,10 +137,6 @@ let seriesVisible=18;
 let catalogLoading=false;
 let resumeItems=[];
 let favoriteItems=[];
-let heroItem=null;
-let heroRotationItems=[];
-let heroRotationIndex=0;
-let heroRotationTimer=null;
 let splashDone=false;
 let dialogAction=null;
 let playerStreams=[];
@@ -825,8 +815,7 @@ function navigate(section){
     return;
   }
   closeLibrary();
-  const target=document.querySelector(".hero");
-  target?.scrollIntoView({behavior:"smooth",block:"start"});
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function getYear(item){
@@ -888,92 +877,6 @@ function renderCatalogSections(){
   renderResume();
   renderFavorites();
   bindCards();
-  const eyebrow=document.querySelector(".hero .eyebrow");
-  if(eyebrow) eyebrow.textContent="";
-  // Put the current film into the cinematic top banner first; fall back to the most popular movie.
-  updateHero(resumeItems[0] || movieItems[0]);
-}
-
-function heroImageUrl(item){
-  return item?.background
-    ? String(item.background)
-    : (item?.poster ? String(item.poster) : "");
-}
-function isLowPowerTV(){
-  return window.matchMedia?.("(min-width: 701px) and (hover: none)").matches === true;
-}
-function preloadHeroImage(item){
-  // Do not decode a second large backdrop in parallel on low-power TV browsers.
-  if(isLowPowerTV()) return Promise.resolve(false);
-  const url=heroImageUrl(item);
-  if(!url) return Promise.resolve(false);
-  return new Promise(resolve=>{
-    const img=new Image();
-    img.onload=()=>resolve(true);
-    img.onerror=()=>resolve(false);
-    img.src=url;
-  });
-}
-function paintHero(item,index=0){
-  if(!item) return;
-  heroItem=item;
-  heroRotationIndex=index;
-  const url=heroImageUrl(item);
-  const active=heroBackdrop?.classList.contains("is-active") ? heroBackdrop : heroBackdropAlt;
-  const next=active===heroBackdrop ? heroBackdropAlt : heroBackdrop;
-
-  const applyImage=()=>{
-    if(next && url){
-      next.style.backgroundImage='url("'+url.replace(/"/g,"&quot;")+'")';
-      next.classList.add("is-ready");
-      window.requestAnimationFrame(()=>{
-        active?.classList.remove("is-active");
-        next.classList.add("is-active");
-      });
-    }
-  };
-
-  if(url){
-    const img=new Image();
-    img.onload=applyImage;
-    img.onerror=()=>{
-      if(item?.poster && item.poster!==url){
-        next.style.backgroundImage='url("'+String(item.poster).replace(/"/g,"&quot;")+'")';
-        next.classList.add("is-ready","is-active");
-      }
-    };
-    img.src=url;
-  }
-
-  if(!isLowPowerTV()) preloadHeroImage(heroRotationItems[(index+1)%Math.max(heroRotationItems.length,1)]);
-  if(heroTitle) heroTitle.innerHTML=escapeHtml(item.name).replace(/\n/g,"<br>");
-  if(heroDescription) heroDescription.textContent=item.description || "Выбери фильм и начни просмотр в LUNO.";
-  if(heroMeta) heroMeta.textContent=[metaLine(item),Number(item.rating)>0 ? "★ "+Number(item.rating).toFixed(1) : ""].filter(Boolean).join(" • ");
-  if(heroDots){
-    heroDots.innerHTML=heroRotationItems.map((_,i)=>'<button type="button" class="'+(i===index ? "active":"")+'" aria-label="Баннер '+(i+1)+'"></button>').join("");
-    heroDots.querySelectorAll("button").forEach((dot,i)=>dot.addEventListener("click",(event)=>{
-      event.stopPropagation();
-      paintHero(heroRotationItems[i],i);
-      restartHeroRotation();
-    }));
-  }
-}
-function restartHeroRotation(){
-  if(heroRotationTimer) clearInterval(heroRotationTimer);
-  if(heroRotationItems.length<2) return;
-  heroRotationTimer=setInterval(()=>{
-    const next=(heroRotationIndex+1)%heroRotationItems.length;
-    paintHero(heroRotationItems[next],next);
-  },8000);
-}
-function updateHero(item){
-  // Home hero banner was removed from the UI. Stop all rotation and image work.
-  if(heroRotationTimer){
-    clearInterval(heroRotationTimer);
-    heroRotationTimer=null;
-  }
-  heroRotationItems=[];
-  heroRotationIndex=0;
 }
 
 function renderItems(items,sections={}){
@@ -1088,11 +991,6 @@ async function installAddonFromInput(){
   if(addonManagerStatus) addonManagerStatus.textContent="Источник «"+result.source.name+"» добавлен.";
   if(sourceInstallForm) sourceInstallForm.reset();
   renderAddonManager();
-}
-
-function showEngineStatus(message){
-  const eyebrow=document.querySelector(".hero .eyebrow");
-  if(eyebrow) eyebrow.textContent=message;
 }
 
 function showCatalogMessage(message){
@@ -1932,13 +1830,14 @@ document.querySelectorAll(".search-source").forEach(btn=>btn.addEventListener("c
 
 renderSearchHistory();
 
-document.querySelector("#openDemo").onclick=()=>{
-  if(heroItem) openDetail(heroItem);
-};
-document.querySelector("#continueBtn").onclick=()=>{
-  if(heroItem) openDetail(heroItem);
-  else if(resumeItems[0]) openDetail(resumeItems[0]);
-};
+document.querySelector("#openDemo")?.addEventListener("click",()=>{
+  const featured=resumeItems[0] || movieItems[0];
+  if(featured) openDetail(featured);
+});
+document.querySelector("#continueBtn")?.addEventListener("click",()=>{
+  const featured=resumeItems[0] || movieItems[0];
+  if(featured) openDetail(featured);
+});
 document.querySelectorAll(".section-more").forEach(btn=>btn.addEventListener("click",()=>{
   navigate(btn.dataset.section||"home");
 }));
