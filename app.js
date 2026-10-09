@@ -152,6 +152,8 @@ let dialogAction=null;
 let playerStreams=[];
 let playerStreamState=null;
 let playerResolving=false;
+let playerResolveController=null;
+let playerResolveId=0;
 let lastCoreTime=-1;
 let playerSeason=0;
 let playerQualityFilter="all";
@@ -1286,7 +1288,11 @@ function buildMetaRequest(item,entry){
 }
 
 async function resolveLunoStreams(item){
-  if(playerResolving || !item) return;
+  if(!item)return;
+  playerResolveController?.abort();
+  const controller=new AbortController();
+  playerResolveController=controller;
+  const requestId=++playerResolveId;
   playerResolving=true;
   playerStreams=[];
   renderSourceSheet();
@@ -1296,7 +1302,8 @@ async function resolveLunoStreams(item){
 
   try{
     const streamIdentity = item?.type==="movie" ? (item?.imdbId || item?.videoId || "") : (item?.videoId || "");
-    let state=await loadMetaDetails(item,streamIdentity);
+    let state=await loadMetaDetails(item,streamIdentity,{signal:controller.signal});
+    if(requestId!==playerResolveId||controller.signal.aborted)return;
     let streams=getReadyMetaStreams(state);
 
     // Для сериала источник сначала получает metadata. Если первый запрос не выбрал
@@ -1307,7 +1314,8 @@ async function resolveLunoStreams(item){
         readyMeta?.videos?.find(video=>!video.watched)?.id ||
         readyMeta?.videos?.[0]?.id || "";
       if(videoId){
-        state=await loadMetaDetails(item,videoId);
+        state=await loadMetaDetails(item,videoId,{signal:controller.signal});
+        if(requestId!==playerResolveId||controller.signal.aborted)return;
         streams=getReadyMetaStreams(state);
       }
     }
@@ -1347,12 +1355,16 @@ async function resolveLunoStreams(item){
       openSourceSheet();
     }
   }catch(error){
+    if(requestId!==playerResolveId||controller.signal.aborted)return;
     console.error("LUNO stream resolution failed",error);
     if(playerMessage) playerMessage.textContent="Не удалось получить источники. Попробуйте ещё раз.";
     openSourceSheet();
   }finally{
-    playerResolving=false;
-    if(playerSourceButton) playerSourceButton.disabled=false;
+    if(requestId===playerResolveId){
+      playerResolving=false;
+      playerResolveController=null;
+      if(playerSourceButton) playerSourceButton.disabled=false;
+    }
   }
 }
 
@@ -1582,6 +1594,11 @@ function openPlayer(id,type,title,streamUrl=""){
 }
 
 function closePlayer(fromHistory=false){
+  playerResolveId++;
+  playerResolveController?.abort();
+  playerResolveController=null;
+  playerResolving=false;
+  if(playerSourceButton) playerSourceButton.disabled=false;
   if(!fromHistory && history.state?.luno==="player"){
     try{history.back();return;}catch{}
   }
