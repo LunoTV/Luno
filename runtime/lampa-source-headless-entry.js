@@ -11,67 +11,98 @@ import cdnmovies from './plugins/online/cdnmovies'
 import filmix from './plugins/online/filmix'
 
 if(!window.Lampa) window.Lampa={}
-window.Lampa.Reguest=Reguest
-window.Lampa.Utils=Utils
-window.Lampa.Arrays=Arrays
-window.Lampa.Lang=Lang
+Object.assign(window.Lampa,{Reguest,Utils,Arrays,Lang})
 if(!window.Lampa.Listener) window.Lampa.Listener=Subscribe()
-
-const noopNode={
-  on(){return this},off(){return this},unbind(){return this},append(){return this},
-  addClass(){return this},removeClass(){return this},find(){return this},text(){return this},
-  remove(){return this},after(){return this},parent(){return this},eq(){return this},
-  last(){return this},first(){return this},length:0
-}
-const fakeItem=()=>{const handlers={};return Object.assign({},noopNode,{
-  on(name,fn){if(fn)handlers[name]=fn;return this},
-  trigger(name){if(handlers[name])handlers[name]();return this}
-})}
 if(!window.Lampa.Template) window.Lampa.Template={}
 if(!window.Lampa.Template.get) window.Lampa.Template.get=()=>fakeItem()
 if(!window.Lampa.Timeline) window.Lampa.Timeline={view:()=>({percent:0,time:0,duration:0}),render:()=>noopNode,details:()=>noopNode,update:()=>{}}
 if(!window.Lampa.Noty) window.Lampa.Noty={show:()=>{}}
 if(!window.Lampa.Favorite) window.Lampa.Favorite={add:()=>{}}
-if(!window.Lampa.Storage) window.Lampa.Storage={get:(key,fallback)=>fallback,set:()=>{},cache:(key)=>({})}
+if(!window.Lampa.Storage) window.Lampa.Storage={get:(key,fallback)=>fallback,set:()=>{},cache:()=>({})}
+if(!window.Lampa.Platform) window.Lampa.Platform={is:()=>false,version:false}
 if(!window.Lampa.Player) window.Lampa.Player={}
 let capturedPlayer=null
-window.Lampa.Player.play=(item)=>{capturedPlayer=item}
-window.Lampa.Player.playlist=()=>{}
 
+const noopNode={
+  on(){return this},off(){return this},unbind(){return this},append(){return this},
+  addClass(){return this},removeClass(){return this},find(){return this},text(){return this},
+  remove(){return this},after(){return this},parent(){return this},eq(){return this},
+  last(){return this},first(){return this},attr(){return ''},hasClass(){return false},
+  toggleClass(){return this},css(){return this},html(){return this},val(){return this},
+  length:0
+}
+function fakeItem(){const handlers={};return Object.assign({},noopNode,{
+  on(name,fn){if(fn)handlers[name]=fn;return this},
+  trigger(name){if(handlers[name])handlers[name]({target:this});return this}
+})}
 const adapters={videocdn,rezka,kinobase,collaps,cdnmovies,filmix}
 const bridgeComponent={
   proxy(){return ''},loading(){},reset(){},saveChoice(){},filter(){},start(){},
   contextmenu(){},empty(){},emptyForQuery(){},render(){return noopNode},
   getLastEpisode(){return 0},append(item){if(item&&typeof item.trigger==='function')item.trigger('hover:enter')}
 }
-
-const resolveSource=(name,movie,searchData=[],options={})=>new Promise((resolve,reject)=>{
-  const Source=adapters[name]
-  if(!Source)return reject(new Error('Lampa source unavailable: '+name))
-  if(!Array.isArray(searchData)||!searchData.length)return reject(new Error('Lampa source requires matching search results: '+name))
-  capturedPlayer=null
-  let settled=false
-  const timeoutMs=Math.min(Math.max(Number(options.timeout)||15000,1000),30000)
-  const finish=(error)=>{
-    if(settled)return
-    settled=true
-    clearTimeout(timeout)
-    window.Lampa.Player.play=originalPlay
-    if(error)return reject(error)
-    if(capturedPlayer)resolve(capturedPlayer)
-    else reject(new Error('Lampa source returned no stream: '+name))
-  }
-  const originalPlay=window.Lampa.Player.play
-  const timeout=setTimeout(()=>finish(new Error('Lampa source timeout: '+name)),timeoutMs)
-  try{
-    window.Lampa.Player.play=item=>{capturedPlayer=item;finish()}
-    const instance=new Source(bridgeComponent,{movie})
-    instance.search({movie},searchData)
-  }catch(error){finish(error)}
+const request=(url,options={})=>new Promise((resolve,reject)=>{
+  const net=new Reguest()
+  const timeout=setTimeout(()=>{try{net.clear()}catch{};reject(new Error('Lampa request timeout'))},Number(options.timeout)||15000)
+  net.native(url,data=>{clearTimeout(timeout);resolve(data)},(a,b)=>{clearTimeout(timeout);reject(new Error(net.errorDecode(a,b)||'Lampa request failed'))},false,{headers:options.headers||{},dataType:options.dataType})
 })
-
-window.LunoLampaSourceRuntime={
-  adapters:Object.keys(adapters),
-  source:resolveSource
+const addParam=(url,key,value)=>Utils.addUrlComponent(url,key+'='+encodeURIComponent(value))
+const searchVideoCDN=async movie=>{
+  const base='https://cdn.svetacdn.in/api/short?api_token=3i40G5TSECmLF77oAqnEgbx61ZWaOYaE'
+  const candidates=[]
+  if(movie?.imdb_id||movie?.imdbId)candidates.push(addParam(base,'imdb_id',movie.imdb_id||movie.imdbId))
+  candidates.push(addParam(base,'title',movie?.title||movie?.name||''))
+  for(const url of candidates){
+    try{
+      const json=await request(url)
+      if(Array.isArray(json?.data)&&json.data.length)return json.data
+    }catch(error){console.debug('[LUNO Lampa search]',error)}
+  }
+  return []
 }
+const searchKinopoisk=async movie=>{
+  const kp=movie?.kinopoisk_id||movie?.kinopoiskId||movie?.kp_id
+  if(kp)return [{kp_id:kp,filmId:kp,title:movie.title||movie.name}]
+  const query=movie?.title||movie?.name||''
+  if(!query)return []
+  try{
+    const json=await request('https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword='+encodeURIComponent(query),{headers:{'X-API-KEY':'2d55adfd-019d-4567-bbf7-67d503f61b5a'}})
+    return (json?.films||json?.data||[]).map(x=>({...x,kp_id:x.filmId||x.film_id||x.kinopoisk_id||x.id,title:x.nameRu||x.nameEn||x.title||query})).filter(x=>x.kp_id)
+  }catch(error){console.debug('[LUNO Lampa KP search]',error);return []}
+}
+const resolveSource=async(name,movie,searchData,options={})=>{
+  const Source=adapters[name]
+  if(!Source)throw new Error('Lampa source unavailable: '+name)
+  let data=Array.isArray(searchData)?searchData:[]
+  if(['videocdn','cdnmovies','filmix'].includes(name)&&!data.length)data=await searchVideoCDN(movie)
+  if(['rezka','kinobase','collaps'].includes(name)&&!data.length)data=await searchKinopoisk(movie)
+  if(!data.length)throw new Error('No matching catalog entry for Lampa source: '+name)
+  const result=await new Promise((resolve,reject)=>{
+    capturedPlayer=null
+    let settled=false
+    const timeoutMs=Math.min(Math.max(Number(options.timeout)||20000,1000),30000)
+    const originalPlay=window.Lampa.Player.play
+    const finish=error=>{
+      if(settled)return
+      settled=true
+      clearTimeout(timeout)
+      window.Lampa.Player.play=originalPlay
+      if(error)return reject(error)
+      if(capturedPlayer)resolve(capturedPlayer)
+      else reject(new Error('Lampa source returned no stream: '+name))
+    }
+    const timeout=setTimeout(()=>finish(new Error('Lampa source timeout: '+name)),timeoutMs)
+    try{
+      window.Lampa.Player.play=item=>{capturedPlayer=item;finish()}
+      const instance=new Source(bridgeComponent,{movie})
+      if(['videocdn','cdnmovies','filmix'].includes(name))instance.search({movie},data)
+      else {
+        const candidate=data.find(x=>x.kp_id||x.filmId||x.film_id)||data[0]
+        instance.search({movie},candidate.kp_id||candidate.filmId||candidate.film_id||candidate.id,data)
+      }
+    }catch(error){finish(error)}
+  })
+  return result
+}
+window.LunoLampaSourceRuntime={adapters:Object.keys(adapters),source:resolveSource}
 window.LunoLampaSourcesReady=true
