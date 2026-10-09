@@ -3320,3 +3320,27 @@ img{backface-visibility:hidden}
   .home-intro h1 { font-size:32px; }
   .home-intro p { font-size:13px; }
 }
+
+
+/* Stable TV home: preserve the shutter and row geometry while posters load. */
+@media (min-width:701px) and (hover:none) {
+  main > .section { min-height:390px; contain:layout style; }
+  main > .section .section-head { min-height:46px; }
+  main > .section .cards { min-height:330px; align-items:start; }
+  main > .section .card, main > .section .card-art { align-self:start; }
+  main > .section .card-art {
+    height:303px!important;
+    min-height:303px;
+    background:#101218!important;
+    box-shadow:none!important;
+  }
+  main > .section .card-art img {
+    display:block;
+    opacity:0;
+    transition:none!important;
+    animation:none!important;
+    will-change:auto!important;
+  }
+  main > .section .card-art img.is-poster-ready { opacity:1; }
+  main > .section .card-art .poster-fallback { position:absolute; inset:0; }
+}
