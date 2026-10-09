@@ -3110,3 +3110,47 @@ img{backface-visibility:hidden}
     transition-duration:.01ms!important;
   }
 }
+
+
+/* Custom source endpoint form */
+.source-install-form{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:8px;
+  margin:16px 0 8px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  background:rgba(255,255,255,.025);
+}
+.source-install-form label{
+  margin-top:4px;
+  color:#aeb4bf;
+  font-size:12px;
+}
+.source-install-form input{
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  height:46px;
+  padding:0 13px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:11px;
+  background:rgba(255,255,255,.05);
+  color:#fff;
+  outline:none;
+}
+.source-install-form input:focus{
+  border-color:rgba(255,255,255,.36);
+  background:rgba(255,255,255,.075);
+}
+.source-install-form .primary{
+  min-height:44px;
+  margin-top:5px;
+}
+.source-install-hint{
+  margin:2px 0 0;
+  color:#747b87;
+  font-size:11px;
+  line-height:1.5;
+}
