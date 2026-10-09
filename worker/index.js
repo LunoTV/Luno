@@ -26,7 +26,9 @@ function json(data, status, origin) {
 }
 
 function normalize(item) {
-  const movie = item.media_type === "movie";
+  const movie = item.media_type === "movie" ||
+    item.type === "movie" ||
+    (!item.media_type && !item.type && Boolean(item.title || item.original_title) && !item.name && !item.first_air_date);
   return {
     id: "tmdb:" + item.id,
     tmdbId: Number(item.id),
@@ -66,41 +68,74 @@ export default {
     const query = String(url.searchParams.get("query") || "").trim();
     if (isSearch && !query) return json({ error: "query is required" }, 400, origin);
 
+    const page = url.searchParams.get("page") || "1";
     const token = env.TMDB_API_TOKEN;
-    if (!token) return json({ error: "TMDB_API_TOKEN is not configured" }, 500, origin);
+    let primaryError = token ? "" : "TMDB_API_TOKEN is not configured";
 
-    const tmdb = new URL(TMDB_BASE + (isSearch ? "/search/multi" : "/trending/all/week"));
-    if (isSearch) tmdb.searchParams.set("query", query);
-    tmdb.searchParams.set("language", "ru-RU");
-    tmdb.searchParams.set("include_adult", "false");
-    tmdb.searchParams.set("page", url.searchParams.get("page") || "1");
+    if (token) {
+      const tmdb = new URL(TMDB_BASE + (isSearch ? "/search/multi" : "/trending/all/week"));
+      if (isSearch) tmdb.searchParams.set("query", query);
+      tmdb.searchParams.set("language", "ru-RU");
+      tmdb.searchParams.set("include_adult", "false");
+      tmdb.searchParams.set("page", page);
 
-    try {
-      const response = await fetch(tmdb, {
-        headers: {
-          accept: "application/json",
-          authorization: "Bearer " + token
+      try {
+        const response = await fetch(tmdb, {
+          headers: { accept: "application/json", authorization: "Bearer " + token }
+        });
+        if (!response.ok) {
+          primaryError = "TMDB HTTP " + response.status;
+        } else {
+          const data = await response.json();
+          const results = (data.results || [])
+            .filter(item => item?.media_type === "movie" || item?.media_type === "tv")
+            .map(normalize);
+          if (results.length) {
+            return json({
+              query, page: Number(data.page) || 1,
+              totalPages: Number(data.total_pages) || 1,
+              totalResults: Number(data.total_results) || results.length,
+              results, source: "TMDB"
+            }, 200, origin);
+          }
+          primaryError = "TMDB returned no results";
         }
-      });
-
-      if (!response.ok) {
-        return json({ error: "TMDB request failed", status: response.status }, response.status, origin);
+      } catch (error) {
+        primaryError = String(error?.message || error);
       }
+    }
 
+    // Server-side CUB fallback avoids browser CORS restrictions on the public proxy.
+    try {
+      const cub = new URL("https://apitmdb.cub.red/3/" + (isSearch ? "search/multi" : "trending/all/week"));
+      if (isSearch) cub.searchParams.set("query", query);
+      cub.searchParams.set("language", "ru-RU");
+      cub.searchParams.set("include_adult", "false");
+      cub.searchParams.set("page", page);
+      const response = await fetch(cub, { headers: { accept: "application/json" } });
+      if (!response.ok) throw new Error("CUB HTTP " + response.status);
       const data = await response.json();
-      const results = (data.results || [])
-        .filter(item => item?.media_type === "movie" || item?.media_type === "tv")
-        .map(normalize);
-
+      const raw = Array.isArray(data?.results) ? data.results : [];
+      const results = raw
+        .filter(item => item?.id && (item?.title || item?.name || item?.original_title || item?.original_name))
+        .map(item => {
+          const inferredType = item.media_type || item.type ||
+            ((!item.title && (item.name || item.first_air_date)) ? "tv" : "movie");
+          return normalize({ ...item, media_type: inferredType === "series" ? "tv" : inferredType });
+        });
+      if (!results.length) throw new Error("CUB returned no results");
       return json({
-        query,
-        page: Number(data.page) || 1,
+        query, page: Number(data.page) || Number(page),
         totalPages: Number(data.total_pages) || 1,
         totalResults: Number(data.total_results) || results.length,
-        results
+        results, source: "CUB", fallbackFrom: primaryError
       }, 200, origin);
     } catch (error) {
-      return json({ error: "TMDB unavailable", detail: String(error?.message || error) }, 502, origin);
+      return json({
+        error: "TMDB and CUB catalog unavailable",
+        detail: String(error?.message || error),
+        primary: primaryError
+      }, 502, origin);
     }
   }
 };
