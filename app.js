@@ -1785,7 +1785,13 @@ async function searchDynamic(query){
   const response=await fetch(dynamicSearchUrl(query),{headers:{accept:"application/json"},cache:"no-store"});
   if(!response.ok) throw new Error("TMDB search HTTP "+response.status);
   const data=await response.json();
-  const items=Array.isArray(data?.results) ? data.results.map(normalizeItem).filter(x=>x.tmdbId) : [];
+  const items=Array.isArray(data?.results) ? data.results
+    .map(item=>normalizeItem({
+      ...item,
+      tmdbId:item?.tmdbId || item?.id,
+      type:item?.media_type==="tv" ? "tv" : (item?.media_type==="movie" ? "movie" : item?.type)
+    }))
+    .filter(x=>x.tmdbId) : [];
   const clean=rankSearchResults(dedupeSearchResults(items),query);
   for(const item of clean) window.__LUNO_ITEMS__.set(item.id,item);
   return clean;
