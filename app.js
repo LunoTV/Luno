@@ -385,10 +385,20 @@ function bindCards(){
   document.querySelectorAll(".card-art img").forEach((img)=>{
     // Smart-TV browsers frequently fail to trigger native lazy loading in horizontal rails.
     // Promote already-rendered poster images to eager loading on TVs and force a reload if needed.
-    if(isLowPowerTV() && img.loading==="lazy"){
+    if(isLowPowerTV()){
+      // TV engines may not start or reveal images after a late loading-mode change.
       img.loading="eager";
       img.setAttribute("fetchpriority","high");
-      if(!img.complete) img.setAttribute("data-tv-poster","priority");
+      img.setAttribute("decoding","sync");
+      img.style.setProperty("opacity","1","important");
+      if(img.dataset.tvLoadPromoted!=="1"){
+        img.dataset.tvLoadPromoted="1";
+        const current=img.getAttribute("src");
+        if(current && (!img.complete || img.naturalWidth===0)){
+          img.removeAttribute("src");
+          img.setAttribute("src",current);
+        }
+      }
     }
     if(img.dataset.posterReadyBound==="1") return;
     img.dataset.posterReadyBound="1";
