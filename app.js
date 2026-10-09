@@ -1556,6 +1556,11 @@ function formatDuration(value){
   return minutes+" мин";
 }
 function openPlayer(id,type,title,streamUrl=""){
+  playerResolveId++;
+  playerResolveController?.abort();
+  playerResolveController=null;
+  playerResolving=false;
+  if(playerSourceButton) playerSourceButton.disabled=false;
   setLunoHistory("player");
   player.classList.remove("hidden");
   if(playerBarTitle) playerBarTitle.textContent=title || "LUNO";
