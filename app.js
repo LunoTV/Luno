@@ -699,6 +699,7 @@ document.querySelector("#closeDetailSecondary")?.addEventListener("click",closeD
 document.querySelector("#openAddonManagerDetail")?.addEventListener("click",()=>document.querySelector("#openAddonManager")?.click());
 document.querySelector(".luno-detail-search")?.addEventListener("click",()=>{ closeDetail(); openSearch(); });
 document.querySelector(".luno-detail-brand")?.addEventListener("click",()=>{ closeDetail(); navigate("home"); });
+document.querySelectorAll(".luno-detail-links [data-section]").forEach(btn=>btn.addEventListener("click",()=>{ const section=btn.dataset.section; closeDetail(); navigate(section); }));
 
 detailFavorite?.addEventListener("click",()=>{ if(currentItem) toggleFavorite(currentItem); });
 closeSearch?.addEventListener("click",closeSearchPanel);
