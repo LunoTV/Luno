@@ -697,6 +697,8 @@ detailEpisodes?.addEventListener("click",()=>{
 document.querySelector("#closeDetail")?.addEventListener("click",closeDetail);
 document.querySelector("#closeDetailSecondary")?.addEventListener("click",closeDetail);
 document.querySelector("#openAddonManagerDetail")?.addEventListener("click",()=>document.querySelector("#openAddonManager")?.click());
+document.querySelector(".luno-detail-search")?.addEventListener("click",()=>{ closeDetail(); openSearch(); });
+document.querySelector(".luno-detail-brand")?.addEventListener("click",()=>{ closeDetail(); navigate("home"); });
 
 detailFavorite?.addEventListener("click",()=>{ if(currentItem) toggleFavorite(currentItem); });
 closeSearch?.addEventListener("click",closeSearchPanel);
