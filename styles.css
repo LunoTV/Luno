@@ -2960,3 +2960,39 @@ body.luno-menu-open .luno-menu-backdrop{pointer-events:auto}
   }
   .card,.card-art{transform:none!important;transition:none!important}
 }
+
+
+/* Final top navigation: Lampa-like horizontal glass bar, no duplicate hamburger or bottom tabs. */
+.luno-nav-shutter{
+  opacity:1!important;visibility:visible!important;pointer-events:auto!important;
+  top:14px!important;left:50%!important;transform:translateX(-50%)!important;
+  width:min(1240px,calc(100% - 32px))!important;min-height:66px!important;height:auto!important;
+  z-index:2500!important;
+  background:rgba(17,19,24,.88)!important;border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:22px!important;box-shadow:0 10px 32px rgba(0,0,0,.34)!important;
+  backdrop-filter:blur(24px) saturate(130%)!important;-webkit-backdrop-filter:blur(24px) saturate(130%)!important;
+}
+body.home-mode .luno-nav-shutter{opacity:1!important;visibility:visible!important;pointer-events:auto!important;transform:translateX(-50%)!important}
+.luno-menu-trigger{display:none!important}
+.mobile-tabbar{display:none!important}
+#app main{padding-top:104px!important}
+@media(max-width:900px){
+  .luno-nav-shutter{top:calc(env(safe-area-inset-top,0px) + 8px)!important;width:calc(100% - 20px)!important;min-height:58px!important;height:58px!important;padding:5px 8px!important;border-radius:19px!important;gap:8px!important}
+  .luno-nav-shutter .brand{flex:0 0 auto!important;padding:0 8px!important;font-size:15px!important}
+  .luno-nav-shutter .nav{flex:1 1 auto!important;min-width:0!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;white-space:nowrap!important;touch-action:pan-x pan-y!important}
+  .luno-nav-shutter .nav-item{padding:10px 12px!important;font-size:12px!important}
+  #app main{padding-top:88px!important}
+}
+@media(max-width:480px){
+  .luno-nav-shutter{width:calc(100% - 14px)!important;gap:4px!important}
+  .luno-nav-shutter .brand{font-size:13px!important;letter-spacing:.12em!important}
+  .luno-nav-shutter .nav-item{padding:10px 10px!important;font-size:11px!important}
+}
+/* Eliminate poster flashes caused by readiness opacity gates and transform compositing. */
+.card-art img,.card-art img.is-poster-ready{
+  opacity:1!important;visibility:visible!important;transition:none!important;animation:none!important;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.card-art img{transform:none!important;filter:none!important;will-change:auto!important}
+.card:hover .card-art img,.card:active .card-art img{transform:none!important;filter:none!important}
+.card-art{isolation:isolate;background:#101218!important}
