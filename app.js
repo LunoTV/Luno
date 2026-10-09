@@ -957,15 +957,13 @@ function restartHeroRotation(){
   },8000);
 }
 function updateHero(item){
-  if(!item) return;
-  const pool=(movieItems||[])
-    .filter(x=>x?.background && x?.poster)
-    .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
-  heroRotationItems=[item,...pool.filter(x=>x.id!==item.id)]
-    .filter((x,i,arr)=>arr.findIndex(y=>y.id===x.id)===i)
-    .slice(0,isLowPowerTV()?1:8);
-  paintHero(heroRotationItems[0],0);
-  restartHeroRotation();
+  // Home hero banner was removed from the UI. Stop all rotation and image work.
+  if(heroRotationTimer){
+    clearInterval(heroRotationTimer);
+    heroRotationTimer=null;
+  }
+  heroRotationItems=[];
+  heroRotationIndex=0;
 }
 
 function renderItems(items,sections={}){
