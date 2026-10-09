@@ -10,7 +10,7 @@ export function renderSourceManager(container,{providers=[],sources=[],status={}
     '<div class="addon-row source-manager-provider">'+
       '<div><strong>'+escapeHtml(provider.name||provider.id)+'</strong>'+
       '<span>'+escapeHtml(provider.description||"LUNO runtime provider")+'</span></div>'+
-      '<em>'+escapeHtml(provider.enabled===false?"Выключен":"Активен")+'</em>'+
+      '<button class="source-toggle" type="button" data-provider-toggle="'+escapeHtml(provider.id)+'">'+(provider.enabled===false?"Выключен":"Включён")+'</button>'+
     '</div>'
   )).join("");
 
@@ -40,11 +40,12 @@ export function sourceManagerStatusText(status={}){
 
 
 export function bindSourceManager(container,onToggle){
-  container?.querySelectorAll("[data-source-toggle]").forEach(button=>{
+  container?.querySelectorAll("[data-source-toggle],[data-provider-toggle]").forEach(button=>{
     button.addEventListener("click",()=>{
-      const id=button.dataset.sourceToggle;
+      const provider=button.hasAttribute("data-provider-toggle");
+      const id=provider?button.dataset.providerToggle:button.dataset.sourceToggle;
       const enabled=button.textContent.trim()!=="Включён";
-      onToggle?.(id,enabled);
+      onToggle?.(id,enabled,provider?"provider":"source");
     });
   });
 }
