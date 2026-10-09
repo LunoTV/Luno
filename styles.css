@@ -3924,3 +3924,158 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-actions .primary,.luno-detail-actions .secondary,.luno-actor-card{transition:none!important}
 }
 
+
+
+/* ---------- LUNO PLAYER POLISH v17 ---------- */
+#player .player-stage{
+  isolation:isolate;
+  overflow:hidden;
+}
+#player #lunoVideo{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#000;
+}
+#player .player-placeholder{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:radial-gradient(ellipse at 50% 42%,rgba(26,31,43,.42),transparent 52%),#030405;
+}
+#player .player-placeholder .big-moon{
+  width:58px;height:58px;display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.14);border-radius:20px;
+  color:#f5f6f8;font-size:35px;background:rgba(255,255,255,.045);
+  box-shadow:0 12px 50px rgba(0,0,0,.35);
+}
+#player .player-placeholder h2{
+  font-size:clamp(22px,2.5vw,34px)!important;
+  letter-spacing:-.045em;
+}
+#player .player-placeholder p{
+  max-width:min(520px,82vw);
+  color:#9297a3!important;font-size:12px;
+}
+#player .player-close{
+  width:44px;height:44px;display:grid;place-items:center;
+  border-radius:50%;font-size:28px;line-height:1;
+  box-shadow:0 8px 30px rgba(0,0,0,.28);
+}
+#player .watch-topline{
+  padding-top:24px;
+}
+#player .watch-identity>.section-kicker,
+#player .watch-source-area>.section-kicker,
+#player .watch-season-row .section-kicker,
+#player .watch-episode-row-head .section-kicker{
+  color:#737987;letter-spacing:.16em;font-size:9px;font-weight:850;
+}
+#player .watch-identity h2{
+  max-width:55vw;
+  overflow:hidden;text-overflow:ellipsis;
+}
+#player .watch-source-area{
+  padding:7px;border:1px solid rgba(255,255,255,.07);
+  border-radius:15px;background:rgba(255,255,255,.025);
+}
+#player .player-source-select,
+#player .watch-filter-button,
+#player .watch-actions button,
+#player .watch-episode-numbers button{
+  transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease;
+}
+#player .player-source-select:hover,
+#player .watch-filter-button:hover,
+#player .watch-actions button:hover,
+#player .watch-episode-numbers button:hover{
+  border-color:rgba(255,255,255,.24)!important;background:rgba(255,255,255,.09)!important;color:#fff;
+}
+#player .watch-actions button:focus-visible,
+#player .player-source-select:focus-visible,
+#player .watch-filter-button:focus-visible,
+#player .watch-episode-numbers button:focus-visible,
+#player .player-episode-card:focus-visible,
+#player .player-actions button:focus-visible,
+#player .source-option:focus-visible,
+#player .source-sheet-close:focus-visible{
+  outline:2px solid #f3f4f6!important;outline-offset:3px;
+}
+#player .player-episode-card{
+  transition:border-color .16s ease,background .16s ease,transform .16s ease!important;
+}
+#player .player-episode-card:hover{
+  transform:translateY(-2px)!important;
+}
+#player .player-episode-card.active .player-episode-body strong{
+  color:#fff;
+}
+#player .player-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:20px 30px 18px!important;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.86) 45%,rgba(0,0,0,.96))!important;
+}
+#player .player-bar>div:first-child{
+  min-width:0;max-width:40%;padding-right:12px;
+}
+#player .player-bar strong{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:13px;letter-spacing:-.01em;
+}
+#player .player-bar span{font-size:10px;color:#9da2ad}
+#player .player-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+#player .player-source{
+  min-height:38px;padding:0 13px;border:1px solid rgba(255,255,255,.14);
+  border-radius:11px;background:rgba(18,20,26,.82);color:#e7e9ee;
+  font-size:11px;font-weight:750;backdrop-filter:blur(16px);
+  transition:background .16s ease,border-color .16s ease,transform .16s ease;
+}
+#player .player-source:hover,#player .player-source:focus-visible{
+  background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.3);color:#fff;
+}
+#player .source-sheet{
+  border-color:rgba(255,255,255,.12);
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+  backdrop-filter:blur(24px);
+}
+#player .source-option{
+  min-height:60px;border-radius:12px;
+}
+#player .source-option:hover{
+  border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.09);
+}
+#player .source-sheet-close{
+  width:38px;height:38px;border-radius:50%;
+}
+@media(max-width:900px){
+  #player .player-bar{padding:14px 18px 16px!important;gap:12px}
+  #player .player-actions{gap:6px}
+  #player .player-source{min-height:36px;padding:0 10px;font-size:10px}
+  #player .watch-source-area{flex-wrap:wrap}
+}
+@media(max-width:600px){
+  #player .player-stage{flex:0 0 40dvh!important;min-height:40dvh!important;max-height:46dvh!important}
+  #player .player-browse{padding:0 14px 24px!important}
+  #player .watch-topline{padding-top:14px}
+  #player .watch-identity h2{max-width:calc(100vw - 32px);font-size:25px}
+  #player .watch-source-area{display:flex;gap:6px;padding:6px;border-radius:12px}
+  #player .watch-source-area>.section-kicker{display:none}
+  #player .player-source-select{min-width:0;flex:1;width:auto!important}
+  #player .watch-filter-button{height:40px;padding:0 10px;white-space:nowrap}
+  #player .watch-season-row{padding-bottom:12px}
+  #player .watch-actions{display:flex;flex-wrap:wrap;gap:6px}
+  #player .watch-actions button{height:34px;padding:0 10px;font-size:10px}
+  #player .player-episode-thumb{height:84px!important}
+  #player .player-episode-card{border-radius:10px!important}
+  #player .player-bar{display:none!important}
+  #player .source-sheet{left:8px;right:8px;bottom:8px;max-height:72dvh;padding:16px;border-radius:18px}
+  #player .source-sheet-head{padding-bottom:12px}
+  #player .source-option{min-height:56px}
+}
+@media(prefers-reduced-motion:reduce){
+  #player .player-source,#player .player-episode-card,#player .player-source-select,
+  #player .watch-filter-button,#player .watch-actions button,#player .watch-episode-numbers button{
+    transition:none!important;scroll-behavior:auto!important
+  }
+}
