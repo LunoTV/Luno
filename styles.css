@@ -5453,3 +5453,29 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     text-shadow:0 1px 18px rgba(0,0,0,.3)!important;
   }
 }
+
+
+/* ---------- MATCH BOTTOM NAV TO LUNO FROSTED TOP SHUTTER ---------- */
+@media(max-width:700px){
+  .mobile-tabbar,
+  body .mobile-tabbar,
+  body.home-mode .mobile-tabbar{
+    background:linear-gradient(180deg,rgba(9,10,16,.82),rgba(12,13,20,.72))!important;
+    -webkit-backdrop-filter:blur(22px) saturate(135%)!important;
+    backdrop-filter:blur(22px) saturate(135%)!important;
+    border-top:1px solid rgba(205,208,235,.19)!important;
+    box-shadow:0 -8px 28px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.035)!important;
+    isolation:isolate!important;
+    overflow:visible!important;
+  }
+  .mobile-tabbar:before{
+    content:""!important;position:absolute!important;inset:0!important;
+    background:linear-gradient(90deg,rgba(107,111,231,.075),transparent 35%,transparent 70%,rgba(125,211,252,.045))!important;
+    pointer-events:none!important;z-index:-1!important;
+  }
+  .mobile-tabbar>.mobile-tab.active{
+    background:linear-gradient(145deg,rgba(110,113,145,.3),rgba(73,75,94,.2))!important;
+    border:1px solid rgba(205,208,235,.19)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
+  }
+}
