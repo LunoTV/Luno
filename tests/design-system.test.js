@@ -33,7 +33,7 @@ test("all core LUNO design tokens are defined in the shared layer", async () => 
   };
 
   for (const [name, value] of Object.entries(tokens)) {
-    assert.match(css, new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*:\\s*" + value, "i"), name);
+    assert.ok(css.includes(`${name}: ${value}`), `missing approved token ${name}`);
   }
 });
 
