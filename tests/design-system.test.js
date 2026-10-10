@@ -15,6 +15,15 @@ test("the shared LUNO design layer loads after legacy page styles", async () => 
   assert.ok(!html.includes("source-manager.css"), "legacy source manager stylesheet is no longer referenced");
 });
 
+test("mobile settings sections open in a focused sheet with a return control", async () => {
+  const css = await readFile(new URL("ui/design-system.css", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  assert.ok(css.includes(".settings-view.settings-section-open .settings-content"), "settings content has a focused mobile sheet");
+  assert.ok(css.includes(".settings-view.settings-section-open .settings-menu"), "the menu is hidden while a section is open");
+  assert.ok(app.includes('data-settings-sections-back'), "the section sheet has a return control");
+  assert.ok(app.includes('openSettingsView(button.dataset.settingsSection,true)'), "selecting a section opens the focused view");
+});
+
 test("all core LUNO design tokens are defined in the shared layer", async () => {
   const css = await readFile(new URL("ui/design-system.css", root), "utf8");
   const tokens = {
