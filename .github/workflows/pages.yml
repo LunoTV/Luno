@@ -24,6 +24,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Run regression tests
+        run: npm test
+
       - name: Build LUNO
         run: |
           npm install --no-audit --no-fund
