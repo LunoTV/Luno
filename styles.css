@@ -3593,8 +3593,6 @@ html,body{
 }
 .home-hero-actions .home-hero-favorite{width:48px;flex:none;font-size:23px;line-height:1}
 .home-hero-actions button:active{transform:scale(.985)}
-.home-hero-poster-wrap{display:none}
-.home-hero-poster[hidden]{display:none}
 .home-hero-dots{display:flex;justify-content:center;align-items:center;gap:6px;min-height:25px;margin:3px 0 0}
 .home-hero-dot{
   width:6px;height:6px;padding:0;border:0;border-radius:50%;
