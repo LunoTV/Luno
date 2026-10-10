@@ -145,7 +145,8 @@ test("catalog poster recovery searches TMDB when poster URLs are missing or fail
   assert.match(app,/async function lookupPosterFromTmdb/);
   assert.match(app,/\/api\/tmdb\/search\?query=/);
   assert.match(app,/candidateType!==type/);
-  assert.match(app,/year===candidateYear/);
+  assert.match(app,/year!==candidateYear/);
+  assert.match(app,/scoreName\(candidate\?\.name\),scoreName\(candidate\?\.originalName\)/);
   assert.match(app,/recoverCardPoster\(c,image\)/);
   assert.match(app,/if\(!image\)\{\s*recoverCardPoster\(c,null\)/);
 });
