@@ -138,3 +138,14 @@ test("catalog scrolling requests another TMDB page after bundled cards are exhau
   assert.match(app,/catalogSections=sections\|\|\{\}/);
   assert.match(app,/renderItems\(unique,catalogSections\)/);
 });
+
+
+test("catalog poster recovery searches TMDB when poster URLs are missing or fail",()=>{
+  const app=readFileSync(new URL("../app.js",import.meta.url),"utf8");
+  assert.match(app,/async function lookupPosterFromTmdb/);
+  assert.match(app,/\/api\/tmdb\/search\?query=/);
+  assert.match(app,/candidateType!==type/);
+  assert.match(app,/year===candidateYear/);
+  assert.match(app,/recoverCardPoster\(c,image\)/);
+  assert.match(app,/if\(!image\)\{\s*recoverCardPoster\(c,null\)/);
+});
