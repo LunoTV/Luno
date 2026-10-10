@@ -5799,3 +5799,80 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   body.search-open .search-discover strong{color:#e8ecff!important}
   body.search-open .mobile-tabbar{z-index:80!important}
 }
+
+
+/* ---------- LUNO SIGNATURE GLASS SHUTTER ON EVERY MOBILE PAGE v126 ---------- */
+@media(max-width:700px){
+  body.search-open .topbar{display:flex!important}
+  .topbar.luno-nav-shutter{
+    position:fixed!important;top:0!important;left:0!important;right:0!important;
+    width:100%!important;height:58px!important;min-height:58px!important;
+    box-sizing:border-box!important;padding:0 18px!important;margin:0!important;
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    gap:12px!important;transform:none!important;
+    background:linear-gradient(112deg,rgba(15,16,27,.84),rgba(9,11,17,.76) 56%,rgba(15,20,29,.82))!important;
+    border:0!important;border-bottom:1px solid rgba(185,185,255,.18)!important;
+    border-radius:0!important;
+    box-shadow:0 8px 28px rgba(0,0,0,.12),inset 0 1px rgba(232,236,255,.025)!important;
+    -webkit-backdrop-filter:blur(24px) saturate(150%)!important;
+    backdrop-filter:blur(24px) saturate(150%)!important;
+    z-index:120!important;
+  }
+  /* Keep the moon logo only on the home screen. Other screens get a compact back button. */
+  body.show-global-back .topbar.luno-nav-shutter .brand{display:none!important}
+  body:not(.show-global-back) .topbar.luno-nav-shutter .global-header-back{display:none!important}
+  .topbar.luno-nav-shutter .global-header-back{
+    display:grid!important;place-items:center!important;
+    flex:0 0 36px!important;width:36px!important;height:36px!important;
+    min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;
+    margin:0!important;padding:0 0 2px!important;
+    border:1px solid rgba(185,185,255,.24)!important;border-radius:50%!important;
+    background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(107,111,231,.12))!important;
+    color:#e8ecff!important;font-size:25px!important;font-weight:350!important;line-height:1!important;
+    box-shadow:0 3px 12px rgba(0,0,0,.10)!important;
+    -webkit-backdrop-filter:blur(14px)!important;backdrop-filter:blur(14px)!important;
+  }
+  .topbar.luno-nav-shutter .brand{
+    flex:1 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;
+    display:flex!important;align-items:center!important;gap:10px!important;
+    color:#f0f1ff!important;font-size:23px!important;font-weight:300!important;
+    letter-spacing:.24em!important;white-space:nowrap!important;
+  }
+  .topbar.luno-nav-shutter .brand-orbit{
+    display:grid!important;place-items:center!important;
+    width:31px!important;height:31px!important;min-width:31px!important;
+    border:1px solid rgba(139,140,244,.62)!important;border-radius:50%!important;
+    background:radial-gradient(circle at 32% 28%,rgba(232,236,255,.15),rgba(107,111,231,.10) 48%,rgba(0,0,0,.22))!important;
+    box-shadow:0 0 15px rgba(107,111,231,.12)!important;
+  }
+  .topbar.luno-nav-shutter .brand-moon{
+    width:21px!important;height:21px!important;
+    background:linear-gradient(135deg,#f1f2ff 0%,#c7c9f5 54%,#7dd3fc 100%)!important;
+    box-shadow:inset -5px -2px 7px rgba(0,0,0,.28)!important;
+  }
+  .topbar.luno-nav-shutter .brand>span:not(.brand-orbit){display:none!important}
+  .topbar.luno-nav-shutter .nav{display:none!important}
+  .topbar.luno-nav-shutter .tv-header-tools{
+    display:flex!important;align-items:center!important;justify-content:flex-end!important;
+    flex:0 0 auto!important;gap:8px!important;margin:0!important;padding:0!important;
+  }
+  .topbar.luno-nav-shutter .global-header-search,
+  .topbar.luno-nav-shutter .global-header-settings{
+    display:grid!important;place-items:center!important;
+    width:36px!important;height:36px!important;min-width:36px!important;
+    margin:0!important;padding:0!important;border:1px solid transparent!important;
+    border-radius:50%!important;background:transparent!important;color:#e8ecff!important;
+  }
+  .topbar.luno-nav-shutter .global-header-settings{font-size:21px!important}
+  .topbar.luno-nav-shutter .global-header-search .search-icon{transform:scale(.88)!important}
+  body.show-global-back main{padding-top:58px!important}
+  /* Search page stays below the shared shutter, with no duplicate floating header controls. */
+  body.search-open .overlay{top:58px!important;inset-block-start:58px!important}
+  body.search-open .luno-search-screen{
+    padding-top:18px!important;
+    min-height:calc(100dvh - 58px)!important;
+  }
+  body.search-open .search-back,
+  body.search-open .search-close-x{display:none!important}
+  body.search-open .search-topbar{margin-top:0!important}
+}
