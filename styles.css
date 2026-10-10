@@ -5991,3 +5991,23 @@ remove conflicting centered LUNO override/* ---------- LUNO WORDMARK LEFT, AS IN
   .topbar .brand .brand-wordmark{display:inline!important;}
   .topbar .brand .brand-orbit{display:none!important;}
 }
+
+
+/* LUNO mobile shutter wordmark: override legacy moon-only rules without changing shutter layout. */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter .brand{
+    width:auto!important;min-width:0!important;max-width:none!important;
+    height:32px!important;flex:0 0 auto!important;
+    justify-content:flex-start!important;padding:0!important;margin:0!important;
+    font-size:25px!important;font-weight:800!important;letter-spacing:-.055em!important;
+    line-height:1!important;color:#f4f5ff!important;
+  }
+  .topbar.luno-nav-shutter .brand .brand-wordmark{
+    display:inline!important;visibility:visible!important;
+    color:#f4f5ff!important;font-size:inherit!important;
+  }
+  .topbar.luno-nav-shutter .brand .brand-orbit,
+  .topbar.luno-nav-shutter .brand .brand-moon{
+    display:none!important;visibility:hidden!important;
+  }
+}
