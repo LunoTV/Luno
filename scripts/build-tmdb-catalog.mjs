@@ -253,6 +253,7 @@ async function cachePosters(items) {
       if (index >= items.length) return;
 
       const item = items[index];
+      const posterFile = "./tmdb-posters/" + catalogPosterFilename(item.type, item.tmdbId);
       const file = "public/tmdb-posters/" + catalogPosterFilename(item.type, item.tmdbId);
       const candidates = [
         item?.poster,
@@ -264,7 +265,7 @@ async function cachePosters(items) {
       for (const source of [...new Set(candidates)]) {
         if (await download(source, file)) {
           item.posterSource = source;
-          item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
+          item.poster = posterFile;
           cached++;
           success = true;
           break;
@@ -276,7 +277,7 @@ async function cachePosters(items) {
         if (await download(source, file)) {
           item.posterSource = source;
           item.posterFallback = "backdrop";
-          item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
+          item.poster = posterFile;
           fallbackCached++;
           success = true;
         }
@@ -287,7 +288,7 @@ async function cachePosters(items) {
         if (await download(source, file)) {
           item.posterSource = source;
           item.posterFallback = "background";
-          item.poster = "./tmdb-posters/" + item.tmdbId + ".jpg";
+          item.poster = posterFile;
           fallbackCached++;
           success = true;
         }

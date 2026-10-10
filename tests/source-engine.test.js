@@ -122,3 +122,11 @@ test("source toggles disable matching headless Lampa adapters",()=>{
   );
   assert.deepEqual(filterEnabledSourceIds([],{}),[]);
 });
+
+
+test("TMDB catalog builder assigns the exact typed poster filename it writes",()=>{
+  const script=readFileSync(new URL("../scripts/build-tmdb-catalog.mjs",import.meta.url),"utf8");
+  assert.match(script,/const posterFile = "\.\/tmdb-posters\/" \+ catalogPosterFilename\(item\.type, item\.tmdbId\);/);
+  assert.equal((script.match(/item\.poster = posterFile;/g)||[]).length,3);
+  assert.doesNotMatch(script,/item\.tmdbId \+ "\.jpg"/);
+});
