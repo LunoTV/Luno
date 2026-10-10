@@ -28,6 +28,16 @@ test("mobile settings sections open in a focused sheet with a return control", a
   assert.ok(app.includes('openSettingsView(button.dataset.settingsSection,true)'), "selecting a section opens the focused view");
 });
 
+test("mobile shutter exposes only contextual back and search controls", async () => {
+  const css = await readFile(new URL("ui/design-system.css", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(css.includes(".topbar.luno-nav-shutter .brand"), "brand is explicitly hidden in the mobile shutter");
+  assert.ok(css.includes(".topbar.luno-nav-shutter .global-header-settings"), "settings button is explicitly hidden in the mobile shutter");
+  assert.ok(css.includes("body.show-global-back .topbar.luno-nav-shutter .global-header-back"), "back is shown only on inner pages");
+  assert.ok(css.includes(".topbar.luno-nav-shutter .global-header-search"), "search remains visible");
+  assert.ok(html.includes("./ui/design-system.css?v=5"), "updated shutter styles use a fresh cache version");
+});
+
 test("all core LUNO design tokens are defined in the shared layer", async () => {
   const css = await readFile(new URL("ui/design-system.css", root), "utf8");
   const tokens = {
