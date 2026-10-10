@@ -142,6 +142,7 @@ let detailReturnLibrary="";
 let movieVisible=18;
 let seriesVisible=18;
 let catalogLoading=false;
+let catalogSections={};
 let resumeItems=[];
 let favoriteItems=[];
 let splashDone=false;
@@ -1217,6 +1218,7 @@ function renderItems(items,sections={}){
   };
 
   catalogItems=unique;
+  catalogSections=sections||{};
   const classify=(items,type)=>items.filter(item=>mediaCategory(item)===type);
   movieItems=classify(unique,"movies");
   openCinemaItems=unique.filter(item=>item.openCinema);
