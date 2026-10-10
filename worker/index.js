@@ -66,8 +66,8 @@ export default {
         return json({ error: "Invalid image path" }, 400, origin);
       }
 
-      // Try the image mirrors that can bypass regional TMDB image-host blocks first.
-      // Each upstream gets a strict timeout so a stalled host cannot hang Safari forever.
+      // Lampa-style mirror list. Race mirrors instead of waiting for a blocked
+      // host one by one; the first valid image wins and slow requests are aborted.
       const imageHosts = [
         "https://imagetmdb.com/t/p",
         "https://nl.imagetmdb.com/t/p",
@@ -76,37 +76,41 @@ export default {
         "https://lampa.byskaz.ru/tmdb/img/t/p",
         "https://image.tmdb.org/t/p"
       ];
-      let lastError = "No image mirrors available";
-      for (const host of imageHosts) {
+      const controllers = [];
+      const attempts = imageHosts.map(async (host) => {
+        const controller = new AbortController();
+        controllers.push(controller);
+        const timer = setTimeout(() => controller.abort("TMDB mirror timeout"), 2500);
         try {
           const response = await fetch(host + imagePath, {
             headers: { accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8" },
-            signal: AbortSignal.timeout(2500),
+            signal: controller.signal,
             cf: { cacheTtl: 86400, cacheEverything: true }
           });
-          if (!response.ok) {
-            lastError = host + " HTTP " + response.status;
-            continue;
-          }
+          if (!response.ok) throw new Error(host + " HTTP " + response.status);
           const contentType = response.headers.get("content-type") || "";
-          if (!contentType.toLowerCase().startsWith("image/")) {
-            lastError = host + " returned non-image content";
-            continue;
-          }
-          const headers = new Headers({
-            "content-type": contentType,
-            "cache-control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000",
-            "access-control-allow-origin": "https://lunotv.github.io",
-            "x-content-type-options": "nosniff"
-          });
-          const etag = response.headers.get("etag");
-          if (etag) headers.set("etag", etag);
-          return new Response(response.body, { status: 200, headers });
-        } catch (error) {
-          lastError = host + ": " + String(error?.message || error);
+          if (!contentType.toLowerCase().startsWith("image/")) throw new Error(host + " returned non-image content");
+          return { response, contentType };
+        } finally {
+          clearTimeout(timer);
         }
+      });
+      try {
+        const winner = await Promise.any(attempts);
+        controllers.forEach(controller => controller.abort("Another mirror responded first"));
+        const headers = new Headers({
+          "content-type": winner.contentType,
+          "cache-control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000",
+          "access-control-allow-origin": "https://lunotv.github.io",
+          "x-content-type-options": "nosniff"
+        });
+        const etag = winner.response.headers.get("etag");
+        if (etag) headers.set("etag", etag);
+        return new Response(winner.response.body, { status: 200, headers });
+      } catch (error) {
+        const reasons = error instanceof AggregateError ? error.errors.map(reason => String(reason?.message || reason)) : [String(error?.message || error)];
+        return json({ error: "TMDB image mirrors unavailable", detail: reasons.slice(0, 6) }, 502, origin);
       }
-      return json({ error: "TMDB image mirrors unavailable", detail: lastError }, 502, origin);
     }
 
     const isSearch = url.pathname === "/api/tmdb/search";
@@ -119,55 +123,29 @@ export default {
     if (isSearch && !query) return json({ error: "query is required" }, 400, origin);
 
     const page = url.searchParams.get("page") || "1";
-    const token = env.TMDB_API_TOKEN;
-    let primaryError = token ? "" : "TMDB_API_TOKEN is not configured";
+    const buildApiUrl = (base) => {
+      const endpoint = isSearch ? "search/multi" : "trending/all/week";
+      const target = new URL(base + endpoint);
+      if (isSearch) target.searchParams.set("query", query);
+      target.searchParams.set("language", "ru-RU");
+      target.searchParams.set("include_adult", "false");
+      target.searchParams.set("page", page);
+      return target;
+    };
+    let primaryError = "";
 
-    if (token) {
-      const tmdb = new URL(TMDB_BASE + (isSearch ? "/search/multi" : "/trending/all/week"));
-      if (isSearch) tmdb.searchParams.set("query", query);
-      tmdb.searchParams.set("language", "ru-RU");
-      tmdb.searchParams.set("include_adult", "false");
-      tmdb.searchParams.set("page", page);
-
+    // Match Lampa TMDB Proxy defaults: try the CUB TMDB API mirrors first,
+    // then Lampa's own API mirror, and only then use the configured TMDB token.
+    const cubMirrors = ["cub.red", "cub.best", "cub.black", "durex.monster", "cubnotrip.top"];
+    const apiMirrors = cubMirrors.map(domain => "https://apitmdb." + domain + "/3/");
+    apiMirrors.push("https://lampa.byskaz.ru/tmdb/api/3/");
+    for (const base of apiMirrors) {
       try {
-        const response = await fetch(tmdb, {
-          headers: { accept: "application/json", authorization: "Bearer " + token }
+        const response = await fetch(buildApiUrl(base), {
+          headers: { accept: "application/json" },
+          signal: AbortSignal.timeout(2500)
         });
-        if (!response.ok) {
-          primaryError = "TMDB HTTP " + response.status;
-        } else {
-          const data = await response.json();
-          const results = (data.results || [])
-            .filter(item => item?.media_type === "movie" || item?.media_type === "tv")
-            .map(normalize);
-          if (results.length) {
-            return json({
-              query, page: Number(data.page) || 1,
-              totalPages: Number(data.total_pages) || 1,
-              totalResults: Number(data.total_results) || results.length,
-              results, source: "TMDB"
-            }, 200, origin);
-          }
-          primaryError = "TMDB returned no results";
-        }
-      } catch (error) {
-        primaryError = String(error?.message || error);
-      }
-    }
-
-    // Match Lampa's TMDB proxy strategy: use the current CUB mirror list,
-    // trying each host server-side so browser CORS does not block catalog loading.
-    const cubMirrors = ["cub.best", "cub.black", "durex.monster", "cubnotrip.top", "cub.red"];
-    let cubError = "";
-    for (const domain of cubMirrors) {
-      try {
-        const cub = new URL("https://apitmdb." + domain + "/3/" + (isSearch ? "search/multi" : "trending/all/week"));
-        if (isSearch) cub.searchParams.set("query", query);
-        cub.searchParams.set("language", "ru-RU");
-        cub.searchParams.set("include_adult", "false");
-        cub.searchParams.set("page", page);
-        const response = await fetch(cub, { headers: { accept: "application/json" } });
-        if (!response.ok) throw new Error(domain + " HTTP " + response.status);
+        if (!response.ok) throw new Error(base + " HTTP " + response.status);
         const data = await response.json();
         const raw = Array.isArray(data?.results) ? data.results : [];
         const results = raw
@@ -177,22 +155,53 @@ export default {
               ((!item.title && (item.name || item.first_air_date)) ? "tv" : "movie");
             return normalize({ ...item, media_type: inferredType === "series" ? "tv" : inferredType });
           });
-        if (!results.length) throw new Error(domain + " returned no results");
+        if (!results.length) throw new Error(base + " returned no results");
         return json({
           query, page: Number(data.page) || Number(page),
           totalPages: Number(data.total_pages) || 1,
           totalResults: Number(data.total_results) || results.length,
-          results, source: "Lampa-compatible CUB mirror (" + domain + ")",
-          fallbackFrom: primaryError
+          results, source: "Lampa-compatible TMDB mirror",
+          fallbackFrom: primaryError || undefined
         }, 200, origin);
       } catch (error) {
-        cubError = String(error?.message || error);
+        primaryError = String(error?.message || error);
       }
     }
+
+    const token = env.TMDB_API_TOKEN;
+    if (token) {
+      try {
+        const tmdb = buildApiUrl(TMDB_BASE + "/");
+        const response = await fetch(tmdb, {
+          headers: { accept: "application/json", authorization: "Bearer " + token },
+          signal: AbortSignal.timeout(5000)
+        });
+        if (!response.ok) throw new Error("TMDB HTTP " + response.status);
+        const data = await response.json();
+        const results = (data.results || [])
+          .filter(item => item?.media_type === "movie" || item?.media_type === "tv")
+          .map(normalize);
+        if (results.length) {
+          return json({
+            query, page: Number(data.page) || 1,
+            totalPages: Number(data.total_pages) || 1,
+            totalResults: Number(data.total_results) || results.length,
+            results, source: "TMDB",
+            fallbackFrom: primaryError
+          }, 200, origin);
+        }
+        primaryError = "TMDB returned no results";
+      } catch (error) {
+        primaryError = String(error?.message || error);
+      }
+    } else {
+      primaryError = primaryError || "TMDB_API_TOKEN is not configured";
+    }
+
     return json({
-      error: "TMDB and CUB catalog unavailable",
-      detail: cubError || "All CUB mirrors failed",
-      primary: primaryError
+      error: "TMDB and Lampa-compatible mirrors unavailable",
+      detail: primaryError
     }, 502, origin);
+
   }
 };
