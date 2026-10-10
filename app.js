@@ -1376,7 +1376,8 @@ document.querySelector("#settingsClearPreferences")?.addEventListener("click",()
 });
 
 function navigate(section){
-  if(section==="settings"){openSettingsView("profile");return;}
+  if(section==="profile" || section==="settings"){openSettingsView("profile");return;}
+  if(section==="library"){openLibrary("favorites");return;}
   settingsView?.classList.add("hidden");
   document.body.classList.remove("settings-open");
   document.body.classList.toggle("home-mode",section==="home");
