@@ -1260,13 +1260,24 @@ function saveLunoSetting(key,value){
   try{localStorage.setItem(LUNO_SETTINGS_KEY,JSON.stringify(settings));}catch{}
 }
 const settingsView=document.querySelector("#settingsView");
-function openSettingsView(section="profile"){
+const settingsContent=settingsView?.querySelector(".settings-content");
+if(settingsContent&&!settingsContent.querySelector("[data-settings-sections-back]")){
+  const sectionsBack=document.createElement("button");
+  sectionsBack.type="button";
+  sectionsBack.className="settings-sections-back";
+  sectionsBack.dataset.settingsSectionsBack="";
+  sectionsBack.textContent="‹ Все настройки";
+  sectionsBack.addEventListener("click",()=>settingsView.classList.remove("settings-section-open"));
+  settingsContent.prepend(sectionsBack);
+}
+function openSettingsView(section="profile",openAsWindow=false){
   if(!settingsView)return;
   closeLibrary();
   searchPanel?.classList.add("hidden");
   detail?.classList.add("hidden");
   document.body.classList.add("settings-open");
   settingsView.classList.remove("hidden");
+  if(openAsWindow&&window.matchMedia("(max-width: 700px)").matches) settingsView.classList.add("settings-section-open");
   document.body.classList.remove("home-mode");
   document.body.classList.add("show-global-back");
   document.querySelectorAll("[data-settings-section]").forEach(button=>{
@@ -1297,7 +1308,7 @@ function closeSettingsView(){
   document.body.classList.remove("settings-open");
   navigate("home");
 }
-document.querySelectorAll("[data-settings-section]").forEach(button=>button.addEventListener("click",()=>openSettingsView(button.dataset.settingsSection)));
+document.querySelectorAll("[data-settings-section]").forEach(button=>button.addEventListener("click",()=>openSettingsView(button.dataset.settingsSection,true)));
 document.querySelector("#settingsBack")?.addEventListener("click",closeSettingsView);
 settingsView?.querySelectorAll("[data-setting]").forEach(control=>{
   control.addEventListener("change",()=>{
