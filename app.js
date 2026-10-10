@@ -2622,7 +2622,7 @@ function prefetchPosters(items){
   }
 
   try{
-    const {initLunoCore}=await import("./source-engine.js?v=source28");
+    const {initLunoCore}=await import("./source-engine.js?v=source30");
     await Promise.race([
       initLunoCore(),
       new Promise((_,reject)=>window.setTimeout(()=>reject(new Error("LUNO Source Engine init timeout")),6500))

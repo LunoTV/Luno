@@ -115,7 +115,7 @@ function addRuntimeParams(url){
 
 function buildMovie(item){
   const rawId=String(item?.id||"");
-  const parsedId=rawId.match(/^tmdb:(?:(?:movie|tv|series):(\\d+))$/)?.[1] || (/^\\d+$/.test(rawId)?rawId:"");
+  const parsedId=rawId.match(/^tmdb:(?:(?:movie|tv|series):)?(\d+)$/)?.[1] || (/^\d+$/.test(rawId)?rawId:"");
   const tmdbId=Number(item?.tmdbId||parsedId)||0;
   return {
     id:tmdbId||text(item?.id),
