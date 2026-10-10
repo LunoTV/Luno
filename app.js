@@ -886,9 +886,6 @@ function openCategoryHub(){
       '<span class="luno-catalog-eyebrow"><i></i> ТВОЯ ВСЕЛЕННАЯ КИНО</span>'+
       '<h2>Что будем <em>смотреть?</em></h2>'+
       '<p>Большие истории начинаются с одного выбора.</p>'+
-      '<div class="luno-catalog-search" role="button" tabindex="0" aria-label="Открыть поиск">'+
-        '<span class="luno-catalog-search-icon">⌕</span><span>Название фильма, сериала…</span><span class="luno-catalog-search-arrow">↗</span>'+
-      '</div>'+
     '</div>'+
     '<div class="category-hub luno-category-hub">'+
       '<button class="category-hub-card luno-category-film" data-category="movies"><span class="luno-category-icon">▰</span><small class="luno-category-overline">БОЛЬШОЙ ЭКРАН</small><strong>Фильмы</strong><small class="luno-category-desc">Истории на один вечер</small><b class="luno-category-arrow">↗</b></button>'+
@@ -899,10 +896,6 @@ function openCategoryHub(){
       '<button class="category-hub-card luno-category-favorites" data-category="favorites"><span class="luno-category-icon">♡</span><small class="luno-category-overline">ТВОЯ КОЛЛЕКЦИЯ</small><strong>Моё кино</strong><small class="luno-category-desc">Избранное и продолжение</small><b class="luno-category-arrow">↗</b></button>'+
     '</div>'+
     '<div class="luno-catalog-foot"><span class="luno-catalog-foot-orbit">◐</span><span><strong>Твой вечер. Твой выбор.</strong><small>Открывай новое в LUNO</small></span></div>';
-  const catalogSearch=libraryContent.querySelector(".luno-catalog-search");
-  const openCatalogSearch=()=>{searchPanel?.classList.remove("hidden");window.setTimeout(()=>searchInput?.focus(),40);};
-  catalogSearch?.addEventListener("click",openCatalogSearch);
-  catalogSearch?.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();openCatalogSearch();}});
   libraryView.classList.remove("hidden");
   document.body.classList.add("library-open");
   libraryContent.scrollTop=0;
@@ -936,6 +929,7 @@ function openLibrary(type,pushHistory=true){
   }[type];
   if(!config || !libraryView) return;
 
+  document.body.classList.add("show-global-back");
   if(pushHistory) setLunoHistory(type);
   if(["popular","continue","openCinema","recommendations","evening","classics","favorites"].includes(type)){
     const all=[...new Map(catalogItems.filter(item=>item?.id).map(item=>[item.id,item])).values()];
