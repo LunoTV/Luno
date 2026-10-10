@@ -493,6 +493,10 @@ function bindCards(){
   });
   document.querySelectorAll(".card").forEach((c)=>{
     const image=c.querySelector(".card-art img");
+    if(!image){
+      recoverCardPoster(c,null);
+      return;
+    }
     if(image && !image.dataset.fallbackBound){
       image.dataset.fallbackBound="1";
       image.addEventListener("error",()=>{
