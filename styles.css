@@ -1251,7 +1251,7 @@ body.library-open .library-content{
     -webkit-line-clamp:4!important;
   }
   .detail-ratings{
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
     gap:6px!important;
     margin:20px 0 0!important;
     max-width:none!important;
@@ -1649,7 +1649,7 @@ body.detail-open{
 .player-episode-card{min-height:0!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:12px!important;background:rgba(255,255,255,.035)!important;transform:none!important}.player-episode-card:hover{border-color:rgba(255,255,255,.22)!important;background:rgba(255,255,255,.06)!important}.player-episode-card.active{border-color:rgba(255,255,255,.75)!important;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 12px 35px rgba(0,0,0,.25);background:rgba(255,255,255,.08)!important}
 .player-episode-thumb{height:110px!important}.player-episode-num{font-size:11px!important;padding:4px 7px!important}.player-episode-quality{position:absolute;z-index:2;right:8px;top:7px;color:#8CB8CC;font-size:8px;font-weight:850;background:rgba(0,0,0,.58);padding:4px 5px;border-radius:5px}.player-episode-duration{font-size:9px!important}.player-episode-progress{position:absolute;z-index:4;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.15)}.player-episode-progress i{display:block;height:100%;background:#fff}.player-episode-body{padding:8px 9px 10px!important}.player-episode-body strong{font-size:11px!important}.player-episode-meta{display:flex;gap:8px;margin-top:5px;color:#747985;font-size:8px}.player-episode-meta span:first-child{color:#d7d9df}
 #player .player-bar{position:absolute!important;left:0;right:0;bottom:0;z-index:12;pointer-events:none;opacity:0;transform:translateY(8px);transition:.2s ease}#player:hover .player-bar,#player:focus-within .player-bar{opacity:1;transform:none;pointer-events:auto}
-@media(max-width:1000px){.player-episode-thumb{height:92px!important}.player-browse-episodes{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:1000px){.player-episode-thumb{height:92px!important}.player-browse-episodes{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
 @media(max-width:700px){
  #player .player-stage{flex:0 0 38dvh!important;min-height:38dvh!important;max-height:46dvh!important}
  #player .player-browse{max-height:62dvh!important;overflow:auto!important;padding-bottom:72px}
@@ -3755,7 +3755,7 @@ html,body{
  .detail-badges{margin-top:11px!important}
  .luno-detail-actions{gap:7px!important;margin-top:18px!important}
  .luno-detail-actions .primary,.luno-detail-actions .secondary{min-height:44px!important;padding:0 13px!important;font-size:12px!important}
- .luno-detail-ratings{left:18px!important;right:18px!important;bottom:18px!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;padding:10px!important}
+ .luno-detail-ratings{left:18px!important;right:18px!important;bottom:18px!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;padding:10px!important}
  .luno-detail-ratings>div{min-width:0!important;text-align:center!important}
  .luno-detail-ratings strong{font-size:17px!important}
  .luno-detail-ratings span{font-size:8px!important}
@@ -3854,22 +3854,10 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 }
 
 /* LUNO home: softer transition from spotlight into discovery rails */
-main>.home-hero{
   margin-bottom:clamp(34px,5vw,64px);
   border-color:rgba(255,255,255,.1);
   box-shadow:0 28px 85px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.035);
 }
-.home-hero-backdrop{will-change:opacity,transform}
-.home-hero.is-ready .home-hero-backdrop{animation:luno-home-backdrop-in .8s cubic-bezier(.2,.7,.2,1) both}
-.home-hero-copy{position:relative;z-index:1;animation:luno-home-copy-in .48s cubic-bezier(.2,.7,.2,1) both}
-.home-hero-eyebrow{color:rgba(255,255,255,.76)}
-.home-hero-meta{display:flex;align-items:center;flex-wrap:wrap;gap:7px;color:rgba(255,255,255,.76)}
-.home-hero-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 5px 20px rgba(0,0,0,.16)}
-.home-hero-actions .home-hero-primary{box-shadow:0 8px 24px rgba(255,255,255,.11),0 5px 20px rgba(0,0,0,.2)}
-.home-hero-actions button:focus-visible{outline:2px solid #fff;outline-offset:4px}
-.home-hero-poster-wrap{position:relative;z-index:1;transform:rotate(2deg) translateY(0);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease}
-.home-hero-poster-wrap:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
-.home-hero.is-ready .home-hero-poster-wrap{animation:luno-home-poster-in .55s .08s cubic-bezier(.2,.7,.2,1) both}
 @media(hover:hover){
   .home-hero:hover .home-hero-poster-wrap{transform:rotate(0) translateY(-5px);box-shadow:0 28px 75px rgba(0,0,0,.62)}
   .home-hero:hover .home-hero-backdrop{transform:scale(1.045)}
@@ -3884,20 +3872,13 @@ main>.home-hero{
 #continueSection{margin-top:0}
 #trendingSection{margin-top:clamp(18px,3vw,38px)}
 .home-hero~.section{transition:opacity .25s ease}
-@keyframes luno-home-backdrop-in{from{opacity:0;transform:scale(1.055)}to{opacity:.46;transform:scale(1)}}
-@keyframes luno-home-copy-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes luno-home-poster-in{from{opacity:0;transform:rotate(4deg) translateY(12px)}to{opacity:1;transform:rotate(2deg) translateY(0)}}
 @media(max-width:700px){
-  main>.home-hero{margin-bottom:clamp(26px,6vw,36px)}
   .home-hero-copy{animation:none}
   .home-hero-poster-wrap{box-shadow:0 15px 40px rgba(0,0,0,.42)}
   .section .cards{scroll-padding-inline:4px}
   #trendingSection{margin-top:24px}
 }
-@media(prefers-reduced-motion:reduce){
-  .home-hero.is-ready .home-hero-backdrop,.home-hero-copy,.home-hero.is-ready .home-hero-poster-wrap{animation:none!important}
-  .home-hero-backdrop,.home-hero-poster-wrap,.section .cards>.card .card-art{transition:none!important}
-}
+@media(prefers-reduced-motion:reduce){.section .cards>.card .card-art{transition:none!important}}
 
 /* LUNO editorial rails: browse by mood without turning the home into a grid */
 main>.section{margin-top:clamp(42px,5.2vw,76px);padding-top:0}
@@ -3996,7 +3977,7 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
   .luno-detail-actions .primary{grid-column:1/-1!important;min-height:49px!important}
   .luno-detail-actions .secondary{min-width:0!important;min-height:43px!important;padding:0 10px!important;font-size:11px!important}
-  .luno-detail-ratings{left:18px!important;right:18px!important;bottom:17px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;padding:10px 3px!important}
+  .luno-detail-ratings{left:18px!important;right:18px!important;bottom:17px!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;padding:10px 3px!important}
   .luno-detail-ratings>div{min-width:0!important;padding:0 3px!important}
   .luno-detail-ratings strong{font-size:clamp(13px,4vw,18px)!important}
   .luno-detail-ratings span{font-size:7px!important;letter-spacing:.07em!important}
@@ -4249,7 +4230,7 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-ratings{
     position:relative!important;left:auto!important;right:auto!important;
     top:auto!important;bottom:auto!important;transform:none!important;
-    width:100%!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    width:100%!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
     margin:18px 0 0!important;padding:12px 8px!important;gap:5px!important;
     order:initial!important;
   }
@@ -4943,89 +4924,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 }
 
 
-/* ---------- LUNO CINEMA HOME 2.0 ---------- */
-/* Cinematic editorial home refresh. Keep poster dimensions, card titles, catalog and TV navigation intact. */
-@media(max-width:700px){
-  body{background:#030406!important}
-  #app main{padding-top:calc(56px + env(safe-area-inset-top,0px))!important;padding-bottom:24px!important}
-  .home-hero{
-    display:flex!important;position:relative!important;isolation:isolate!important;
-    min-height:clamp(560px,82svh,760px)!important;height:clamp(560px,82svh,760px)!important;
-    margin:0 0 24px!important;padding:0 22px 28px!important;
-    align-items:flex-end!important;overflow:hidden!important;border:0!important;border-radius:0 0 24px 24px!important;
-    background:#050609!important;box-shadow:none!important;
-  }
-  .home-hero-backdrop{
-    position:absolute!important;inset:0!important;z-index:-2!important;
-    background-position:center 24%!important;background-size:cover!important;
-    opacity:0!important;transform:scale(1.02)!important;
-  }
-  .home-hero.is-ready .home-hero-backdrop{opacity:.88!important}
-  .home-hero:before{
-    content:""!important;position:absolute!important;inset:0!important;z-index:-1!important;
-    background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.03) 26%,rgba(0,0,0,.55) 53%,#030406 94%,#030406 100%)!important;
-  }
-  .home-hero-copy{
-    position:relative!important;z-index:2!important;align-self:auto!important;
-    width:100%!important;max-width:100%!important;padding:0!important;margin:0!important;
-  }
-  .home-hero-eyebrow{font-size:10px!important;letter-spacing:.2em!important;margin:0 0 12px!important;color:#E7E8EF!important}
-  .home-hero-title{
-    max-width:100%!important;margin:0 0 10px!important;font-size:clamp(31px,8.2vw,43px)!important;
-    line-height:1.02!important;letter-spacing:-.045em!important;font-weight:850!important;
-    text-wrap:balance!important;text-shadow:0 2px 22px rgba(0,0,0,.35)!important;
-  }
-  .home-hero-meta{font-size:12px!important;line-height:1.5!important;color:rgba(245,246,255,.78)!important;margin:0 0 12px!important}
-  .home-hero-description{
-    max-width:500px!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;
-    overflow:hidden!important;margin:0 0 20px!important;font-size:14px!important;line-height:1.48!important;
-    color:rgba(242,243,248,.78)!important;
-  }
-  .home-hero-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;width:100%!important}
-  .home-hero-actions button{
-    min-height:52px!important;border-radius:14px!important;padding:0 12px!important;
-    font-size:14px!important;font-weight:750!important;letter-spacing:0!important;
-    border:1px solid rgba(231,232,239,.2)!important;background:rgba(20,21,28,.72)!important;
-    color:#f6f6fb!important;backdrop-filter:blur(12px)!important;
-  }
-  .home-hero-actions .home-hero-primary{background:#f6f6fb!important;color:#08090c!important;border-color:#f6f6fb!important}
-  .home-hero-poster-wrap{display:none!important}
-  .section{margin:0 0 28px!important;padding:0 16px!important;scroll-margin-top:100px!important}
-  .section-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin:0 0 13px!important}
-  .section-head h2{font-size:21px!important;line-height:1.15!important;letter-spacing:-.035em!important;font-weight:780!important;margin:0!important}
-  .section-kicker{font-size:9px!important;letter-spacing:.18em!important;margin-bottom:5px!important;color:#a7a8c8!important}
-  .section-more{font-size:12px!important;white-space:nowrap!important;color:rgba(230,232,242,.72)!important}
-  .cards{display:flex!important;grid-template-columns:none!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;
-    padding:0 0 5px!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important}
-  .cards::-webkit-scrollbar{display:none!important}
-  main>.section .cards>.card{scroll-snap-align:start!important;flex:0 0 128px!important;width:128px!important;min-width:128px!important;max-width:128px!important;border-radius:9px!important;background:transparent!important}
-  main>.section .cards>.card .card-art{width:128px!important;height:192px!important;aspect-ratio:auto!important;border-radius:9px!important;overflow:hidden!important}
-  main>.section .cards>.card .card-title{display:block!important;width:128px!important;max-width:128px!important;min-height:0!important;height:auto!important;
-    padding:8px 2px 2px!important;font-size:12px!important;line-height:1.3!important;font-weight:650!important;color:#f1f1f4!important;
-    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-  .card-type,.poster-quality,.poster-year{backdrop-filter:blur(10px)!important}
-  .resume-section .cards>.card{flex-basis:clamp(220px,72vw,280px)!important;width:clamp(220px,72vw,280px)!important;min-width:clamp(220px,72vw,280px)!important;max-width:clamp(220px,72vw,280px)!important}
-  .resume-section .cards>.card .card-art{width:100%!important;height:clamp(124px,41vw,158px)!important;aspect-ratio:16/9!important}
-  .resume-section .cards>.card .card-title{width:100%!important;max-width:100%!important}
-  .mobile-tabbar{grid-template-columns:repeat(4,minmax(0,1fr))!important;left:12px!important;right:12px!important;bottom:max(10px,env(safe-area-inset-bottom))!important;height:68px!important;
-    border-radius:24px!important;background:rgba(9,10,16,.88)!important;backdrop-filter:blur(24px)!important;-webkit-backdrop-filter:blur(24px)!important;
-    border:1px solid rgba(68,68,82,.65)!important;box-shadow:0 12px 42px rgba(0,0,0,.58),0 0 22px rgba(133,129,173,.1)!important}
-  .mobile-tab{gap:4px!important;color:rgba(225,227,241,.58)!important;border-radius:20px!important}
-  .mobile-tab .tab-icon{font-size:22px!important;line-height:1!important}
-  .mobile-tab small{font-size:10px!important;letter-spacing:.01em!important}
-  .mobile-tab.active{background:linear-gradient(145deg,rgba(133,129,173,.3),rgba(140,184,204,.06))!important;color:#f2f2ff!important;box-shadow:inset 0 0 0 1px rgba(133,129,173,.36),0 0 20px rgba(133,129,173,.12)!important}
-  body{padding-bottom:94px!important}
-}
-@media(min-width:701px){
-  .home-hero{min-height:clamp(520px,55vw,740px)!important;border:0!important;border-radius:0 0 26px 26px!important;margin-bottom:36px!important;padding:clamp(40px,6vw,90px)!important}
-  .home-hero-backdrop{background-position:center 30%!important}
-  .home-hero:before{background:linear-gradient(90deg,#030406 0%,rgba(3,4,6,.84) 22%,rgba(3,4,6,.24) 68%,rgba(3,4,6,.08) 100%),linear-gradient(0deg,#030406 0%,transparent 55%)!important}
-  .home-hero-copy{align-self:end!important;max-width:min(58%,760px)!important}
-  .home-hero-title{font-size:clamp(44px,6vw,84px)!important;line-height:.98!important;letter-spacing:-.045em!important}
-  .home-hero-description{max-width:540px!important;color:rgba(242,243,248,.76)!important}
-}
-
-
 /* ---------- LUNO MOBILE LAYOUT RECOVERY ---------- */
 /* Keep the top shutter fixed to the viewport and force the complete four-item bottom bar on-screen. */
 @media(max-width:700px){
@@ -5045,7 +4943,7 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     width:auto!important;max-width:none!important;min-width:0!important;
     margin:0!important;transform:none!important;translate:none!important;
     box-sizing:border-box!important;
-    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
     justify-content:stretch!important;align-items:stretch!important;
     height:68px!important;min-height:68px!important;max-height:68px!important;
     padding:5px!important;overflow:hidden!important;z-index:3000!important;
@@ -5060,28 +4958,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     overflow:hidden!important;
   }
   #app main{padding-top:calc(56px + env(safe-area-inset-top,0px))!important}
-}
-
-
-/* ---------- LUNO CINEMATIC HERO HEIGHT REFINEMENT ---------- */
-/* Shorter first-screen feature so the Popular rail appears sooner, like the approved reference. */
-@media(max-width:700px){
-  .home-hero{
-    height:min(70svh,560px)!important;
-    min-height:460px!important;
-    max-height:560px!important;
-    padding:0 20px 24px!important;
-    margin-bottom:20px!important;
-  }
-  .home-hero-backdrop{background-position:center 22%!important}
-  .home-hero-description{
-    -webkit-line-clamp:2!important;
-    margin-bottom:16px!important;
-    font-size:13px!important;
-    line-height:1.42!important;
-  }
-  .home-hero-title{font-size:clamp(30px,7.7vw,40px)!important}
-  .home-hero-actions button{min-height:48px!important}
 }
 
 
@@ -5136,304 +5012,12 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 }
 
 
-/* ---------- LUNO REFERENCE MATCH: HERO + HEADER ---------- */
-@media(max-width:700px){
-  .topbar.luno-nav-shutter,
-  body.home-mode .topbar.luno-nav-shutter{
-    height:60px!important;min-height:60px!important;max-height:60px!important;
-    padding:0 18px!important;background:linear-gradient(180deg,rgba(4,5,8,.72),rgba(4,5,8,.08))!important;
-    backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important;
-  }
-  .topbar.luno-nav-shutter .brand,
-  body.home-mode .topbar.luno-nav-shutter .brand{
-    font-size:28px!important;letter-spacing:.25em!important;
-  }
-  .topbar.luno-nav-shutter .tv-header-tools{gap:8px!important}
-  .topbar.luno-nav-shutter .global-header-search,
-  .topbar.luno-nav-shutter .global-header-settings{
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    flex:0 0 36px!important;width:36px!important;min-width:36px!important;max-width:36px!important;
-    height:36px!important;min-height:36px!important;max-height:36px!important;
-    border:0!important;border-radius:50%!important;background:transparent!important;
-    color:#f2f2f6!important;box-shadow:none!important;padding:0!important;margin:0!important;
-  }
-  .topbar.luno-nav-shutter .global-header-settings span{font-size:23px!important;font-weight:300!important;line-height:1!important}
-  .topbar.luno-nav-shutter .global-header-search .search-icon{filter:none!important}
-  body.home-mode #app main,body.home-mode main{padding-top:0!important}
-  body.home-mode .home-hero{
-    height:min(66svh,510px)!important;min-height:420px!important;max-height:510px!important;
-    margin-top:0!important;margin-bottom:24px!important;padding:0 18px 22px!important;
-    justify-content:flex-start!important;align-items:flex-end!important;
-  }
-  body.home-mode .home-hero-backdrop{
-    background-position:center 24%!important;background-size:cover!important;
-  }
-  body.home-mode .home-hero:before{
-    background:linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,.05) 20%,rgba(0,0,0,.24) 40%,rgba(0,0,0,.78) 70%,#030406 100%)!important;
-  }
-  body.home-mode .home-hero-copy{margin:0!important;padding:0!important;max-width:100%!important}
-  body.home-mode .home-hero-eyebrow{margin-bottom:8px!important;font-size:9px!important}
-  body.home-mode .home-hero-title{font-size:clamp(30px,8vw,38px)!important;line-height:.99!important;margin-bottom:8px!important}
-  body.home-mode .home-hero-meta{font-size:11px!important;margin-bottom:8px!important}
-  body.home-mode .home-hero-description{font-size:12px!important;line-height:1.38!important;-webkit-line-clamp:2!important;margin-bottom:12px!important}
-  body.home-mode .home-hero-actions{gap:8px!important}
-  body.home-mode .home-hero-actions button{min-height:44px!important;border-radius:12px!important;font-size:13px!important}
-}
-
-
-/* ---------- LUNO HERO BLEED + VERTICAL RHYTHM FIX ---------- */
-@media(max-width:700px){
-  /* Let the cinematic image continue behind the wordmark, as in the approved mockup. */
-  body.home-mode #app main,
-  body.home-mode main{padding-top:0!important;margin-top:0!important}
-  body.home-mode .home-hero{
-    margin-top:-60px!important;
-    padding-top:60px!important;
-    height:min(74svh,590px)!important;
-    min-height:500px!important;
-    max-height:590px!important;
-    margin-bottom:20px!important;
-    box-sizing:border-box!important;
-  }
-  body.home-mode .home-hero-backdrop{
-    inset:0!important;background-position:center 24%!important;background-size:cover!important;
-  }
-  body.home-mode .home-hero:before{
-    background:linear-gradient(180deg,rgba(0,0,0,.14) 0%,rgba(0,0,0,.02) 24%,rgba(0,0,0,.22) 43%,rgba(0,0,0,.82) 72%,#030406 100%)!important;
-  }
-  body.home-mode .home-hero-copy{padding-bottom:0!important}
-  body.home-mode .section{margin-top:0!important;margin-bottom:26px!important}
-  body.home-mode #trendingSection{padding-top:0!important}
-  .topbar.luno-nav-shutter .global-header-settings span{
-    font-family:Arial,sans-serif!important;font-variant-emoji:text!important;
-    filter:grayscale(1)!important;opacity:.9!important;
-  }
-}
-
-
-/* ---------- LUNO FINAL SPACING + FLOATING HEADER POLISH ---------- */
-@media(max-width:700px){
-  .topbar.luno-nav-shutter,
-  body.home-mode .topbar.luno-nav-shutter{
-    background:linear-gradient(180deg,rgba(3,4,6,.3),rgba(3,4,6,0))!important;
-    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
-  }
-  body.home-mode .home-hero{
-    margin-bottom:0!important;
-    height:min(70svh,550px)!important;min-height:480px!important;max-height:550px!important;
-  }
-  body.home-mode #trendingSection{
-    margin-top:-72px!important;
-    padding-top:0!important;
-    position:relative!important;z-index:1!important;
-  }
-  body.home-mode #trendingSection .section-head{margin-bottom:12px!important}
-  body.home-mode .mobile-tabbar{bottom:max(8px,env(safe-area-inset-bottom,8px))!important}
-  .topbar.luno-nav-shutter .global-header-settings span{
-    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;
-    font-size:24px!important;font-weight:300!important;
-    -webkit-text-stroke:.35px currentColor!important;
-    filter:none!important;opacity:.85!important;
-  }
-}
-
-
-/* ---------- LUNO HOME SECTION CLEARANCE FIX ---------- */
-@media(max-width:700px){
-  /* The hero already ends close to the first rail; don't pull its heading over the CTA. */
-  body.home-mode #trendingSection{
-    margin-top:-28px!important;
-    padding-top:0!important;
-    position:relative!important;
-    z-index:1!important;
-  }
-  body.home-mode #trendingSection .section-head{
-    margin-bottom:12px!important;
-    position:relative!important;
-    z-index:2!important;
-  }
-  body.home-mode #trendingSection .section-head>div{
-    min-width:0!important;position:relative!important;z-index:2!important;
-  }
-  body.home-mode #trendingSection .section-more{
-    position:relative!important;z-index:2!important;flex-shrink:0!important;
-    background:rgba(3,4,6,.8)!important;backdrop-filter:blur(12px)!important;
-  }
-  body.home-mode #trendingSection .cards{margin-top:0!important}
-  body.home-mode .home-hero{margin-bottom:0!important}
-}
-
-
-/* ---------- LUNO POSTER RAIL CLEARANCE ---------- */
-@media(max-width:700px){
-  /* Preserve poster dimensions; give the rail breathing room above the fixed bottom navigation. */
-  body.home-mode #trendingSection .cards{
-    padding-bottom:82px!important;
-    scroll-padding-bottom:82px!important;
-  }
-  body.home-mode #trendingSection .cards>.card{
-    margin-bottom:0!important;
-  }
-  body.home-mode #trendingSection{
-    margin-bottom:8px!important;
-  }
-  body.home-mode .mobile-tabbar{
-    background:rgba(8,9,14,.94)!important;
-    -webkit-backdrop-filter:blur(24px)!important;
-    backdrop-filter:blur(24px)!important;
-  }
-}
-
-
-/* ---------- LUNO MOCKUP BOTTOM NAV: FIXED GREY GLASS STRIP ---------- */
-@media(max-width:700px){
-  .mobile-tabbar,
-  body .mobile-tabbar,
-  body.home-mode .mobile-tabbar{
-    position:fixed!important;left:0!important;right:0!important;
-    bottom:0!important;top:auto!important;
-    width:100%!important;max-width:100vw!important;min-width:0!important;
-    height:76px!important;min-height:76px!important;max-height:76px!important;
-    padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))!important;
-    margin:0!important;box-sizing:border-box!important;
-    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
-    gap:2px!important;align-items:stretch!important;justify-content:stretch!important;
-    border:0!important;border-top:1px solid rgba(220,224,236,.22)!important;
-    border-radius:0!important;
-    background:rgba(28,29,34,.92)!important;
-    box-shadow:0 -8px 28px rgba(0,0,0,.22)!important;
-    backdrop-filter:blur(24px)!important;-webkit-backdrop-filter:blur(24px)!important;
-    overflow:hidden!important;z-index:3000!important;
-  }
-  .mobile-tabbar>.mobile-tab{
-    display:flex!important;position:relative!important;
-    flex:initial!important;width:100%!important;min-width:0!important;max-width:none!important;
-    height:100%!important;min-height:0!important;max-height:none!important;
-    margin:0!important;padding:4px 1px!important;box-sizing:border-box!important;
-    align-items:center!important;justify-content:center!important;gap:4px!important;
-    border:0!important;border-radius:12px!important;background:transparent!important;
-    color:rgba(235,236,243,.66)!important;transform:none!important;overflow:hidden!important;
-  }
-  .mobile-tabbar>.mobile-tab .tab-icon{font-size:22px!important;line-height:1!important}
-  .mobile-tabbar>.mobile-tab small{font-size:10px!important;line-height:1.2!important;letter-spacing:.01em!important}
-  .mobile-tabbar>.mobile-tab.active{
-    color:#fff!important;
-    background:rgba(150,153,171,.18)!important;
-    box-shadow:inset 0 0 0 1px rgba(215,219,235,.12)!important;
-  }
-  body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))!important}
-}
-
-
 /* iOS Safari toolbar-aware bottom navigation positioning */
 @media(max-width:700px){
   .mobile-tabbar,
   body .mobile-tabbar,
   body.home-mode .mobile-tabbar{
     bottom:calc(var(--luno-vv-bottom,0px) + env(safe-area-inset-bottom,0px))!important;
-  }
-}
-
-
-/* ---------- LUNO SAFARI SCROLL CLEARANCE ---------- */
-@media(max-width:700px){
-  /* Account for the iPhone home-indicator safe area without clipping tab labels. */
-  .mobile-tabbar,
-  body .mobile-tabbar,
-  body.home-mode .mobile-tabbar{
-    height:calc(76px + env(safe-area-inset-bottom,0px))!important;
-    min-height:calc(76px + env(safe-area-inset-bottom,0px))!important;
-    max-height:calc(76px + env(safe-area-inset-bottom,0px))!important;
-    padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))!important;
-    overflow:visible!important;
-  }
-  .mobile-tabbar>.mobile-tab{min-height:54px!important}
-  .mobile-tabbar>.mobile-tab small{display:block!important;white-space:nowrap!important}
-  /* On downward scroll hide the floating brand row so it never collides with hero text.
-     Scrolling up brings it back; at page top it is always visible. */
-  .topbar.luno-nav-shutter{
-    transition:transform .22s ease,opacity .22s ease!important;
-    will-change:transform!important;
-  }
-  body.luno-scroll-down .topbar.luno-nav-shutter{
-    transform:translateY(-110%)!important;opacity:0!important;pointer-events:none!important;
-  }
-  body.luno-scroll-up .topbar.luno-nav-shutter,
-  body:not(.luno-scroll-down) .topbar.luno-nav-shutter{
-    transform:translateY(0)!important;opacity:1!important;pointer-events:auto!important;
-  }
-}
-
-
-/* ---------- LUNO TIGHTER SECTION RHYTHM + PREMIUM NAV ---------- */
-@media(max-width:700px){
-  /* Reduce excessive blank space between the horizontal rails without changing card size. */
-  body.home-mode #trendingSection{margin-bottom:0!important;padding-bottom:0!important}
-  body.home-mode #trendingSection .cards{padding-bottom:0!important}
-  body.home-mode #trendingSection + section,
-  body.home-mode #trendingSection + .section{margin-top:0!important;padding-top:0!important}
-  body.home-mode .section{margin-bottom:28px!important}
-  body.home-mode .section-head{margin-bottom:12px!important}
-  body.home-mode #trendingSection .section-head{margin-bottom:10px!important}
-  body.home-mode .section + .section{margin-top:0!important}
-  body.home-mode .mobile-tabbar,
-  body .mobile-tabbar{
-    height:calc(82px + env(safe-area-inset-bottom,0px))!important;
-    min-height:calc(82px + env(safe-area-inset-bottom,0px))!important;
-    max-height:calc(82px + env(safe-area-inset-bottom,0px))!important;
-    padding:7px 12px calc(8px + env(safe-area-inset-bottom,0px))!important;
-    border-top:1px solid rgba(228,231,244,.16)!important;
-    background:linear-gradient(180deg,rgba(42,43,51,.94),rgba(25,26,32,.97))!important;
-    box-shadow:0 -10px 30px rgba(0,0,0,.3)!important;
-    backdrop-filter:blur(28px) saturate(135%)!important;
-    -webkit-backdrop-filter:blur(28px) saturate(135%)!important;
-  }
-  .mobile-tabbar>.mobile-tab{
-    border-radius:16px!important;
-    gap:5px!important;
-    color:rgba(236,237,245,.66)!important;
-    transition:background .18s ease,color .18s ease!important;
-  }
-  .mobile-tabbar>.mobile-tab .tab-icon{
-    font-size:23px!important;
-    filter:drop-shadow(0 1px 5px rgba(180,185,255,.12))!important;
-  }
-  .mobile-tabbar>.mobile-tab small{
-    font-size:10px!important;font-weight:500!important;letter-spacing:.025em!important;
-  }
-  .mobile-tabbar>.mobile-tab.active{
-    background:linear-gradient(145deg,rgba(110,113,145,.36),rgba(73,75,94,.25))!important;
-    box-shadow:inset 0 0 0 1px rgba(221,224,255,.2),0 4px 14px rgba(0,0,0,.14)!important;
-    color:#fff!important;
-  }
-}
-
-
-/* ---------- LUNO MOBILE RAIL SPACING: REMOVE OVERSIZED GAPS ---------- */
-@media(max-width:700px){
-  body.home-mode main{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
-  body.home-mode main>.section,
-  body.home-mode .section{
-    min-height:0!important;height:auto!important;
-    margin-top:0!important;margin-bottom:22px!important;
-    padding-top:0!important;padding-bottom:0!important;
-    contain:none!important;
-  }
-  body.home-mode main>.section+.section,
-  body.home-mode .section+.section{
-    margin-top:0!important;padding-top:0!important;
-  }
-  body.home-mode .section .cards{
-    min-height:0!important;height:auto!important;
-    padding-top:2px!important;padding-bottom:8px!important;
-    margin-bottom:0!important;
-  }
-  body.home-mode .section-head{margin-top:0!important;margin-bottom:10px!important}
-  body.home-mode #trendingSection{margin-top:0!important;margin-bottom:20px!important}
-  body.home-mode #continueSection{margin-top:0!important;margin-bottom:22px!important}
-  body.home-mode .mobile-tabbar>.mobile-tab.active{
-    outline:none!important;
-    border:1px solid rgba(202,205,226,.2)!important;
   }
 }
 
@@ -5467,133 +5051,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   body:not(.luno-scroll-down) .topbar.luno-nav-shutter{
     transform:translateY(0)!important;opacity:1!important;
     visibility:visible!important;pointer-events:auto!important;
-  }
-}
-
-
-/* ---------- LUNO FINAL HOME FLOW + NAV CLEARANCE ---------- */
-@media(max-width:700px){
-  body.home-mode main{
-    padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))!important;
-  }
-  body.home-mode main>.section,
-  body.home-mode main>section.section,
-  body.home-mode .section{
-    position:relative!important;
-    min-height:0!important;height:auto!important;
-    margin-block:0 20px!important;
-    padding-block:0!important;
-  }
-  body.home-mode #trendingSection{margin-bottom:18px!important}
-  body.home-mode #continueSection{margin-bottom:20px!important}
-  body.home-mode .section .section-head{
-    margin-top:0!important;margin-bottom:10px!important;
-  }
-  body.home-mode .section .cards{
-    min-height:0!important;height:auto!important;
-    margin-top:0!important;margin-bottom:0!important;
-    padding-top:0!important;padding-bottom:6px!important;
-  }
-  /* Keep real page content above the fixed nav stacking layer. */
-  body.home-mode main>.section:last-of-type{margin-bottom:12px!important}
-  .mobile-tabbar{isolation:isolate!important}
-}
-
-
-/* ---------- FIX MOBILE CINEMATIC HERO ART LAYER ---------- */
-@media(max-width:700px){
-  body.home-mode #homeHero{
-    position:relative!important;
-    isolation:isolate!important;
-    overflow:hidden!important;
-    background:#08090d!important;
-  }
-  body.home-mode #homeHero .home-hero-backdrop{
-    position:absolute!important;
-    z-index:0!important;
-    inset:0!important;
-    display:block!important;
-    opacity:.92!important;
-    background-position:center 30%!important;
-    background-size:cover!important;
-    transform:none!important;
-  }
-  body.home-mode #homeHero:before{
-    content:""!important;
-    position:absolute!important;
-    z-index:1!important;
-    inset:0!important;
-    background:
-      linear-gradient(180deg,rgba(4,5,9,.08) 0%,rgba(4,5,9,.04) 25%,rgba(4,5,9,.55) 49%,rgba(4,5,9,.94) 73%,#08090d 100%),
-      linear-gradient(90deg,rgba(4,5,9,.34),rgba(4,5,9,.02) 75%)!important;
-    pointer-events:none!important;
-  }
-  body.home-mode #homeHero .home-hero-copy,
-  body.home-mode #homeHero .home-hero-poster-wrap{
-    position:relative!important;
-    z-index:2!important;
-  }
-  body.home-mode #homeHero .home-hero-copy{
-    text-shadow:0 1px 18px rgba(0,0,0,.3)!important;
-  }
-}
-
-
-/* ---------- MATCH BOTTOM NAV TO LUNO FROSTED TOP SHUTTER ---------- */
-@media(max-width:700px){
-  .mobile-tabbar,
-  body .mobile-tabbar,
-  body.home-mode .mobile-tabbar{
-    position:fixed!important;
-    z-index:2600!important;
-    background:rgba(12,13,20,.56)!important;
-    -webkit-backdrop-filter:blur(22px) saturate(135%)!important;
-    backdrop-filter:blur(22px) saturate(135%)!important;
-    border-top:1px solid rgba(205,208,235,.19)!important;
-    box-shadow:0 -8px 28px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.035)!important;
-    isolation:isolate!important;
-    overflow:visible!important;
-  }
-  .mobile-tabbar:before{
-    content:""!important;position:absolute!important;inset:0!important;
-    background:linear-gradient(90deg,rgba(133,129,173,.075),transparent 35%,transparent 70%,rgba(140,184,204,.045))!important;
-    pointer-events:none!important;z-index:0!important;
-  }
-  .mobile-tabbar>*{position:relative;z-index:1}
-  .mobile-tabbar>.mobile-tab.active{
-    background:linear-gradient(145deg,rgba(110,113,145,.3),rgba(73,75,94,.2))!important;
-    border:1px solid rgba(205,208,235,.19)!important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
-  }
-}
-
-
-/* ---------- COMPACT LUNO BOTTOM SHUTTER ---------- */
-@media(max-width:700px){
-  .mobile-tabbar,
-  body .mobile-tabbar,
-  body.home-mode .mobile-tabbar{
-    left:0!important;right:0!important;
-    bottom:0!important;
-    height:76px!important;
-    padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))!important;
-    border-radius:20px 20px 0 0!important;
-    border-left:0!important;border-right:0!important;border-bottom:0!important;
-    box-sizing:border-box!important;
-  }
-  .mobile-tabbar>.mobile-tab{
-    min-height:0!important;
-    padding:5px 2px!important;
-    gap:3px!important;
-    border-radius:16px!important;
-  }
-  .mobile-tabbar>.mobile-tab .tab-icon,
-  .mobile-tabbar>.mobile-tab .icon{
-    font-size:22px!important;line-height:1.05!important;
-  }
-  .mobile-tabbar>.mobile-tab .tab-label,
-  .mobile-tabbar>.mobile-tab span{
-    font-size:12px!important;line-height:1.15!important;
   }
 }
 
@@ -6478,71 +5935,21 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
 }
 
 
-/* ---------- MOBILE SHUTTER ALIGNMENT: NO WORDMARK OR MOON ---------- */
-/* Keep the compact controls consistent across home, details, history and settings. */
+/* Mobile header behavior: keep the LUNO wordmark on Home; inner screens use Back + Search. */
 @media(max-width:700px){
-  .topbar.luno-nav-shutter .brand,
-  .topbar.luno-nav-shutter .brand-orbit,
-  .topbar.luno-nav-shutter .brand-moon,
-  .topbar.luno-nav-shutter .brand:before,
-  .topbar.luno-nav-shutter .brand:after{
-    display:none!important;
-    visibility:hidden!important;
-    border:0!important;
-    outline:0!important;
-    box-shadow:none!important;
-    background:none!important;
-    content:none!important;
+  body.show-global-back .topbar.luno-nav-shutter .brand,
+  body.show-global-back .topbar.luno-nav-shutter .brand-orbit,
+  body.show-global-back .topbar.luno-nav-shutter .brand-moon,
+  body.show-global-back .topbar.luno-nav-shutter .nav,
+  body.show-global-back .topbar.luno-nav-shutter .global-header-settings{
+    display:none!important;visibility:hidden!important;
   }
-  .topbar.luno-nav-shutter{
-    justify-content:flex-start!important;
-    gap:12px!important;
-    padding-left:18px!important;
-    padding-right:18px!important;
+  body.show-global-back .topbar.luno-nav-shutter .global-header-back{
+    display:grid!important;flex:0 0 36px!important;width:36px!important;min-width:36px!important;height:36px!important;
   }
-  .topbar.luno-nav-shutter .global-header-back{
-    display:grid!important;
-    flex:0 0 36px!important;
-  }
-  .topbar.luno-nav-shutter .tv-header-tools{
-    display:flex!important;
-    flex:0 0 auto!important;
-    margin-left:0!important;
-    justify-content:flex-start!important;
-  }
-  .topbar.luno-nav-shutter .global-header-search,
-  .topbar.luno-nav-shutter .global-header-settings{
-    flex:0 0 36px!important;
-  }
+  body.show-global-back .topbar.luno-nav-shutter .tv-header-tools{margin-left:auto!important}
+  body.show-global-back .topbar.luno-nav-shutter .global-header-search{display:grid!important}
 }
-
-
-/* LUNO mobile inner-page header: final override for legacy brand rules. */
-@media (max-width: 700px) {
-  html body.show-global-back header.topbar.luno-nav-shutter > button.brand,
-  html body.show-global-back header.topbar.luno-nav-shutter > .nav,
-  html body.show-global-back header.topbar.luno-nav-shutter::after,
-  html body.show-global-back header.topbar.luno-nav-shutter .global-header-settings {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    content: none !important;
-  }
-  html body.show-global-back header.topbar.luno-nav-shutter > button.global-header-back {
-    display: grid !important;
-    visibility: visible !important;
-  }
-  html body.show-global-back header.topbar.luno-nav-shutter .tv-header-tools {
-    display: flex !important;
-    margin-left: auto !important;
-  }
-  html body.show-global-back header.topbar.luno-nav-shutter .global-header-search {
-    display: grid !important;
-    visibility: visible !important;
-  }
-}
-
-
 /* Reference-inspired five-item mobile navigation; LUNO palette and type stay fixed. */
 .mobile-tabbar.luno-reference-tabbar {
   display: grid !important;
@@ -6588,4 +5995,55 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
 }
 @media(min-width:701px) {
   .mobile-tabbar.luno-reference-tabbar { display:none !important; }
+}
+
+
+/* Home layout owns its geometry; legacy home-mode patches above are removed. */
+@media(max-width:700px){
+  body.home-mode #app main,body.home-mode main{
+    padding-top:64px!important;
+    padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))!important;
+  }
+  body.home-mode .home-hero{
+    height:clamp(310px,82vw,390px)!important;
+    min-height:0!important;max-height:none!important;
+    margin:0 14px!important;padding:18px 15px 15px!important;
+    border:1px solid var(--luno-border)!important;border-radius:16px!important;
+    background:var(--luno-surface)!important;box-shadow:none!important;
+  }
+  body.home-mode .home-hero-backdrop{opacity:0;transform:none!important}
+  body.home-mode .home-hero.is-ready .home-hero-backdrop{opacity:1!important;animation:none!important}
+  body.home-mode .home-hero:before{
+    background:linear-gradient(180deg,rgba(8,9,13,.01) 0%,rgba(8,9,13,.02) 30%,rgba(8,9,13,.35) 53%,rgba(8,9,13,.9) 77%,#08090D 100%)!important;
+  }
+  body.home-mode .home-hero-copy{padding:0!important;max-width:100%!important;animation:none!important}
+  body.home-mode .home-hero-description{display:none!important}
+  body.home-mode main>.section{margin-top:27px!important;margin-bottom:0!important;padding:0 14px!important}
+  body.home-mode #trendingSection{margin-top:27px!important}
+  body.home-mode main>.section .section-head{margin-bottom:12px!important}
+  body.home-mode main>.section .cards{padding:2px 14px 9px 0!important}
+  body.home-mode .mobile-tabbar.luno-reference-tabbar{
+    position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    width:100%!important;height:calc(76px + env(safe-area-inset-bottom,0px))!important;
+    min-height:calc(76px + env(safe-area-inset-bottom,0px))!important;max-height:none!important;
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))!important;
+    margin:0!important;gap:2px!important;overflow:hidden!important;
+    border:0!important;border-top:1px solid var(--luno-border)!important;border-radius:18px 18px 0 0!important;
+    background:rgba(20,21,29,.94)!important;box-shadow:0 -8px 28px rgba(0,0,0,.22)!important;
+    -webkit-backdrop-filter:blur(22px)!important;backdrop-filter:blur(22px)!important;z-index:3000!important;
+  }
+  body.home-mode .mobile-tabbar.luno-reference-tabbar>.mobile-tab{
+    display:flex!important;min-width:0!important;width:100%!important;height:100%!important;min-height:0!important;
+    margin:0!important;padding:4px 1px!important;gap:4px!important;flex:none!important;
+    align-items:center!important;justify-content:center!important;overflow:hidden!important;
+    border:1px solid transparent!important;border-radius:13px!important;background:transparent!important;
+    color:var(--luno-text-muted)!important;
+  }
+  body.home-mode .mobile-tabbar.luno-reference-tabbar>.mobile-tab.active{
+    color:var(--luno-text)!important;background:var(--luno-surface-raised)!important;
+    border-color:var(--luno-border-strong)!important;box-shadow:none!important;
+  }
+  body.home-mode .mobile-tabbar.luno-reference-tabbar>.mobile-tab .tab-icon{font-size:21px!important;line-height:1!important}
+  body.home-mode .mobile-tabbar.luno-reference-tabbar>.mobile-tab small{display:block!important;font-size:10px!important;white-space:nowrap!important}
 }
