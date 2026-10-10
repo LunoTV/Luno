@@ -394,39 +394,62 @@ async function lookupPosterFromTmdb(item){
   if(!title) return "";
   const type=item?.type==="tv"?"series":(item?.type||"movie");
   const year=searchYear(item);
-  const normalizedTitle=normalizeSearchText(title);
-  const key=[type,normalizedTitle,year||""].join("|");
+  const queries=[...new Set([title,String(item?.originalName||"").trim()].filter(Boolean))];
+  const key=[type,queries.map(normalizeSearchText).join("|"),year||""].join("|");
   if(!posterLookupCache.has(key)){
-    const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
     const request=(async()=>{
-      try{
-        const response=await fetch(base+"/api/tmdb/search?query="+encodeURIComponent(title),{
-          cache:"no-store",headers:{accept:"application/json"}
-        });
-        if(!response.ok) return "";
-        const data=await response.json();
-        const matches=(Array.isArray(data?.results)?data.results:[])
-          .filter(candidate=>{
-            if(!candidate?.poster) return false;
-            const candidateType=candidate?.type==="tv"?"series":(candidate?.type||"movie");
-            if(candidateType!==type) return false;
-            const candidateName=normalizeSearchText(candidate?.name||"");
-            const candidateOriginal=normalizeSearchText(candidate?.originalName||"");
-            if(candidateName!==normalizedTitle && candidateOriginal!==normalizedTitle) return false;
-            const candidateYear=searchYear(candidate);
-            return !year || !candidateYear || year===candidateYear;
-          })
-          .sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0));
-        return matches[0]?.poster||"";
-      }catch(error){
-        console.warn("[LUNO] TMDB poster lookup failed",title,error);
-        return "";
+      const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
+      const targets=queries.map(normalizeSearchText).filter(Boolean);
+      const tokenSets=targets.map(value=>new Set(value.split(" ").filter(word=>word.length>1)));
+      const scoreName=value=>{
+        const normalized=normalizeSearchText(value);
+        if(!normalized) return 0;
+        if(targets.includes(normalized)) return 1000;
+        let score=0;
+        for(const target of targets){
+          if(normalized.startsWith(target)||target.startsWith(normalized)) score=Math.max(score,750);
+          const targetWords=new Set(target.split(" ").filter(word=>word.length>1));
+          const candidateWords=new Set(normalized.split(" ").filter(word=>word.length>1));
+          if(targetWords.size && candidateWords.size){
+            const overlap=[...targetWords].filter(word=>candidateWords.has(word)).length;
+            const ratio=overlap/Math.max(targetWords.size,candidateWords.size);
+            if(ratio>=0.6) score=Math.max(score,Math.round(ratio*600));
+          }
+        }
+        return score;
+      };
+      for(const query of queries){
+        try{
+          const response=await fetch(base+"/api/tmdb/search?query="+encodeURIComponent(query),{
+            cache:"no-store",headers:{accept:"application/json"}
+          });
+          if(!response.ok) continue;
+          const data=await response.json();
+          const matches=(Array.isArray(data?.results)?data.results:[])
+            .map(candidate=>{
+              if(!candidate?.poster) return null;
+              const candidateType=candidate?.type==="tv"?"series":(candidate?.type||"movie");
+              if(candidateType!==type) return null;
+              const candidateYear=searchYear(candidate);
+              if(year && candidateYear && year!==candidateYear) return null;
+              const titleScore=Math.max(scoreName(candidate?.name),scoreName(candidate?.originalName));
+              if(titleScore<600) return null;
+              return {candidate,titleScore};
+            })
+            .filter(Boolean)
+            .sort((a,b)=>b.titleScore-a.titleScore || (Number(b.candidate.rating)||0)-(Number(a.candidate.rating)||0));
+          if(matches.length) return matches[0].candidate.poster;
+        }catch(error){
+          console.warn("[LUNO] TMDB poster lookup failed",query,error);
+        }
       }
+      return "";
     })();
     posterLookupCache.set(key,request);
   }
   return posterLookupCache.get(key);
 }
+
 async function recoverCardPoster(cardElement,image){
   if(image?.dataset.posterLookupAttempted==="1") return false;
   if(image) image.dataset.posterLookupAttempted="1";
