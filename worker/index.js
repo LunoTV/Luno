@@ -90,14 +90,14 @@ export default {
           if (!response.ok) throw new Error(host + " HTTP " + response.status);
           const contentType = response.headers.get("content-type") || "";
           if (!contentType.toLowerCase().startsWith("image/")) throw new Error(host + " returned non-image content");
-          return { response, contentType };
+          return { response, contentType, controller };
         } finally {
           clearTimeout(timer);
         }
       });
       try {
         const winner = await Promise.any(attempts);
-        controllers.forEach(controller => controller.abort("Another mirror responded first"));
+        controllers.forEach(controller => { if (controller !== winner.controller) controller.abort("Another mirror responded first"); });
         const headers = new Headers({
           "content-type": winner.contentType,
           "cache-control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000",
