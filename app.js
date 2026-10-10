@@ -270,27 +270,49 @@ function normalizeItem(item){
   };
 }
 
+const LUNO_TMDB_IMAGE_MIRRORS=[
+  "https://imagetmdb.com/",
+  "https://nl.imagetmdb.com/",
+  "https://de.imagetmdb.com/",
+  "https://pl.imagetmdb.com/",
+  "https://lampa.byskaz.ru/tmdb/img/"
+];
+function tmdbImageMirrorCandidates(path){
+  const clean=String(path||"").trim().replace(/^\\/+/, "");
+  if(!clean) return [];
+  return LUNO_TMDB_IMAGE_MIRRORS.map(base=>base+clean);
+}
 function posterCandidates(item){
   const values=[];
   const rawPoster=String(item?.poster||"").trim();
   const rawSource=String(item?.posterSource||"").trim();
   const path=String(item?.poster_path||item?.posterPath||"").trim();
-  const isTmdbImage=value=>String(value||"").trim().toLowerCase().startsWith("https://image.tmdb.org/t/p/") || String(value||"").trim().toLowerCase().startsWith("http://image.tmdb.org/t/p/");
+  const tmdbPathFromUrl=value=>{
+    const match=String(value||"").trim().match(/^https?:\\/\\/image\\.tmdb\\.org\\/t\\/p\\/(.+)$/i);
+    return match?.[1]||"";
+  };
 
-  // TMDB artwork must win over LUNO's bundled/cached artwork. Some catalog
-  // records contain an older local poster URL even when poster_path is available.
-  if(isTmdbImage(rawPoster)) values.push(rawPoster);
-  if(path){
-    const clean=path.startsWith("/") ? path.slice(1) : path;
-    values.push("https://image.tmdb.org/t/p/w500/"+clean);
-    values.push("https://image.tmdb.org/t/p/original/"+clean);
+  // Follow Lampa's TMDB Proxy strategy: try its image mirrors first, remember
+  // each failed host through the existing img fallback chain, then try TMDB CDN.
+  const remotePath=path.replace(/^\\/+/, "") || tmdbPathFromUrl(rawPoster);
+  if(remotePath){
+    values.push(...tmdbImageMirrorCandidates("t/p/"+remotePath));
+    if(!/^https?:\\/\\/image\\.tmdb\\.org\\/t\\/p\\//i.test(rawPoster)) {
+      const size=remotePath.match(/^(?:w[0-9]+|original)\\//)?.[0]||"w500/";
+      const clean=remotePath.replace(/^(?:w[0-9]+|original)\\//, "");
+      values.push("https://image.tmdb.org/t/p/"+size+clean);
+    } else {
+      values.push(rawPoster);
+    }
   }
-  if(isTmdbImage(rawSource)) values.push(rawSource);
-
-  // Non-TMDB artwork is retained only as a fallback for records that genuinely
-  // have no TMDB poster. Never let a matching cached LUNO card override TMDB.
-  if(rawPoster && !isTmdbImage(rawPoster)) values.push(normalizeImageValue(rawPoster,"w500"));
-  if(rawSource && !isTmdbImage(rawSource)) values.push(normalizeImageValue(rawSource,"w500"));
+  if(rawSource && rawSource!==rawPoster) {
+    const sourcePath=tmdbPathFromUrl(rawSource);
+    if(sourcePath) values.push(...tmdbImageMirrorCandidates("t/p/"+sourcePath));
+    values.push(rawSource);
+  }
+  // Keep non-TMDB posters only as last-resort artwork if all official mirrors fail.
+  if(rawPoster && !tmdbPathFromUrl(rawPoster)) values.push(normalizeImageValue(rawPoster,"w500"));
+  if(rawSource && !tmdbPathFromUrl(rawSource)) values.push(normalizeImageValue(rawSource,"w500"));
   if(item?.background) values.push(item.background);
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
@@ -304,7 +326,7 @@ function card(item,eager=false){
   const title=item?.name || "Без названия";
   const candidates=posterCandidates(item);
   const image=candidates[0] || "";
-  const fallbacks=candidates.slice(1,6);
+  const fallbacks=candidates.slice(1);
   const rating=Number(item?.rating)>0 ? Number(item.rating).toFixed(1) : "";
   const year=String(item?.releaseInfo||"").match(/\d{4}/)?.[0] || "";
   const rawType=mediaCategory(item);
