@@ -5954,3 +5954,30 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   .topbar.luno-nav-shutter .brand:after{content:none!important;display:none!important}
   .topbar.luno-nav-shutter .tv-header-tools{position:relative!important;z-index:3!important}
 }
+
+
+/* ---------- LUNO WORDMARK LEFT, AS IN THE ORIGINAL SHUTTER ---------- */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter .brand{
+    position:relative!important;
+    left:auto!important;top:auto!important;
+    transform:none!important;
+    display:flex!important;align-items:center!important;justify-content:flex-start!important;
+    flex:0 0 auto!important;
+    width:auto!important;height:100%!important;min-width:0!important;
+    margin:0 auto 0 0!important;padding:0!important;
+    background:transparent!important;border:0!important;box-shadow:none!important;
+    color:#E8ECFF!important;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;
+    font-size:25px!important;font-weight:300!important;
+    letter-spacing:.30em!important;line-height:1!important;
+    white-space:nowrap!important;text-shadow:0 0 12px rgba(107,111,231,.20)!important;
+    z-index:2!important;
+  }
+  .topbar.luno-nav-shutter .brand .brand-orbit{display:none!important}
+  .topbar.luno-nav-shutter .brand>span:not(.brand-orbit){
+    display:inline!important;color:#E8ECFF!important;
+  }
+  .topbar.luno-nav-shutter .brand:after{content:none!important;display:none!important}
+  .topbar.luno-nav-shutter .tv-header-tools{position:relative!important;z-index:3!important}
+}
