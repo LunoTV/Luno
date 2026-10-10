@@ -1249,7 +1249,107 @@ function closeLibrary(fromHistory=false){
 
 document.querySelectorAll("[data-home-collection]").forEach(button=>button.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();const collection=button.dataset.homeCollection;if(collection)openLibrary(collection);}));
 
+const LUNO_SETTINGS_KEY="luno-settings-v1";
+const LUNO_SETTINGS_DEFAULTS={
+  notificationsEnabled:true,movieNotifications:true,seriesNotifications:true,appNotifications:true,
+  playbackQuality:"auto",autoplayNext:true,skipIntros:false,subtitlesDefault:false,
+  softAnimations:true,showMovies:true,showSeries:true,showAnimation:true,showRatings:true,catalogSort:"popular"
+};
+function readLunoSettings(){
+  try{return {...LUNO_SETTINGS_DEFAULTS,...JSON.parse(localStorage.getItem(LUNO_SETTINGS_KEY)||"{}")};}
+  catch{return {...LUNO_SETTINGS_DEFAULTS};}
+}
+function saveLunoSetting(key,value){
+  const settings=readLunoSettings();settings[key]=value;
+  try{localStorage.setItem(LUNO_SETTINGS_KEY,JSON.stringify(settings));}catch{}
+}
+const settingsView=document.querySelector("#settingsView");
+function openSettingsView(section="profile"){
+  if(!settingsView)return;
+  closeLibrary();
+  searchPanel?.classList.add("hidden");
+  detail?.classList.add("hidden");
+  document.body.classList.add("settings-open");
+  settingsView.classList.remove("hidden");
+  document.body.classList.remove("home-mode");
+  document.body.classList.add("show-global-back");
+  document.querySelectorAll("[data-settings-section]").forEach(button=>{
+    const active=button.dataset.settingsSection===section;
+    button.classList.toggle("active",active);
+    button.setAttribute("aria-current",active?"page":"false");
+  });
+  document.querySelectorAll("[data-settings-panel]").forEach(panel=>{
+    panel.classList.toggle("hidden",panel.dataset.settingsPanel!==section);
+  });
+  const settings=readLunoSettings();
+  settingsView.querySelectorAll("[data-setting]").forEach(control=>{
+    const key=control.dataset.setting;
+    if(!(key in settings))return;
+    if(control.type==="checkbox")control.checked=Boolean(settings[key]);
+    else if(control.type==="radio")control.checked=String(settings[key])===control.value;
+    else control.value=String(settings[key]);
+  });
+  document.querySelectorAll(".settings-theme-choice").forEach(button=>{
+    button.classList.toggle("active",button.dataset.themeChoice===(localStorage.getItem("luno-settings-theme")||"dark"));
+  });
+  document.querySelectorAll(".settings-accent").forEach(button=>{
+    button.classList.toggle("active",button.dataset.accent===(localStorage.getItem("luno-settings-accent")||"violet"));
+  });
+}
+function closeSettingsView(){
+  settingsView?.classList.add("hidden");
+  document.body.classList.remove("settings-open");
+  navigate("home");
+}
+document.querySelectorAll("[data-settings-section]").forEach(button=>button.addEventListener("click",()=>openSettingsView(button.dataset.settingsSection)));
+document.querySelector("#settingsBack")?.addEventListener("click",closeSettingsView);
+settingsView?.querySelectorAll("[data-setting]").forEach(control=>{
+  control.addEventListener("change",()=>{
+    const value=control.type==="checkbox"?control.checked:control.value;
+    saveLunoSetting(control.dataset.setting,value);
+  });
+});
+document.querySelector("#settingsAuthForm")?.addEventListener("submit",event=>{
+  event.preventDefault();
+  const status=document.querySelector("#settingsAuthStatus");
+  if(status)status.textContent="Сервер авторизации ещё не подключён. Данные формы не отправлены и не сохранены.";
+});
+document.querySelector("#settingsRegister")?.addEventListener("click",()=>{
+  const status=document.querySelector("#settingsAuthStatus");
+  if(status)status.textContent="Регистрация появится после подключения безопасного серверного сервиса аккаунтов.";
+});
+document.querySelector("#settingsManageSources")?.addEventListener("click",()=>{
+  settingsView?.classList.add("hidden");
+  document.body.classList.remove("settings-open");
+  openAddonManagerPanel();
+});
+document.querySelectorAll("[data-theme-choice]").forEach(button=>button.addEventListener("click",()=>{
+  localStorage.setItem("luno-settings-theme",button.dataset.themeChoice);
+  document.querySelectorAll("[data-theme-choice]").forEach(item=>item.classList.toggle("active",item===button));
+}));
+document.querySelectorAll("[data-accent]").forEach(button=>button.addEventListener("click",()=>{
+  localStorage.setItem("luno-settings-accent",button.dataset.accent);
+  document.querySelectorAll("[data-accent]").forEach(item=>item.classList.toggle("active",item===button));
+  document.documentElement.dataset.lunoAccent=button.dataset.accent;
+}));
+document.querySelector("#settingsClearHistory")?.addEventListener("click",()=>{
+  ["luno-history","luno-resume","luno-search-history"].forEach(key=>localStorage.removeItem(key));
+  const status=document.querySelector("#settingsPrivacyStatus");
+  if(status)status.textContent="История просмотров, продолжение просмотра и поисковые запросы очищены на этом устройстве.";
+});
+document.querySelector("#settingsClearPreferences")?.addEventListener("click",()=>{
+  localStorage.removeItem(LUNO_SETTINGS_KEY);
+  localStorage.removeItem("luno-settings-theme");
+  localStorage.removeItem("luno-settings-accent");
+  openSettingsView("privacy");
+  const status=document.querySelector("#settingsPrivacyStatus");
+  if(status)status.textContent="Настройки сброшены. Избранное и история не затронуты.";
+});
+
 function navigate(section){
+  if(section==="settings"){openSettingsView("profile");return;}
+  settingsView?.classList.add("hidden");
+  document.body.classList.remove("settings-open");
   document.body.classList.toggle("home-mode",section==="home");
   document.body.classList.toggle("show-global-back",section!=="home");
   document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>{
@@ -2587,7 +2687,7 @@ document.querySelector("#globalHeaderSearch")?.addEventListener("click",()=>{
   if(!detail?.classList.contains("hidden")) closeDetail();
   openSearch();
 });
-document.querySelector("#globalHeaderSettings")?.addEventListener("click",()=>navigate("settings"));
+document.querySelectorAll("#globalHeaderSettings,#topHeaderSettings").forEach(button=>button.addEventListener("click",()=>navigate("settings")));
 document.querySelector("#globalHeaderBack")?.addEventListener("click",()=>{
   if(detail && !detail.classList.contains("hidden")){ closeDetail(); return; }
   if(searchPanel && !searchPanel.classList.contains("hidden")){ closeSearchPanel(); return; }
