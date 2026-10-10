@@ -1,8 +1,9 @@
 :root{
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  color:#f7f7f8;background:#06070a;font-synthesis:none;
-  --bg:#06070a;--panel:#101116;--panel2:#15171e;--text:#f6f6f7;--muted:#999ca7;
-  --soft:#686c78;--line:rgba(255,255,255,.09);--glass:rgba(12,13,17,.72);
+  color:#E7E8EF;background:#08090D;font-synthesis:none;
+  /* Legacy aliases intentionally map to the approved LUNO design tokens. */
+  --bg:#08090D;--panel:#14151D;--panel2:#242334;--text:#E7E8EF;--muted:#989BAA;
+  --soft:#989BAA;--line:#30313C;--glass:rgba(20,21,29,.94);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;background:var(--bg)}
@@ -5929,7 +5930,7 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
 }
 
 
-remove conflicting centered LUNO override/* ---------- LUNO WORDMARK LEFT, AS IN THE ORIGINAL SHUTTER ---------- */
+/* ---------- LUNO WORDMARK LEFT, AS IN THE ORIGINAL SHUTTER ---------- */
 @media(max-width:700px){
   .topbar.luno-nav-shutter .brand{
     position:relative!important;
