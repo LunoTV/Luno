@@ -59,9 +59,9 @@
 
 /* The detail card is a full-screen page: never stack the app shell shutter
    or the mobile tab bar underneath its own header. */
-body.detail-open > header.topbar,
-body.detail-open > .mobile-tabbar,
-body.detail-open > .search-topbar {
+body.detail-open .topbar,
+body.detail-open .mobile-tabbar,
+body.detail-open .search-topbar {
   display: none !important;
 }
 body.detail-open #detail.luno-card-page {
