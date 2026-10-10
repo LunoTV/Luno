@@ -683,7 +683,7 @@ function paintDetail(value){
   if(detail) detail.style.setProperty("--luno-poster",image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "none");
   if(detailSeasonsSection) detailSeasonsSection.classList.toggle("hidden",value?.type!=="series");
   if(detailSeasonsTitle) detailSeasonsTitle.textContent=title+" — сезоны и серии";
-  const detailKicker=document.querySelector(".luno-detail-hero-copy .detail-kicker");
+  const detailKicker=document.querySelector(".luno-card-hero-copy .luno-card-eyebrow");
   if(detailKicker) detailKicker.textContent="LUNO  •  "+(value?.type==="series"?"СЕРИАЛ":"ФИЛЬМ");
   if(detailTitle) detailTitle.textContent=title;
   if(detailMeta) detailMeta.innerHTML=[
@@ -947,7 +947,7 @@ function closeDetail(fromHistory=false){
   }
 }
 
-document.querySelectorAll(".luno-detail-links [data-section]").forEach((button)=>{
+document.querySelectorAll(".luno-card-links [data-section]").forEach((button)=>{
   button.addEventListener("click",()=>{
     const section=button.dataset.section;
     closeDetail(true);
