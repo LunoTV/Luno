@@ -5323,3 +5323,32 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     color:#fff!important;
   }
 }
+
+
+/* ---------- LUNO MOBILE RAIL SPACING: REMOVE OVERSIZED GAPS ---------- */
+@media(max-width:700px){
+  body.home-mode main{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+  body.home-mode main>.section,
+  body.home-mode .section{
+    min-height:0!important;height:auto!important;
+    margin-top:0!important;margin-bottom:22px!important;
+    padding-top:0!important;padding-bottom:0!important;
+    contain:none!important;
+  }
+  body.home-mode main>.section+.section,
+  body.home-mode .section+.section{
+    margin-top:0!important;padding-top:0!important;
+  }
+  body.home-mode .section .cards{
+    min-height:0!important;height:auto!important;
+    padding-top:2px!important;padding-bottom:8px!important;
+    margin-bottom:0!important;
+  }
+  body.home-mode .section-head{margin-top:0!important;margin-bottom:10px!important}
+  body.home-mode #trendingSection{margin-top:0!important;margin-bottom:20px!important}
+  body.home-mode #continueSection{margin-top:0!important;margin-bottom:22px!important}
+  body.home-mode .mobile-tabbar>.mobile-tab.active{
+    outline:none!important;
+    border:1px solid rgba(202,205,226,.2)!important;
+  }
+}
