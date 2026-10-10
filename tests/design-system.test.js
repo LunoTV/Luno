@@ -72,3 +72,20 @@ test("home, catalog, detail, settings, drawer and player share the design layer"
     assert.ok(css.includes(selector), `missing shared style coverage for ${selector}`);
   }
 });
+
+
+test("movie detail uses the isolated card v2 instead of the legacy overlay", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
+  assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
+  assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
+  assert.ok(html.includes("./ui/detail-page.css?v=1"), "isolated detail stylesheet is linked");
+  for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
+    assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
+  }
+  assert.ok(css.includes(".luno-card-page") && css.includes("@media(max-width:700px)"), "new page has isolated responsive styles");
+  assert.ok(app.includes('document.querySelector(".luno-card-search")'), "new card search control is wired");
+  assert.ok(app.includes('document.querySelectorAll(".luno-card-links [data-section]")'), "new card navigation is wired");
+});
