@@ -74,6 +74,11 @@ test("source registry rejects invalid providers and supports toggling",()=>{
   assert.equal(registry.get("demo"),null);
 });
 
+test("Vite has a checked-in fallback catalog module for local and navigation builds",()=>{
+  const module=readFileSync(new URL("../tmdb-catalog.generated.js",import.meta.url),"utf8");
+  assert.match(module,/export default/);
+});
+
 test("core UI hooks used by app.js exist in index.html",()=>{
   const html=readFileSync(new URL("../index.html",import.meta.url),"utf8");
   for(const id of ["app","nav","searchPanel","searchInput","detail","detailPlay","detailTitle","detailTrailer","player","sourceSheet","qualitySheet","voiceSheet","subtitleSheet","episodeSheet","libraryView","continueCards","favoriteCards"]){
