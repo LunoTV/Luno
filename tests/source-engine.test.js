@@ -130,3 +130,11 @@ test("TMDB catalog builder assigns the exact typed poster filename it writes",()
   assert.equal((script.match(/item\.poster = posterFile;/g)||[]).length,3);
   assert.doesNotMatch(script,/item\.tmdbId \+ "\.jpg"/);
 });
+
+
+test("catalog scrolling requests another TMDB page after bundled cards are exhausted",()=>{
+  const app=readFileSync(new URL("../app.js",import.meta.url),"utf8");
+  assert.match(app,/async function loadMoreCatalog\(\)[\s\S]*?\/api\/tmdb\/discover\?page=/);
+  assert.match(app,/catalogSections=sections\|\|\{\}/);
+  assert.match(app,/renderItems\(unique,catalogSections\)/);
+});
