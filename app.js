@@ -2196,7 +2196,7 @@ function setLunoStream(streamUrl,streamMeta={}){
 window.LUNOPlayer={openStream:setLunoStream};
 
 let searchSource="tmdb";
-let searchResultsState={tmdb:[],luno:[],ai:[]};
+let searchResultsState={tmdb:[],ai:[]};
 
 function loadSearchHistory(){
   try{
@@ -2254,15 +2254,12 @@ function renderSearchSections(items,query){
 function updateSearchSourceUI(){
   document.querySelectorAll(".search-source").forEach(btn=>btn.classList.toggle("active",btn.dataset.searchSource===searchSource));
   const tmdb=document.querySelector("#searchTmdbCount");
-  const luno=document.querySelector("#searchLunoCount");
   if(tmdb) tmdb.textContent=String(searchResultsState.tmdb.length||0);
-  if(luno) luno.textContent=String(searchResultsState.luno.length||0);
 }
 function renderActiveSearch(query){
   let items=[];
-  if(searchSource==="tmdb") items=searchSourceItems("tmdb");
-  else if(searchSource==="luno") items=searchSourceItems("luno");
-  else items=rankSearchResults(dedupeSearchResults([...searchResultsState.tmdb,...searchResultsState.luno]),query);
+  // Search results come only from TMDB; never mix in the bundled LUNO catalog.
+  items=searchSourceItems("tmdb");
   renderSearchSections(items,query);
   updateSearchSourceUI();
 }
@@ -2270,16 +2267,6 @@ function renderActiveSearch(query){
 function showSearchResults(items,query,source="tmdb"){
   searchResultsState[source]=items||[];
   renderActiveSearch(query);
-}
-
-function searchLocal(query){
-  const q=query.trim().toLocaleLowerCase("ru-RU");
-  if(!q) return [];
-  return rankSearchResults(catalogItems
-    .filter(item=>{
-      const hay=[item.name,item.originalName,...(item.genres||[])].join(" ").toLocaleLowerCase("ru-RU");
-      return hay.includes(q);
-    }),query);
 }
 
 function dynamicSearchUrl(query){
@@ -2374,7 +2361,7 @@ function closeSearchPanel(){
 document.querySelector("#searchBack")?.addEventListener("click",closeSearchPanel);
 document.querySelector("#searchClear")?.addEventListener("click",()=>{
   searchInput.value="";
-  searchResultsState={tmdb:[],luno:[],ai:[]};
+  searchResultsState={tmdb:[],ai:[]};
   renderSearchHistory();
   renderActiveSearch("");
   searchInput.focus();
@@ -2519,15 +2506,14 @@ searchInput.addEventListener("input",()=>{
     return;
   }
   searchTimer=setTimeout(async()=>{
-    const local=searchLocal(query);
-    searchResultsState.luno=local;
+    searchResultsState.tmdb=[];
     renderActiveSearch(query);
     try{
       const remote=await searchDynamic(query);
       searchResultsState.tmdb=remote;
       renderActiveSearch(query);
     }catch(error){
-      console.warn("LUNO remote search unavailable, using local catalog:",error);
+      console.warn("TMDB search unavailable:",error);
       searchResultsState.tmdb=[];
       renderActiveSearch(query);
     }
@@ -2539,11 +2525,13 @@ searchInput.addEventListener("keydown",async(e)=>{
   if(e.key==="Enter"){
     const query=searchInput.value.trim();
     saveSearchQuery(query);
-    let result=searchLocal(query)[0];
+    let result=null;
     try{
       const remote=await searchDynamic(query);
-      result=remote[0]||result;
-    }catch{}
+      result=remote[0]||null;
+    }catch(error){
+      console.warn("TMDB search unavailable:",error);
+    }
     if(result){
       searchPanel.classList.add("hidden");
       openDetail(result);
