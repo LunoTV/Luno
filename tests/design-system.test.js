@@ -26,6 +26,7 @@ test("mobile settings sections open in a focused sheet with a return control", a
   assert.ok(css.includes(".settings-view .settings-content {\n    display: none !important;"), "mobile settings list is shown without a panel below it");
   assert.ok(app.includes('data-settings-sections-back'), "the section sheet has a return control");
   assert.ok(app.includes('openSettingsView(button.dataset.settingsSection,true)'), "selecting a section opens the focused view");
+  assert.ok(app.includes('settingsView.querySelectorAll("[data-settings-panel]").forEach(panel=>panel.classList.add("hidden"))'), "returning to the menu clears every section panel");
 });
 
 test("mobile shutter exposes only contextual back and search controls", async () => {
