@@ -8,7 +8,7 @@
 .luno-card-backdrop-shade{position:absolute;inset:0;background:linear-gradient(90deg,#08090D 0%,rgba(8,9,13,.78) 45%,rgba(8,9,13,.2) 100%),linear-gradient(0deg,#08090D 0%,rgba(8,9,13,.08) 65%,rgba(8,9,13,.3) 100%)}
 .luno-card-header{position:sticky;top:0;z-index:5;min-height:72px;display:flex;align-items:center;gap:12px;padding:12px clamp(16px,4vw,56px);background:linear-gradient(180deg,rgba(8,9,13,.94),rgba(8,9,13,.62));backdrop-filter:blur(14px)}
 .luno-card-icon-button{display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px;border:1px solid var(--luno-border);border-radius:12px;background:rgba(20,21,29,.88);color:var(--luno-text);font-size:28px;cursor:pointer}
-.luno-card-brand{display:flex;align-items:center;gap:9px;margin-left:4px;font-size:14px;letter-spacing:.18em}
+.luno-card-brand{display:flex;align-items:center;gap:9px;margin-left:4px;padding:0;border:0;background:transparent;color:var(--luno-text);font:inherit;font-size:14px;letter-spacing:.18em;cursor:pointer}
 .luno-card-brand .brand-orbit{width:28px;height:28px;flex:0 0 28px}.luno-card-brand .brand-moon{width:16px;height:16px}
 .luno-card-links{display:flex;gap:4px;margin:auto;padding:5px;border:1px solid var(--luno-border);border-radius:14px;background:rgba(20,21,29,.82)}
 .luno-card-links button{border:0;border-radius:9px;padding:9px 10px;background:transparent;color:var(--luno-text-muted);font:inherit;cursor:pointer}
