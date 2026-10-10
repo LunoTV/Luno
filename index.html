@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=144">
+  <link rel="stylesheet" href="./styles.css?v=145">
   <link rel="stylesheet" href="./ui/design-system.css?v=7">
   <link rel="stylesheet" href="./ui/detail-page.css?v=8">
   <link rel="stylesheet" href="./ui/settings.css?v=1">
@@ -66,20 +66,27 @@
 <button class="luno-menu-item active" data-section="home"><span>⌂</span>Главная</button><button class="luno-menu-item" data-section="history"><span>◷</span>История</button><button class="luno-menu-item" data-section="movies"><span>▣</span>Фильмы</button><button class="luno-menu-item" data-section="series"><span>▤</span>Сериалы</button><button class="luno-menu-item" data-section="cartoons"><span>▧</span>Мультфильмы</button><button class="luno-menu-item" data-section="anime"><span>✧</span>Аниме</button><button class="luno-menu-item" data-section="shows"><span>▦</span>Шоу</button>
 </nav></aside>
     <main>
+      <nav class="home-category-tabs" aria-label="Категории">
+        <button class="home-category-tab active" data-section="home" aria-current="page">Главная</button>
+        <button class="home-category-tab" data-section="movies">Фильмы</button>
+        <button class="home-category-tab" data-section="series">Сериалы</button>
+        <button class="home-category-tab" data-section="cartoons">Мультфильмы</button>
+        <button class="home-category-tab" data-section="anime">Аниме</button>
+      </nav>
       <section id="homeHero" class="home-hero" aria-label="Рекомендуем посмотреть">
         <div class="home-hero-backdrop" aria-hidden="true"></div>
         <div class="home-hero-copy">
           <div class="home-hero-eyebrow">В центре внимания · LUNO</div>
           <h1 class="home-hero-title">Открой новое кино</h1>
           <div class="home-hero-meta">Фильмы и сериалы · Подборка LUNO</div>
-          <p class="home-hero-description">Подбираем для тебя истории, к которым хочется возвращаться.</p>
           <div class="home-hero-actions">
-            <button class="home-hero-primary" type="button" data-hero-action="detail">Смотреть</button>
-            <button type="button" data-hero-action="detail">Подробнее</button>
+            <button class="home-hero-primary" type="button" data-hero-action="detail"><span aria-hidden="true">▶</span> Смотреть</button>
+            <button class="home-hero-favorite" type="button" data-hero-action="favorite" aria-label="Добавить в избранное" aria-pressed="false">＋</button>
           </div>
         </div>
-        <div class="home-hero-poster-wrap"><img class="home-hero-poster" alt="" loading="eager" hidden></div>
+        <div class="home-hero-poster-wrap" aria-hidden="true"><img class="home-hero-poster" alt="" loading="eager" hidden></div>
       </section>
+      <div id="homeHeroDots" class="home-hero-dots" role="group" aria-label="Выбор рекомендуемого фильма"></div>
 
       <section class="section discovery-section" id="trendingSection">
         <div class="section-head">
@@ -87,6 +94,14 @@
           <button class="section-more" data-home-collection="popular">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="trendingCards"></div>
+      </section>
+
+      <section class="section discovery-section" id="eveningSection">
+        <div class="section-head">
+          <div><span class="section-kicker">НА ВЕЧЕР</span><h2>Что посмотреть сегодня</h2></div>
+          <button class="section-more" data-home-collection="evening">Смотреть все <span>›</span></button>
+        </div>
+        <div class="cards" id="eveningCards"></div>
       </section>
 
       <section class="section resume-section" id="continueSection">
@@ -111,14 +126,6 @@
           <button class="section-more" data-home-collection="recommendations">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="lunoPicksCards"></div>
-      </section>
-
-      <section class="section discovery-section" id="eveningSection">
-        <div class="section-head">
-          <div><span class="section-kicker">НА ВЕЧЕР</span><h2>Что посмотреть сегодня</h2></div>
-          <button class="section-more" data-home-collection="evening">Смотреть все <span>›</span></button>
-        </div>
-        <div class="cards" id="eveningCards"></div>
       </section>
 
       <section class="section discovery-section" id="classicsSection">
