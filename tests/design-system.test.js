@@ -38,6 +38,8 @@ test("mobile shutter exposes only contextual back and search controls", async ()
   assert.ok(css.includes(".topbar.luno-nav-shutter .global-header-search"), "search remains visible");
   assert.ok(css.includes(".topbar.luno-nav-shutter::after"), "legacy centered wordmark pseudo-element is explicitly removed");
   assert.ok(css.includes("html body.show-global-back .topbar.luno-nav-shutter > .brand"), "inner-page brand hiding outranks legacy high-specificity rules");
+  const legacyCss = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(legacyCss.includes("html body.show-global-back header.topbar.luno-nav-shutter > button.brand"), "final mobile header override is present after legacy stylesheet rules");
   assert.ok(html.includes("./ui/design-system.css?v=7"), "updated shutter styles use a fresh cache version");
 });
 
