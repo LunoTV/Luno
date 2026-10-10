@@ -221,10 +221,6 @@ function mediaCategory(item){
 function categoryLabel(item){
   return ({movies:"Фильм",series:"Сериал",cartoons:"Мультфильм",anime:"Аниме",shows:"Шоу"})[mediaCategory(item)] || "Контент";
 }
-function metaLine(item){
-  const year=String(item?.releaseInfo || "").match(/\d{4}/)?.[0] || "";
-  return [year,categoryLabel(item)].filter(Boolean).join(" • ");
-}
 
 function normalizeImageValue(value,size){
   const raw=String(value||"").trim();
@@ -1670,7 +1666,6 @@ async function loadMoreCatalog(){
   }
 }
 
-function providerLabel(provider){ return String(provider?.name||provider?.id||"LUNO Source"); }
 function renderAddonManager(){
   if(!addonList) return;
   const engine=window.__LUNO_SOURCE_ENGINE__;
@@ -2451,15 +2446,7 @@ function renderActiveSearch(query){
   updateSearchSourceUI();
 }
 
-function showSearchResults(items,query,source="tmdb"){
-  searchResultsState[source]=items||[];
-  renderActiveSearch(query);
-}
 
-function dynamicSearchUrl(query){
-  const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
-  return (base||"")+"/api/tmdb/search?query="+encodeURIComponent(query);
-}
 
 function normalizeSearchText(value=""){
   return String(value)
