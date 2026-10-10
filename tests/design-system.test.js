@@ -8,18 +8,22 @@ test("the shared LUNO design layer loads after legacy page styles", async () => 
   const html = await readFile(new URL("index.html", root), "utf8");
   const legacyStyles = html.search(/href="\.\/styles\.css\?v=\d+"/);
   const sharedStyles = html.search(/href="\.\/ui\/design-system\.css\?v=\d+"/);
+  const settingsStyles = html.search(/href="\.\/ui\/settings\.css\?v=\d+"/);
 
   assert.notEqual(legacyStyles, -1, "versioned base stylesheet is linked");
   assert.notEqual(sharedStyles, -1, "shared design layer is linked");
+  assert.notEqual(settingsStyles, -1, "isolated settings stylesheet is linked");
   assert.ok(sharedStyles > legacyStyles, "shared layer follows the legacy stylesheet");
+  assert.ok(settingsStyles > sharedStyles, "isolated settings layer loads last");
   assert.ok(!html.includes("source-manager.css"), "legacy source manager stylesheet is no longer referenced");
 });
 
 test("mobile settings sections open in a focused sheet with a return control", async () => {
-  const css = await readFile(new URL("ui/design-system.css", root), "utf8");
+  const css = await readFile(new URL("ui/settings.css", root), "utf8");
   const app = await readFile(new URL("app.js", root), "utf8");
   assert.ok(css.includes(".settings-view.settings-section-open .settings-content"), "settings content has a focused mobile sheet");
   assert.ok(css.includes(".settings-view.settings-section-open .settings-menu"), "the menu is hidden while a section is open");
+  assert.ok(css.includes(".settings-view .settings-content {\n    display: none !important;"), "mobile settings list is shown without a panel below it");
   assert.ok(app.includes('data-settings-sections-back'), "the section sheet has a return control");
   assert.ok(app.includes('openSettingsView(button.dataset.settingsSection,true)'), "selecting a section opens the focused view");
 });
