@@ -34,11 +34,6 @@ export function renderSourceManager(container,{providers=[],sources=[],status={}
     (sourceRows||'<div class="addon-row"><div><strong>Каталог пуст</strong></div></div>');
 }
 
-){
-  return "LUNO Source Engine • "+Number(status.catalogSources||0)+" источников";
-}
-
-
 export function bindSourceManager(container,onToggle){
   container?.querySelectorAll("[data-source-toggle],[data-provider-toggle]").forEach(button=>{
     button.addEventListener("click",()=>{
