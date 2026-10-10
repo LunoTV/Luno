@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build-tmdb-catalog.mjs && vite build"
+    "build": "node scripts/build-tmdb-catalog.mjs && vite build",
+    "test": "node --test"
   },
   "dependencies": {
     "hls.js": "1.7.2",
