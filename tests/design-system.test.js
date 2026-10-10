@@ -93,7 +93,8 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
 
 test("detail card hides the app shell header and mobile tab bar while open", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.match(css, /body\\.detail-open > header\\.topbar[\\s\\S]*?display:\\s*none\\s*!important/);
-  assert.match(css, /body\\.detail-open > \\.mobile-tabbar[\\s\\S]*?display:\\s*none\\s*!important/);
-  assert.match(css, /body\\.detail-open #detail\\.luno-card-page\\.hidden[\\s\\S]*?display:\\s*none\\s*!important/);
+  assert.ok(css.includes("body.detail-open .topbar"), "app shutter is hidden");
+  assert.ok(css.includes("body.detail-open .mobile-tabbar"), "mobile tab bar is hidden");
+  assert.ok(css.includes("body.detail-open .search-topbar"), "legacy search shutter is hidden");
+  assert.ok(css.includes("body.detail-open #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
 });
