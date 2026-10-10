@@ -277,6 +277,63 @@ const LUNO_TMDB_IMAGE_MIRRORS=[
   "https://pl.imagetmdb.com/",
   "https://lampa.byskaz.ru/tmdb/img/"
 ];
+
+// Browser-side equivalent of Lampa's TMDB Proxy.
+// Try the public TMDB-compatible gateways directly first so the app does not
+// depend on the LUNO Worker hostname being reachable from the user's network.
+const LUNO_TMDB_API_MIRRORS=[
+  "https://apitmdb.cub.red/3/",
+  "https://apitmdb.cub.best/3/",
+  "https://apitmdb.cub.black/3/",
+  "https://apitmdb.durex.monster/3/",
+  "https://apitmdb.cubnotrip.top/3/",
+  "https://lampa.byskaz.ru/tmdb/api/3/"
+];
+async function fetchTmdbApi(endpoint,params={}){
+  const cleanEndpoint=String(endpoint||"").replace(/^\\/+/, "");
+  const query=new URLSearchParams();
+  Object.entries(params||{}).forEach(([key,value])=>{
+    if(value!==undefined&&value!==null&&String(value)!=="") query.set(key,String(value));
+  });
+  if(!query.has("language")) query.set("language","ru-RU");
+  if(!query.has("include_adult")) query.set("include_adult","false");
+  const directAttempts=LUNO_TMDB_API_MIRRORS.map(async(base)=>{
+    const controller=new AbortController();
+    const timer=window.setTimeout(()=>controller.abort(),4500);
+    try{
+      const response=await fetch(base+cleanEndpoint+"?"+query.toString(),{
+        cache:"no-store",
+        headers:{accept:"application/json"},
+        signal:controller.signal
+      });
+      if(!response.ok) throw new Error("TMDB mirror HTTP "+response.status);
+      const data=await response.json();
+      if(!data||!Array.isArray(data.results)) throw new Error("TMDB mirror returned invalid data");
+      return data;
+    }finally{
+      window.clearTimeout(timer);
+    }
+  });
+  try{
+    return await Promise.any(directAttempts);
+  }catch(mirrorError){
+    // Last resort only: retain the existing Worker path, but do not make it
+    // the primary route on networks where workers.dev is unavailable.
+    const workerBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\\/$/,"");
+    const workerPath=cleanEndpoint==="search/multi" ? "/api/tmdb/search" :
+      (cleanEndpoint==="trending/all/week" ? "/api/tmdb/discover" : "");
+    if(!workerPath) throw mirrorError;
+    const workerQuery=new URLSearchParams(query);
+    if(cleanEndpoint==="search/multi"&&!workerQuery.has("query")) throw mirrorError;
+    const response=await fetch(workerBase+workerPath+"?"+workerQuery.toString(),{
+      cache:"no-store",headers:{accept:"application/json"},signal:AbortSignal.timeout(5000)
+    });
+    if(!response.ok) throw new Error("TMDB gateways and LUNO API unavailable (HTTP "+response.status+")");
+    const data=await response.json();
+    if(!data||!Array.isArray(data.results)) throw new Error("LUNO API returned invalid data");
+    return data;
+  }
+}
 function tmdbImageMirrorCandidates(path){
   let clean=String(path||"").trim();
   if(clean.startsWith("/")) clean=clean.slice(1);
@@ -425,11 +482,12 @@ async function lookupPosterFromTmdb(item){
       };
       for(const query of queries){
         try{
-          const response=await fetch(base+"/api/tmdb/search?query="+encodeURIComponent(query),{
-            cache:"no-store",headers:{accept:"application/json"}
+          const data=await fetchTmdbApi("search/multi",{
+            query,
+            page:"1",
+            language:"ru-RU",
+            include_adult:"false"
           });
-          if(!response.ok) continue;
-          const data=await response.json();
           const matches=(Array.isArray(data?.results)?data.results:[])
             .map(candidate=>{
               if(!candidate?.poster) return null;
@@ -1465,10 +1523,11 @@ async function loadMoreCatalog(){
     }
     if(window.__LUNO_TMDB_TOTAL_PAGES__ && (window.__LUNO_TMDB_PAGE__||1)>=window.__LUNO_TMDB_TOTAL_PAGES__) return;
     const nextPage=(window.__LUNO_TMDB_PAGE__||1)+1;
-    const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
-    const response=await fetch(base+"/api/tmdb/discover?page="+nextPage,{cache:"no-store",headers:{accept:"application/json"}});
-    if(!response.ok) throw new Error("TMDB page HTTP "+response.status);
-    const data=await response.json();
+    const data=await fetchTmdbApi("trending/all/week",{
+      page:String(nextPage),
+      language:"ru-RU",
+      include_adult:"false"
+    });
     const pageItems=(Array.isArray(data?.results)?data.results:[]).filter(item=>item?.id).map(normalizeItem);
     window.__LUNO_TMDB_PAGE__=Number(data?.page)||nextPage;
     window.__LUNO_TMDB_TOTAL_PAGES__=Math.max(window.__LUNO_TMDB_PAGE__,Number(data?.totalPages)||window.__LUNO_TMDB_PAGE__);
@@ -2331,9 +2390,12 @@ function rankSearchResults(items,query){
 }
 
 async function searchDynamic(query){
-  const response=await fetch(dynamicSearchUrl(query),{headers:{accept:"application/json"},cache:"no-store"});
-  if(!response.ok) throw new Error("TMDB search HTTP "+response.status);
-  const data=await response.json();
+  const data=await fetchTmdbApi("search/multi",{
+    query,
+    page:"1",
+    language:"ru-RU",
+    include_adult:"false"
+  });
   const items=Array.isArray(data?.results) ? data.results
     .map(item=>normalizeItem({
       ...item,
