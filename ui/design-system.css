@@ -380,3 +380,29 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--luno-violet); 
     border-radius: 12px !important;
   }
 }
+
+
+/* Final mobile shutter override: remove the legacy centered wordmark pseudo-element too. */
+@media (max-width: 700px) {
+  html body .topbar.luno-nav-shutter > .brand,
+  html body .topbar.luno-nav-shutter > .nav,
+  html body .topbar.luno-nav-shutter .global-header-settings,
+  html body .topbar.luno-nav-shutter::after {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+  }
+  html body .topbar.luno-nav-shutter > .global-header-back {
+    display: none !important;
+  }
+  html body.show-global-back .topbar.luno-nav-shutter > .global-header-back {
+    display: grid !important;
+  }
+  html body .topbar.luno-nav-shutter .tv-header-tools {
+    display: flex !important;
+    margin-left: auto !important;
+  }
+  html body .topbar.luno-nav-shutter .global-header-search {
+    display: grid !important;
+  }
+}
