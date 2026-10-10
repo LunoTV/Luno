@@ -66,19 +66,22 @@ export default {
         return json({ error: "Invalid image path" }, 400, origin);
       }
 
+      // Try the image mirrors that can bypass regional TMDB image-host blocks first.
+      // Each upstream gets a strict timeout so a stalled host cannot hang Safari forever.
       const imageHosts = [
-        "https://image.tmdb.org/t/p",
         "https://imagetmdb.com/t/p",
         "https://nl.imagetmdb.com/t/p",
         "https://de.imagetmdb.com/t/p",
         "https://pl.imagetmdb.com/t/p",
-        "https://lampa.byskaz.ru/tmdb/img/t/p"
+        "https://lampa.byskaz.ru/tmdb/img/t/p",
+        "https://image.tmdb.org/t/p"
       ];
       let lastError = "No image mirrors available";
       for (const host of imageHosts) {
         try {
           const response = await fetch(host + imagePath, {
             headers: { accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8" },
+            signal: AbortSignal.timeout(2500),
             cf: { cacheTtl: 86400, cacheEverything: true }
           });
           if (!response.ok) {
@@ -100,7 +103,7 @@ export default {
           if (etag) headers.set("etag", etag);
           return new Response(response.body, { status: 200, headers });
         } catch (error) {
-          lastError = String(error?.message || error);
+          lastError = host + ": " + String(error?.message || error);
         }
       }
       return json({ error: "TMDB image mirrors unavailable", detail: lastError }, 502, origin);
