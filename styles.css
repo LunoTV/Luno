@@ -5975,3 +5975,19 @@ remove conflicting centered LUNO override/* ---------- LUNO WORDMARK LEFT, AS IN
   body.search-open .search-back,
   body.search-open .search-close-x{display:none!important}
 }
+
+
+/* ---------- LUNO WORDMARK — replace moon icon with text ---------- */
+@media(max-width:700px){
+  .topbar .brand{
+    gap:0!important;
+    font-size:27px!important;
+    font-weight:850!important;
+    letter-spacing:-.065em!important;
+    line-height:1!important;
+    color:#f4f5ff!important;
+    text-shadow:0 0 22px rgba(125,211,252,.12);
+  }
+  .topbar .brand .brand-wordmark{display:inline!important;}
+  .topbar .brand .brand-orbit{display:none!important;}
+}
