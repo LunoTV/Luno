@@ -7,14 +7,12 @@ const root = new URL("../", import.meta.url);
 test("the shared LUNO design layer loads after legacy page styles", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const legacyStyles = html.indexOf('href="./styles.css?v=140"');
-  const sourceStyles = html.indexOf('href="./source-manager.css?v=1"');
-  const sharedStyles = html.indexOf('href="./ui/design-system.css?v=1"');
+  const sharedStyles = html.indexOf('href="./ui/design-system.css?v=2"');
 
   assert.notEqual(legacyStyles, -1, "versioned base stylesheet is linked");
-  assert.notEqual(sourceStyles, -1, "source manager stylesheet is linked");
   assert.notEqual(sharedStyles, -1, "shared design layer is linked");
   assert.ok(sharedStyles > legacyStyles, "shared layer follows the legacy stylesheet");
-  assert.ok(sharedStyles > sourceStyles, "shared layer follows source manager styles");
+  assert.ok(!html.includes("source-manager.css"), "legacy source manager stylesheet is no longer referenced");
 });
 
 test("all core LUNO design tokens are defined in the shared layer", async () => {
