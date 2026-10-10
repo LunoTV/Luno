@@ -59,6 +59,53 @@ export default {
 
     const url = new URL(request.url);
 
+    if (url.pathname === "/api/tmdb/image") {
+      if (request.method !== "GET") return json({ error: "Method not allowed" }, 405, origin);
+      const imagePath = String(url.searchParams.get("path") || "");
+      if (!/^\/(?:w\d{1,4}|original)\/[A-Za-z0-9._/-]+$/.test(imagePath) || imagePath.includes("..") || imagePath.includes("//")) {
+        return json({ error: "Invalid image path" }, 400, origin);
+      }
+
+      const imageHosts = [
+        "https://image.tmdb.org/t/p",
+        "https://imagetmdb.com/t/p",
+        "https://nl.imagetmdb.com/t/p",
+        "https://de.imagetmdb.com/t/p",
+        "https://pl.imagetmdb.com/t/p",
+        "https://lampa.byskaz.ru/tmdb/img/t/p"
+      ];
+      let lastError = "No image mirrors available";
+      for (const host of imageHosts) {
+        try {
+          const response = await fetch(host + imagePath, {
+            headers: { accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8" },
+            cf: { cacheTtl: 86400, cacheEverything: true }
+          });
+          if (!response.ok) {
+            lastError = host + " HTTP " + response.status;
+            continue;
+          }
+          const contentType = response.headers.get("content-type") || "";
+          if (!contentType.toLowerCase().startsWith("image/")) {
+            lastError = host + " returned non-image content";
+            continue;
+          }
+          const headers = new Headers({
+            "content-type": contentType,
+            "cache-control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000",
+            "access-control-allow-origin": "https://lunotv.github.io",
+            "x-content-type-options": "nosniff"
+          });
+          const etag = response.headers.get("etag");
+          if (etag) headers.set("etag", etag);
+          return new Response(response.body, { status: 200, headers });
+        } catch (error) {
+          lastError = String(error?.message || error);
+        }
+      }
+      return json({ error: "TMDB image mirrors unavailable", detail: lastError }, 502, origin);
+    }
+
     const isSearch = url.pathname === "/api/tmdb/search";
     const isDiscover = url.pathname === "/api/tmdb/discover";
     if ((!isSearch && !isDiscover) || request.method !== "GET") {
