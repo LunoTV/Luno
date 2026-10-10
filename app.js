@@ -981,9 +981,9 @@ detailEpisodes?.addEventListener("click",()=>{
 document.querySelector("#closeDetail")?.addEventListener("click",closeDetail);
 document.querySelector("#closeDetailSecondary")?.addEventListener("click",closeDetail);
 document.querySelector("#openAddonManagerDetail")?.addEventListener("click",()=>document.querySelector("#openAddonManager")?.click());
-document.querySelector(".luno-detail-search")?.addEventListener("click",()=>{ closeDetail(); openSearch(); });
-document.querySelector(".luno-detail-brand")?.addEventListener("click",()=>{ closeDetail(); navigate("home"); });
-document.querySelectorAll(".luno-detail-links [data-section]").forEach(btn=>btn.addEventListener("click",()=>{ const section=btn.dataset.section; closeDetail(); navigate(section); }));
+document.querySelector(".luno-card-search")?.addEventListener("click",()=>{ closeDetail(); openSearch(); });
+document.querySelector(".luno-card-brand")?.addEventListener("click",()=>{ closeDetail(); navigate("home"); });
+document.querySelectorAll(".luno-card-links [data-section]").forEach(btn=>btn.addEventListener("click",()=>{ const section=btn.dataset.section; closeDetail(); navigate(section); }));
 
 document.querySelector("#detailTags")?.addEventListener("click",event=>{
   const tag=event.target.closest("[data-detail-genre]");
