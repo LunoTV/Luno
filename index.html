@@ -384,6 +384,93 @@
       </div>
     </div>
   </div>
+  <section id="settingsView" class="settings-view hidden" aria-labelledby="settingsTitle">
+    <header class="settings-head">
+      <button id="settingsBack" class="settings-back" type="button" aria-label="Назад">‹</button>
+      <div class="settings-heading"><span class="settings-eyebrow">LUNO · ПЕРСОНАЛЬНОЕ ПРОСТРАНСТВО</span><h1 id="settingsTitle">Настройки</h1><p>Твой LUNO. Твои правила.</p></div>
+      <div class="settings-orbit" aria-hidden="true"><span></span></div>
+    </header>
+    <div class="settings-layout">
+      <nav class="settings-menu" aria-label="Разделы настроек">
+        <button class="settings-menu-item active" type="button" data-settings-section="profile"><span class="settings-menu-icon violet">♙</span><span><strong>Профиль</strong><small>Аккаунт и безопасность</small></span><b>›</b></button>
+        <button class="settings-menu-item" type="button" data-settings-section="notifications"><span class="settings-menu-icon blue">♧</span><span><strong>Уведомления</strong><small>Обновления и события</small></span><b>›</b></button>
+        <button class="settings-menu-item" type="button" data-settings-section="playback"><span class="settings-menu-icon blue">▷</span><span><strong>Воспроизведение</strong><small>Качество, звук и субтитры</small></span><b>›</b></button>
+        <button class="settings-menu-item" type="button" data-settings-section="appearance"><span class="settings-menu-icon violet">◐</span><span><strong>Внешний вид</strong><small>Оформление и эффекты</small></span><b>›</b></button>
+        <button class="settings-menu-item" type="button" data-settings-section="catalog"><span class="settings-menu-icon blue">☷</span><span><strong>Каталог</strong><small>Предпочтения и фильтры</small></span><b>›</b></button>
+        <button class="settings-menu-item" type="button" data-settings-section="sources"><span class="settings-menu-icon violet">⌁</span><span><strong>Источники</strong><small>Подключения для просмотра</small></span><b>›</b></button>
+        <button class="settings-menu-item" type="button" data-settings-section="privacy"><span class="settings-menu-icon blue">◇</span><span><strong>Приватность и данные</strong><small>История и сохранённые данные</small></span><b>›</b></button>
+        <button class="settings-menu-item" type="button" data-settings-section="about"><span class="settings-menu-icon violet">ⓘ</span><span><strong>О приложении</strong><small>Версия и диагностика</small></span><b>›</b></button>
+      </nav>
+      <div class="settings-content">
+        <section class="settings-panel" data-settings-panel="profile">
+          <div class="settings-panel-heading"><span class="settings-eyebrow">ТВОЁ ПРОСТРАНСТВО</span><h2>Профиль</h2><p>Войди в аккаунт LUNO, чтобы управлять персональными настройками.</p></div>
+          <div class="settings-account-card"><div class="settings-avatar">L<span>✦</span></div><div><strong>Аккаунт LUNO</strong><small>Вход или создание аккаунта</small></div><span class="settings-status">Не выполнен вход</span></div>
+          <form id="settingsAuthForm" class="settings-form">
+            <label for="settingsEmail">Электронная почта</label><input id="settingsEmail" type="email" autocomplete="email" placeholder="name@example.com" required>
+            <label for="settingsPassword">Пароль</label><input id="settingsPassword" type="password" autocomplete="current-password" placeholder="Не менее 8 символов" minlength="8" required>
+            <div class="settings-form-actions"><button class="settings-primary" type="submit">Продолжить</button><button class="settings-secondary" id="settingsRegister" type="button">Создать аккаунт</button></div>
+            <p id="settingsAuthStatus" class="settings-inline-note">Форма интерфейса готова. Серверную авторизацию подключим отдельным этапом — данные сейчас не отправляются и не сохраняются.</p>
+          </form>
+        </section>
+        <section class="settings-panel hidden" data-settings-panel="notifications">
+          <div class="settings-panel-heading"><span class="settings-eyebrow">БУДЬ В КУРСЕ</span><h2>Уведомления</h2><p>Выбери, какие события LUNO показывать на этом устройстве.</p></div>
+          <div class="settings-group"><div class="settings-group-title">УВЕДОМЛЕНИЯ LUNO</div>
+            <label class="settings-row"><span><strong>Уведомления</strong><small>Разрешить уведомления в приложении</small></span><input type="checkbox" data-setting="notificationsEnabled" checked><i></i></label>
+            <label class="settings-row"><span><strong>Новинки фильмов</strong><small>Новые премьеры и подборки</small></span><input type="checkbox" data-setting="movieNotifications" checked><i></i></label>
+            <label class="settings-row"><span><strong>Новинки сериалов</strong><small>Новые сезоны и серии</small></span><input type="checkbox" data-setting="seriesNotifications" checked><i></i></label>
+            <label class="settings-row"><span><strong>Новости приложения</strong><small>Обновления LUNO</small></span><input type="checkbox" data-setting="appNotifications" checked><i></i></label>
+          </div>
+          <p class="settings-inline-note">Настройки сохраняются на этом устройстве. Push-уведомления потребуют отдельного подключения.</p>
+        </section>
+        <section class="settings-panel hidden" data-settings-panel="playback">
+          <div class="settings-panel-heading"><span class="settings-eyebrow">ТВОЙ КИНОТЕАТР</span><h2>Воспроизведение</h2><p>Настрой качество и поведение плеера.</p></div>
+          <div class="settings-group"><div class="settings-group-title">КАЧЕСТВО ВИДЕО</div>
+            <label class="settings-choice"><span>Авто (рекомендуется)</span><input type="radio" name="playbackQuality" value="auto" data-setting="playbackQuality" checked></label>
+            <label class="settings-choice"><span>До 4K</span><input type="radio" name="playbackQuality" value="4k" data-setting="playbackQuality"></label>
+            <label class="settings-choice"><span>До 1080p</span><input type="radio" name="playbackQuality" value="1080" data-setting="playbackQuality"></label>
+            <label class="settings-choice"><span>До 720p — экономия трафика</span><input type="radio" name="playbackQuality" value="720" data-setting="playbackQuality"></label>
+          </div>
+          <div class="settings-group"><div class="settings-group-title">ПОВЕДЕНИЕ ПЛЕЕРА</div>
+            <label class="settings-row"><span><strong>Следующий эпизод</strong><small>Автоматически продолжать сериал</small></span><input type="checkbox" data-setting="autoplayNext" checked><i></i></label>
+            <label class="settings-row"><span><strong>Пропуск заставок</strong><small>Если это поддерживает источник</small></span><input type="checkbox" data-setting="skipIntros"><i></i></label>
+            <label class="settings-row"><span><strong>Субтитры по умолчанию</strong><small>Включать при наличии</small></span><input type="checkbox" data-setting="subtitlesDefault"><i></i></label>
+          </div>
+        </section>
+        <section class="settings-panel hidden" data-settings-panel="appearance">
+          <div class="settings-panel-heading"><span class="settings-eyebrow">АТМОСФЕРА LUNO</span><h2>Внешний вид</h2><p>Спокойная палитра, мягкие акценты и минимум лишнего свечения.</p></div>
+          <div class="settings-group"><div class="settings-group-title">ТЕМА</div><div class="settings-theme-options"><button type="button" class="settings-theme-choice active" data-theme-choice="dark"><span class="theme-preview dark-preview">☾</span><strong>Тёмная</strong><small>Текущая тема</small></button><button type="button" class="settings-theme-choice" data-theme-choice="system"><span class="theme-preview system-preview">◐</span><strong>Системная</strong><small>Следовать устройству</small></button></div></div>
+          <div class="settings-group"><div class="settings-group-title">АКЦЕНТНЫЙ ЦВЕТ</div><div class="settings-accent-options"><button type="button" data-accent="violet" class="settings-accent active" aria-label="Спокойный фиолетовый"></button><button type="button" data-accent="ice" class="settings-accent ice" aria-label="Ледяной голубой"></button></div></div>
+          <div class="settings-group"><label class="settings-row"><span><strong>Мягкие анимации</strong><small>Ненавязчивые переходы</small></span><input type="checkbox" data-setting="softAnimations" checked><i></i></label></div>
+        </section>
+        <section class="settings-panel hidden" data-settings-panel="catalog">
+          <div class="settings-panel-heading"><span class="settings-eyebrow">ПОД ТВОЙ ВКУС</span><h2>Каталог</h2><p>Настрой отображение подборок и карточек.</p></div>
+          <div class="settings-group"><div class="settings-group-title">ПОКАЗЫВАТЬ В КАТАЛОГЕ</div>
+            <label class="settings-row"><span><strong>Фильмы</strong><small>Показывать фильмы в подборках</small></span><input type="checkbox" data-setting="showMovies" checked><i></i></label>
+            <label class="settings-row"><span><strong>Сериалы</strong><small>Показывать сериалы в подборках</small></span><input type="checkbox" data-setting="showSeries" checked><i></i></label>
+            <label class="settings-row"><span><strong>Мультфильмы и аниме</strong><small>Включать анимационный контент</small></span><input type="checkbox" data-setting="showAnimation" checked><i></i></label>
+            <label class="settings-row"><span><strong>Показывать рейтинги</strong><small>Рейтинг TMDB на карточках</small></span><input type="checkbox" data-setting="showRatings" checked><i></i></label>
+          </div>
+          <div class="settings-group"><div class="settings-group-title">СОРТИРОВКА</div><label class="settings-select-label" for="settingsSort">Порядок карточек</label><select id="settingsSort" data-setting="catalogSort"><option value="popular">По популярности</option><option value="rating">По рейтингу</option><option value="date">По дате выхода</option><option value="name">По названию</option></select></div>
+        </section>
+        <section class="settings-panel hidden" data-settings-panel="sources">
+          <div class="settings-panel-heading"><span class="settings-eyebrow">ПОДКЛЮЧЕНИЯ</span><h2>Источники</h2><p>Управляй источниками просмотра, не меняя плеер LUNO.</p></div>
+          <div class="settings-source-card"><span class="settings-source-symbol violet">◉</span><span><strong>Менеджер источников</strong><small>Добавление и настройка источников видео</small></span><button id="settingsManageSources" type="button">Открыть</button></div>
+          <p class="settings-inline-note">Список активных источников и их статус доступны в менеджере источников.</p>
+        </section>
+        <section class="settings-panel hidden" data-settings-panel="privacy">
+          <div class="settings-panel-heading"><span class="settings-eyebrow">ТВОИ ДАННЫЕ</span><h2>Приватность и данные</h2><p>Управляй данными, которые LUNO хранит в этом браузере.</p></div>
+          <div class="settings-group"><button class="settings-action-row" id="settingsClearHistory" type="button"><span><strong>Очистить историю просмотров</strong><small>Удалить историю на этом устройстве</small></span><b>›</b></button><button class="settings-action-row" id="settingsClearPreferences" type="button"><span><strong>Сбросить настройки</strong><small>Вернуть параметры по умолчанию</small></span><b>›</b></button></div>
+          <p id="settingsPrivacyStatus" class="settings-inline-note" role="status"></p>
+        </section>
+        <section class="settings-panel hidden" data-settings-panel="about">
+          <div class="settings-panel-heading"><span class="settings-eyebrow">LUNO · CINEMA EXPERIENCE</span><h2>О приложении</h2><p>Твой единый интерфейс для поиска и просмотра.</p></div>
+          <div class="settings-about-card"><div class="settings-about-logo"><span class="brand-orbit"><span class="brand-moon"></span></span></div><div><strong>LUNO</strong><small>Cinema Experience</small><span>Веб-приложение · версия 0.4.0</span></div></div>
+          <div class="settings-group"><div class="settings-action-row"><span><strong>Каталог и метаданные</strong><small>TMDB</small></span><b>✓</b></div><div class="settings-action-row"><span><strong>Плеер</strong><small>Встроенный LUNO Player</small></span><b>✓</b></div><div class="settings-action-row"><span><strong>Дизайн</strong><small>Интерфейс LUNO</small></span><b>✓</b></div></div>
+        </section>
+      </div>
+    </div>
+  </section>
+
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
