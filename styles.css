@@ -5876,3 +5876,54 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   body.search-open .search-close-x{display:none!important}
   body.search-open .search-topbar{margin-top:0!important}
 }
+
+
+/* ---------- MATCHING LUNO GLASS BOTTOM NAVIGATION v127 ---------- */
+@media(max-width:700px){
+  .mobile-tabbar{
+    left:12px!important;right:12px!important;
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+    height:64px!important;min-height:64px!important;
+    box-sizing:border-box!important;
+    padding:5px!important;gap:3px!important;
+    border:1px solid rgba(172,170,255,.28)!important;
+    border-radius:23px!important;
+    background:
+      radial-gradient(ellipse at 12% 110%,rgba(107,111,231,.20),transparent 42%),
+      radial-gradient(ellipse at 90% -20%,rgba(125,211,252,.10),transparent 38%),
+      linear-gradient(115deg,rgba(24,25,37,.78),rgba(12,14,22,.70) 52%,rgba(25,25,35,.76))!important;
+    -webkit-backdrop-filter:blur(26px) saturate(165%)!important;
+    backdrop-filter:blur(26px) saturate(165%)!important;
+    box-shadow:0 12px 36px rgba(0,0,0,.30),inset 0 1px rgba(238,239,255,.10),inset 0 0 0 1px rgba(107,111,231,.045)!important;
+  }
+  .mobile-tab{
+    min-width:0!important;min-height:0!important;
+    border:1px solid transparent!important;border-radius:17px!important;
+    background:transparent!important;
+    color:rgba(220,221,237,.67)!important;
+    gap:3px!important;
+    transition:background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease!important;
+    -webkit-tap-highlight-color:transparent!important;
+  }
+  .mobile-tab .tab-icon{
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    font-size:19px!important;line-height:1!important;
+    filter:drop-shadow(0 1px 5px rgba(125,211,252,.10))!important;
+  }
+  .mobile-tab small{
+    font-size:9px!important;font-weight:550!important;
+    letter-spacing:.025em!important;line-height:1.15!important;
+    color:inherit!important;
+  }
+  .mobile-tab.active{
+    color:#f0f0ff!important;
+    border-color:rgba(158,155,255,.36)!important;
+    background:
+      radial-gradient(ellipse at 50% 0%,rgba(125,211,252,.10),transparent 72%),
+      linear-gradient(145deg,rgba(107,111,231,.23),rgba(107,111,231,.10) 60%,rgba(255,255,255,.035))!important;
+    box-shadow:inset 0 1px rgba(237,238,255,.12),0 0 16px rgba(107,111,231,.09)!important;
+  }
+  .mobile-tab.active .tab-icon{filter:drop-shadow(0 0 7px rgba(167,166,255,.28))!important}
+  body{padding-bottom:calc(84px + env(safe-area-inset-bottom))!important}
+  body.library-open .mobile-tabbar{display:none!important}
+}
