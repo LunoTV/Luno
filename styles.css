@@ -6393,3 +6393,42 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
   .settings-menu-item,.settings-choice,.settings-row,.settings-action-row{min-height:44px}
   .library-sort button,.catalog-toolbar button{min-height:40px}
 }
+
+
+/* ---------- MOBILE SHUTTER ALIGNMENT: NO WORDMARK OR MOON ---------- */
+/* Keep the compact controls consistent across home, details, history and settings. */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter .brand,
+  .topbar.luno-nav-shutter .brand-orbit,
+  .topbar.luno-nav-shutter .brand-moon,
+  .topbar.luno-nav-shutter .brand:before,
+  .topbar.luno-nav-shutter .brand:after{
+    display:none!important;
+    visibility:hidden!important;
+    border:0!important;
+    outline:0!important;
+    box-shadow:none!important;
+    background:none!important;
+    content:none!important;
+  }
+  .topbar.luno-nav-shutter{
+    justify-content:flex-start!important;
+    gap:12px!important;
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+  .topbar.luno-nav-shutter .global-header-back{
+    display:grid!important;
+    flex:0 0 36px!important;
+  }
+  .topbar.luno-nav-shutter .tv-header-tools{
+    display:flex!important;
+    flex:0 0 auto!important;
+    margin-left:0!important;
+    justify-content:flex-start!important;
+  }
+  .topbar.luno-nav-shutter .global-header-search,
+  .topbar.luno-nav-shutter .global-header-settings{
+    flex:0 0 36px!important;
+  }
+}
