@@ -173,3 +173,13 @@ test("legacy tall-hero and four-column home navigation overrides are removed", a
   assert.ok(css.includes("body.home-mode .mobile-tabbar.luno-reference-tabbar"), "single five-column home nav rule remains");
   assert.ok(css.includes("body.show-global-back .topbar.luno-nav-shutter .brand"), "wordmark is hidden only on inner screens");
 });
+
+
+test("featured home screen has no unused legacy poster element or old hero sizing rules", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(!html.includes("home-hero-poster-wrap"), "unused side-poster markup is removed");
+  assert.ok(!css.includes(".home-hero-poster-wrap"), "unused side-poster CSS is removed");
+  assert.ok(!css.includes("#homeHero{\n    min-height:500px!important"), "old fixed-height hero is removed");
+  assert.ok(css.includes("home-hero-dots"), "active carousel indicators remain");
+});
