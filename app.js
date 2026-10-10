@@ -256,7 +256,7 @@ function normalizeItem(item){
     tmdbId,
     type,
     name:item?.name || item?.originalName || "Без названия",
-    poster,
+    poster:tmdbPoster,
     background,
     releaseInfo:item?.releaseInfo || "",
     description:item?.description || "",
