@@ -82,7 +82,7 @@
       <section class="section discovery-section" id="trendingSection">
         <div class="section-head">
           <div><span class="section-kicker">СЕЙЧАС СМОТРЯТ</span><h2>Популярное</h2></div>
-          <button class="section-more" data-section="movies">Смотреть все <span>›</span></button>
+          <button class="section-more" data-home-collection="popular">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="trendingCards"></div>
       </section>
@@ -90,7 +90,7 @@
       <section class="section resume-section" id="continueSection">
         <div class="section-head">
           <div><span class="section-kicker">ВОЗВРАЩАЙСЯ</span><h2>Продолжить просмотр</h2></div>
-          <button class="section-more" data-section="favorites">Все <span>›</span></button>
+          <button class="section-more" data-home-collection="continue">Все <span>›</span></button>
         </div>
         <div class="cards" id="continueCards"></div>
       </section>
@@ -98,7 +98,7 @@
       <section class="section discovery-section" id="openCinemaSection">
         <div class="section-head">
           <div><span class="section-kicker">ОТКРЫТОЕ КИНО</span><h2>Open Cinema</h2></div>
-          <button class="section-more" type="button" id="openCinemaSources">Источники <span>›</span></button>
+          <button class="section-more" data-home-collection="openCinema">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="openCinemaCards"></div>
       </section>
@@ -106,7 +106,7 @@
       <section class="section discovery-section" id="lunoPicksSection">
         <div class="section-head">
           <div><span class="section-kicker">ВЫБОР LUNO</span><h2>Рекомендуем тебе</h2></div>
-          <button class="section-more" data-section="movies">Смотреть все <span>›</span></button>
+          <button class="section-more" data-home-collection="recommendations">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="lunoPicksCards"></div>
       </section>
@@ -114,6 +114,7 @@
       <section class="section discovery-section" id="eveningSection">
         <div class="section-head">
           <div><span class="section-kicker">НА ВЕЧЕР</span><h2>Что посмотреть сегодня</h2></div>
+          <button class="section-more" data-home-collection="evening">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="eveningCards"></div>
       </section>
@@ -121,6 +122,7 @@
       <section class="section discovery-section" id="classicsSection">
         <div class="section-head">
           <div><span class="section-kicker">ПРОВЕРЕНО ВРЕМЕНЕМ</span><h2>Культовое кино</h2></div>
+          <button class="section-more" data-home-collection="classics">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="classicsCards"></div>
       </section>
@@ -128,7 +130,7 @@
       <section class="section favorites-section" id="favoritesSection">
         <div class="section-head">
           <div><span class="section-kicker">ТВОЁ</span><h2>Избранное</h2></div>
-          <button id="openAddonManager" class="section-more" type="button">Источники <span>›</span></button>
+          <button class="section-more" data-home-collection="favorites">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="favoriteCards"></div>
         <div class="favorites-empty" id="favoritesEmpty">
@@ -387,6 +389,6 @@
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
-  <script type="module" src="./app.js?v=remote92"></script>
+  <script type="module" src="./app.js?v=remote93"></script>
 </body>
 </html>
