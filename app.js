@@ -1260,16 +1260,6 @@ function saveLunoSetting(key,value){
   try{localStorage.setItem(LUNO_SETTINGS_KEY,JSON.stringify(settings));}catch{}
 }
 const settingsView=document.querySelector("#settingsView");
-const settingsContent=settingsView?.querySelector(".settings-content");
-if(settingsContent&&!settingsContent.querySelector("[data-settings-sections-back]")){
-  const sectionsBack=document.createElement("button");
-  sectionsBack.type="button";
-  sectionsBack.className="settings-sections-back";
-  sectionsBack.dataset.settingsSectionsBack="";
-  sectionsBack.textContent="‹ Все настройки";
-  sectionsBack.addEventListener("click",()=>settingsView.classList.remove("settings-section-open"));
-  settingsContent.prepend(sectionsBack);
-}
 function openSettingsView(section="profile",openAsWindow=false){
   if(!settingsView)return;
   closeLibrary();
@@ -1277,7 +1267,7 @@ function openSettingsView(section="profile",openAsWindow=false){
   detail?.classList.add("hidden");
   document.body.classList.add("settings-open");
   settingsView.classList.remove("hidden");
-  if(openAsWindow&&window.matchMedia("(max-width: 700px)").matches) settingsView.classList.add("settings-section-open");
+  settingsView.classList.toggle("settings-section-open",Boolean(openAsWindow&&window.matchMedia("(max-width: 700px)").matches));
   document.body.classList.remove("home-mode");
   document.body.classList.add("show-global-back");
   document.querySelectorAll("[data-settings-section]").forEach(button=>{
@@ -1310,6 +1300,7 @@ function closeSettingsView(){
 }
 document.querySelectorAll("[data-settings-section]").forEach(button=>button.addEventListener("click",()=>openSettingsView(button.dataset.settingsSection,true)));
 document.querySelector("#settingsBack")?.addEventListener("click",closeSettingsView);
+document.querySelector("[data-settings-sections-back]")?.addEventListener("click",()=>settingsView?.classList.remove("settings-section-open"));
 settingsView?.querySelectorAll("[data-setting]").forEach(control=>{
   control.addEventListener("change",()=>{
     const value=control.type==="checkbox"?control.checked:control.value;
