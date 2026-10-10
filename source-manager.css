@@ -11,3 +11,20 @@
 
 .player-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .player-actions .player-source{min-width:88px}
+
+/* LUNO design system v1.0 — source manager */
+.source-manager-summary>div{
+  padding:14px;border:1px solid var(--luno-border,#30313C);border-radius:16px;
+  background:var(--luno-surface,#14151D);
+}
+.source-manager-summary span{color:var(--luno-text-muted,#989BAA)}
+.source-manager-title{color:#B7B4D4}
+.source-toggle{
+  border:1px solid var(--luno-border-strong,#444452);
+  border-radius:12px;padding:8px 12px;background:var(--luno-surface,#14151D);
+  color:var(--luno-text,#E7E8EF);transition:background-color .18s,border-color .18s;
+}
+.source-toggle:hover,.source-toggle:focus-visible{
+  background:var(--luno-surface-raised,#242334);border-color:var(--luno-violet,#8581AD);
+}
+@media(prefers-reduced-motion:reduce){.source-toggle{transition:none}}
