@@ -36,7 +36,8 @@ test("mobile shutter exposes only contextual back and search controls", async ()
   assert.ok(css.includes(".topbar.luno-nav-shutter .global-header-settings"), "settings button is explicitly hidden in the mobile shutter");
   assert.ok(css.includes("body.show-global-back .topbar.luno-nav-shutter .global-header-back"), "back is shown only on inner pages");
   assert.ok(css.includes(".topbar.luno-nav-shutter .global-header-search"), "search remains visible");
-  assert.ok(html.includes("./ui/design-system.css?v=5"), "updated shutter styles use a fresh cache version");
+  assert.ok(css.includes(".topbar.luno-nav-shutter::after"), "legacy centered wordmark pseudo-element is explicitly removed");
+  assert.ok(html.includes("./ui/design-system.css?v=6"), "updated shutter styles use a fresh cache version");
 });
 
 test("all core LUNO design tokens are defined in the shared layer", async () => {
