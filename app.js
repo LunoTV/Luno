@@ -297,16 +297,20 @@ async function fetchTmdbApi(endpoint,params={}){
   });
   if(!query.has("language")) query.set("language","ru-RU");
   if(!query.has("include_adult")) query.set("include_adult","false");
+  // Lampa's TMDB gateway accepts an email query parameter; an empty value is
+  // valid when LUNO has no Lampa account configured.
+  if(!query.has("email")) query.set("email","");
+  const mirrorErrors=[];
   const directAttempts=LUNO_TMDB_API_MIRRORS.map(async(base)=>{
     const controller=new AbortController();
-    const timer=window.setTimeout(()=>controller.abort(),4500);
+    const timer=window.setTimeout(()=>controller.abort(),10000);
     try{
       const response=await fetch(base+cleanEndpoint+"?"+query.toString(),{
         cache:"no-store",
         headers:{accept:"application/json"},
         signal:controller.signal
       });
-      if(!response.ok) throw new Error("TMDB mirror HTTP "+response.status);
+      if(!response.ok) throw new Error(base+" HTTP "+response.status);
       const data=await response.json();
       if(!data||!Array.isArray(data.results)) throw new Error("TMDB mirror returned invalid data");
       // A gateway that returns an empty search response must not win Promise.any
@@ -315,6 +319,9 @@ async function fetchTmdbApi(endpoint,params={}){
         throw new Error("TMDB mirror returned an empty search result");
       }
       return data;
+    }catch(error){
+      mirrorErrors.push(base+": "+String(error?.message||error));
+      throw error;
     }finally{
       window.clearTimeout(timer);
     }
@@ -330,9 +337,15 @@ async function fetchTmdbApi(endpoint,params={}){
     if(!workerPath) throw mirrorError;
     const workerQuery=new URLSearchParams(query);
     if(cleanEndpoint==="search/multi"&&!workerQuery.has("query")) throw mirrorError;
-    const response=await fetch(workerBase+workerPath+"?"+workerQuery.toString(),{
-      cache:"no-store",headers:{accept:"application/json"},signal:AbortSignal.timeout(5000)
-    });
+    let response;
+    try{
+      response=await fetch(workerBase+workerPath+"?"+workerQuery.toString(),{
+        cache:"no-store",headers:{accept:"application/json"},signal:AbortSignal.timeout(10000)
+      });
+    }catch(workerError){
+      const details=mirrorErrors.slice(0,4).join(" | ");
+      throw new Error("Зеркала TMDB недоступны: "+(details||"тайм-аут")+"; LUNO API: "+String(workerError?.message||workerError));
+    }
     if(!response.ok) throw new Error("TMDB gateways and LUNO API unavailable (HTTP "+response.status+")");
     const data=await response.json();
     if(!data||!Array.isArray(data.results)) throw new Error("LUNO API returned invalid data");
