@@ -882,14 +882,27 @@ function openCategoryHub(){
   libraryTitle.textContent="Каталог";
   libraryKicker.textContent="";
   libraryContent.innerHTML=
-    '<div class="category-hub">'+
-      '<button class="category-hub-card" data-category="movies"><span>🎬</span><strong>Фильмы</strong><small>Полнометражное кино</small></button>'+
-      '<button class="category-hub-card" data-category="series"><span>📺</span><strong>Сериалы</strong><small>Сезоны и эпизоды</small></button>'+
-      '<button class="category-hub-card" data-category="cartoons"><span>✦</span><strong>Мультфильмы</strong><small>Анимационное кино</small></button>'+
-      '<button class="category-hub-card" data-category="anime"><span>◈</span><strong>Аниме</strong><small>Японская анимация</small></button>'+
-      '<button class="category-hub-card" data-category="shows"><span>◉</span><strong>Шоу</strong><small>Реалити, ток-шоу и другое</small></button>'+
-      '<button class="category-hub-card" data-category="favorites"><span>♡</span><strong>Моё</strong><small>Избранное и продолжение</small></button>'+
-    '</div>';
+    '<div class="luno-catalog-intro">'+
+      '<span class="luno-catalog-eyebrow"><i></i> ТВОЯ ВСЕЛЕННАЯ КИНО</span>'+
+      '<h2>Что будем <em>смотреть?</em></h2>'+
+      '<p>Большие истории начинаются с одного выбора.</p>'+
+      '<div class="luno-catalog-search" role="button" tabindex="0" aria-label="Открыть поиск">'+
+        '<span class="luno-catalog-search-icon">⌕</span><span>Название фильма, сериала…</span><span class="luno-catalog-search-arrow">↗</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="category-hub luno-category-hub">'+
+      '<button class="category-hub-card luno-category-film" data-category="movies"><span class="luno-category-icon">▰</span><small class="luno-category-overline">БОЛЬШОЙ ЭКРАН</small><strong>Фильмы</strong><small class="luno-category-desc">Истории на один вечер</small><b class="luno-category-arrow">↗</b></button>'+
+      '<button class="category-hub-card luno-category-series" data-category="series"><span class="luno-category-icon">▤</span><small class="luno-category-overline">СЛЕДУЮЩАЯ СЕРИЯ</small><strong>Сериалы</strong><small class="luno-category-desc">Истории, в которые погружаешься</small><b class="luno-category-arrow">↗</b></button>'+
+      '<button class="category-hub-card luno-category-cartoons" data-category="cartoons"><span class="luno-category-icon">✦</span><small class="luno-category-overline">ДЛЯ ВСЕХ ВОЗРАСТОВ</small><strong>Мультфильмы</strong><small class="luno-category-desc">Яркие миры и герои</small><b class="luno-category-arrow">↗</b></button>'+
+      '<button class="category-hub-card luno-category-anime" data-category="anime"><span class="luno-category-icon">◇</span><small class="luno-category-overline">МИР АНИМАЦИИ</small><strong>Аниме</strong><small class="luno-category-desc">Эмоции без границ</small><b class="luno-category-arrow">↗</b></button>'+
+      '<button class="category-hub-card luno-category-shows" data-category="shows"><span class="luno-category-icon">◉</span><small class="luno-category-overline">В ПРЯМОМ ЭФИРЕ</small><strong>Шоу</strong><small class="luno-category-desc">Развлечения и открытия</small><b class="luno-category-arrow">↗</b></button>'+
+      '<button class="category-hub-card luno-category-favorites" data-category="favorites"><span class="luno-category-icon">♡</span><small class="luno-category-overline">ТВОЯ КОЛЛЕКЦИЯ</small><strong>Моё кино</strong><small class="luno-category-desc">Избранное и продолжение</small><b class="luno-category-arrow">↗</b></button>'+
+    '</div>'+
+    '<div class="luno-catalog-foot"><span class="luno-catalog-foot-orbit">◐</span><span><strong>Твой вечер. Твой выбор.</strong><small>Открывай новое в LUNO</small></span></div>';
+  const catalogSearch=libraryContent.querySelector(".luno-catalog-search");
+  const openCatalogSearch=()=>{searchPanel?.classList.remove("hidden");window.setTimeout(()=>searchInput?.focus(),40);};
+  catalogSearch?.addEventListener("click",openCatalogSearch);
+  catalogSearch?.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();openCatalogSearch();}});
   libraryView.classList.remove("hidden");
   document.body.classList.add("library-open");
   libraryContent.scrollTop=0;
