@@ -237,12 +237,12 @@ function normalizeImageValue(value,size){
 }
 
 function normalizeItem(item){
-  const posterValue=String(item?.poster||"");
-  const backgroundValue=String(item?.background||"");
+  // Use TMDB artwork only. Ignore LUNO's cached/custom poster fields.
+  const posterValue=String(item?.poster||"").trim();
   const tmdbPoster=item?.poster_path
     ? "https://image.tmdb.org/t/p/w500/"+String(item.poster_path).replace(/^\//,"")
-    : "";
-  const poster=tmdbPoster || normalizeImageValue(posterValue,"w500");
+    : (isDirectTmdbImage(posterValue) ? posterValue : "");
+  const backgroundValue=String(item?.background||"");
   const background=normalizeImageValue(backgroundValue,"w1280") ||
     (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280/"+String(item.backdrop_path).replace(/^\//,"") : "");
   const type=item?.type==="tv" ? "series" : (item?.type || "movie");
@@ -296,13 +296,11 @@ function isDirectTmdbImage(value){
 function posterCandidates(item){
   const values=[];
   const rawPoster=String(item?.poster||"").trim();
-  const rawSource=String(item?.posterSource||"").trim();
   let path=String(item?.poster_path||item?.posterPath||"").trim();
   if(path.startsWith("/")) path=path.slice(1);
+  // LUNO's own cached/custom poster fields are deliberately ignored. Only
+  // TMDB poster paths or explicit TMDB image URLs may be used, including in search.
   const remotePath=path || tmdbImagePath(rawPoster);
-
-  // Lampa's TMDB Proxy rotates through these image mirrors. Try them before
-  // image.tmdb.org, then retain the direct URL and non-TMDB art as last resorts.
   if(remotePath){
     const parts=remotePath.split("/");
     const first=parts[0]||"";
@@ -315,11 +313,6 @@ function posterCandidates(item){
     values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
   }
   if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
-  const sourcePath=tmdbImagePath(rawSource);
-  if(sourcePath) values.push(...tmdbImageMirrorCandidates("t/p/"+sourcePath));
-  if(rawSource) values.push(rawSource);
-  if(rawPoster && !isDirectTmdbImage(rawPoster)) values.push(normalizeImageValue(rawPoster,"w500"));
-  if(item?.background) values.push(item.background);
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
 // Shared device capability check used by poster loading and prefetching.
