@@ -406,3 +406,28 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--luno-violet); 
     display: grid !important;
   }
 }
+
+/* Inner pages must win over legacy high-specificity mobile wordmark rules. */
+@media (max-width: 700px) {
+  html body.show-global-back .topbar.luno-nav-shutter > .brand,
+  html body.show-global-back .topbar.luno-nav-shutter > .nav,
+  html body.show-global-back .topbar.luno-nav-shutter .global-header-settings,
+  html body.show-global-back .topbar.luno-nav-shutter::after {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+  html body.show-global-back .topbar.luno-nav-shutter > .global-header-back {
+    display: grid !important;
+    visibility: visible !important;
+  }
+  html body.show-global-back .topbar.luno-nav-shutter .tv-header-tools {
+    display: flex !important;
+    margin-left: auto !important;
+  }
+  html body.show-global-back .topbar.luno-nav-shutter .global-header-search {
+    display: grid !important;
+    visibility: visible !important;
+  }
+}
