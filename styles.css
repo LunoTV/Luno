@@ -5512,3 +5512,24 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     font-size:12px!important;line-height:1.15!important;
   }
 }
+
+
+/* ---------- LUNO VIEWING HISTORY PAGE ---------- */
+.history-watch-grid{padding-bottom:24px}
+.history-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:12px;min-height:300px;padding:32px 22px;
+  border:1px solid rgba(205,208,235,.12);border-radius:24px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(107,111,231,.11),transparent 65%),rgba(14,15,21,.62);
+}
+.history-empty-icon{
+  display:grid;place-items:center;width:64px;height:64px;border-radius:22px;
+  color:#c5c8ff;font-size:34px;
+  background:rgba(107,111,231,.13);border:1px solid rgba(125,211,252,.18);
+}
+.history-empty h3{margin:0;color:#f3f4ff;font-size:21px;font-weight:750}
+.history-empty p{max-width:310px;margin:0;color:#a8a9b7;font-size:14px;line-height:1.6}
+.history-empty-action{
+  margin-top:8px;padding:12px 20px;border:1px solid rgba(205,208,235,.2);
+  border-radius:14px;background:rgba(107,111,231,.17);color:#f3f4ff;font-weight:700
+}
