@@ -8,7 +8,7 @@ import {
   getPlayerStreamUrl,
   unloadLunoPlayer,
   dispatchLunoPlayerAction,
-} from "./source-engine.js?v=source30";
+} from "./source-engine.js?v=source31";
 import {renderSourceManager,bindSourceManager} from "./ui/source-manager.js";
 import {qualityNumber} from "./sources/quality.js";
 import {installRemoteNavigation} from "./ui/remote-navigation.js?v=remote32";
@@ -2622,7 +2622,7 @@ function prefetchPosters(items){
   }
 
   try{
-    const {initLunoCore}=await import("./source-engine.js?v=source30");
+    const {initLunoCore}=await import("./source-engine.js?v=source31");
     await Promise.race([
       initLunoCore(),
       new Promise((_,reject)=>window.setTimeout(()=>reject(new Error("LUNO Source Engine init timeout")),6500))

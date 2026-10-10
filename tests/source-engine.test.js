@@ -6,6 +6,7 @@ import { normalizeStream, normalizeVoice, normalizeEpisodeInfo, streamKind } fro
 import { qualityNumber, listQualities, selectBestUrl } from "../sources/quality.js";
 import { normalizeSubtitles } from "../sources/subtitles.js";
 import { catalogItemId, catalogPosterFilename } from "../scripts/catalog-utils.mjs";
+import { filterEnabledSourceIds } from "../sources/preferences.js";
 import { isTrustedRuntimeApiUrl, appendRuntimeParams } from "../sources/request-policy.js";
 
 const url=(name)=>`https://media.example.test/${name}`;
@@ -111,4 +112,13 @@ test("catalog IDs and poster filenames distinguish movies from series with the s
   assert.notEqual(catalogPosterFilename("movie",1399),catalogPosterFilename("tv",1399));
   assert.equal(catalogPosterFilename("movie",1399),"movie-1399.jpg");
   assert.equal(catalogPosterFilename("tv",1399),"tv-1399.jpg");
+});
+
+
+test("source toggles disable matching headless Lampa adapters",()=>{
+  assert.deepEqual(
+    filterEnabledSourceIds(["videocdn","rezka","filmix"],{videocdn:false,filmix:false}),
+    ["rezka"]
+  );
+  assert.deepEqual(filterEnabledSourceIds([],{}),[]);
 });

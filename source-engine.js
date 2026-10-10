@@ -1,5 +1,6 @@
 import {createSourceRegistry} from "./sources/registry.js";
 import {isTrustedRuntimeApiUrl,appendRuntimeParams} from "./sources/request-policy.js";
+import {filterEnabledSourceIds} from "./sources/preferences.js";
 import {loadSourceDefinitions,sourceDefinition} from "./sources/loader.js";
 import {normalizeSubtitles as normalizeSubtitle,normalizeStream,streamKind,normalizeVoice,normalizeEpisodeInfo} from "./sources/normalizer.js";
 import {selectBestUrl as selectBestQualityUrl,qualityNumber} from "./sources/quality.js";
@@ -76,13 +77,19 @@ async function requestJson(url,options={}){
 
 async function requestText(url,options={}){
   const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),options.timeout||SOURCE_TIMEOUT);
+  const externalSignal=options.signal;
+  const abortFromCaller=()=>controller.abort(externalSignal?.reason);
+  if(externalSignal?.aborted)abortFromCaller();
+  else externalSignal?.addEventListener("abort",abortFromCaller,{once:true});
+  const timer=setTimeout(()=>controller.abort(),Number(options.timeout)||SOURCE_TIMEOUT);
   try{
+    const {timeout:ignoredTimeout,signal:ignoredSignal,...fetchOptions}=options;
+    const trustedApi=isTrustedRuntimeApiUrl(url,apiBaseCandidates());
     const response=await fetch(addRuntimeParams(url),{
-      ...options,
+      ...fetchOptions,
       headers:{
         accept:"text/html,application/json,text/plain,*/*",
-        ...(isTrustedRuntimeApiUrl(url,apiBaseCandidates())?{"X-Kit-AesGcm":localStorage.getItem("aesgcmkey")||""}:{}),
+        ...(trustedApi?{"X-Kit-AesGcm":localStorage.getItem("aesgcmkey")||""}:{}),
         ...(options.headers||{})
       },
       signal:controller.signal,
@@ -90,7 +97,10 @@ async function requestText(url,options={}){
     });
     if(!response.ok)throw new Error("HTTP "+response.status);
     return await response.text();
-  }finally{clearTimeout(timer)}
+  }finally{
+    clearTimeout(timer);
+    externalSignal?.removeEventListener("abort",abortFromCaller);
+  }
 }
 
 function apiBaseCandidates(){
@@ -152,7 +162,7 @@ function requestParams(item){
   return params;
 }
 
-async function enrichExternalIds(item){
+async function enrichExternalIds(item,signal){
   if(item?.imdbId||item?.imdb_id||item?.kinopoiskId||item?.kinopoisk_id)return item;
   const params=new URLSearchParams();
   const movie=buildMovie(item);
@@ -160,8 +170,9 @@ async function enrichExternalIds(item){
   if(movie.tmdb_id)params.set("tmdb_id",movie.tmdb_id);
   params.set("serial",movie.type==="series"?"1":"0");
   for(const base of apiBaseCandidates()){
+    if(signal?.aborted)return item;
     try{
-      const data=await requestJson(base+"/externalids?"+params.toString(),{timeout:6000});
+      const data=await requestJson(base+"/externalids?"+params.toString(),{timeout:6000,signal});
       if(data&&typeof data==="object")return {...item,
         imdbId:item.imdbId||data.imdb_id||data.imdbId||"",
         kinopoiskId:item.kinopoiskId||data.kinopoisk_id||data.kinopoiskId||""
@@ -171,7 +182,7 @@ async function enrichExternalIds(item){
   return item;
 }
 
-async function discoverSources(item){
+async function discoverSources(item,signal){
   const movie=buildMovie(item);
   const params=requestParams(movie);
   const cacheKey="sources|"+params.toString();
@@ -179,8 +190,9 @@ async function discoverSources(item){
   if(cached&&cached.expires>Date.now())return cached.value;
 
   for(const base of apiBaseCandidates()){
+    if(signal?.aborted)return[];
     try{
-      const data=await requestJson(base+"/lite/events?"+params.toString(),{timeout:SOURCE_TIMEOUT});
+      const data=await requestJson(base+"/lite/events?"+params.toString(),{timeout:SOURCE_TIMEOUT,signal});
       const online=Array.isArray(data)?data:(Array.isArray(data?.online)?data.online:[]);
       const mapped=online.map((entry)=>({
         id:sourceName(entry),
@@ -250,40 +262,41 @@ function parseSourcePayload(payload){
   return[];
 }
 
-async function resolveFile(raw){
-  if(!raw)return null;
+async function resolveFile(raw,signal){
+  if(!raw||signal?.aborted)return null;
   if(raw.method==="play"&&http(raw.url||raw.stream))return raw;
   const url=text(raw.url||raw.stream);
   if(!http(url))return null;
   if(raw.method==="link"&&raw.similar)return null;
   try{
-    const data=await requestJson(url,{timeout:SOURCE_TIMEOUT});
+    const data=await requestJson(url,{timeout:SOURCE_TIMEOUT,signal});
     const parsed=parseSourcePayload(data);
     if(parsed.length)return parsed[0];
     if(data&&typeof data==="object"&&(data.url||data.stream||data.file))return data;
     return null;
   }catch{
     try{
-      const textData=await requestText(url,{timeout:SOURCE_TIMEOUT});
+      const textData=await requestText(url,{timeout:SOURCE_TIMEOUT,signal});
       const parsed=parseSourcePayload(textData);
       return parsed[0]||null;
     }catch{return null}
   }
 }
 
-async function resolveSource(source,item){
+async function resolveSource(source,item,signal){
   const movie=buildMovie(item);
   const params=requestParams({...item,...movie});
   const candidates=sourceUrlCandidates(source);
   for(const endpoint of candidates){
+    if(signal?.aborted)return[];
     try{
       const separator=endpoint.includes("?")?"&":"?";
-      const payload=await requestText(endpoint+separator+params.toString(),{timeout:SOURCE_TIMEOUT});
+      const payload=await requestText(endpoint+separator+params.toString(),{timeout:SOURCE_TIMEOUT,signal});
       const entries=parseSourcePayload(payload);
       const playable=[];
       for(const entry of entries){
         if(entry?.method==="play"||entry?.method==="call"||entry?.url||entry?.stream||entry?.file){
-          const resolved=entry?.method==="play"?entry:await resolveFile(entry);
+          const resolved=entry?.method==="play"?entry:await resolveFile(entry,signal);
           const chosen=resolved||entry;
           const url=selectBestQualityUrl(chosen);
           if(http(url))playable.push({...chosen,url});
@@ -313,13 +326,13 @@ function normalizeResolved(raw,source,item){
 }
 
 async function resolvePrismaSources(item,{videoId="",signal}={}){
-  const enriched=await enrichExternalIds(item||{});
+  const enriched=await enrichExternalIds(item||{},signal);
   if(signal?.aborted)return[];
 
   // Lampa resolves sources headlessly; LUNO remains the only UI/player.
   const runtime=window.LunoLampaRuntime;
   const sourceRuntime=window.LunoLampaSourceRuntime;
-  const adapters=sourceRuntime?.adapters||[];
+  const adapters=filterEnabledSourceIds(sourceRuntime?.adapters||[],sourcePreferences());
   const movie=buildMovie(enriched);
   let lampaStreams=[];
   if(runtime?.source&&window.LunoLampaSourcesReady&&adapters.length){
@@ -341,12 +354,12 @@ async function resolvePrismaSources(item,{videoId="",signal}={}){
   if(signal?.aborted)return[];
 
   // Keep user-configured LUNO providers available as additional fallbacks.
-  const sources=await discoverSources(enriched);
+  const sources=await discoverSources(enriched,signal);
   if(signal?.aborted)return[];
   const selected=await Promise.all(sources.filter(s=>s.show!==false).map(async source=>{
     if(signal?.aborted)return[];
     try{
-      const rows=await resolveSource(source,enriched);
+      const rows=await resolveSource(source,enriched,signal);
       return rows.map(row=>normalizeResolved(row,source,enriched)).filter(Boolean);
     }catch(error){
       console.debug("[LUNO resolver]",source.id,error);
