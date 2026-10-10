@@ -5929,34 +5929,7 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
 }
 
 
-/* ---------- RESTORE THE LUNO WORDMARK IN THE TOP GLASS BAR ---------- */
-@media(max-width:700px){
-  .topbar.luno-nav-shutter .brand{
-    position:absolute!important;
-    left:50%!important;top:50%!important;
-    transform:translate(-50%,-50%)!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    width:auto!important;height:auto!important;min-width:0!important;
-    margin:0!important;padding:0!important;
-    background:transparent!important;border:0!important;box-shadow:none!important;
-    color:#E8ECFF!important;
-    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;
-    font-size:25px!important;font-weight:300!important;
-    letter-spacing:.30em!important;line-height:1!important;
-    white-space:nowrap!important;
-    text-shadow:0 0 12px rgba(107,111,231,.20)!important;
-    z-index:2!important;
-  }
-  .topbar.luno-nav-shutter .brand .brand-orbit{display:none!important}
-  .topbar.luno-nav-shutter .brand>span:not(.brand-orbit){
-    display:inline!important;color:#E8ECFF!important;
-  }
-  .topbar.luno-nav-shutter .brand:after{content:none!important;display:none!important}
-  .topbar.luno-nav-shutter .tv-header-tools{position:relative!important;z-index:3!important}
-}
-
-
-/* ---------- LUNO WORDMARK LEFT, AS IN THE ORIGINAL SHUTTER ---------- */
+remove conflicting centered LUNO override/* ---------- LUNO WORDMARK LEFT, AS IN THE ORIGINAL SHUTTER ---------- */
 @media(max-width:700px){
   .topbar.luno-nav-shutter .brand{
     position:relative!important;
@@ -5980,4 +5953,25 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   }
   .topbar.luno-nav-shutter .brand:after{content:none!important;display:none!important}
   .topbar.luno-nav-shutter .tv-header-tools{position:relative!important;z-index:3!important}
+}
+
+
+/* ---------- SEARCH EXIT + SCREEN STACKING FIX ---------- */
+@media(max-width:700px){
+  body.search-open{overflow:hidden!important}
+  body.search-open .mobile-tabbar{display:none!important;visibility:hidden!important;pointer-events:none!important}
+  body.search-open .topbar.luno-nav-shutter{z-index:120!important}
+  body.search-open .overlay{
+    top:58px!important;inset-block-start:58px!important;
+    height:calc(100dvh - 58px)!important;
+    z-index:110!important;
+    overflow:hidden!important;
+  }
+  body.search-open .luno-search-screen{
+    height:100%!important;min-height:0!important;max-height:100%!important;
+    padding-top:18px!important;padding-bottom:calc(28px + env(safe-area-inset-bottom))!important;
+    overflow-y:auto!important;overscroll-behavior:contain!important;
+  }
+  body.search-open .search-back,
+  body.search-open .search-close-x{display:none!important}
 }
