@@ -667,7 +667,6 @@ function openDetail(item){
   detailReturnLibrary=libraryView && !libraryView.classList.contains("hidden") ? libraryType : "";
   if(detailReturnLibrary) closeLibrary(true);
   currentItem=item;
-  saveHistoryItem(item);
   try{
     setLunoHistory("detail");
     paintDetail(item);
@@ -906,11 +905,31 @@ function openLibrary(type,pushHistory=true){
     series:{title:"Сериалы",kicker:""},
     cartoons:{title:"Мультфильмы",kicker:""},
     anime:{title:"Аниме",kicker:""},
-    shows:{title:"Шоу",kicker:""}
+    shows:{title:"Шоу",kicker:""},
+    history:{title:"История просмотра",kicker:"ТВОИ ПРОСМОТРЫ"}
   }[type];
   if(!config || !libraryView) return;
 
   if(pushHistory) setLunoHistory(type);
+  if(type==="history"){
+    libraryType="history";
+    libraryItems=loadHistory().sort((a,b)=>(Number(b.updatedAt)||0)-(Number(a.updatedAt)||0));
+    libraryVisible=libraryItems.length;
+    libraryTitle.textContent=config.title;
+    libraryKicker.textContent=config.kicker;
+    libraryContent.innerHTML=
+      '<div class="library-toolbar"><span>Видео, которые ты начал смотреть</span>'+
+      '<strong class="library-toolbar-count">'+libraryItems.length+'</strong></div>'+
+      (libraryItems.length
+        ? '<div class="library-infinite-grid history-watch-grid">'+libraryItems.map(card).join("")+'</div>'
+        : '<div class="history-empty"><span class="history-empty-icon">◷</span><h3>Здесь появится история просмотров</h3><p>Начни смотреть фильм или сериал — он автоматически сохранится здесь.</p><button type="button" class="history-empty-action" data-section="home">Выбрать фильм</button></div>');
+    libraryView.classList.remove("hidden");
+    document.body.classList.add("library-open");
+    libraryContent.scrollTop=0;
+    bindCards();
+    libraryContent.querySelector('[data-section="home"]')?.addEventListener("click",()=>{closeLibrary();navigate("home");});
+    return;
+  }
   libraryType=type;
   librarySort="popular";
   libraryItems=sortLibraryItems(getLibraryItems(type),"popular");
@@ -1834,6 +1853,17 @@ function openPlayer(id,type,title,streamUrl=""){
   }
   document.querySelector("#closePlayer")?.focus();
 }
+
+// Save a title to viewing history only when playback actually starts.
+lunoVideo?.addEventListener("playing",()=>{
+  if(!currentItem?.id) return;
+  saveHistoryItem(currentItem);
+  if(libraryType==="history" && libraryView && !libraryView.classList.contains("hidden")){
+    const scrollTop=libraryContent?.scrollTop||0;
+    openLibrary("history",false);
+    if(libraryContent) libraryContent.scrollTop=scrollTop;
+  }
+});
 
 function closePlayer(fromHistory=false){
   playerResolveId++;
