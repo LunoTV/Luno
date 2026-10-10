@@ -5571,3 +5571,76 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 .luno-catalog-foot small{font-size:10px;color:#858797}
 @media(min-width:700px){.category-hub.luno-category-hub{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.luno-category-hub .category-hub-card{min-height:210px;padding:23px;border-radius:24px}.luno-category-hub .category-hub-card strong{font-size:23px}.luno-category-hub .category-hub-card .luno-category-desc{font-size:12px}.luno-category-overline{font-size:9px!important}}
 @media(max-width:380px){.category-hub.luno-category-hub{gap:9px}.luno-category-hub .category-hub-card{min-height:160px;padding:13px;border-radius:18px}.luno-category-hub .category-hub-card strong{font-size:17px}.luno-category-hub .category-hub-card .luno-category-desc{font-size:9px}.luno-category-arrow{right:11px;bottom:11px}}
+
+
+/* ---------- LUNO UNIFIED LUNAR PALETTE + COMPACT INNER HEADER v123 ---------- */
+:root{
+  --luno-violet:#8b8cf4;
+  --luno-ice:#7dd3fc;
+  --luno-lavender:#b9b9ff;
+  --luno-silver:#e8ecff;
+  --luno-line:rgba(139,140,244,.22);
+  --luno-panel:rgba(19,21,31,.88);
+}
+body, #app, main, .library-view, .overlay, .detail-overlay{
+  background-color:#050609;
+}
+.section-kicker,.section-more,.library-kicker,.luno-catalog-eyebrow,
+.library-toolbar,.category-hub-card .luno-category-overline{
+  color:#b7b8d8;
+}
+.section-kicker:before,.section-kicker:after{
+  border-color:rgba(125,211,252,.42);
+}
+.section-more,.library-sort button,.library-back,.global-header-back,
+.category-hub-card,.luno-catalog-foot,.library-toolbar{
+  border-color:rgba(185,185,255,.18)!important;
+}
+.section-more:hover,.library-sort button.active{
+  background:linear-gradient(115deg,rgba(107,111,231,.18),rgba(125,211,252,.08))!important;
+  border-color:rgba(125,211,252,.38)!important;
+}
+.category-hub-card,.library-view .library-infinite-grid .card,
+.luno-category-hub .category-hub-card{
+  box-shadow:inset 0 1px rgba(232,236,255,.045),0 12px 34px rgba(0,0,0,.12);
+}
+.topbar{
+  background:linear-gradient(110deg,rgba(15,16,27,.97),rgba(10,12,17,.95) 55%,rgba(16,21,30,.96))!important;
+  border-bottom:1px solid rgba(185,185,255,.19)!important;
+  box-shadow:0 8px 26px rgba(0,0,0,.12);
+}
+.topbar .brand{color:#f1f2ff!important}
+.topbar .brand-orbit{border-color:rgba(185,185,255,.7)!important;box-shadow:0 0 16px rgba(107,111,231,.12)}
+.global-header-back,.global-header-search,.global-header-settings{
+  color:#e8ecff!important;border-color:rgba(185,185,255,.22)!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(107,111,231,.055))!important;
+}
+@media(max-width:700px){
+  .topbar{
+    height:64px!important;padding:0 18px!important;gap:12px!important;
+    background:linear-gradient(110deg,rgba(15,16,27,.96),rgba(10,12,17,.95) 55%,rgba(16,21,30,.96))!important;
+  }
+  main{padding-top:64px!important}
+  .global-header-back{
+    display:none!important;flex:0 0 40px!important;width:40px!important;height:40px!important;
+    min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;
+    margin:0 2px 0 0!important;padding:0!important;border:1px solid rgba(185,185,255,.24)!important;
+    border-radius:50%!important;font-size:27px!important;font-weight:400!important;line-height:1!important;
+    color:#e8ecff!important;background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(107,111,231,.08))!important;
+  }
+  body.show-global-back .global-header-back{display:grid!important;place-items:center!important}
+  body.show-global-back .topbar .brand{display:none!important}
+  body.show-global-back .topbar{justify-content:flex-start!important}
+  body.show-global-back .tv-header-tools{margin-left:auto!important}
+  body:not(.show-global-back) .topbar .brand{display:flex!important}
+  .luno-catalog-intro{padding-top:18px!important}
+  .luno-catalog-intro:before{background:radial-gradient(circle,rgba(139,140,244,.22),rgba(125,211,252,.07) 44%,transparent 72%)!important}
+  .luno-catalog-intro h2 em{color:#b9b9ff!important}
+  .luno-category-hub .category-hub-card{
+    background:linear-gradient(145deg,rgba(27,29,43,.97),rgba(9,11,17,.99) 72%)!important;
+    border-color:rgba(185,185,255,.18)!important;
+  }
+  .luno-category-hub .category-hub-card:before{
+    background:radial-gradient(circle,var(--category-glow,rgba(139,140,244,.27)),rgba(125,211,252,.045) 52%,transparent 72%)!important;
+  }
+}
