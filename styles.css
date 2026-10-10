@@ -6110,3 +6110,26 @@ body.settings-open{overflow-x:hidden}
  .settings-menu-item{min-height:76px}
 }
 @media(prefers-reduced-motion:reduce){.settings-menu-item,.settings-row i,.settings-row i:after{transition:none!important}}
+
+/* Settings is a viewport-level screen, not a section below the home page. */
+.settings-view{
+  position:fixed!important;
+  inset:0!important;
+  z-index:1000!important;
+  box-sizing:border-box;
+  width:100%;
+  height:100vh;
+  height:100dvh;
+  min-height:0!important;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding-top:calc(env(safe-area-inset-top, 0px) + 24px);
+  padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 32px);
+  background-color:#08090D;
+}
+.settings-view.hidden{display:none!important}
+@media(max-width:760px){
+  .settings-view{padding-left:16px;padding-right:16px}
+  .settings-head{margin-top:0;padding-top:4px}
+}
