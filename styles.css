@@ -2019,22 +2019,6 @@ main > .section .cards .card-title{font-size:12px}
 @media(max-width:700px){
 }
 
-/* LUNO TOP FEATURE V6 — the current film is the first thing on the home screen */
-#continueSection{
-  display:none!important;
-}
-#homeHero{
-  margin-top:0!important;
-}
-@media(max-width:700px){
-  #homeHero{
-    min-height:500px!important;
-    height:500px!important;
-    margin:0!important;
-    padding:0 20px 26px!important;
-  }
-}
-
 /* LUNO CARD CORNER LABEL V4 */
 .card-art{position:relative!important}
 .card-type.card-corner{
@@ -3859,7 +3843,7 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
   box-shadow:0 28px 85px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.035);
 }
 @media(hover:hover){
-  .home-hero:hover .home-hero-poster-wrap{transform:rotate(0) translateY(-5px);box-shadow:0 28px 75px rgba(0,0,0,.62)}
+
   .home-hero:hover .home-hero-backdrop{transform:scale(1.045)}
 }
 .section{position:relative;scroll-margin-top:90px}
@@ -3873,8 +3857,7 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 #trendingSection{margin-top:clamp(18px,3vw,38px)}
 .home-hero~.section{transition:opacity .25s ease}
 @media(max-width:700px){
-  .home-hero-copy{animation:none}
-  .home-hero-poster-wrap{box-shadow:0 15px 40px rgba(0,0,0,.42)}
+
   .section .cards{scroll-padding-inline:4px}
   #trendingSection{margin-top:24px}
 }
