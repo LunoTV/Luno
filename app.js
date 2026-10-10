@@ -340,6 +340,10 @@ function tmdbImageMirrorCandidates(path){
   if(!clean) return [];
   return LUNO_TMDB_IMAGE_MIRRORS.map(base=>base+clean);
 }
+function preferredTmdbImage(value){
+  const path=tmdbImagePath(value);
+  return path ? (tmdbImageMirrorCandidates("t/p/"+path)[0]||value) : value;
+}
 function tmdbImagePath(value){
   const raw=String(value||"").trim();
   const marker="/t/p/";
@@ -365,10 +369,9 @@ function posterCandidates(item){
     const file=(first==="original" || first.startsWith("w")) ? parts.slice(1).join("/") : remotePath;
     const imagePath="t/p/"+size+"/"+file;
     const imageProxyBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
-    // Prefer the Cloudflare Worker image proxy/cache for phones and TVs.
-    // It provides one stable origin and falls back to public mirrors if unavailable.
-    values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
+    // Use Lampa-compatible public image mirrors first; the Worker is only a fallback.
     values.push(...tmdbImageMirrorCandidates(imagePath));
+    values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
     values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
   }
   if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
@@ -641,7 +644,7 @@ function bindCards(){
 
 function paintDetail(value){
   const title=value?.name || "Без названия";
-  const image=value?.poster || value?.background || "";
+  const image=preferredTmdbImage(value?.poster || value?.background || "");
   const year=String(value?.releaseInfo || "").match(/\d{4}/)?.[0] || "—";
   const score=Number(value?.rating)||0;
   const type=categoryLabel(value);
@@ -871,7 +874,7 @@ function openDetail(item){
   }catch(error){
     console.error("[LUNO] paintDetail failed",error);
   }
-  if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(item.background).replace(/"/g,"&quot;")+'")' : "";
+  if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(preferredTmdbImage(item.background)).replace(/"/g,"&quot;")+'")' : "";
   const trailerVideo=document.querySelector("#detailTrailerVideo");
   const trailerSound=document.querySelector("#detailTrailerSound");
   const trailerUrl=String(item?.trailerUrl||item?.trailer||"").trim();
