@@ -6084,7 +6084,7 @@ remove conflicting centered LUNO override/* ---------- LUNO WORDMARK LEFT, AS IN
 .settings-about-logo{display:grid;place-items:center;width:62px;height:62px;border-radius:15px;background:#181927}
 .settings-about-logo .brand-orbit{width:36px;height:36px;border-color:#a8a6d0}.settings-about-logo .brand-moon{background:linear-gradient(135deg,#deddf6,#757b9e)}
 .settings-about-card>div:last-child{display:grid;gap:5px}.settings-about-card>div:last-child>span{font-size:10px;color:#a3a6b8;margin-top:3px}
-body.settings-open>main,body.settings-open>.topbar,body.settings-open>.mobile-tabbar,body.settings-open>.luno-menu-trigger,body.settings-open>.tmdb-attribution{display:none!important}
+body.settings-open #app>main,body.settings-open #app>.topbar,body.settings-open #app>.mobile-tabbar,body.settings-open #app>.luno-menu-trigger,body.settings-open #app>.luno-menu-drawer,body.settings-open #app>.tmdb-attribution{display:none!important}
 body.settings-open{overflow-x:hidden}
 @media(max-width:760px){
  .settings-view{padding:88px 16px 105px;min-height:100vh}
