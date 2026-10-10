@@ -227,3 +227,64 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--luno-violet); 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+
+/* Consolidated source-manager and player-control styles (formerly source-manager.css). */
+.source-manager-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+.source-manager-summary > div {
+  padding: 14px;
+  border: 1px solid var(--luno-border);
+  border-radius: 16px;
+  background: var(--luno-surface);
+}
+.source-manager-summary strong { display: block; font-size: 20px; }
+.source-manager-summary span {
+  display: block;
+  margin-top: 4px;
+  color: var(--luno-text-muted);
+  font-size: 11px;
+}
+.source-manager-title {
+  margin: 20px 0 9px;
+  color: var(--luno-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.source-manager-source {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.source-toggle {
+  border: 1px solid var(--luno-border-strong);
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: var(--luno-surface);
+  color: var(--luno-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  transition: background-color .18s, border-color .18s;
+}
+.source-toggle:hover, .source-toggle:focus-visible {
+  background: var(--luno-surface-raised);
+  border-color: var(--luno-violet);
+}
+.player-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.player-actions .player-source { min-width: 88px; }
+@media (max-width: 700px) {
+  .source-manager-summary { grid-template-columns: 1fr; }
+}
