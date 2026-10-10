@@ -2420,13 +2420,27 @@ async function searchDynamic(query){
     language:"ru-RU",
     include_adult:"false"
   });
-  const items=Array.isArray(data?.results) ? data.results
-    .map(item=>normalizeItem({
-      ...item,
-      tmdbId:item?.tmdbId || item?.id,
-      type:item?.media_type==="tv" ? "tv" : (item?.media_type==="movie" ? "movie" : item?.type)
-    }))
-    .filter(x=>x.tmdbId) : [];
+  const rawResults=Array.isArray(data?.results) ? data.results : [];
+  const items=rawResults
+    .filter(item=>item && typeof item==="object")
+    .map(item=>{
+      const rawId=item?.tmdbId ?? item?.tmdb_id ?? item?.id ?? item?.kinopoisk_id ?? "";
+      const idText=String(rawId);
+      const idMatch=idText.match(/(?:tmdb:)?(?:(?:movie|tv|series):)?(\\d+)/i);
+      const mediaType=String(item?.media_type||item?.mediaType||item?.type||"").toLowerCase();
+      const type=mediaType==="tv"||mediaType==="series" ? "tv" :
+        (mediaType==="movie" ? "movie" : (item?.first_air_date||item?.name&&!item?.title ? "tv" : "movie"));
+      return normalizeItem({
+        ...item,
+        id:idMatch?.[1]||rawId,
+        tmdbId:Number(idMatch?.[1]||rawId)||0,
+        type
+      });
+    })
+    .filter(x=>x.tmdbId && x.name && x.name!=="Без названия");
+  if(rawResults.length && !items.length){
+    throw new Error("TMDB gateway returned results in an unsupported format");
+  }
   const clean=rankSearchResults(dedupeSearchResults(items),query);
   for(const item of clean) window.__LUNO_ITEMS__.set(item.id,item);
   return clean;
