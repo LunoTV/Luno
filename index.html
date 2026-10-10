@@ -13,6 +13,7 @@
   <title>LUNO</title>
   <link rel="stylesheet" href="./styles.css?v=143">
   <link rel="stylesheet" href="./ui/design-system.css?v=7">
+  <link rel="stylesheet" href="./ui/detail-page.css?v=1">
   <link rel="stylesheet" href="./ui/settings.css?v=1">
 </head>
 <body>
@@ -181,94 +182,60 @@
       </div>
     </div>
 
-    <div id="detail" class="detail-overlay hidden">
-      <div class="luno-detail">
-        <header class="luno-detail-nav">
-          <button id="closeDetail" class="luno-detail-back" aria-label="Назад">‹</button>
-          <button class="luno-detail-brand" type="button" aria-label="LUNO">
-            <span class="brand-orbit"><span class="brand-moon"></span></span><span>LUNO</span>
-          </button>
-          <nav class="luno-detail-links" aria-label="Навигация LUNO">
-            <button type="button" data-section="home">Главная</button>
-            <button type="button" data-section="movies">Фильмы</button>
-            <button type="button" data-section="series">Сериалы</button>
-            <button type="button" data-section="cartoons">Мультфильмы</button>
-            <button type="button" data-section="anime">Аниме</button>
-            <button type="button" data-section="shows">Шоу</button>
-            <button type="button" data-section="favorites">Моё</button>
-          </nav>
-          <div class="luno-detail-tools">
-            <button id="openAddonManagerDetail" class="luno-detail-tool" type="button">＋ Источники</button>
-            <button class="luno-detail-search" type="button" aria-label="Поиск">⌕</button>
-          </div>
-        </header>
-
-        <section class="luno-detail-hero">
-          <div id="detailBackdrop" class="detail-backdrop"></div>
-          <video id="detailTrailerVideo" class="detail-trailer-video" autoplay muted playsinline loop preload="none" aria-label="Трейлер фильма"></video>
-          <button id="detailTrailerSound" class="detail-trailer-sound" type="button" aria-label="Включить звук трейлера"><span>⌁</span></button>
-          <div class="luno-detail-hero-vignette"></div>
-          <div class="luno-detail-hero-copy">
-            <div class="detail-kicker">LUNO • ПРЕМЬЕРА</div>
+    <!-- LUNO movie/series card v2: standalone markup; legacy detail markup removed. -->
+    <div id="detail" class="luno-card-page hidden" aria-label="Карточка фильма">
+      <div class="luno-card-backdrop" aria-hidden="true">
+        <div id="detailBackdrop" class="luno-card-backdrop-image"></div>
+        <video id="detailTrailerVideo" class="luno-card-trailer" autoplay muted playsinline loop preload="none" aria-label="Трейлер фильма"></video>
+        <div class="luno-card-backdrop-shade"></div>
+      </div>
+      <header class="luno-card-header">
+        <button id="closeDetail" class="luno-card-icon-button" type="button" aria-label="Назад">‹</button>
+        <span class="luno-card-brand"><span class="brand-orbit"><span class="brand-moon"></span></span><b>LUNO</b></span>
+        <nav class="luno-card-links" aria-label="Навигация LUNO">
+          <button type="button" data-section="home">Главная</button><button type="button" data-section="movies">Фильмы</button><button type="button" data-section="series">Сериалы</button><button type="button" data-section="cartoons">Мультфильмы</button><button type="button" data-section="anime">Аниме</button><button type="button" data-section="shows">Шоу</button><button type="button" data-section="favorites">Моё</button>
+        </nav>
+        <div class="luno-card-header-actions">
+          <button id="openAddonManagerDetail" class="luno-card-source-button" type="button">＋ Источники</button>
+          <button class="luno-card-icon-button luno-card-search" type="button" aria-label="Поиск">⌕</button>
+        </div>
+      </header>
+      <main class="luno-card-content">
+        <section class="luno-card-hero">
+          <div class="luno-card-hero-copy">
+            <div class="luno-card-eyebrow">LUNO · ПРЕМЬЕРА</div>
             <h2 id="detailTitle">Фильм</h2>
-            <div id="detailMeta" class="detail-meta"></div>
-            <div id="detailBadges" class="detail-badges"></div>
-            <div class="luno-detail-actions">
-              <button id="detailPlay" class="primary"><span>▶</span> Смотреть</button>
-              <button id="detailTrailer" class="secondary detail-trailer-button" type="button"><span>▷</span> Трейлер</button>
-              <button id="detailEpisodes" class="secondary detail-series-button hidden"><span>▤</span> Серии</button>
-              <button id="detailFavorite" class="secondary"><span>♡</span><em>В избранное</em></button>
+            <div id="detailMeta" class="luno-card-meta"></div>
+            <div id="detailBadges" class="luno-card-badges"></div>
+            <div class="luno-card-actions">
+              <button id="detailPlay" class="luno-card-primary" type="button">▶ <span>Смотреть</span></button>
+              <button id="detailTrailer" class="luno-card-secondary" type="button">▷ <span>Трейлер</span></button>
+              <button id="detailEpisodes" class="luno-card-secondary detail-series-button hidden" type="button">▤ <span>Серии</span></button>
+              <button id="detailFavorite" class="luno-card-secondary" type="button">♡ <em>В избранное</em></button>
+              <button id="detailTrailerSound" class="luno-card-secondary luno-card-sound" type="button" aria-label="Включить звук трейлера">⌁</button>
             </div>
-          </div>
-          <div id="detailRatings" class="luno-detail-ratings" hidden></div>
-        </section>
-
-        <section id="detailSeasonsSection" class="luno-detail-section detail-seasons-section hidden">
-          <div class="luno-section-title"><h3>Сезоны и серии</h3><span>Выбери, с чего продолжить</span></div>
-          <div class="luno-detail-seasons-panel">
-            <div class="luno-detail-seasons-copy">
-              <span class="detail-kicker">LUNO • СЕРИАЛ</span>
-              <strong id="detailSeasonsTitle">Смотри в удобном порядке</strong>
-              <p>Открой доступные сезоны и серии. Список загрузится из источника просмотра.</p>
-            </div>
-            <button id="detailOpenEpisodes" class="primary" type="button">▤ Открыть сезоны и серии</button>
+            <div id="detailRatings" class="luno-card-ratings" hidden></div>
           </div>
         </section>
-
-        <section class="luno-detail-section about-section">
-          <div class="luno-section-title"><h3>О фильме</h3><span>Подробнее о тайтле</span></div>
-          <div class="luno-about-grid">
-            <div class="luno-about-main">
-              <p id="detailDescription">Описание загружается…</p>
-              <div id="detailTags" class="luno-tags"></div>
-            </div>
-            <aside class="luno-about-side">
-              <div class="luno-info-card"><span>◷</span><small>Год релиза</small><strong id="detailReleaseInfo">—</strong></div>
-              <div class="luno-info-card"><span>◎</span><small>Формат</small><strong id="detailTypeInfo">—</strong></div>
-              <div class="luno-budget-card">
-                <div><span>Качество</span><strong id="detailQualityInfo">FULLHD</strong></div>
-                <div class="luno-quality-track"><i id="detailQualityBar"></i></div>
-                <small id="detailQualityText">Оптимально для просмотра</small>
-              </div>
+        <section id="detailSeasonsSection" class="luno-card-section luno-card-seasons hidden">
+          <div><span class="luno-card-eyebrow">LUNO · СЕРИАЛ</span><h3 id="detailSeasonsTitle">Смотри в удобном порядке</h3><p>Открой доступные сезоны и серии. Список загрузится из источника просмотра.</p></div>
+          <button id="detailOpenEpisodes" class="luno-card-primary" type="button">▤ Открыть сезоны и серии</button>
+        </section>
+        <section class="luno-card-section">
+          <div class="luno-card-section-heading"><h3>О фильме</h3><span>Подробнее о тайтле</span></div>
+          <div class="luno-card-about">
+            <div><p id="detailDescription">Описание загружается…</p><div id="detailTags" class="luno-card-tags"></div></div>
+            <aside class="luno-card-facts">
+              <div><small>Год релиза</small><strong id="detailReleaseInfo">—</strong></div>
+              <div><small>Формат</small><strong id="detailTypeInfo">—</strong></div>
+              <div><small>Качество</small><strong id="detailQualityInfo">По источнику</strong><div class="luno-card-quality-track"><i id="detailQualityBar"></i></div><small id="detailQualityText">Качество определяется выбранным потоком</small></div>
             </aside>
           </div>
         </section>
-
-        <section class="luno-detail-section actors-section">
-          <div class="luno-section-title"><h3>Актёры</h3><span>В главных ролях</span></div>
-          <div class="luno-actor-row" id="detailCredits"></div>
-        </section>
-
-        <section class="luno-detail-section similar-section">
-          <div class="luno-section-title"><h3 id="detailSimilarTitle">Похожие</h3><span>Фильмы и сериалы в этой вселенной</span></div>
-          <div id="detailSimilar" class="luno-recommend-row"></div>
-        </section>
-
-        <section class="luno-detail-section recommend-section">
-          <div class="luno-section-title"><h3>LUNO рекомендует</h3><span>Похожие по настроению</span></div>
-          <div id="detailRecommendations" class="luno-recommend-row"></div>
-        </section>
-      </div>
+        <section class="luno-card-section"><div class="luno-card-section-heading"><h3>Актёры</h3><span>В главных ролях</span></div><div id="detailCredits" class="luno-card-actors"></div></section>
+        <section class="luno-card-section"><div class="luno-card-section-heading"><h3 id="detailSimilarTitle">Похожие</h3><span>Фильмы и сериалы в этой вселенной</span></div><div id="detailSimilar" class="luno-card-recommendations"></div></section>
+        <section class="luno-card-section"><div class="luno-card-section-heading"><h3>LUNO рекомендует</h3><span>Похожие по настроению</span></div><div id="detailRecommendations" class="luno-card-recommendations"></div></section>
+      </main>
     </div>
 
  <div id="confirmDialog" class="dialog-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
