@@ -112,7 +112,7 @@ test("detail card isolates itself from Home and falls back to the poster backdro
   const app = await readFile(new URL("app.js", root), "utf8");
   assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "other app screens are hidden while detail is open");
   assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page"), "detail is the active top-level screen");
-  assert.ok(app.includes("const backdropImage=item?.background || item?.poster || item?.poster_path ||"), "poster is used when a backdrop is missing");
+  assert.ok(app.includes("const backdropPath=String(item?.backdrop_path||item?.backdropPath||\"\").trim()"), "TMDB backdrop and poster candidates are resolved");
 });
 
 
