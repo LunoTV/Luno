@@ -309,6 +309,8 @@ function posterCandidates(item){
     const size=(first==="original" || first.startsWith("w")) ? first : "w500";
     const file=(first==="original" || first.startsWith("w")) ? parts.slice(1).join("/") : remotePath;
     const imagePath="t/p/"+size+"/"+file;
+    const imageProxyBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
+    values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
     values.push(...tmdbImageMirrorCandidates(imagePath));
     values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
   }
