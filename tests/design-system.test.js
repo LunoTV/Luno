@@ -163,3 +163,13 @@ test("home screen uses poster-led featured carousel and mobile category navigati
   assert.ok(css.includes(".home-hero-dot[aria-current=\"true\"]"), "active slide indicator is styled");
   assert.ok(css.includes("grid-template-columns:repeat(5,minmax(0,1fr))")===false || css.includes(".mobile-tabbar.luno-reference-tabbar"), "existing navigation remains independent from home content");
 });
+
+
+test("legacy tall-hero and four-column home navigation overrides are removed", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(!css.includes("body.home-mode .home-hero{margin-top:-60px!important"), "old hero bleed patch is removed");
+  assert.ok(!css.includes("min-height:500px!important"), "old fixed tall hero patch is removed");
+  assert.ok(!css.includes("grid-template-columns:repeat(4,minmax(0,1fr))!important"), "old four-column nav override is removed");
+  assert.ok(css.includes("body.home-mode .mobile-tabbar.luno-reference-tabbar"), "single five-column home nav rule remains");
+  assert.ok(css.includes("body.show-global-back .topbar.luno-nav-shutter .brand"), "wordmark is hidden only on inner screens");
+});
