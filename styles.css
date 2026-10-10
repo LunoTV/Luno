@@ -5352,3 +5352,36 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     border:1px solid rgba(202,205,226,.2)!important;
   }
 }
+
+
+/* ---------- LUNO ALWAYS-VISIBLE FROSTED HEADER ---------- */
+@media(max-width:700px){
+  .topbar.luno-nav-shutter,
+  body.home-mode .topbar.luno-nav-shutter{
+    position:fixed!important;
+    top:0!important;left:0!important;right:0!important;
+    z-index:2500!important;
+    background:linear-gradient(180deg,rgba(9,10,16,.82),rgba(12,13,20,.62))!important;
+    -webkit-backdrop-filter:blur(22px) saturate(135%)!important;
+    backdrop-filter:blur(22px) saturate(135%)!important;
+    border:0!important;
+    border-bottom:1px solid rgba(205,208,235,.19)!important;
+    box-shadow:0 8px 28px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.035)!important;
+    transform:translateY(0)!important;
+    opacity:1!important;visibility:visible!important;
+    pointer-events:auto!important;
+    transition:background .2s ease,box-shadow .2s ease!important;
+    isolation:isolate!important;
+  }
+  body.home-mode .topbar.luno-nav-shutter:before{
+    content:""!important;position:absolute!important;inset:0!important;
+    background:linear-gradient(90deg,rgba(107,111,231,.075),transparent 35%,transparent 70%,rgba(125,211,252,.045))!important;
+    pointer-events:none!important;z-index:-1!important;
+  }
+  body.luno-scroll-down .topbar.luno-nav-shutter,
+  body.luno-scroll-up .topbar.luno-nav-shutter,
+  body:not(.luno-scroll-down) .topbar.luno-nav-shutter{
+    transform:translateY(0)!important;opacity:1!important;
+    visibility:visible!important;pointer-events:auto!important;
+  }
+}
