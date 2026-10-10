@@ -134,38 +134,43 @@ export default {
     };
     let primaryError = "";
 
-    // Match Lampa TMDB Proxy defaults: try the CUB TMDB API mirrors first,
-    // then Lampa's own API mirror, and only then use the configured TMDB token.
+    // Query the public TMDB-compatible mirrors concurrently. Sequential
+    // attempts could take 15+ seconds on mobile networks and look like a
+    // successful empty search while every mirror is still timing out.
     const cubMirrors = ["cub.red", "cub.best", "cub.black", "durex.monster", "cubnotrip.top"];
     const apiMirrors = cubMirrors.map(domain => "https://apitmdb." + domain + "/3/");
     apiMirrors.push("https://lampa.byskaz.ru/tmdb/api/3/");
-    for (const base of apiMirrors) {
-      try {
-        const response = await fetch(buildApiUrl(base), {
-          headers: { accept: "application/json" },
-          signal: AbortSignal.timeout(2500)
+    const mirrorAttempts = apiMirrors.map(async (base) => {
+      const response = await fetch(buildApiUrl(base), {
+        headers: { accept: "application/json" },
+        signal: AbortSignal.timeout(3500)
+      });
+      if (!response.ok) throw new Error(base + " HTTP " + response.status);
+      const data = await response.json();
+      const raw = Array.isArray(data?.results) ? data.results : [];
+      const results = raw
+        .filter(item => item?.id && (item?.title || item?.name || item?.original_title || item?.original_name))
+        .map(item => {
+          const inferredType = item.media_type || item.type ||
+            ((!item.title && (item.name || item.first_air_date)) ? "tv" : "movie");
+          return normalize({ ...item, media_type: inferredType === "series" ? "tv" : inferredType });
         });
-        if (!response.ok) throw new Error(base + " HTTP " + response.status);
-        const data = await response.json();
-        const raw = Array.isArray(data?.results) ? data.results : [];
-        const results = raw
-          .filter(item => item?.id && (item?.title || item?.name || item?.original_title || item?.original_name))
-          .map(item => {
-            const inferredType = item.media_type || item.type ||
-              ((!item.title && (item.name || item.first_air_date)) ? "tv" : "movie");
-            return normalize({ ...item, media_type: inferredType === "series" ? "tv" : inferredType });
-          });
-        if (!results.length) throw new Error(base + " returned no results");
-        return json({
-          query, page: Number(data.page) || Number(page),
-          totalPages: Number(data.total_pages) || 1,
-          totalResults: Number(data.total_results) || results.length,
-          results, source: "Lampa-compatible TMDB mirror",
-          fallbackFrom: primaryError || undefined
-        }, 200, origin);
-      } catch (error) {
-        primaryError = String(error?.message || error);
-      }
+      if (!results.length) throw new Error(base + " returned no results");
+      return {
+        query, page: Number(data.page) || Number(page),
+        totalPages: Number(data.total_pages) || 1,
+        totalResults: Number(data.total_results) || results.length,
+        results, source: "Lampa-compatible TMDB mirror"
+      };
+    });
+    try {
+      const data = await Promise.any(mirrorAttempts);
+      return json(data, 200, origin);
+    } catch (error) {
+      const reasons = error instanceof AggregateError
+        ? error.errors.map(reason => String(reason?.message || reason))
+        : [String(error?.message || error)];
+      primaryError = reasons.slice(0, 6).join("; ");
     }
 
     const token = env.TMDB_API_TOKEN;
