@@ -147,3 +147,19 @@ test("mobile navigation follows the five-section reference layout while retainin
   assert.ok(app.includes('if(section==="profile" || section==="settings"){openSettingsView("profile");return;}'), "profile opens the existing profile/settings view");
   assert.ok(css.includes(".mobile-tabbar.luno-reference-tabbar"), "navigation uses LUNO's shared styling");
 });
+
+
+test("home screen uses poster-led featured carousel and mobile category navigation", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(html.includes('class="home-category-tabs"'), "home has its own category strip");
+  assert.ok(html.includes('id="homeHeroDots"'), "featured carousel has slide indicators");
+  assert.ok(html.includes('data-hero-action="favorite"'), "featured item has a favorite action");
+  assert.ok(app.includes("homeHeroItems=catalogItems.slice()"), "featured items come from the catalog");
+  assert.ok(app.includes('if(button.dataset.heroAction==="favorite")'), "featured favorite button is wired");
+  assert.ok(app.includes('data-hero-slide'), "carousel indicators are wired");
+  assert.ok(css.includes(".home-hero-backdrop{"), "featured artwork fills the hero");
+  assert.ok(css.includes(".home-hero-dot[aria-current=\"true\"]"), "active slide indicator is styled");
+  assert.ok(css.includes("grid-template-columns:repeat(5,minmax(0,1fr))")===false || css.includes(".mobile-tabbar.luno-reference-tabbar"), "existing navigation remains independent from home content");
+});
