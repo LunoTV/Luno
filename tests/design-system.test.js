@@ -81,7 +81,7 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
   assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
-  assert.ok(html.includes("./ui/detail-page.css?v=6"), "isolated detail stylesheet is linked");
+  assert.ok(html.includes("./ui/detail-page.css?v=7"), "isolated detail stylesheet is linked");
   for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
@@ -113,4 +113,14 @@ test("detail card isolates itself from Home and falls back to the poster backdro
   assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "other app screens are hidden while detail is open");
   assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page"), "detail is the active top-level screen");
   assert.ok(app.includes("const backdropImage=item?.background || item?.poster || item?.poster_path ||"), "poster is used when a backdrop is missing");
+});
+
+
+test("LUNO detail card is an isolated full-screen cinematic screen", async () => {
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  assert.ok(css.includes("body.detail-open #app > main"), "home main content is hidden while detail is open");
+  assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page"), "detail card owns the screen");
+  assert.ok(css.includes("height: min(76svh, 720px) !important"), "cinematic backdrop fills the upper screen");
+  assert.ok(css.includes("background-size: cover !important"), "poster art fills the backdrop");
+  assert.ok(css.includes("background: linear-gradient(180deg,rgba(8,9,13,.12)"), "backdrop uses LUNO dark fade");
 });
