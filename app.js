@@ -1059,8 +1059,7 @@ function navigate(section){
   }
   if(section==="search"){
     closeLibrary();
-    searchPanel?.classList.remove("hidden");
-    window.setTimeout(()=>searchInput?.focus(),40);
+    openSearch();
     return;
   }
   closeLibrary();
@@ -2192,8 +2191,9 @@ async function searchDynamic(query){
 }
 
 function openSearch(){
-  searchPanel?.classList.remove("hidden");
-  document.body.classList.add("search-open");
+  if(!searchPanel) return;
+  searchPanel.classList.remove("hidden");
+  document.body.classList.add("search-open","show-global-back");
   renderSearchHistory();
   updateSearchSourceUI();
   window.setTimeout(()=>searchInput?.focus(),40);
@@ -2201,6 +2201,8 @@ function openSearch(){
 function closeSearchPanel(){
   searchPanel?.classList.add("hidden");
   document.body.classList.remove("search-open");
+  const libraryIsOpen=!!(libraryView && !libraryView.classList.contains("hidden"));
+  document.body.classList.toggle("show-global-back",!document.body.classList.contains("home-mode") || libraryIsOpen);
 }
 document.querySelector("#searchBack")?.addEventListener("click",closeSearchPanel);
 document.querySelector("#searchClear")?.addEventListener("click",()=>{
@@ -2329,9 +2331,13 @@ document.querySelector("#globalHeaderSearch")?.addEventListener("click",()=>{
 });
 document.querySelector("#globalHeaderSettings")?.addEventListener("click",()=>navigate("settings"));
 document.querySelector("#globalHeaderBack")?.addEventListener("click",()=>{
-  if(!detail?.classList.contains("hidden")){ closeDetail(); return; }
-  if(!searchPanel?.classList.contains("hidden")){ closeSearch(); return; }
-  if(!libraryPanel?.classList.contains("hidden")){ closeLibrary(); return; }
+  if(detail && !detail.classList.contains("hidden")){ closeDetail(); return; }
+  if(searchPanel && !searchPanel.classList.contains("hidden")){ closeSearchPanel(); return; }
+  if(libraryView && !libraryView.classList.contains("hidden")){
+    closeLibrary();
+    document.body.classList.toggle("show-global-back",!document.body.classList.contains("home-mode"));
+    return;
+  }
   navigate("home");
 });
 
@@ -2362,7 +2368,7 @@ searchInput.addEventListener("input",()=>{
 });
 
 searchInput.addEventListener("keydown",async(e)=>{
-  if(e.key==="Escape") searchPanel.classList.add("hidden");
+  if(e.key==="Escape") closeSearchPanel();
   if(e.key==="Enter"){
     const query=searchInput.value.trim();
     saveSearchQuery(query);
@@ -2382,6 +2388,11 @@ ensureLunoHistory();
 document.body.classList.add("home-mode");
 window.addEventListener("popstate",(event)=>{
   const state=event.state||{};
+  if(searchPanel && !searchPanel.classList.contains("hidden")){
+    closeSearchPanel();
+    restoreLunoHistoryPosition(state);
+    return;
+  }
   if(!player?.classList.contains("hidden")){
     closePlayer(true);
     restoreLunoHistoryPosition(state);
