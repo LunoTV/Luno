@@ -308,11 +308,11 @@ function posterCandidates(item){
     const file=(first==="original" || first.startsWith("w")) ? parts.slice(1).join("/") : remotePath;
     const imagePath="t/p/"+size+"/"+file;
     const imageProxyBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
-    // Try public image mirrors before the Worker. On mobile networks the
-    // Worker image response can remain pending without firing an <img> error.
+    // Prefer the Cloudflare Worker image proxy/cache for phones and TVs.
+    // It provides one stable origin and falls back to public mirrors if unavailable.
+    values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
     values.push(...tmdbImageMirrorCandidates(imagePath));
     values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
-    values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
   }
   if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
