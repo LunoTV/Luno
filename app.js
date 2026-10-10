@@ -8,7 +8,7 @@ import {
   getPlayerStreamUrl,
   unloadLunoPlayer,
   dispatchLunoPlayerAction,
-} from "./source-engine.js?v=source28";
+} from "./source-engine.js?v=source29";
 import {renderSourceManager,bindSourceManager} from "./ui/source-manager.js";
 import {qualityNumber} from "./sources/quality.js";
 import {installRemoteNavigation} from "./ui/remote-navigation.js?v=remote32";

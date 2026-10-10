@@ -1,4 +1,5 @@
 import {createSourceRegistry} from "./sources/registry.js";
+import {isTrustedRuntimeApiUrl,appendRuntimeParams} from "./sources/request-policy.js";
 import {loadSourceDefinitions,sourceDefinition} from "./sources/loader.js";
 import {normalizeSubtitles as normalizeSubtitle,normalizeStream,streamKind,normalizeVoice,normalizeEpisodeInfo} from "./sources/normalizer.js";
 import {selectBestUrl as selectBestQualityUrl,qualityNumber} from "./sources/quality.js";
@@ -54,9 +55,10 @@ async function requestJson(url,options={}){
   else externalSignal?.addEventListener("abort",abortFromCaller,{once:true});
   const timer=setTimeout(()=>controller.abort(),timeout);
   try{
+    const trustedApi=isTrustedRuntimeApiUrl(url,apiBaseCandidates());
     const headers={
       accept:"application/json,text/plain,*/*",
-      "X-Kit-AesGcm":localStorage.getItem("aesgcmkey")||"",
+      ...(trustedApi?{"X-Kit-AesGcm":localStorage.getItem("aesgcmkey")||""}:{}),
       ...(options.headers||{})
     };
     const {timeout:ignoredTimeout,signal:ignoredSignal,...fetchOptions}=options;
@@ -80,7 +82,7 @@ async function requestText(url,options={}){
       ...options,
       headers:{
         accept:"text/html,application/json,text/plain,*/*",
-        "X-Kit-AesGcm":localStorage.getItem("aesgcmkey")||"",
+        ...(isTrustedRuntimeApiUrl(url,apiBaseCandidates())?{"X-Kit-AesGcm":localStorage.getItem("aesgcmkey")||""}:{}),
         ...(options.headers||{})
       },
       signal:controller.signal,
@@ -102,20 +104,13 @@ function apiBaseCandidates(){
 }
 
 function addRuntimeParams(url){
-  try{
-    const u=new URL(url);
-    const email=text(localStorage.getItem("account_email"));
-    const uid=text(localStorage.getItem("online_unic_id"));
-    const token=text(localStorage.getItem("luno_token"));
-    const lang=text(localStorage.getItem("language"))||"ru";
-    const site=text(localStorage.getItem("luno_domain"))||"luno.rip";
-    if(email&&!u.searchParams.has("account_email"))u.searchParams.set("account_email",email);
-    if(uid&&!u.searchParams.has("uid"))u.searchParams.set("uid",uid);
-    if(token&&!u.searchParams.has("luno_token"))u.searchParams.set("luno_token",token);
-    if(lang&&!u.searchParams.has("lang"))u.searchParams.set("lang",lang);
-    if(site&&!u.searchParams.has("luno_site"))u.searchParams.set("luno_site",site);
-    return u.toString();
-  }catch{return url}
+  return appendRuntimeParams(url,{
+    account_email:text(localStorage.getItem("account_email")),
+    uid:text(localStorage.getItem("online_unic_id")),
+    luno_token:text(localStorage.getItem("luno_token")),
+    lang:text(localStorage.getItem("language"))||"ru",
+    luno_site:text(localStorage.getItem("luno_domain"))||"luno.rip"
+  },apiBaseCandidates());
 }
 
 function buildMovie(item){

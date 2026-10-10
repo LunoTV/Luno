@@ -5,6 +5,7 @@ import { createSourceRegistry } from "../sources/registry.js";
 import { normalizeStream, normalizeVoice, normalizeEpisodeInfo, streamKind } from "../sources/normalizer.js";
 import { qualityNumber, listQualities, selectBestUrl } from "../sources/quality.js";
 import { normalizeSubtitles } from "../sources/subtitles.js";
+import { isTrustedRuntimeApiUrl, appendRuntimeParams } from "../sources/request-policy.js";
 
 const url=(name)=>`https://media.example.test/${name}`;
 
@@ -78,4 +79,20 @@ test("core UI hooks used by app.js exist in index.html",()=>{
   for(const id of ["app","nav","searchPanel","searchInput","detail","detailPlay","detailTitle","detailTrailer","player","sourceSheet","qualitySheet","voiceSheet","subtitleSheet","episodeSheet","libraryView","continueCards","favoriteCards"]){
     assert.match(html,new RegExp(`id=["']${id}["']`),`Missing required UI element #${id}`);
   }
+});
+
+
+test("runtime credentials and parameters are only attached to configured API origins",()=>{
+  const bases=["https://api.example.test/v1","https://mirror.example.test"];
+  const credentials={account_email:"user@example.test",uid:"123",luno_token:"secret",lang:"ru",luno_site:"luno.rip"};
+  const sourceUrl="https://media.example.test/stream.m3u8";
+  assert.equal(isTrustedRuntimeApiUrl(sourceUrl,bases),false);
+  assert.equal(appendRuntimeParams(sourceUrl,credentials,bases),sourceUrl);
+  const apiUrl="https://api.example.test/v1/lite/events?title=Film";
+  assert.equal(isTrustedRuntimeApiUrl(apiUrl,bases),true);
+  const enriched=new URL(appendRuntimeParams(apiUrl,credentials,bases));
+  assert.equal(enriched.searchParams.get("title"),"Film");
+  assert.equal(enriched.searchParams.get("account_email"),"user@example.test");
+  assert.equal(enriched.searchParams.get("luno_token"),"secret");
+  assert.equal(isTrustedRuntimeApiUrl("javascript:alert(1)",bases),false);
 });
