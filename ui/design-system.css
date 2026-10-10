@@ -288,3 +288,46 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--luno-violet); 
 @media (max-width: 700px) {
   .source-manager-summary { grid-template-columns: 1fr; }
 }
+
+/* Mobile settings sections open as focused, scrollable sheets instead of expanding below the menu. */
+.settings-sections-back {
+  display: none;
+}
+@media (max-width: 700px) {
+  .settings-view.settings-section-open .settings-menu {
+    display: none !important;
+  }
+  .settings-view.settings-section-open .settings-content {
+    position: fixed;
+    inset: calc(env(safe-area-inset-top, 0px) + 10px) 0 calc(env(safe-area-inset-bottom, 0px) + 10px);
+    z-index: 1002;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 16px;
+    background: var(--luno-bg);
+    border: 1px solid var(--luno-border);
+    border-radius: 22px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+  }
+  .settings-view.settings-section-open .settings-sections-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    margin: 0 0 14px;
+    padding: 0 13px;
+    border: 1px solid var(--luno-border);
+    border-radius: 12px;
+    background: var(--luno-surface);
+    color: var(--luno-text);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .settings-view.settings-section-open .settings-panel {
+    padding: 18px 15px;
+    border-radius: 16px;
+  }
+}
