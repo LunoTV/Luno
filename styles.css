@@ -5460,7 +5460,9 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .mobile-tabbar,
   body .mobile-tabbar,
   body.home-mode .mobile-tabbar{
-    background:linear-gradient(180deg,rgba(9,10,16,.82),rgba(12,13,20,.72))!important;
+    position:fixed!important;
+    z-index:2600!important;
+    background:rgba(12,13,20,.56)!important;
     -webkit-backdrop-filter:blur(22px) saturate(135%)!important;
     backdrop-filter:blur(22px) saturate(135%)!important;
     border-top:1px solid rgba(205,208,235,.19)!important;
@@ -5471,8 +5473,9 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .mobile-tabbar:before{
     content:""!important;position:absolute!important;inset:0!important;
     background:linear-gradient(90deg,rgba(107,111,231,.075),transparent 35%,transparent 70%,rgba(125,211,252,.045))!important;
-    pointer-events:none!important;z-index:-1!important;
+    pointer-events:none!important;z-index:0!important;
   }
+  .mobile-tabbar>*{position:relative;z-index:1}
   .mobile-tabbar>.mobile-tab.active{
     background:linear-gradient(145deg,rgba(110,113,145,.3),rgba(73,75,94,.2))!important;
     border:1px solid rgba(205,208,235,.19)!important;
