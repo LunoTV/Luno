@@ -32,7 +32,6 @@ function text(v){return v==null?"":String(v).trim()}
 function http(v){try{const u=new URL(text(v));return u.protocol==="http:"||u.protocol==="https:"}catch{return false}}
 function unique(list){return [...new Set(list.filter(Boolean))]}
 function sourcePreferences(){try{return JSON.parse(localStorage.getItem(SOURCE_PREFS_KEY)||"{}")||{}}catch{return{}}}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
 
 
