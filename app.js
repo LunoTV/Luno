@@ -1456,30 +1456,42 @@ function renderDiscovery(){
   bindCards();
 }
 
+let homeHeroItems=[];
+let homeHeroIndex=0;
 function renderHomeHero(item){
   const hero=document.querySelector("#homeHero");
   if(!hero||!item)return;
   const title=String(item.name||item.title||"Открой новое кино");
   const background=String(item.background||item.backdrop||item.poster||"");
-  const poster=String(item.poster||background);
   const year=getYear(item);
   const rating=Number(item.rating)||0;
   const type=mediaCategory(item)==="series"?"Сериал":"Фильм";
-  const description=String(item.description||item.overview||"").trim();
   const backdrop=hero.querySelector(".home-hero-backdrop");
-  if(backdrop)backdrop.style.backgroundImage=background ? "url(" + JSON.stringify(background.replace(/"/g, "%22")) + ")" : "none";
-  const art=hero.querySelector(".home-hero-poster");
-  if(art){art.src=poster;art.alt=title;art.hidden=!poster;}
+  if(backdrop)backdrop.style.backgroundImage=background ? "url("+JSON.stringify(background.replace(/"/g,"%22"))+")" : "none";
   const heading=hero.querySelector(".home-hero-title");if(heading)heading.textContent=title;
   const meta=hero.querySelector(".home-hero-meta");if(meta)meta.textContent=[type,year||"",rating?"TMDB ★ "+rating.toFixed(1):""].filter(Boolean).join("  ·  ");
-  const summary=hero.querySelector(".home-hero-description");if(summary)summary.textContent=description||"Выбери фильм и погрузись в историю. Открой карточку, чтобы посмотреть доступные источники.";
   hero.dataset.itemId=String(item.id||"");
   hero.classList.add("is-ready");
+  const favorite=hero.querySelector(".home-hero-favorite");
+  if(favorite){
+    const active=isFavorite(item.id);
+    favorite.textContent=active?"✓":"＋";
+    favorite.setAttribute("aria-pressed",String(active));
+    favorite.setAttribute("aria-label",active?"Убрать из избранного":"Добавить в избранное");
+  }
+  const dots=document.querySelector("#homeHeroDots");
+  if(dots){
+    dots.innerHTML=homeHeroItems.map((entry,index)=>'<button class="home-hero-dot" type="button" data-hero-slide="'+index+'" aria-label="Рекомендация '+(index+1)+'" aria-current="'+String(index===homeHeroIndex)+'"></button>').join("");
+  }
 }
 
 function renderCatalogSections(){
-  const heroPick=catalogItems.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0))[0];
-  renderHomeHero(heroPick);
+  homeHeroItems=catalogItems.slice()
+    .filter(item=>item?.id && (item.background||item.backdrop||item.poster))
+    .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0))
+    .slice(0,5);
+  homeHeroIndex=0;
+  renderHomeHero(homeHeroItems[0]||catalogItems[0]);
   // Discovery is an enhancement, not a dependency for the primary poster rails.
   // A malformed discovery field must never prevent the home rows from rendering.
   try{
@@ -2919,7 +2931,21 @@ document.querySelector("#homeHero")?.addEventListener("click",event=>{
   const button=event.target.closest("[data-hero-action]");
   if(!button)return;
   const item=window.__LUNO_ITEMS__?.get(document.querySelector("#homeHero")?.dataset.itemId);
-  if(item)openDetail(item);
+  if(!item)return;
+  if(button.dataset.heroAction==="favorite"){
+    toggleFavorite(item);
+    renderHomeHero(item);
+    return;
+  }
+  openDetail(item);
+});
+document.querySelector("#homeHeroDots")?.addEventListener("click",event=>{
+  const button=event.target.closest("[data-hero-slide]");
+  if(!button)return;
+  const index=Number(button.dataset.heroSlide);
+  if(!Number.isInteger(index)||!homeHeroItems[index])return;
+  homeHeroIndex=index;
+  renderHomeHero(homeHeroItems[index]);
 });
 
 // TV navigation follows the active screen/sheet, with per-screen focus memory.
