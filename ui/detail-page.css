@@ -1,0 +1,57 @@
+/* LUNO detail card v2 — isolated from legacy detail-page selectors. */
+.luno-card-page{position:fixed;inset:0;z-index:80;overflow:auto;isolation:isolate;background:var(--luno-bg);color:var(--luno-text);overscroll-behavior:contain}
+.luno-card-page.hidden{display:none!important}
+.luno-card-backdrop{position:absolute;inset:0 0 auto;height:min(82vh,850px);min-height:520px;z-index:-1;overflow:hidden;background:var(--luno-bg)}
+.luno-card-backdrop-image{position:absolute;inset:0;background-position:center 25%;background-size:cover;opacity:.64;filter:saturate(.78)}
+.luno-card-trailer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%;opacity:0;transition:opacity .2s}
+.luno-card-trailer.is-ready{opacity:.42}
+.luno-card-backdrop-shade{position:absolute;inset:0;background:linear-gradient(90deg,#08090D 0%,rgba(8,9,13,.78) 45%,rgba(8,9,13,.2) 100%),linear-gradient(0deg,#08090D 0%,rgba(8,9,13,.08) 65%,rgba(8,9,13,.3) 100%)}
+.luno-card-header{position:sticky;top:0;z-index:5;min-height:72px;display:flex;align-items:center;gap:12px;padding:12px clamp(16px,4vw,56px);background:linear-gradient(180deg,rgba(8,9,13,.94),rgba(8,9,13,.62));backdrop-filter:blur(14px)}
+.luno-card-icon-button{display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px;border:1px solid var(--luno-border);border-radius:12px;background:rgba(20,21,29,.88);color:var(--luno-text);font-size:28px;cursor:pointer}
+.luno-card-brand{display:flex;align-items:center;gap:9px;margin-left:4px;font-size:14px;letter-spacing:.18em}
+.luno-card-brand .brand-orbit{width:28px;height:28px;flex:0 0 28px}.luno-card-brand .brand-moon{width:16px;height:16px}
+.luno-card-links{display:flex;gap:4px;margin:auto;padding:5px;border:1px solid var(--luno-border);border-radius:14px;background:rgba(20,21,29,.82)}
+.luno-card-links button{border:0;border-radius:9px;padding:9px 10px;background:transparent;color:var(--luno-text-muted);font:inherit;cursor:pointer}
+.luno-card-links button:hover,.luno-card-links button:focus-visible{background:var(--luno-surface-raised);color:var(--luno-text)}
+.luno-card-header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.luno-card-source-button,.luno-card-primary,.luno-card-secondary{min-height:44px;padding:0 16px;border:1px solid var(--luno-border-strong);border-radius:12px;background:var(--luno-surface);color:var(--luno-text);font:inherit;cursor:pointer}
+.luno-card-primary{background:var(--luno-violet);border-color:var(--luno-violet);color:#fff;font-weight:700}
+.luno-card-content{max-width:1440px;margin:0 auto;padding:0 clamp(16px,5vw,72px) 56px}
+.luno-card-hero{display:flex;align-items:flex-end;min-height:clamp(480px,66vh,700px);padding:100px 0 48px}
+.luno-card-hero-copy{width:min(760px,100%);padding-top:40px}
+.luno-card-eyebrow{font-size:11px;letter-spacing:.14em;color:var(--luno-ice);font-weight:700}
+.luno-card-hero h2{max-width:900px;margin:12px 0 16px;font-size:clamp(32px,5vw,64px);line-height:1.04;letter-spacing:-.035em;font-weight:800}
+.luno-card-meta{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-bottom:16px;color:var(--luno-text-muted);font-size:14px}
+.luno-card-badges,.luno-card-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.luno-card-badges{margin-bottom:24px}.luno-card-badges .detail-badge{padding:6px 10px;border:1px solid var(--luno-border);border-radius:999px;background:rgba(20,21,29,.86);color:var(--luno-text);font-size:12px}
+.luno-card-actions{gap:10px}.luno-card-actions button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px}
+.luno-card-ratings{margin-top:16px}.luno-card-section{padding:28px 0;border-top:1px solid rgba(68,68,82,.72)}
+.luno-card-section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px}
+.luno-card-section-heading h3,.luno-card-seasons h3{font-size:clamp(20px,2.5vw,26px);margin:0;font-weight:750}
+.luno-card-section-heading span,.luno-card-seasons p{color:var(--luno-text-muted);font-size:13px}
+.luno-card-about{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,280px);gap:24px}
+.luno-card-about p{margin:0;color:#C6C8D2;font-size:15px;line-height:1.7;white-space:pre-line}
+.luno-card-facts{display:grid;gap:10px;align-content:start}.luno-card-facts>div{padding:14px;border:1px solid var(--luno-border);border-radius:12px;background:rgba(20,21,29,.86);display:grid;gap:6px}
+.luno-card-facts small{color:var(--luno-text-muted);font-size:12px}.luno-card-facts strong{font-size:15px}
+.luno-card-quality-track{height:4px;background:var(--luno-surface-raised);border-radius:99px;overflow:hidden}.luno-card-quality-track i{display:block;height:100%;width:0;background:var(--luno-violet)}
+.luno-card-tags,.luno-card-actors,.luno-card-recommendations{display:flex;gap:10px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:thin}
+.luno-card-tags button,.luno-card-actors button,.luno-card-recommendations button{flex:0 0 auto;border:1px solid var(--luno-border);border-radius:12px;background:var(--luno-surface);color:var(--luno-text);padding:10px 12px}
+.luno-card-seasons{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px;border:1px solid var(--luno-border);border-radius:16px;background:var(--luno-surface)}
+.luno-card-seasons p{margin:8px 0 0}
+@media(max-width:900px){.luno-card-links{display:none}}
+@media(max-width:700px){
+ .luno-card-header{min-height:60px;padding:8px 14px;gap:8px}.luno-card-brand,.luno-card-source-button{display:none}
+ .luno-card-content{padding:0 16px calc(88px + env(safe-area-inset-bottom))}
+ .luno-card-backdrop{height:610px;min-height:0}.luno-card-backdrop-image{background-position:center 18%}
+ .luno-card-backdrop-shade{background:linear-gradient(180deg,rgba(8,9,13,.18) 0%,rgba(8,9,13,.22) 26%,rgba(8,9,13,.8) 56%,#08090D 88%),linear-gradient(90deg,rgba(8,9,13,.28),transparent)}
+ .luno-card-hero{min-height:550px;padding:260px 0 28px;align-items:flex-end}.luno-card-hero-copy{padding-top:0}
+ .luno-card-hero h2{font-size:clamp(28px,8vw,38px);margin:8px 0 12px}.luno-card-meta{font-size:13px;gap:7px;margin-bottom:12px}
+ .luno-card-badges{margin-bottom:16px}.luno-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .luno-card-actions button{min-width:0;padding:0 10px;font-size:13px}.luno-card-actions #detailPlay{grid-column:1/-1}
+ .luno-card-actions #detailFavorite em{font-style:normal}.luno-card-actions .luno-card-sound{display:none}
+ .luno-card-section{padding:22px 0}.luno-card-section-heading{display:block}.luno-card-section-heading span{display:block;margin-top:5px}
+ .luno-card-about{grid-template-columns:1fr;gap:16px}.luno-card-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .luno-card-facts>div:last-child{grid-column:1/-1}.luno-card-seasons{align-items:stretch;flex-direction:column}
+ .luno-card-seasons .luno-card-primary{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.luno-card-trailer{transition:none}}
