@@ -388,6 +388,78 @@ document.addEventListener("click",(event)=>{
   }
 },true);
 
+const posterLookupCache=new Map();
+async function lookupPosterFromTmdb(item){
+  const title=String(item?.name||item?.originalName||item?.title||"").trim();
+  if(!title) return "";
+  const type=item?.type==="tv"?"series":(item?.type||"movie");
+  const year=searchYear(item);
+  const normalizedTitle=normalizeSearchText(title);
+  const key=[type,normalizedTitle,year||""].join("|");
+  if(!posterLookupCache.has(key)){
+    const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
+    const request=(async()=>{
+      try{
+        const response=await fetch(base+"/api/tmdb/search?query="+encodeURIComponent(title),{
+          cache:"no-store",headers:{accept:"application/json"}
+        });
+        if(!response.ok) return "";
+        const data=await response.json();
+        const matches=(Array.isArray(data?.results)?data.results:[])
+          .filter(candidate=>{
+            if(!candidate?.poster) return false;
+            const candidateType=candidate?.type==="tv"?"series":(candidate?.type||"movie");
+            if(candidateType!==type) return false;
+            const candidateName=normalizeSearchText(candidate?.name||"");
+            const candidateOriginal=normalizeSearchText(candidate?.originalName||"");
+            if(candidateName!==normalizedTitle && candidateOriginal!==normalizedTitle) return false;
+            const candidateYear=searchYear(candidate);
+            return !year || !candidateYear || year===candidateYear;
+          })
+          .sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0));
+        return matches[0]?.poster||"";
+      }catch(error){
+        console.warn("[LUNO] TMDB poster lookup failed",title,error);
+        return "";
+      }
+    })();
+    posterLookupCache.set(key,request);
+  }
+  return posterLookupCache.get(key);
+}
+async function recoverCardPoster(cardElement,image){
+  if(image?.dataset.posterLookupAttempted==="1") return false;
+  if(image) image.dataset.posterLookupAttempted="1";
+  const item=resolveCardItem(cardElement);
+  if(!item) return false;
+  const poster=await lookupPosterFromTmdb(item);
+  if(!poster || !cardElement.isConnected) return false;
+  let target=image;
+  if(!target){
+    const art=cardElement.querySelector(".card-art");
+    if(!art) return false;
+    target=document.createElement("img");
+    target.alt=String(item.name||"");
+    target.loading="lazy";
+    target.decoding="async";
+    target.referrerPolicy="no-referrer";
+    const fallback=art.querySelector(".poster-fallback");
+    if(fallback) fallback.insertAdjacentElement("afterend",target);
+    else art.prepend(target);
+    target.addEventListener("load",()=>{
+      target.classList.add("is-poster-ready");
+      art.querySelector(".poster-fallback")?.remove();
+    },{once:true});
+    target.addEventListener("error",()=>{
+      target.remove();
+    },{once:true});
+  }else{
+    target.dataset.fallbacks="[]";
+  }
+  target.src=poster;
+  return true;
+}
+
 function bindCards(){
   document.querySelectorAll(".card-art img").forEach((img)=>{
     // Smart-TV browsers frequently fail to trigger native lazy loading in horizontal rails.
@@ -430,6 +502,17 @@ function bindCards(){
         if(next && image.src!==next){
           image.dataset.fallbacks=JSON.stringify(fallbacks);
           image.src=next;
+          return;
+        }
+        if(image.dataset.posterLookupAttempted!=="1"){
+          recoverCardPoster(c,image).then(recovered=>{
+            if(recovered) return;
+            image.remove();
+            const art=c.querySelector(".card-art");
+            if(art && !art.querySelector(".poster-fallback")){
+              art.insertAdjacentHTML("afterbegin",'<span class="poster-fallback poster-fallback-title"><span>'+escapeHtml(c.dataset.title||"Без названия")+'</span></span>');
+            }
+          });
           return;
         }
         image.remove();
