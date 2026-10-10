@@ -1,0 +1,133 @@
+/* LUNO settings — isolated layout layer.
+   Loaded after the legacy stylesheet and shared design tokens to prevent old layout rules
+   from moving settings sections below the fold on mobile. */
+.settings-view {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1000 !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  padding: calc(env(safe-area-inset-top, 0px) + 22px) clamp(18px, 4vw, 64px) calc(env(safe-area-inset-bottom, 0px) + 28px) !important;
+  background: var(--luno-bg, #08090D) !important;
+  color: var(--luno-text, #E7E8EF) !important;
+}
+.settings-view.hidden { display: none !important; }
+.settings-view .settings-layout {
+  display: grid !important;
+  grid-template-columns: minmax(240px, .82fr) minmax(0, 1.45fr) !important;
+  align-items: start !important;
+  gap: 22px !important;
+  max-width: 1320px !important;
+  margin: 0 auto !important;
+}
+.settings-view .settings-menu {
+  display: grid !important;
+  align-content: start;
+  gap: 9px !important;
+  min-width: 0;
+}
+.settings-view .settings-content { min-width: 0 !important; }
+.settings-view .settings-panel {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--luno-border, #30313C);
+  border-radius: 20px;
+  background: var(--luno-surface, #14151D);
+  color: var(--luno-text, #E7E8EF);
+}
+.settings-view .settings-sections-back { display: none; }
+.settings-view .settings-menu-item { min-width: 0; }
+.settings-view .settings-panel-heading p,
+.settings-view .settings-inline-note { overflow-wrap: anywhere; }
+
+@media (max-width: 760px) {
+  .settings-view {
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
+  }
+  .settings-view .settings-head {
+    margin: 0 0 20px !important;
+    padding: 4px 0 12px !important;
+  }
+  .settings-view .settings-layout {
+    display: block !important;
+    width: 100% !important;
+  }
+  .settings-view .settings-menu {
+    display: grid !important;
+    width: 100%;
+    gap: 9px !important;
+  }
+  .settings-view .settings-content {
+    display: none !important;
+  }
+  .settings-view.settings-section-open .settings-head,
+  .settings-view.settings-section-open .settings-menu {
+    display: none !important;
+  }
+  .settings-view.settings-section-open .settings-content {
+    display: block !important;
+    position: fixed !important;
+    inset: calc(env(safe-area-inset-top, 0px) + 8px) 8px calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+    z-index: 1001 !important;
+    box-sizing: border-box !important;
+    width: auto !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    padding: 14px !important;
+    border: 1px solid var(--luno-border, #30313C);
+    border-radius: 20px;
+    background: var(--luno-bg, #08090D) !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+    -webkit-overflow-scrolling: touch;
+  }
+  .settings-view.settings-section-open .settings-sections-back {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    margin: 0 0 14px;
+    padding: 0 13px;
+    border: 1px solid var(--luno-border, #30313C);
+    border-radius: 12px;
+    background: var(--luno-surface, #14151D);
+    color: var(--luno-text, #E7E8EF);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .settings-view.settings-section-open .settings-panel {
+    width: 100%;
+    padding: 18px 14px !important;
+    border-radius: 16px;
+    box-shadow: none;
+  }
+  .settings-view .settings-menu-item {
+    min-height: 62px !important;
+    padding: 10px 12px !important;
+  }
+  .settings-view .settings-menu-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .settings-view .settings-form-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+  .settings-view .settings-form-actions > * { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-view *, .settings-view *::before, .settings-view *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
