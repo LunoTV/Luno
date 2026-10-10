@@ -309,6 +309,11 @@ async function fetchTmdbApi(endpoint,params={}){
       if(!response.ok) throw new Error("TMDB mirror HTTP "+response.status);
       const data=await response.json();
       if(!data||!Array.isArray(data.results)) throw new Error("TMDB mirror returned invalid data");
+      // A gateway that returns an empty search response must not win Promise.any
+      // while another mirror may have the actual TMDB results.
+      if(cleanEndpoint==="search/multi" && String(params.query||"").trim() && data.results.length===0){
+        throw new Error("TMDB mirror returned an empty search result");
+      }
       return data;
     }finally{
       window.clearTimeout(timer);
