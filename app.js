@@ -308,9 +308,11 @@ function posterCandidates(item){
     const file=(first==="original" || first.startsWith("w")) ? parts.slice(1).join("/") : remotePath;
     const imagePath="t/p/"+size+"/"+file;
     const imageProxyBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
-    values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
+    // Try public image mirrors before the Worker. On mobile networks the
+    // Worker image response can remain pending without firing an <img> error.
     values.push(...tmdbImageMirrorCandidates(imagePath));
     values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
+    values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
   }
   if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
@@ -525,6 +527,24 @@ function bindCards(){
     }
     if(image && !image.dataset.fallbackBound){
       image.dataset.fallbackBound="1";
+      // Some iOS Safari/network combinations leave blocked image requests
+      // pending forever instead of firing error. Force the normal fallback
+      // chain after a short deadline so the next mirror can be tried.
+      let posterLoadTimer=0;
+      const armPosterLoadTimer=()=>{
+        window.clearTimeout(posterLoadTimer);
+        posterLoadTimer=window.setTimeout(()=>{
+          if(image.isConnected && (!image.complete || image.naturalWidth===0)){
+            image.dispatchEvent(new Event("error"));
+          }
+        },4500);
+      };
+      image.addEventListener("load",()=>window.clearTimeout(posterLoadTimer));
+      image.addEventListener("error",()=>{
+        window.clearTimeout(posterLoadTimer);
+        window.setTimeout(armPosterLoadTimer,0);
+      });
+      armPosterLoadTimer();
       image.addEventListener("error",()=>{
         let fallbacks=[];
         try{ fallbacks=JSON.parse(image.dataset.fallbacks||"[]"); }catch{}
