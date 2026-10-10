@@ -2261,6 +2261,7 @@ window.LUNOPlayer={openStream:setLunoStream};
 document.querySelectorAll('.search-source[data-search-source="luno"], #searchLunoCount').forEach(node=>node.remove());
 let searchSource="tmdb";
 let searchResultsState={tmdb:[],ai:[]};
+let searchError="";
 
 function loadSearchHistory(){
   try{
@@ -2306,7 +2307,9 @@ function renderSearchSections(items,query){
     : "";
   if(!items.length){
     resultBox.innerHTML=query
-      ? '<div class="search-empty search-empty-modern"><strong>Ничего не нашли</strong><span>Попробуй другое название или убери год из запроса.</span></div>'
+      ? (searchError
+        ? '<div class="search-empty search-empty-modern"><strong>Не удалось подключиться к TMDB</strong><span>'+escapeHtml(searchError)+'</span></div>'
+        : '<div class="search-empty search-empty-modern"><strong>Ничего не нашли</strong><span>Попробуй другое название или убери год из запроса.</span></div>')
       : '<div class="search-discover"><strong>Что будем смотреть?</strong><span>Введи название фильма, сериала или франшизы.</span></div>';
     return;
   }
@@ -2568,11 +2571,13 @@ searchInput.addEventListener("input",()=>{
   clearTimeout(searchTimer);
   const query=searchInput.value.trim();
   if(!query){
+    searchError="";
     searchResultsState={tmdb:[],ai:[]};
     renderActiveSearch("");
     return;
   }
   searchTimer=setTimeout(async()=>{
+    searchError="";
     searchResultsState.tmdb=[];
     renderActiveSearch(query);
     try{
@@ -2581,6 +2586,7 @@ searchInput.addEventListener("input",()=>{
       renderActiveSearch(query);
     }catch(error){
       console.warn("TMDB search unavailable:",error);
+      searchError=String(error?.message||error||"Сетевая ошибка");
       searchResultsState.tmdb=[];
       renderActiveSearch(query);
     }
