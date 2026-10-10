@@ -1300,7 +1300,11 @@ function closeSettingsView(){
 }
 document.querySelectorAll("[data-settings-section]").forEach(button=>button.addEventListener("click",()=>openSettingsView(button.dataset.settingsSection,true)));
 document.querySelector("#settingsBack")?.addEventListener("click",closeSettingsView);
-document.querySelector("[data-settings-sections-back]")?.addEventListener("click",()=>settingsView?.classList.remove("settings-section-open"));
+document.querySelector("[data-settings-sections-back]")?.addEventListener("click",()=>{
+  if(!settingsView)return;
+  settingsView.classList.remove("settings-section-open");
+  settingsView.querySelectorAll("[data-settings-panel]").forEach(panel=>panel.classList.add("hidden"));
+});
 settingsView?.querySelectorAll("[data-setting]").forEach(control=>{
   control.addEventListener("change",()=>{
     const value=control.type==="checkbox"?control.checked:control.value;
