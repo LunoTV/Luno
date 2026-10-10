@@ -906,11 +906,39 @@ function openLibrary(type,pushHistory=true){
     cartoons:{title:"Мультфильмы",kicker:""},
     anime:{title:"Аниме",kicker:""},
     shows:{title:"Шоу",kicker:""},
-    history:{title:"История просмотра",kicker:"ТВОИ ПРОСМОТРЫ"}
+    history:{title:"История просмотра",kicker:"ТВОИ ПРОСМОТРЫ"},
+    popular:{title:"Популярное",kicker:"СЕЙЧАС СМОТРЯТ"},
+    continue:{title:"Продолжить просмотр",kicker:"ВОЗВРАЩАЙСЯ"},
+    openCinema:{title:"Open Cinema",kicker:"ОТКРЫТОЕ КИНО"},
+    recommendations:{title:"Рекомендуем тебе",kicker:"ВЫБОР LUNO"},
+    evening:{title:"Что посмотреть сегодня",kicker:"НА ВЕЧЕР"},
+    classics:{title:"Культовое кино",kicker:"ПРОВЕРЕНО ВРЕМЕНЕМ"},
+    favorites:{title:"Избранное",kicker:"ТВОЯ КОЛЛЕКЦИЯ"}
   }[type];
   if(!config || !libraryView) return;
 
   if(pushHistory) setLunoHistory(type);
+  if(["popular","continue","openCinema","recommendations","evening","classics","favorites"].includes(type)){
+    const all=[...new Map(catalogItems.filter(item=>item?.id).map(item=>[item.id,item])).values()];
+    const stableKey=item=>{const value=String(item.id||item.name||item.title||"");let hash=2166136261;for(const ch of value){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}return hash>>>0;};
+    const popular=all.slice().sort((x,y)=>(Number(y.popularity)||0)-(Number(x.popularity)||0));
+    const topIds=new Set(popular.slice(0,6).map(item=>item.id));
+    const recommendations=all.filter(item=>!topIds.has(item.id)).sort((x,y)=>stableKey(x)-stableKey(y));
+    const genres=item=>Array.isArray(item.genres)?item.genres.map(x=>String(x).toLowerCase()):[];
+    const evening=all.filter(item=>genres(item).some(g=>/комеди|роман|приключ|семейн|фэнтези|мелодрам/.test(g))).sort((x,y)=>stableKey(x)-stableKey(y));
+    const classics=all.filter(item=>getYear(item)>0&&getYear(item)<=2010).sort((x,y)=>stableKey(x)-stableKey(y));
+    const source={popular,continue:loadResume(),openCinema:openCinemaItems,recommendations,evening,classics,favorites:loadFavorites()}[type]||[];
+    libraryType=type;libraryItems=source.slice();librarySort="popular";
+    if(type!=="continue"&&type!=="favorites")libraryItems=sortLibraryItems(libraryItems,"popular");
+    libraryVisible=0;libraryTitle.textContent=config.title;libraryKicker.textContent=config.kicker;
+    libraryContent.innerHTML='<div class="library-toolbar"><span>Все подборки · '+escapeHtml(config.title.toLocaleLowerCase("ru-RU"))+'</span><strong class="library-toolbar-count">'+libraryItems.length+'</strong></div><div class="library-sort" role="group" aria-label="Сортировка подборки"><button type="button" class="active" data-library-sort="popular" aria-pressed="true">Популярное</button><button type="button" data-library-sort="rating" aria-pressed="false">По рейтингу</button><button type="button" data-library-sort="newest" aria-pressed="false">Новинки</button></div><div class="library-infinite-grid"></div><div class="library-loader" id="libraryLoader">Загрузка…</div>';
+    libraryView.classList.remove("hidden");document.body.classList.add("library-open");libraryContent.scrollTop=0;
+    libraryContent.querySelectorAll("[data-library-sort]").forEach(button=>button.addEventListener("click",()=>applyLibrarySort(button.dataset.librarySort)));
+    renderLibraryBatch();if(libraryContent._observer)libraryContent._observer.disconnect();
+    const loader=document.querySelector("#libraryLoader");
+    if(loader){const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){if(libraryVisible<libraryItems.length)renderLibraryBatch();else loader.textContent="Вы просмотрели всю подборку";}},{root:libraryContent,rootMargin:"900px 0px"});observer.observe(loader);libraryContent._observer=observer;}
+    return;
+  }
   if(type==="history"){
     libraryType="history";
     libraryItems=loadHistory().sort((a,b)=>(Number(b.updatedAt)||0)-(Number(a.updatedAt)||0));
@@ -984,6 +1012,8 @@ function closeLibrary(fromHistory=false){
     }catch{}
   }
 }
+
+document.querySelectorAll("[data-home-collection]").forEach(button=>button.addEventListener("click",()=>{const collection=button.dataset.homeCollection;if(collection)openLibrary(collection);}));
 
 function navigate(section){
   document.body.classList.toggle("home-mode",section==="home");
