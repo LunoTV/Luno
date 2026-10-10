@@ -1104,12 +1104,24 @@ function renderCatalogSections(){
       .sort((a,b)=>stablePickKey(a)-stablePickKey(b)));
   }
   const picks=pickPool.slice(0,18);
-  const evening=all.filter(item=>{
+  // Randomize these editorial rails once per page session, while keeping their
+  // order stable across scrolls and any subsequent catalog re-render.
+  const homeShuffleKey=item=>{
+    const value=String(item.id||item.name||item.title||"");
+    let hash=2166136261;
+    const seed=window.__LUNO_HOME_RANDOM_SEED||(window.__LUNO_HOME_RANDOM_SEED=Math.random().toString(36).slice(2));
+    for(const ch of seed+"|"+value){
+      hash^=ch.charCodeAt(0);
+      hash=Math.imul(hash,16777619);
+    }
+    return hash>>>0;
+  };
+  const shuffleHomeRail=items=>items.slice().sort((a,b)=>homeShuffleKey(a)-homeShuffleKey(b));
+  const evening=shuffleHomeRail(all.filter(item=>{
     const genres=Array.isArray(item.genres)?item.genres.map(x=>String(x).toLowerCase()):[];
     return genres.some(g=>/комеди|роман|приключ|семейн|фэнтези|мелодрам/.test(g));
-  }).sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)).slice(0,18);
-  const classics=all.filter(item=>getYear(item)>0 && getYear(item)<=2010)
-    .sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0) || (Number(b.popularity)||0)-(Number(a.popularity)||0))
+  })).slice(0,18);
+  const classics=shuffleHomeRail(all.filter(item=>getYear(item)>0 && getYear(item)<=2010))
     .slice(0,18);
   if(lunoPicksCards) setHTMLIfChanged(lunoPicksCards,picks.map((item,index)=>card(item,index<6)).join(""));
   if(eveningCards) setHTMLIfChanged(eveningCards,evening.map((item,index)=>card(item,index<6)).join(""));
