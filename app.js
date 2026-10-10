@@ -304,11 +304,12 @@ function posterCandidates(item){
   // Lampa's TMDB Proxy rotates through these image mirrors. Try them before
   // image.tmdb.org, then retain the direct URL and non-TMDB art as last resorts.
   if(remotePath){
-    values.push(...tmdbImageMirrorCandidates("t/p/"+remotePath));
     const parts=remotePath.split("/");
     const first=parts[0]||"";
     const size=(first==="original" || first.startsWith("w")) ? first : "w500";
     const file=(first==="original" || first.startsWith("w")) ? parts.slice(1).join("/") : remotePath;
+    const imagePath="t/p/"+size+"/"+file;
+    values.push(...tmdbImageMirrorCandidates(imagePath));
     values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
   }
   if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
