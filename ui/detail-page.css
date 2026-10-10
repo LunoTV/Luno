@@ -89,3 +89,18 @@ body.detail-open #app > .mobile-tabbar,
 body.detail-open #app > .search-topbar { display:none !important; }
 body.detail-open #detail.luno-card-page { display:block; }
 body.detail-open #detail.luno-card-page.hidden { display:none !important; }
+
+
+/* A detail card is a separate screen, not a transparent layer over Home. */
+body.detail-open #app > :not(#detail) { display: none !important; }
+body.detail-open #app > #detail.luno-card-page {
+  display: block !important;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  min-height: 100dvh;
+  background: #08090D;
+}
+body.detail-open #detail .luno-card-backdrop { z-index: 0; pointer-events: none; }
+body.detail-open #detail .luno-card-content,
+body.detail-open #detail .luno-card-header { position: relative; z-index: 1; }
