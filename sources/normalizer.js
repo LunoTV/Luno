@@ -24,7 +24,7 @@ export function normalizeStream(raw,source,request={}){
   const quality=normalizeQualityMap(s.quality||s.qualitys);
   let url=text(s.url||s.streamingUrl||s.externalUrl||s.webosUrl||s.file||"");
   if(!url&&Object.keys(quality).length){
-    url=quality[String(Math.max(...Object.keys(quality).map(qualityNumber)))];
+    url=selectBestUrl({quality});
   }
   if(!http(url))return null;
   const subtitles=normalizeSubtitles(s.subtitles);
