@@ -6133,3 +6133,45 @@ body.settings-open{overflow-x:hidden}
   .settings-view{padding-left:16px;padding-right:16px}
   .settings-head{margin-top:0;padding-top:4px}
 }
+
+/* LUNO visual-system correction: calm the navigation drawer and center the detail banner. */
+.luno-menu-drawer{
+  background:rgba(8,9,13,.985)!important;
+  border-right:1px solid #30313C!important;
+  box-shadow:20px 0 56px rgba(0,0,0,.42)!important;
+}
+.luno-menu-close{
+  border-color:#30313C!important;
+  background:#14151D!important;
+  color:#E7E8EF!important;
+}
+.luno-menu-caption{color:#989BAA!important}
+.luno-menu-item{color:#BFC1CE!important;background:transparent!important}
+.luno-menu-item>span{color:#989BAA!important}
+.luno-menu-item:hover,.luno-menu-item.active{
+  color:#E7E8EF!important;
+  background:#242334!important;
+}
+.luno-menu-item.active{
+  box-shadow:inset 3px 0 0 #8581AD!important;
+}
+.luno-menu-item.active>span{color:#8CB8CC!important}
+.luno-menu-divider{background:#30313C!important}
+.luno-menu-source{color:#8CB8CC!important}
+.luno-menu-backdrop{background:rgba(5,6,10,.68)!important}
+.luno-detail-hero .detail-backdrop{
+  background-position:50% 50%!important;
+  background-size:cover!important;
+}
+.luno-detail-hero .detail-trailer-video{
+  object-position:50% 50%!important;
+}
+@media(max-width:700px){
+  .luno-detail-hero .detail-backdrop{
+    background-position:50% 50%!important;
+    background-size:cover!important;
+  }
+  .luno-detail-hero .detail-trailer-video{
+    object-position:50% 50%!important;
+  }
+}
