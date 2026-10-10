@@ -10,6 +10,7 @@ import {
   dispatchLunoPlayerAction,
 } from "./source-engine.js?v=source28";
 import {renderSourceManager,bindSourceManager} from "./ui/source-manager.js";
+import {qualityNumber} from "./sources/quality.js";
 import {installRemoteNavigation} from "./ui/remote-navigation.js?v=remote32";
 const continueCards=document.querySelector("#continueCards");
 const movieCards=document.querySelector("#movieCards");
@@ -1429,7 +1430,7 @@ function streamQualities(entry){
   const map=entry?.stream?.quality||entry?.stream?.qualitys||{};
   return Object.entries(map).filter(([,url])=>/^https?:\/\//i.test(String(url||"")))
     .map(([label,url])=>({label,url}))
-    .sort((a,b)=>(Number(String(b.label).match(/\d{3,4}/)?.[0]||0)-Number(String(a.label).match(/\d{3,4}/)?.[0]||0)));
+    .sort((a,b)=>qualityNumber(b.label)-qualityNumber(a.label));
 }
 function streamSubtitles(entry){
   return Array.isArray(entry?.stream?.subtitles)?entry.stream.subtitles.filter(x=>/^https?:\/\//i.test(String(x?.url||""))):[];
