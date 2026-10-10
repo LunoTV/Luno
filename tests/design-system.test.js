@@ -133,3 +133,17 @@ test("detail backdrop tries available TMDB image candidates until one loads", as
   assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "tries the next image if a mirror fails");
   assert.ok(app.includes("image.onload=()=>{"), "only applies an image after it loads");
 });
+
+
+test("mobile navigation follows the five-section reference layout while retaining LUNO styling", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(html.includes('class="mobile-tabbar luno-reference-tabbar"'), "uses the reference-style mobile navigation");
+  for (const section of ["home","catalog","search","library","profile"]) {
+    assert.ok(html.includes('data-section="'+section+'"'), "includes "+section+" navigation");
+  }
+  assert.ok(app.includes('if(section==="library"){openLibrary("favorites");return;}'), "library opens saved favorites");
+  assert.ok(app.includes('if(section==="profile" || section==="settings"){openSettingsView("profile");return;}'), "profile opens the existing profile/settings view");
+  assert.ok(css.includes(".mobile-tabbar.luno-reference-tabbar"), "navigation uses LUNO's shared styling");
+});
