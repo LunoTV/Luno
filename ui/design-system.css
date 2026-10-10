@@ -331,3 +331,52 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--luno-violet); 
     border-radius: 16px;
   }
 }
+
+/* Mobile inner-page shutter: only contextual Back and Search controls. */
+@media (max-width: 700px) {
+  .topbar.luno-nav-shutter .brand,
+  .topbar.luno-nav-shutter .nav,
+  .topbar.luno-nav-shutter .global-header-settings {
+    display: none !important;
+  }
+  .topbar.luno-nav-shutter {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+  }
+  .topbar.luno-nav-shutter .global-header-back {
+    display: none !important;
+  }
+  body.show-global-back .topbar.luno-nav-shutter .global-header-back {
+    display: grid !important;
+    place-items: center !important;
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    border-radius: 12px !important;
+  }
+  .topbar.luno-nav-shutter .tv-header-tools {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+  }
+  .topbar.luno-nav-shutter .global-header-search {
+    display: grid !important;
+    place-items: center !important;
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    border-radius: 12px !important;
+  }
+}
