@@ -8,7 +8,7 @@ import {
   getPlayerStreamUrl,
   unloadLunoPlayer,
   dispatchLunoPlayerAction,
-} from "./source-engine.js?v=source29";
+} from "./source-engine.js?v=source30";
 import {renderSourceManager,bindSourceManager} from "./ui/source-manager.js";
 import {qualityNumber} from "./sources/quality.js";
 import {installRemoteNavigation} from "./ui/remote-navigation.js?v=remote32";
@@ -244,11 +244,16 @@ function normalizeItem(item){
   const poster=normalizeImageValue(posterValue,"w500") || tmdbPoster;
   const background=normalizeImageValue(backgroundValue,"w1280") ||
     (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280/"+String(item.backdrop_path).replace(/^\//,"") : "");
+  const type=item?.type==="tv" ? "series" : (item?.type || "movie");
+  const idText=String(item?.id||"");
+  const parsedId=idText.match(/^tmdb:(?:(?:movie|tv|series):)?(\d+)$/)?.[1] || (/^\d+$/.test(idText)?idText:"");
+  const tmdbId=Number(item?.tmdbId)||Number(parsedId)||0;
+  const id=tmdbId ? "tmdb:"+(type==="series"?"tv":"movie")+":"+tmdbId : (item?.id||"");
   return {
     ...item,
-    id:item?.id || (item?.tmdbId ? "tmdb:"+item.tmdbId : ""),
-    tmdbId:Number(item?.tmdbId)||0,
-    type:item?.type==="tv" ? "series" : (item?.type || "movie"),
+    id,
+    tmdbId,
+    type,
     name:item?.name || item?.originalName || "Без названия",
     poster,
     background,
@@ -574,7 +579,7 @@ function isFavorite(id){
 function loadHistory(){
   try{
     const value=JSON.parse(localStorage.getItem("luno-history")||"[]");
-    return Array.isArray(value) ? value.filter(x=>x?.id) : [];
+    return Array.isArray(value) ? value.filter(x=>x?.id).map(normalizeItem) : [];
   }catch{return []}
 }
 function saveHistoryItem(item){
@@ -587,7 +592,7 @@ function saveHistoryItem(item){
 function loadFavorites(){
   try{
     const value=JSON.parse(localStorage.getItem("luno-favorites")||"[]");
-    return Array.isArray(value) ? value.filter(x=>x?.id) : [];
+    return Array.isArray(value) ? value.filter(x=>x?.id).map(normalizeItem) : [];
   }catch{return []}
 }
 
@@ -783,7 +788,7 @@ closeSearch?.addEventListener("click",closeSearchPanel);
 function loadResume(){
   try{
     const value=JSON.parse(localStorage.getItem("luno-resume")||"[]");
-    return Array.isArray(value) ? value.filter(x=>x?.id) : [];
+    return Array.isArray(value) ? value.filter(x=>x?.id).map(normalizeItem) : [];
   }catch{return []}
 }
 
@@ -1268,10 +1273,12 @@ async function loadTmdbCatalog(){
         const posterPath=String(item?.poster_path||item?.posterPath||"").split("/").filter(Boolean).join("/");
         const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").split("/").filter(Boolean).join("/");
         const rawId=String(item?.id||"");
+        const parsedId=rawId.match(/^tmdb:(?:(?:movie|tv|series):)?(\d+)$/)?.[1] || (/^\d+$/.test(rawId)?rawId:"");
+        const tmdbId=Number(item?.tmdbId)||Number(parsedId)||0;
         return {
           ...item,
-          id:rawId.startsWith("tmdb:")?rawId:"tmdb:"+rawId,
-          tmdbId:Number(item?.tmdbId||rawId.replace(/^tmdb:/,""))||0,
+          id:tmdbId ? "tmdb:"+(isSeries?"tv":"movie")+":"+tmdbId : rawId,
+          tmdbId,
           type:isSeries?"series":"movie",
           name:item?.name||item?.title||item?.original_name||item?.original_title||"Без названия",
           poster:item?.poster||(posterPath?"https://image.tmdb.org/t/p/w500/"+posterPath:""),

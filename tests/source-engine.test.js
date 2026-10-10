@@ -5,6 +5,7 @@ import { createSourceRegistry } from "../sources/registry.js";
 import { normalizeStream, normalizeVoice, normalizeEpisodeInfo, streamKind } from "../sources/normalizer.js";
 import { qualityNumber, listQualities, selectBestUrl } from "../sources/quality.js";
 import { normalizeSubtitles } from "../sources/subtitles.js";
+import { catalogItemId, catalogPosterFilename } from "../scripts/catalog-utils.mjs";
 import { isTrustedRuntimeApiUrl, appendRuntimeParams } from "../sources/request-policy.js";
 
 const url=(name)=>`https://media.example.test/${name}`;
@@ -100,4 +101,14 @@ test("runtime credentials and parameters are only attached to configured API ori
   assert.equal(enriched.searchParams.get("account_email"),"user@example.test");
   assert.equal(enriched.searchParams.get("luno_token"),"secret");
   assert.equal(isTrustedRuntimeApiUrl("javascript:alert(1)",bases),false);
+});
+
+
+test("catalog IDs and poster filenames distinguish movies from series with the same TMDB ID",()=>{
+  assert.notEqual(catalogItemId("movie",1399),catalogItemId("tv",1399));
+  assert.equal(catalogItemId("movie",1399),"tmdb:movie:1399");
+  assert.equal(catalogItemId("tv",1399),"tmdb:tv:1399");
+  assert.notEqual(catalogPosterFilename("movie",1399),catalogPosterFilename("tv",1399));
+  assert.equal(catalogPosterFilename("movie",1399),"movie-1399.jpg");
+  assert.equal(catalogPosterFilename("tv",1399),"tv-1399.jpg");
 });

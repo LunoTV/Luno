@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
+import { catalogItemId, catalogPosterFilename } from "./catalog-utils.mjs";
 
 const token = process.env.TMDB_API_TOKEN || "";
 if (!token) throw new Error("TMDB_API_TOKEN is missing. Add it to GitHub Actions secrets.");
@@ -27,7 +28,7 @@ function normalize(item, type, genres) {
   const originalName = movie ? (item.original_title || item.original_name) : (item.original_name || item.original_title);
   const name = movie ? (item.title || item.name) : (item.name || item.title);
   return {
-    id: "tmdb:" + tmdbId,
+    id: catalogItemId(type, tmdbId),
     tmdbId,
     type,
     name: name || originalName || "Без названия",
@@ -252,7 +253,7 @@ async function cachePosters(items) {
       if (index >= items.length) return;
 
       const item = items[index];
-      const file = "public/tmdb-posters/" + item.tmdbId + ".jpg";
+      const file = "public/tmdb-posters/" + catalogPosterFilename(item.type, item.tmdbId);
       const candidates = [
         item?.poster,
         item?.posterPath ? IMAGE + "/w500" + String(item.posterPath).replace(/^\//, "") : "",

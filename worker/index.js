@@ -30,7 +30,7 @@ function normalize(item) {
     item.type === "movie" ||
     (!item.media_type && !item.type && Boolean(item.title || item.original_title) && !item.name && !item.first_air_date);
   return {
-    id: "tmdb:" + item.id,
+    id: "tmdb:" + (movie ? "movie:" : "tv:") + item.id,
     tmdbId: Number(item.id),
     type: movie ? "movie" : "series",
     name: movie ? (item.title || item.original_title || "") : (item.name || item.original_name || ""),
