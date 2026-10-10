@@ -2195,6 +2195,8 @@ function setLunoStream(streamUrl,streamMeta={}){
 
 window.LUNOPlayer={openStream:setLunoStream};
 
+// Remove the legacy LUNO catalog search tab if an older cached HTML shell still contains it.
+document.querySelectorAll('.search-source[data-search-source="luno"], #searchLunoCount').forEach(node=>node.remove());
 let searchSource="tmdb";
 let searchResultsState={tmdb:[],ai:[]};
 
@@ -2501,7 +2503,7 @@ searchInput.addEventListener("input",()=>{
   clearTimeout(searchTimer);
   const query=searchInput.value.trim();
   if(!query){
-    searchResultsState={tmdb:[],luno:[],ai:[]};
+    searchResultsState={tmdb:[],ai:[]};
     renderActiveSearch("");
     return;
   }
