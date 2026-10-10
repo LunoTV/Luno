@@ -242,7 +242,7 @@ function normalizeItem(item){
   const tmdbPoster=item?.poster_path
     ? "https://image.tmdb.org/t/p/w500/"+String(item.poster_path).replace(/^\//,"")
     : "";
-  const poster=normalizeImageValue(posterValue,"w500") || tmdbPoster;
+  const poster=tmdbPoster || normalizeImageValue(posterValue,"w500");
   const background=normalizeImageValue(backgroundValue,"w1280") ||
     (item?.backdrop_path ? "https://image.tmdb.org/t/p/w1280/"+String(item.backdrop_path).replace(/^\//,"") : "");
   const type=item?.type==="tv" ? "series" : (item?.type || "movie");
@@ -272,44 +272,26 @@ function normalizeItem(item){
 
 function posterCandidates(item){
   const values=[];
-  const targetId=String(item?.tmdbId||String(item?.id||"").replace(/^tmdb:/,"")||"");
-  const targetName=normalizeSearchText(item?.name||item?.originalName||item?.title||"");
-  const targetOriginal=normalizeSearchText(item?.originalName||item?.original_title||item?.original_name||"");
-  const targetYear=searchYear(item);
-  const targetType=item?.type==="tv"?"series":(item?.type||"movie");
-  const catalog=Array.isArray(catalogItems)?catalogItems:[];
-  // Prefer the already-cached same-origin LUNO poster for the exact TMDB record.
-  const exactMatches=catalog.filter(candidate=>{
-    if(!candidate?.poster) return false;
-    const candidateId=String(candidate?.tmdbId||String(candidate?.id||"").replace(/^tmdb:/,"")||"");
-    const candidateType=candidate?.type==="tv"?"series":(candidate?.type||"movie");
-    return targetId && candidateId===targetId && candidateType===targetType;
-  });
-  for(const candidate of exactMatches) values.push(candidate.poster);
-  // If the TMDB ID isn't in the local catalog, match conservatively by title, type and year.
-  if(!exactMatches.length && (targetName||targetOriginal)){
-    const localMatches=catalog.filter(candidate=>{
-      if(!candidate?.poster) return false;
-      const candidateType=candidate?.type==="tv"?"series":(candidate?.type||"movie");
-      if(candidateType!==targetType) return false;
-      const candidateName=normalizeSearchText(candidate?.name||candidate?.originalName||"");
-      const candidateOriginal=normalizeSearchText(candidate?.originalName||candidate?.original_title||candidate?.original_name||"");
-      if(candidateName!==targetName && candidateOriginal!==targetName &&
-         candidateName!==targetOriginal && candidateOriginal!==targetOriginal) return false;
-      const candidateYear=searchYear(candidate);
-      return !targetYear || !candidateYear || targetYear===candidateYear;
-    });
-    for(const candidate of localMatches) values.push(candidate.poster);
-  }
-  // Then try the item's own image and the regular TMDB CDN variants.
-  values.push(item?.poster,item?.posterSource);
+  const rawPoster=String(item?.poster||"").trim();
+  const rawSource=String(item?.posterSource||"").trim();
   const path=String(item?.poster_path||item?.posterPath||"").trim();
+  const isTmdbImage=value=>/^https?:\\/\\/image\\.tmdb\\.org\\/t\\/p\\//i.test(String(value||"").trim());
+
+  // TMDB artwork must win over LUNO's bundled/cached artwork. Some catalog
+  // records contain an older local poster URL even when poster_path is available.
+  if(isTmdbImage(rawPoster)) values.push(rawPoster);
   if(path){
-    const clean=path.replace(/^\/+/, "");
+    const clean=path.replace(/^\\/+/, "");
     values.push("https://image.tmdb.org/t/p/w500/"+clean);
     values.push("https://image.tmdb.org/t/p/original/"+clean);
   }
-  values.push(item?.background);
+  if(isTmdbImage(rawSource)) values.push(rawSource);
+
+  // Non-TMDB artwork is retained only as a fallback for records that genuinely
+  // have no TMDB poster. Never let a matching cached LUNO card override TMDB.
+  if(rawPoster && !isTmdbImage(rawPoster)) values.push(normalizeImageValue(rawPoster,"w500"));
+  if(rawSource && !isTmdbImage(rawSource)) values.push(normalizeImageValue(rawSource,"w500"));
+  if(item?.background) values.push(item.background);
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
 // Shared device capability check used by poster loading and prefetching.
