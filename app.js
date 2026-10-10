@@ -278,41 +278,44 @@ const LUNO_TMDB_IMAGE_MIRRORS=[
   "https://lampa.byskaz.ru/tmdb/img/"
 ];
 function tmdbImageMirrorCandidates(path){
-  const clean=String(path||"").trim().replace(/^\\/+/, "");
+  let clean=String(path||"").trim();
+  if(clean.startsWith("/")) clean=clean.slice(1);
   if(!clean) return [];
   return LUNO_TMDB_IMAGE_MIRRORS.map(base=>base+clean);
+}
+function tmdbImagePath(value){
+  const raw=String(value||"").trim();
+  const marker="/t/p/";
+  const index=raw.toLowerCase().indexOf(marker);
+  return index<0 ? "" : raw.slice(index+marker.length);
+}
+function isDirectTmdbImage(value){
+  const raw=String(value||"").trim().toLowerCase();
+  return raw.startsWith("https://image.tmdb.org/t/p/") || raw.startsWith("http://image.tmdb.org/t/p/");
 }
 function posterCandidates(item){
   const values=[];
   const rawPoster=String(item?.poster||"").trim();
   const rawSource=String(item?.posterSource||"").trim();
-  const path=String(item?.poster_path||item?.posterPath||"").trim();
-  const tmdbPathFromUrl=value=>{
-    const match=String(value||"").trim().match(/^https?:\\/\\/image\\.tmdb\\.org\\/t\\/p\\/(.+)$/i);
-    return match?.[1]||"";
-  };
+  let path=String(item?.poster_path||item?.posterPath||"").trim();
+  if(path.startsWith("/")) path=path.slice(1);
+  const remotePath=path || tmdbImagePath(rawPoster);
 
-  // Follow Lampa's TMDB Proxy strategy: try its image mirrors first, remember
-  // each failed host through the existing img fallback chain, then try TMDB CDN.
-  const remotePath=path.replace(/^\\/+/, "") || tmdbPathFromUrl(rawPoster);
+  // Lampa's TMDB Proxy rotates through these image mirrors. Try them before
+  // image.tmdb.org, then retain the direct URL and non-TMDB art as last resorts.
   if(remotePath){
     values.push(...tmdbImageMirrorCandidates("t/p/"+remotePath));
-    if(!/^https?:\\/\\/image\\.tmdb\\.org\\/t\\/p\\//i.test(rawPoster)) {
-      const size=remotePath.match(/^(?:w[0-9]+|original)\\//)?.[0]||"w500/";
-      const clean=remotePath.replace(/^(?:w[0-9]+|original)\\//, "");
-      values.push("https://image.tmdb.org/t/p/"+size+clean);
-    } else {
-      values.push(rawPoster);
-    }
+    const parts=remotePath.split("/");
+    const first=parts[0]||"";
+    const size=(first==="original" || first.startsWith("w")) ? first : "w500";
+    const file=(first==="original" || first.startsWith("w")) ? parts.slice(1).join("/") : remotePath;
+    values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
   }
-  if(rawSource && rawSource!==rawPoster) {
-    const sourcePath=tmdbPathFromUrl(rawSource);
-    if(sourcePath) values.push(...tmdbImageMirrorCandidates("t/p/"+sourcePath));
-    values.push(rawSource);
-  }
-  // Keep non-TMDB posters only as last-resort artwork if all official mirrors fail.
-  if(rawPoster && !tmdbPathFromUrl(rawPoster)) values.push(normalizeImageValue(rawPoster,"w500"));
-  if(rawSource && !tmdbPathFromUrl(rawSource)) values.push(normalizeImageValue(rawSource,"w500"));
+  if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
+  const sourcePath=tmdbImagePath(rawSource);
+  if(sourcePath) values.push(...tmdbImageMirrorCandidates("t/p/"+sourcePath));
+  if(rawSource) values.push(rawSource);
+  if(rawPoster && !isDirectTmdbImage(rawPoster)) values.push(normalizeImageValue(rawPoster,"w500"));
   if(item?.background) values.push(item.background);
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
