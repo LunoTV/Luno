@@ -239,8 +239,9 @@ function normalizeImageValue(value,size){
 function normalizeItem(item){
   // Use TMDB artwork only. Ignore LUNO's cached/custom poster fields.
   const posterValue=String(item?.poster||"").trim();
-  const tmdbPoster=item?.poster_path
-    ? "https://image.tmdb.org/t/p/w500/"+String(item.poster_path).replace(/^\//,"")
+  const posterPath=item?.poster_path || item?.posterPath || "";
+  const tmdbPoster=posterPath
+    ? "https://image.tmdb.org/t/p/w500/"+String(posterPath).replace(/^\//,"")
     : (isDirectTmdbImage(posterValue) ? posterValue : "");
   const backgroundValue=String(item?.background||"");
   const background=normalizeImageValue(backgroundValue,"w1280") ||
@@ -255,7 +256,8 @@ function normalizeItem(item){
     id,
     tmdbId,
     type,
-    name:item?.name || item?.originalName || "Без названия",
+    name:item?.name || item?.title || item?.originalName || item?.original_name || item?.original_title || "Без названия",
+    originalName:item?.originalName || item?.original_name || item?.original_title || item?.originalName || "",
     poster:tmdbPoster,
     background,
     releaseInfo:item?.releaseInfo || "",
