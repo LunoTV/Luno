@@ -890,7 +890,10 @@ function openDetail(item){
   }catch(error){
     console.error("[LUNO] paintDetail failed",error);
   }
-  if(detailBackdrop) detailBackdrop.style.backgroundImage=item?.background ? 'url("'+String(preferredTmdbImage(item.background)).replace(/"/g,"&quot;")+'")' : "";
+  if(detailBackdrop){
+    const backdropImage=item?.background || item?.poster || item?.poster_path || "";
+    detailBackdrop.style.backgroundImage=backdropImage ? 'url("'+String(preferredTmdbImage(backdropImage)).replace(/"/g,"&quot;")+'")' : "";
+  }
   const trailerVideo=document.querySelector("#detailTrailerVideo");
   const trailerSound=document.querySelector("#detailTrailerSound");
   const trailerUrl=String(item?.trailerUrl||item?.trailer||"").trim();
