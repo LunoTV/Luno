@@ -275,13 +275,13 @@ function posterCandidates(item){
   const rawPoster=String(item?.poster||"").trim();
   const rawSource=String(item?.posterSource||"").trim();
   const path=String(item?.poster_path||item?.posterPath||"").trim();
-  const isTmdbImage=value=>/^https?:\\/\\/image\\.tmdb\\.org\\/t\\/p\\//i.test(String(value||"").trim());
+  const isTmdbImage=value=>String(value||"").trim().toLowerCase().startsWith("https://image.tmdb.org/t/p/") || String(value||"").trim().toLowerCase().startsWith("http://image.tmdb.org/t/p/");
 
   // TMDB artwork must win over LUNO's bundled/cached artwork. Some catalog
   // records contain an older local poster URL even when poster_path is available.
   if(isTmdbImage(rawPoster)) values.push(rawPoster);
   if(path){
-    const clean=path.replace(/^\\/+/, "");
+    const clean=path.startsWith("/") ? path.slice(1) : path;
     values.push("https://image.tmdb.org/t/p/w500/"+clean);
     values.push("https://image.tmdb.org/t/p/original/"+clean);
   }
