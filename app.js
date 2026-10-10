@@ -290,7 +290,7 @@ const LUNO_TMDB_API_MIRRORS=[
   "https://lampa.byskaz.ru/tmdb/api/3/"
 ];
 async function fetchTmdbApi(endpoint,params={}){
-  const cleanEndpoint=String(endpoint||"").replace(/^\\/+/, "");
+  const cleanEndpoint=String(endpoint||"").replace(/^\/+/, "");
   const query=new URLSearchParams();
   Object.entries(params||{}).forEach(([key,value])=>{
     if(value!==undefined&&value!==null&&String(value)!=="") query.set(key,String(value));
@@ -319,7 +319,7 @@ async function fetchTmdbApi(endpoint,params={}){
   }catch(mirrorError){
     // Last resort only: retain the existing Worker path, but do not make it
     // the primary route on networks where workers.dev is unavailable.
-    const workerBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\\/$/,"");
+    const workerBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
     const workerPath=cleanEndpoint==="search/multi" ? "/api/tmdb/search" :
       (cleanEndpoint==="trending/all/week" ? "/api/tmdb/discover" : "");
     if(!workerPath) throw mirrorError;
