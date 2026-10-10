@@ -2426,7 +2426,7 @@ async function searchDynamic(query){
     .map(item=>{
       const rawId=item?.tmdbId ?? item?.tmdb_id ?? item?.id ?? item?.kinopoisk_id ?? "";
       const idText=String(rawId);
-      const idMatch=idText.match(/(?:tmdb:)?(?:(?:movie|tv|series):)?(\\d+)/i);
+      const idMatch=idText.match(/(?:tmdb:)?(?:(?:movie|tv|series):)?(\d+)/i);
       const mediaType=String(item?.media_type||item?.mediaType||item?.type||"").toLowerCase();
       const type=mediaType==="tv"||mediaType==="series" ? "tv" :
         (mediaType==="movie" ? "movie" : (item?.first_air_date||item?.name&&!item?.title ? "tv" : "movie"));
