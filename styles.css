@@ -5533,3 +5533,41 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   margin-top:8px;padding:12px 20px;border:1px solid rgba(205,208,235,.2);
   border-radius:14px;background:rgba(107,111,231,.17);color:#f3f4ff;font-weight:700
 }
+
+
+/* ---------- LUNO PREMIUM CATALOG HUB ---------- */
+.luno-catalog-intro{position:relative;overflow:hidden;padding:18px 4px 26px;margin:0 auto 4px;max-width:1120px}
+.luno-catalog-intro:before{content:"";position:absolute;width:240px;height:240px;right:-90px;top:-120px;border-radius:50%;background:radial-gradient(circle,rgba(107,111,231,.17),rgba(125,211,252,.04) 42%,transparent 70%);pointer-events:none}
+.luno-catalog-eyebrow{display:flex;align-items:center;gap:9px;color:#a7a8ca;font-size:10px;font-weight:800;letter-spacing:.2em}
+.luno-catalog-eyebrow i{width:22px;height:1px;background:linear-gradient(90deg,#7dd3fc,#8a7ee8);display:inline-block}
+.luno-catalog-intro h2{position:relative;margin:15px 0 7px;color:#f7f7fc;font-size:clamp(29px,6vw,44px);line-height:1.04;letter-spacing:-.055em;font-weight:800}
+.luno-catalog-intro h2 em{font-style:normal;color:#b9b9ff}
+.luno-catalog-intro p{margin:0;color:#9698a8;font-size:13px;line-height:1.55}
+.luno-catalog-search{display:flex;align-items:center;gap:12px;min-height:49px;margin-top:20px;padding:0 15px;border:1px solid rgba(205,208,235,.13);border-radius:15px;background:linear-gradient(110deg,rgba(255,255,255,.055),rgba(107,111,231,.055));color:#898b9c;font-size:13px;cursor:pointer;transition:border-color .2s,background .2s}
+.luno-catalog-search:focus-visible,.luno-catalog-search:hover{outline:none;border-color:rgba(125,211,252,.42);background:rgba(107,111,231,.09)}
+.luno-catalog-search-icon{font-size:27px;line-height:1;color:#c6c7ff}
+.luno-catalog-search-arrow{margin-left:auto;color:#c5c6ff;font-size:18px}
+.category-hub.luno-category-hub{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:4px auto 0;padding:0;max-width:1120px}
+.luno-category-hub .category-hub-card{position:relative;isolation:isolate;overflow:hidden;min-height:174px;justify-content:flex-end;gap:5px;padding:17px 15px;border-radius:21px;border:1px solid rgba(211,214,245,.13);background:linear-gradient(145deg,rgba(27,29,39,.96),rgba(10,11,16,.98) 72%);box-shadow:inset 0 1px rgba(255,255,255,.035);transition:transform .22s,border-color .22s,box-shadow .22s}
+.luno-category-hub .category-hub-card:before{content:"";position:absolute;z-index:-1;width:180px;height:150px;right:-70px;top:-65px;border-radius:50%;background:radial-gradient(circle,var(--category-glow,rgba(107,111,231,.23)),transparent 70%);opacity:.9;transition:transform .25s}
+.luno-category-hub .category-hub-card:after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.035),transparent 45%);pointer-events:none}
+.luno-category-hub .category-hub-card:hover,.luno-category-hub .category-hub-card:focus-visible{outline:none;transform:translateY(-2px);border-color:rgba(177,180,255,.48);box-shadow:0 12px 34px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.07)}
+.luno-category-hub .category-hub-card:hover:before{transform:scale(1.18)}
+.luno-category-hub .category-hub-card .luno-category-icon{display:grid;place-items:center;width:39px;height:39px;margin:0 0 auto;border-radius:13px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:#e5e7ff;font-size:22px;line-height:1}
+.luno-category-overline{margin-top:15px;color:#a3a5bf!important;font-size:8px!important;font-weight:800;letter-spacing:.15em;line-height:1.35}
+.luno-category-hub .category-hub-card strong{font-size:19px;line-height:1.18;letter-spacing:-.035em}
+.luno-category-hub .category-hub-card .luno-category-desc{font-size:10px;line-height:1.45;color:#9294a3}
+.luno-category-arrow{position:absolute;right:14px;bottom:14px;color:#b6b8e9;font-size:15px;font-weight:500;opacity:.8}
+.luno-category-film{--category-glow:rgba(107,111,231,.34)}
+.luno-category-series{--category-glow:rgba(125,211,252,.22)}
+.luno-category-cartoons{--category-glow:rgba(192,132,252,.24)}
+.luno-category-anime{--category-glow:rgba(115,135,255,.27)}
+.luno-category-shows{--category-glow:rgba(125,211,252,.19)}
+.luno-category-favorites{--category-glow:rgba(192,132,252,.22)}
+.luno-catalog-foot{display:flex;align-items:center;gap:12px;margin:22px 2px 8px;padding:15px 16px;border-top:1px solid rgba(210,213,240,.1);color:#e6e7f4}
+.luno-catalog-foot-orbit{display:grid;place-items:center;width:35px;height:35px;border-radius:50%;border:1px solid rgba(125,211,252,.24);color:#c6c7ff;background:radial-gradient(circle at 35% 35%,rgba(125,211,252,.14),rgba(107,111,231,.08));font-size:22px}
+.luno-catalog-foot span:last-child{display:flex;flex-direction:column;gap:3px}
+.luno-catalog-foot strong{font-size:12px;letter-spacing:.01em}
+.luno-catalog-foot small{font-size:10px;color:#858797}
+@media(min-width:700px){.category-hub.luno-category-hub{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.luno-category-hub .category-hub-card{min-height:210px;padding:23px;border-radius:24px}.luno-category-hub .category-hub-card strong{font-size:23px}.luno-category-hub .category-hub-card .luno-category-desc{font-size:12px}.luno-category-overline{font-size:9px!important}}
+@media(max-width:380px){.category-hub.luno-category-hub{gap:9px}.luno-category-hub .category-hub-card{min-height:160px;padding:13px;border-radius:18px}.luno-category-hub .category-hub-card strong{font-size:17px}.luno-category-hub .category-hub-card .luno-category-desc{font-size:9px}.luno-category-arrow{right:11px;bottom:11px}}
