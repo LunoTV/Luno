@@ -1117,12 +1117,19 @@ function renderCatalogSections(){
     return hash>>>0;
   };
   const shuffleHomeRail=items=>items.slice().sort((a,b)=>homeShuffleKey(a)-homeShuffleKey(b));
-  const evening=shuffleHomeRail(all.filter(item=>{
+  // Keep the three editorial rails distinct: no title already shown in LUNO picks
+  // or the evening row may reappear in the classic-cinema row.
+  const usedHomeIds=new Set(picks.map(item=>item.id));
+  const eveningPool=shuffleHomeRail(all.filter(item=>{
     const genres=Array.isArray(item.genres)?item.genres.map(x=>String(x).toLowerCase()):[];
-    return genres.some(g=>/комеди|роман|приключ|семейн|фэнтези|мелодрам/.test(g));
-  })).slice(0,18);
-  const classics=shuffleHomeRail(all.filter(item=>getYear(item)>0 && getYear(item)<=2010))
-    .slice(0,18);
+    return !usedHomeIds.has(item.id) &&
+      genres.some(g=>/комеди|роман|приключ|семейн|фэнтези|мелодрам/.test(g));
+  }));
+  const evening=eveningPool.slice(0,18);
+  evening.forEach(item=>usedHomeIds.add(item.id));
+  const classics=shuffleHomeRail(all.filter(item=>
+    !usedHomeIds.has(item.id) && getYear(item)>0 && getYear(item)<=2010
+  )).slice(0,18);
   if(lunoPicksCards) setHTMLIfChanged(lunoPicksCards,picks.map((item,index)=>card(item,index<6)).join(""));
   if(eveningCards) setHTMLIfChanged(eveningCards,evening.map((item,index)=>card(item,index<6)).join(""));
   if(classicsCards) setHTMLIfChanged(classicsCards,classics.map((item,index)=>card(item,index<6)).join(""));
