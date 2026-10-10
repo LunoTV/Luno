@@ -55,3 +55,18 @@
  .luno-card-seasons .luno-card-primary{width:100%}
 }
 @media(prefers-reduced-motion:reduce){.luno-card-trailer{transition:none}}
+
+
+/* The detail card is a full-screen page: never stack the app shell shutter
+   or the mobile tab bar underneath its own header. */
+body.detail-open > header.topbar,
+body.detail-open > .mobile-tabbar,
+body.detail-open > .search-topbar {
+  display: none !important;
+}
+body.detail-open #detail.luno-card-page {
+  display: block;
+}
+body.detail-open #detail.luno-card-page.hidden {
+  display: none !important;
+}
