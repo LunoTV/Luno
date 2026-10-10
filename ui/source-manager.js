@@ -34,7 +34,7 @@ export function renderSourceManager(container,{providers=[],sources=[],status={}
     (sourceRows||'<div class="addon-row"><div><strong>Каталог пуст</strong></div></div>');
 }
 
-export function sourceManagerStatusText(status={}){
+){
   return "LUNO Source Engine • "+Number(status.catalogSources||0)+" источников";
 }
 
