@@ -5385,3 +5385,32 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     visibility:visible!important;pointer-events:auto!important;
   }
 }
+
+
+/* ---------- LUNO FINAL HOME FLOW + NAV CLEARANCE ---------- */
+@media(max-width:700px){
+  body.home-mode main{
+    padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))!important;
+  }
+  body.home-mode main>.section,
+  body.home-mode main>section.section,
+  body.home-mode .section{
+    position:relative!important;
+    min-height:0!important;height:auto!important;
+    margin-block:0 20px!important;
+    padding-block:0!important;
+  }
+  body.home-mode #trendingSection{margin-bottom:18px!important}
+  body.home-mode #continueSection{margin-bottom:20px!important}
+  body.home-mode .section .section-head{
+    margin-top:0!important;margin-bottom:10px!important;
+  }
+  body.home-mode .section .cards{
+    min-height:0!important;height:auto!important;
+    margin-top:0!important;margin-bottom:0!important;
+    padding-top:0!important;padding-bottom:6px!important;
+  }
+  /* Keep real page content above the fixed nav stacking layer. */
+  body.home-mode main>.section:last-of-type{margin-bottom:12px!important}
+  .mobile-tabbar{isolation:isolate!important}
+}
