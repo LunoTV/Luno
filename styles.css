@@ -5414,3 +5414,42 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   body.home-mode main>.section:last-of-type{margin-bottom:12px!important}
   .mobile-tabbar{isolation:isolate!important}
 }
+
+
+/* ---------- FIX MOBILE CINEMATIC HERO ART LAYER ---------- */
+@media(max-width:700px){
+  body.home-mode #homeHero{
+    position:relative!important;
+    isolation:isolate!important;
+    overflow:hidden!important;
+    background:#08090d!important;
+  }
+  body.home-mode #homeHero .home-hero-backdrop{
+    position:absolute!important;
+    z-index:0!important;
+    inset:0!important;
+    display:block!important;
+    opacity:.92!important;
+    background-position:center 30%!important;
+    background-size:cover!important;
+    transform:none!important;
+  }
+  body.home-mode #homeHero:before{
+    content:""!important;
+    position:absolute!important;
+    z-index:1!important;
+    inset:0!important;
+    background:
+      linear-gradient(180deg,rgba(4,5,9,.08) 0%,rgba(4,5,9,.04) 25%,rgba(4,5,9,.55) 49%,rgba(4,5,9,.94) 73%,#08090d 100%),
+      linear-gradient(90deg,rgba(4,5,9,.34),rgba(4,5,9,.02) 75%)!important;
+    pointer-events:none!important;
+  }
+  body.home-mode #homeHero .home-hero-copy,
+  body.home-mode #homeHero .home-hero-poster-wrap{
+    position:relative!important;
+    z-index:2!important;
+  }
+  body.home-mode #homeHero .home-hero-copy{
+    text-shadow:0 1px 18px rgba(0,0,0,.3)!important;
+  }
+}
