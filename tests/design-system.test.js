@@ -81,7 +81,7 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
   assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
-  assert.ok(html.includes("./ui/detail-page.css?v=4"), "isolated detail stylesheet is linked");
+  assert.ok(html.includes("./ui/detail-page.css?v=5"), "isolated detail stylesheet is linked");
   for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
@@ -93,8 +93,15 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
 
 test("detail card hides the app shell header and mobile tab bar while open", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.ok(css.includes("body.detail-open .topbar"), "app shutter is hidden");
-  assert.ok(css.includes("body.detail-open .mobile-tabbar"), "mobile tab bar is hidden");
-  assert.ok(css.includes("body.detail-open .search-topbar"), "legacy search shutter is hidden");
+  assert.ok(css.includes("body.detail-open #app > .topbar"), "app shutter is hidden while detail is open");
+  assert.ok(css.includes("body.detail-open #app > .mobile-tabbar"), "mobile tab bar is hidden");
   assert.ok(css.includes("body.detail-open #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
+});
+
+
+test("mobile detail hero uses the poster backdrop without a fixed 550px top gap", async () => {
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  assert.match(css, /\.luno-card-backdrop\{height:clamp\(430px,64svh,600px\)/);
+  assert.match(css, /\.luno-card-hero\{min-height:clamp\(430px,64svh,600px\);padding:0 0 24px/);
+  assert.ok(css.includes(".luno-card-backdrop-image{background-position:center 18%;opacity:.82"));
 });
