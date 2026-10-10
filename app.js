@@ -1330,16 +1330,18 @@ async function loadMoreCatalog(){
       renderCatalogSections();
       return;
     }
+    if(window.__LUNO_TMDB_TOTAL_PAGES__ && (window.__LUNO_TMDB_PAGE__||1)>=window.__LUNO_TMDB_TOTAL_PAGES__) return;
     const nextPage=(window.__LUNO_TMDB_PAGE__||1)+1;
     const base=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
     const response=await fetch(base+"/api/tmdb/discover?page="+nextPage,{cache:"no-store",headers:{accept:"application/json"}});
     if(!response.ok) throw new Error("TMDB page HTTP "+response.status);
     const data=await response.json();
     const pageItems=(Array.isArray(data?.results)?data.results:[]).filter(item=>item?.id).map(normalizeItem);
+    window.__LUNO_TMDB_PAGE__=Number(data?.page)||nextPage;
+    window.__LUNO_TMDB_TOTAL_PAGES__=Math.max(window.__LUNO_TMDB_PAGE__,Number(data?.totalPages)||window.__LUNO_TMDB_PAGE__);
     if(!pageItems.length) return;
     const merged=[...catalogItems,...pageItems];
     const unique=[...new Map(merged.filter(item=>item?.id).map(item=>[item.id,item])).values()];
-    window.__LUNO_TMDB_PAGE__=Number(data?.page)||nextPage;
     movieVisible+=18;
     seriesVisible+=18;
     renderItems(unique,catalogSections);
