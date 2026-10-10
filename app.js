@@ -638,7 +638,7 @@ function setLunoHistory(view){
     if(current) history.replaceState(snapshot,"",location.href);
     const active=document.activeElement;
     const next={luno:view,scrollY:window.scrollY,focusId:active?.id||"",focusCardDataId:active?.closest?.(".card")?.dataset?.id||"",libraryScrollTop:libraryContent?.scrollTop||0};
-    const url=view==="home" ? location.pathname+location.search : "#"+view;
+    const url=location.pathname+location.search; // Keep views in history.state; hash fragments can trigger native page jumps on iOS Safari.
     if(current===view) history.replaceState(next,"",url);
     else history.pushState(next,"",url);
   }catch{}
@@ -1032,7 +1032,7 @@ function closeLibrary(fromHistory=false){
   }
 }
 
-document.querySelectorAll("[data-home-collection]").forEach(button=>button.addEventListener("click",()=>{const collection=button.dataset.homeCollection;if(collection)openLibrary(collection);}));
+document.querySelectorAll("[data-home-collection]").forEach(button=>button.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();const collection=button.dataset.homeCollection;if(collection)openLibrary(collection);}));
 
 function navigate(section){
   document.body.classList.toggle("home-mode",section==="home");
