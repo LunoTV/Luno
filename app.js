@@ -891,8 +891,32 @@ function openDetail(item){
     console.error("[LUNO] paintDetail failed",error);
   }
   if(detailBackdrop){
-    const backdropImage=item?.background || item?.poster || item?.poster_path || "";
-    detailBackdrop.style.backgroundImage=backdropImage ? 'url("'+String(preferredTmdbImage(backdropImage)).replace(/"/g,"&quot;")+'")' : "";
+    const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").trim();
+    const backdropSource={
+      ...item,
+      poster: item?.background || item?.backdrop || item?.poster || "",
+      poster_path: backdropPath || item?.poster_path || item?.posterPath || ""
+    };
+    const candidates=[...new Set([
+      ...posterCandidates(backdropSource),
+      ...posterCandidates({...item,poster:item?.poster||"",poster_path:item?.poster_path||item?.posterPath||""})
+    ])];
+    detailBackdrop.style.backgroundImage="";
+    detailBackdrop.dataset.imageIndex="0";
+    const tryBackdrop=(index)=>{
+      if(index>=candidates.length){
+        detailBackdrop.style.backgroundImage="";
+        return;
+      }
+      const image=new Image();
+      image.onload=()=>{
+        detailBackdrop.style.backgroundImage='url("'+candidates[index].replace(/"/g,"&quot;")+'")';
+        detailBackdrop.dataset.imageIndex=String(index);
+      };
+      image.onerror=()=>tryBackdrop(index+1);
+      image.src=candidates[index];
+    };
+    tryBackdrop(0);
   }
   const trailerVideo=document.querySelector("#detailTrailerVideo");
   const trailerSound=document.querySelector("#detailTrailerSound");
