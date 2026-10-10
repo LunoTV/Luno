@@ -6432,3 +6432,29 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
     flex:0 0 36px!important;
   }
 }
+
+
+/* LUNO mobile inner-page header: final override for legacy brand rules. */
+@media (max-width: 700px) {
+  html body.show-global-back header.topbar.luno-nav-shutter > button.brand,
+  html body.show-global-back header.topbar.luno-nav-shutter > .nav,
+  html body.show-global-back header.topbar.luno-nav-shutter::after,
+  html body.show-global-back header.topbar.luno-nav-shutter .global-header-settings {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    content: none !important;
+  }
+  html body.show-global-back header.topbar.luno-nav-shutter > button.global-header-back {
+    display: grid !important;
+    visibility: visible !important;
+  }
+  html body.show-global-back header.topbar.luno-nav-shutter .tv-header-tools {
+    display: flex !important;
+    margin-left: auto !important;
+  }
+  html body.show-global-back header.topbar.luno-nav-shutter .global-header-search {
+    display: grid !important;
+    visibility: visible !important;
+  }
+}
