@@ -81,7 +81,7 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
   assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
-  assert.ok(html.includes("./ui/detail-page.css?v=7"), "isolated detail stylesheet is linked");
+  assert.ok(html.includes("./ui/detail-page.css?v=8"), "isolated detail stylesheet is linked");
   for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
@@ -123,4 +123,13 @@ test("LUNO detail card is an isolated full-screen cinematic screen", async () =>
   assert.ok(css.includes("height: min(76svh, 720px) !important"), "cinematic backdrop fills the upper screen");
   assert.ok(css.includes("background-size: cover !important"), "poster art fills the backdrop");
   assert.ok(css.includes("background: linear-gradient(180deg,rgba(8,9,13,.12)"), "backdrop uses LUNO dark fade");
+});
+
+
+test("detail backdrop tries available TMDB image candidates until one loads", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  assert.ok(app.includes("const backdropPath=String(item?.backdrop_path||item?.backdropPath||\"\").trim()"), "uses TMDB backdrop paths when present");
+  assert.ok(app.includes("const candidates=[...new Set(["), "builds fallback image candidates");
+  assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "tries the next image if a mirror fails");
+  assert.ok(app.includes("image.onload=()=>{"), "only applies an image after it loads");
 });
