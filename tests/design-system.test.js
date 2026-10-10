@@ -6,8 +6,8 @@ const root = new URL("../", import.meta.url);
 
 test("the shared LUNO design layer loads after legacy page styles", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
-  const legacyStyles = html.indexOf('href="./styles.css?v=140"');
-  const sharedStyles = html.indexOf('href="./ui/design-system.css?v=2"');
+  const legacyStyles = html.search(/href="\.\/styles\.css\?v=\d+"/);
+  const sharedStyles = html.search(/href="\.\/ui\/design-system\.css\?v=\d+"/);
 
   assert.notEqual(legacyStyles, -1, "versioned base stylesheet is linked");
   assert.notEqual(sharedStyles, -1, "shared design layer is linked");
