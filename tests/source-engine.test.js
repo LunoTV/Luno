@@ -134,7 +134,7 @@ test("TMDB catalog builder assigns the exact typed poster filename it writes",()
 
 test("catalog scrolling requests another TMDB page after bundled cards are exhausted",()=>{
   const app=readFileSync(new URL("../app.js",import.meta.url),"utf8");
-  assert.match(app,/async function loadMoreCatalog\(\)[\s\S]*?\/api\/tmdb\/discover\?page=/);
+  assert.match(app,/async function loadMoreCatalog\(\)[\s\S]*?fetchTmdbApi\("trending\/all\/week"/);
   assert.match(app,/catalogSections=sections\|\|\{\}/);
   assert.match(app,/renderItems\(unique,catalogSections\)/);
 });
@@ -143,7 +143,7 @@ test("catalog scrolling requests another TMDB page after bundled cards are exhau
 test("catalog poster recovery searches TMDB when poster URLs are missing or fail",()=>{
   const app=readFileSync(new URL("../app.js",import.meta.url),"utf8");
   assert.match(app,/async function lookupPosterFromTmdb/);
-  assert.match(app,/\/api\/tmdb\/search\?query=/);
+  assert.match(app,/fetchTmdbApi\("search\/multi"/);
   assert.match(app,/candidateType!==type/);
   assert.match(app,/year!==candidateYear/);
   assert.match(app,/scoreName\(candidate\?\.name\),scoreName\(candidate\?\.originalName\)/);
