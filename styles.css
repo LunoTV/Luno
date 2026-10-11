@@ -2677,7 +2677,7 @@ html,body{
   position:absolute;
   z-index:-2;
   inset:0;
-  background-position:center 24%;
+  background-position:center center;
   background-size:cover;
   background-repeat:no-repeat;
   opacity:0;
@@ -2709,12 +2709,12 @@ html,body{
 .home-hero-actions{display:flex;align-items:center;gap:9px;margin-top:14px}
 .home-hero-actions button{
   min-height:44px;border:1px solid var(--luno-border-strong);border-radius:12px;
-  background:var(--luno-surface);color:var(--luno-text);font-size:14px;font-weight:750;
+  background:var(--luno-surface);color:var(--luno-text);font-size:14px;font-weight:560;
   cursor:pointer;transition:background .16s ease,border-color .16s ease;
 }
 .home-hero-actions .home-hero-primary{
   display:flex;align-items:center;justify-content:center;gap:9px;flex:1;
-  border-color:transparent;background:var(--luno-violet);color:#fff;
+  border-color:transparent;background:var(--luno-violet);color:#fff;font-weight:560;
 }
 .home-hero-actions .home-hero-favorite{width:48px;flex:none;font-size:23px;line-height:1}
 .home-hero-actions button:active{transform:scale(.985)}
