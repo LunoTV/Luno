@@ -77,6 +77,7 @@ test("home, catalog, detail, settings, drawer and player share the design layer"
 test("movie detail uses the isolated card v2 instead of the legacy overlay", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  const searchCss = await readFile(new URL("styles.css", root), "utf8");
   const app = await readFile(new URL("app.js", root), "utf8");
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
@@ -89,7 +90,7 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(app.includes('document.querySelector(".luno-card-search")'), "new card search control is wired");
   assert.ok(html.includes("search-discovery-block") && html.includes("data-search-genre") && html.includes("search-mic"), "search uses the new genre discovery interface");
   assert.ok(app.includes("searchMediaCategory") && app.includes('document.querySelectorAll("[data-search-genre]")'), "genre cards and media category tabs are interactive");
-  assert.ok(css.includes(".search-genre-card") && css.includes("body.search-open .luno-search-screen.luno-search-discovery"), "old search screen is replaced by the mobile discovery layout");
+  assert.ok(searchCss.includes(".search-genre-card") && searchCss.includes("body.search-open .luno-search-screen.luno-search-discovery"), "old search screen is replaced by the mobile discovery layout");
   assert.ok(app.includes('document.querySelectorAll(".luno-card-links [data-section]")'), "new card navigation is wired");
 });
 
