@@ -2261,21 +2261,11 @@ main > .section .cards .card-title{font-size:12px}
 
 /* TV experience: larger cards, full-height drawer, and obvious remote focus. */
 @media(min-width:1000px) and (hover:none), (min-width:1200px){
-  .luno-menu-drawer{
     width:min(440px,36vw)!important;
     padding:32px 28px 36px!important;
     display:flex!important;flex-direction:column!important;
     height:100dvh!important;box-sizing:border-box!important;
   }
-  .luno-menu-head{padding:8px 8px 34px!important}
-  .luno-menu-brand{font-size:28px!important;gap:16px!important}
-  .luno-menu-brand .brand-orbit{width:48px!important;height:48px!important}
-  .luno-menu-caption{font-size:14px!important;letter-spacing:.24em!important;margin:0 8px 18px!important}
-  .luno-menu-items{display:flex!important;flex-direction:column!important;gap:8px!important;flex:1 1 auto!important}
-  .luno-menu-item{min-height:64px!important;padding:14px 18px!important;font-size:23px!important;gap:18px!important;border-radius:16px!important}
-  .luno-menu-item>span{width:30px!important;font-size:27px!important}
-  .luno-menu-trigger{width:76px!important;height:76px!important;font-size:34px!important}
-  .luno-menu-backdrop{background:rgba(0,0,0,.72)!important;backdrop-filter:blur(5px)}
   .card{flex-basis:clamp(190px,15vw,270px)!important;width:clamp(190px,15vw,270px)!important}
   .card-art{height:auto!important;aspect-ratio:2/3!important}
   .card-title{font-size:18px!important;line-height:1.3!important}
@@ -4718,7 +4708,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
 .settings-about-logo{display:grid;place-items:center;width:62px;height:62px;border-radius:15px;background:#181927}
 .settings-about-logo .brand-orbit{width:36px;height:36px;border-color:#a8a6d0}.settings-about-logo .brand-moon{background:linear-gradient(135deg,#deddf6,#757b9e)}
 .settings-about-card>div:last-child{display:grid;gap:5px}.settings-about-card>div:last-child>span{font-size:10px;color:#a3a6b8;margin-top:3px}
-body.settings-open #app>main,body.settings-open #app>.topbar,body.settings-open #app>.mobile-tabbar,body.settings-open #app>.luno-menu-trigger,body.settings-open #app>.luno-menu-drawer,body.settings-open #app>.tmdb-attribution{display:none!important}
 body.settings-open{overflow-x:hidden}
 @media(max-width:760px){
  .settings-view{padding:88px 16px 105px;min-height:100vh}
@@ -4768,31 +4757,6 @@ body.settings-open{overflow-x:hidden}
   .settings-head{margin-top:0;padding-top:4px}
 }
 
-/* LUNO visual-system correction: calm the navigation drawer and center the detail banner. */
-.luno-menu-drawer{
-  background:rgba(8,9,13,.985)!important;
-  border-right:1px solid #30313C!important;
-  box-shadow:20px 0 56px rgba(0,0,0,.42)!important;
-}
-.luno-menu-close{
-  border-color:#30313C!important;
-  background:#14151D!important;
-  color:#E7E8EF!important;
-}
-.luno-menu-caption{color:#989BAA!important}
-.luno-menu-item{color:#BFC1CE!important;background:transparent!important}
-.luno-menu-item>span{color:#989BAA!important}
-.luno-menu-item:hover,.luno-menu-item.active{
-  color:#E7E8EF!important;
-  background:#242334!important;
-}
-.luno-menu-item.active{
-  box-shadow:inset 3px 0 0 #8581AD!important;
-}
-.luno-menu-item.active>span{color:#8CB8CC!important}
-.luno-menu-divider{background:#30313C!important}
-.luno-menu-source{color:#8CB8CC!important}
-.luno-menu-backdrop{background:rgba(5,6,10,.68)!important}
 .luno-detail-hero .detail-backdrop{
   background-position:50% 50%!important;
   background-size:cover!important;
@@ -5087,15 +5051,8 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
   background: var(--luno-surface-raised) !important;
 }
 @media(min-width:701px) {
-  .mobile-tabbar.luno-reference-tabbar { display:none !important; }
 }
 
-
-/* LUNO mobile Home must not expose the obsolete drawer or desktop header. */
-#lunoMenuTrigger,#lunoMenuBackdrop,#lunoMenuDrawer{display:none!important}
-@media(max-width:700px){
-  body.home-mode #app>.topbar.luno-nav-shutter{display:none!important}
-}
 
 /* LUNO Home layout v2 — authoritative responsive home layout. */
 @media(max-width:700px){
