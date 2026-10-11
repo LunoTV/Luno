@@ -18,7 +18,7 @@ const openCinemaCards=document.querySelector("#openCinemaCards");
 const seriesCards=document.querySelector("#seriesCards");
 const lunoPicksCards=document.querySelector("#lunoPicksCards");
 const eveningCards=document.querySelector("#eveningCards");
-const classicsCards=document.querySelector("#classicsCards");
+const classicsCards=document.querySelector("#classicsCards");\nconst topRatedCards=document.querySelector("#topRatedCards");\nconst topMoviesCards=document.querySelector("#topMoviesCards");\nconst topSeriesCards=document.querySelector("#topSeriesCards");\nconst doramasCards=document.querySelector("#doramasCards");
 const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
@@ -1442,6 +1442,13 @@ function renderDiscovery(){
   if(trendingCards) setHTMLIfChanged(trendingCards,trending.map(card).join(""));
   if(newCards) setHTMLIfChanged(newCards,fresh.map(card).join(""));
   if(topCards) setHTMLIfChanged(topCards,top.map(card).join(""));
+  if(topRatedCards) setHTMLIfChanged(topRatedCards,top.slice(0,18).map(card).join(""));
+  const topMovies=all.filter(item=>mediaCategory(item)==="movies").sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)||(Number(y.popularity)||0)-(Number(x.popularity)||0)).slice(0,10);
+  const topSeries=all.filter(item=>mediaCategory(item)==="series").sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)||(Number(y.popularity)||0)-(Number(x.popularity)||0)).slice(0,10);
+  const doramas=all.filter(item=>/дорам|korean|k-drama|корейск/i.test([item.name,item.title,...(Array.isArray(item.genres)?item.genres:[])].join(" "))).slice(0,18);
+  if(topMoviesCards) setHTMLIfChanged(topMoviesCards,topMovies.map(card).join(""));
+  if(topSeriesCards) setHTMLIfChanged(topSeriesCards,topSeries.map(card).join(""));
+  if(doramasCards) setHTMLIfChanged(doramasCards,doramas.map(card).join(""));
 
   const genres=[
     ["Боевики","⚡"],["Комедии","☻"],["Драмы","◒"],["Фантастика","✦"],
@@ -1471,16 +1478,16 @@ function renderHomeHero(item){
   const year=getYear(item);
   const rating=Number(item.rating)||0;
   const type=mediaCategory(item)==="series"?"Сериал":"Фильм";
-  const backdrop=hero.querySelector(".home-hero-backdrop");
+  const backdrop=hero.querySelector(".luno-home-hero-art");
   if(backdrop)backdrop.style.backgroundImage=background ? "url("+JSON.stringify(background.replace(/"/g,"%22"))+")" : "none";
-  const heading=hero.querySelector(".home-hero-title");if(heading)heading.textContent=title;
-  const meta=hero.querySelector(".home-hero-meta");if(meta)meta.textContent=[type,year||"",rating?"TMDB ★ "+rating.toFixed(1):""].filter(Boolean).join("  ·  ");
+  const heading=hero.querySelector(".luno-home-title");if(heading)heading.textContent=title;
+  const meta=hero.querySelector(".luno-home-meta");if(meta)meta.textContent=[type,year||"",rating?"TMDB ★ "+rating.toFixed(1):""].filter(Boolean).join("  ·  ");
   hero.dataset.itemId=String(item.id||"");
-  hero.classList.add("is-ready");
-  const favorite=hero.querySelector(".home-hero-favorite");
+  hero.classList.add("is-ready");\n  const description=hero.querySelector(".luno-home-description");\n  if(description) description.textContent=String(item.overview||item.description||"");
+  const favorite=hero.querySelector(".luno-home-favorite");
   if(favorite){
     const active=isFavorite(item.id);
-    favorite.textContent=active?"✓":"＋";
+    favorite.innerHTML=active?"✓ <span>В списке</span>":"＋ <span>В список</span>";
     favorite.setAttribute("aria-pressed",String(active));
     favorite.setAttribute("aria-label",active?"Убрать из избранного":"Добавить в избранное");
   }
