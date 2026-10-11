@@ -848,6 +848,9 @@ function lunoHistorySnapshot(){
     libraryScrollTop:libraryContent?.scrollTop||0
   };
 }
+function isLunoLibraryRoute(view){
+  return ["catalog","movies","series","cartoons","anime","shows","history","popular","continue","openCinema","recommendations","evening","classics","favorites"].includes(view);
+}
 function setLunoHistory(view){
   try{
     const current=history.state?.luno;
@@ -856,7 +859,9 @@ function setLunoHistory(view){
     const active=document.activeElement;
     const next={luno:view,scrollY:window.scrollY,focusId:active?.id||"",focusCardDataId:active?.closest?.(".card")?.dataset?.id||"",libraryScrollTop:libraryContent?.scrollTop||0};
     const url=location.pathname+location.search; // Keep views in history.state; hash fragments can trigger native page jumps on iOS Safari.
-    if(current===view) history.replaceState(next,"",url);
+    // Category tabs are sibling views, not a stack of pages. Replace one category
+    // with another so Back always returns to the original home position.
+    if(current===view || (isLunoLibraryRoute(current)&&isLunoLibraryRoute(view))) history.replaceState(next,"",url);
     else history.pushState(next,"",url);
   }catch{}
 }
@@ -2910,15 +2915,18 @@ function syncLunoActiveNavigation(){
   const detailOpen=!!detail && !detail.classList.contains("hidden");
   const libraryOpen=!!libraryView && !libraryView.classList.contains("hidden");
   const searchOpen=!!searchPanel && !searchPanel.classList.contains("hidden");
+  const settingsOpen=!!settingsView && !settingsView.classList.contains("hidden");
+  const playerOpen=!!player && !player.classList.contains("hidden");
   let section="home";
   if(detailOpen) section="home";
   else if(searchOpen) section="search";
   else if(libraryOpen){
     const title=(libraryTitle?.textContent||"").toLowerCase();
     section=title.includes("сериал")?"series":title.includes("фильм")?"movies":title.includes("мульт")?"cartoons":title.includes("аниме")?"anime":title.includes("истори")?"history":"catalog";
-  }
-  document.body.classList.toggle("home-mode",section==="home");
-  document.body.classList.toggle("show-global-back",section!=="home" || detailOpen);
+  }else if(settingsOpen) section="profile";
+  const isHomeView=!detailOpen&&!libraryOpen&&!searchOpen&&!settingsOpen&&!playerOpen;
+  document.body.classList.toggle("home-mode",isHomeView);
+  document.body.classList.toggle("show-global-back",!isHomeView);
   document.querySelectorAll(".nav-item,.mobile-tab,.home-category-tab").forEach(btn=>{
     const active=btn.dataset.section===section;
     btn.classList.toggle("active",active);
