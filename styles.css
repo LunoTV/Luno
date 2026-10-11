@@ -5201,3 +5201,43 @@ body.catalog-open .luno-catalog-results-meta span:first-child{font-size:13px;fon
  body.catalog-open .luno-catalog-sticky{margin-inline:0;padding-inline:0}
  body.catalog-open .luno-catalog-tabs{margin-inline:0;padding-inline:0}
 }
+
+
+/* Catalog header is the top edge of its own full-screen scroller, not the old library offset. */
+body.library-open.catalog-open .library-view{
+  background:#08090D!important;
+}
+body.library-open.catalog-open .library-content{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  padding:0 0 calc(100px + env(safe-area-inset-bottom))!important;
+  margin:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  background:#08090D!important;
+  overscroll-behavior:contain;
+}
+body.library-open.catalog-open .luno-catalog-shell{padding-top:0!important}
+body.library-open.catalog-open .luno-catalog-sticky{
+  position:sticky!important;top:0!important;z-index:2147483002!important;
+  margin:0 0 12px!important;padding:calc(env(safe-area-inset-top) + 8px) 14px 0!important;
+  background:#08090D!important;
+  -webkit-backdrop-filter:blur(18px) saturate(125%)!important;
+  backdrop-filter:blur(18px) saturate(125%)!important;
+  border-bottom:1px solid rgba(231,232,239,.08)!important;
+}
+body.library-open.catalog-open .luno-catalog-sticky-title{
+  height:32px!important;justify-content:center!important;text-align:center!important;
+  font-size:18px!important;font-weight:650!important;letter-spacing:-.025em!important;
+}
+body.library-open.catalog-open .luno-catalog-tabs{
+  margin:0 -14px!important;padding:0 14px!important;
+  gap:21px!important;border:0!important;
+}
+body.library-open.catalog-open .luno-catalog-tab{
+  min-height:42px!important;padding:0 0 10px!important;
+  font-size:14px!important;font-weight:550!important;
+}
