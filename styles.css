@@ -5360,7 +5360,7 @@ main > .section .cards .card.tv-remote-focus {
   }
   body.search-open .search-discovery-block{
     position:absolute!important;
-    top:285px!important;
+    top:180px!important;
     left:34px!important;
     right:34px!important;
     margin:0!important;
