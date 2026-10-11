@@ -2725,7 +2725,15 @@ document.querySelector("#globalHeaderBack")?.addEventListener("click",()=>{
   if(detail && !detail.classList.contains("hidden")){ closeDetail(); return; }
   if(searchPanel && !searchPanel.classList.contains("hidden")){ closeSearchPanel(); return; }
   if(libraryView && !libraryView.classList.contains("hidden")){
-    closeLibrary();
+    // Let popstate close the category so it can restore the correct home mode
+    // before the saved scroll position is applied. Hiding it here makes the
+    // popstate handler miss the open-category branch on iOS Safari.
+    if(history.state?.luno && history.state.luno!=="home"){
+      history.back();
+    }else{
+      closeLibrary(true);
+      syncLunoActiveNavigation();
+    }
     return;
   }
   navigate("home");
