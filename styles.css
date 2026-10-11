@@ -5057,15 +5057,15 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
 /* LUNO Home layout v2 — authoritative responsive home layout. */
 @media(max-width:700px){
   body.home-mode #app main,body.home-mode main{padding-top:calc(env(safe-area-inset-top,0px) + 12px)!important;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))!important}
-  body.home-mode .home-hero{height:clamp(560px,70svh,680px)!important;min-height:560px!important;max-height:680px!important;margin:0!important;padding:24px 20px 22px!important;border:0!important;border-radius:0!important;background:var(--luno-bg)!important;box-shadow:none!important}
+  body.home-mode .home-hero{height:clamp(590px,76svh,700px)!important;min-height:590px!important;max-height:700px!important;box-sizing:border-box!important;overflow:hidden!important;margin:0!important;padding:24px 20px 22px!important;border:0!important;border-radius:0!important;background:var(--luno-bg)!important;box-shadow:none!important}
   body.home-mode .home-hero-backdrop{inset:0!important;opacity:0;transform:none!important;background-position:center 24%!important;background-size:cover!important}
   body.home-mode .home-hero.is-ready .home-hero-backdrop{opacity:1!important;animation:none!important}
-  body.home-mode .home-hero:before{background:linear-gradient(180deg,rgba(8,9,13,.02) 0%,rgba(8,9,13,.05) 32%,rgba(8,9,13,.48) 58%,rgba(8,9,13,.92) 82%,#08090D 100%)!important}
+  body.home-mode .home-hero:before{background:linear-gradient(180deg,rgba(8,9,13,.02) 0%,rgba(8,9,13,.05) 25%,rgba(8,9,13,.48) 52%,rgba(8,9,13,.92) 78%,#08090D 100%)!important}
   body.home-mode .home-hero-copy{padding:0!important;max-width:100%!important;animation:none!important}
   body.home-mode .home-hero-eyebrow{font-size:11px!important;letter-spacing:.12em!important}
   body.home-mode .home-hero-title{font-size:clamp(34px,9vw,48px)!important;line-height:1.02!important}
   body.home-mode .home-hero-meta{font-size:14px!important;margin-top:12px!important}
-  body.home-mode .home-hero-description{display:block!important;font-size:15px!important;line-height:1.45!important;margin-top:12px!important}
+  body.home-mode .home-hero-description{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:4!important;overflow:hidden!important;font-size:15px!important;line-height:1.4!important;margin-top:12px!important;max-height:5.6em!important}
   body.home-mode .home-hero-actions{gap:10px!important;margin-top:18px!important}
   body.home-mode .home-hero-actions button{min-height:52px!important;font-size:15px!important}
   body.home-mode .home-hero-actions .home-hero-primary{font-size:16px!important}
