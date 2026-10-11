@@ -5012,3 +5012,51 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
   body.home-mode .home-hero-dots{position:relative!important;z-index:2!important;left:auto!important;right:auto!important;bottom:auto!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:7px!important;min-height:18px!important;margin:10px 0 0!important}
 }
 @media(min-width:701px){body.home-mode .home-hero{min-height:clamp(560px,70vh,780px);margin:0 clamp(18px,5vw,80px);border-radius:20px}}
+
+
+/* Floating glass navigation matched to the mobile reference. */
+@media(max-width:700px){
+  html body #app > .mobile-tabbar.luno-reference-tabbar{
+    position:fixed!important;
+    left:16px!important;right:16px!important;
+    bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;
+    width:auto!important;height:78px!important;min-height:78px!important;max-height:78px!important;
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    align-items:center!important;gap:2px!important;
+    padding:7px!important;margin:0!important;box-sizing:border-box!important;
+    border:1px solid rgba(220,222,238,.13)!important;border-radius:30px!important;
+    background:rgba(22,23,29,.70)!important;
+    -webkit-backdrop-filter:blur(28px) saturate(155%)!important;
+    backdrop-filter:blur(28px) saturate(155%)!important;
+    box-shadow:0 10px 35px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)!important;
+    overflow:visible!important;
+  }
+  html body #app > .mobile-tabbar.luno-reference-tabbar .mobile-tab{
+    position:relative!important;width:100%!important;height:66px!important;min-height:66px!important;
+    display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+    gap:5px!important;padding:5px 1px!important;margin:0!important;
+    border:1px solid transparent!important;border-radius:22px!important;
+    background:transparent!important;color:rgba(232,233,241,.72)!important;
+    box-shadow:none!important;transform:none!important;overflow:visible!important;
+  }
+  html body #app > .mobile-tabbar.luno-reference-tabbar .mobile-tab .tab-icon{
+    width:27px!important;height:27px!important;display:flex!important;align-items:center!important;justify-content:center!important;
+    font-size:0!important;line-height:1!important;color:currentColor!important;
+  }
+  html body #app > .mobile-tabbar.luno-reference-tabbar .mobile-tab .tab-icon svg{
+    display:block!important;width:25px!important;height:25px!important;fill:none!important;
+    stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important;
+  }
+  html body #app > .mobile-tabbar.luno-reference-tabbar .mobile-tab small{
+    display:block!important;font-size:11px!important;line-height:1.1!important;font-weight:500!important;
+    letter-spacing:.01em!important;white-space:nowrap!important;color:inherit!important;
+  }
+  html body #app > .mobile-tabbar.luno-reference-tabbar .mobile-tab.active{
+    color:#FFD43B!important;
+    background:radial-gradient(ellipse at 50% 45%,rgba(255,212,59,.22),rgba(255,212,59,.10) 58%,rgba(255,212,59,.025) 100%)!important;
+    border-color:rgba(255,212,59,.09)!important;
+    box-shadow:0 0 20px rgba(255,212,59,.08),inset 0 1px 0 rgba(255,255,255,.06)!important;
+  }
+  html body #app > .mobile-tabbar.luno-reference-tabbar .mobile-tab.active .tab-icon svg{stroke-width:2.15!important}
+  body.home-mode #app main,body.home-mode main{padding-bottom:calc(116px + env(safe-area-inset-bottom,0px))!important}
+}
