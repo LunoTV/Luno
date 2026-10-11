@@ -5091,6 +5091,12 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
 }
 
 
+/* LUNO mobile Home must not expose the obsolete drawer or desktop header. */
+#lunoMenuTrigger,#lunoMenuBackdrop,#lunoMenuDrawer{display:none!important}
+@media(max-width:700px){
+  body.home-mode #app>.topbar.luno-nav-shutter{display:none!important}
+}
+
 /* LUNO Home layout v2 — authoritative responsive home layout. */
 @media(max-width:700px){
   body.home-mode #app main,body.home-mode main{padding-top:calc(env(safe-area-inset-top,0px) + 12px)!important;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))!important}
