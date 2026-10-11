@@ -148,7 +148,8 @@ test("mobile navigation uses a floating glass bar with five SVG icon tabs", asyn
   assert.ok(app.includes('if(section==="profile" || section==="settings"){openSettingsView("profile");return;}'), "profile opens the existing profile/settings view");
   assert.ok(css.includes("bottom:calc(14px + env(safe-area-inset-bottom,0px))"), "navigation floats above the bottom safe area");
   assert.ok(css.includes("rgba(22,23,29,.70)"), "navigation uses a translucent glass background");
-  assert.ok(css.includes("#FFD43B"), "active navigation item uses the reference yellow accent");
+  assert.ok(css.includes("#8581AD"), "active navigation item uses LUNO violet");
+  assert.ok(css.includes("rgba(140,184,204"), "navigation preserves the LUNO ice-blue accent");
 });
 
 
