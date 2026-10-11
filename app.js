@@ -2726,7 +2726,6 @@ document.querySelector("#globalHeaderBack")?.addEventListener("click",()=>{
   if(searchPanel && !searchPanel.classList.contains("hidden")){ closeSearchPanel(); return; }
   if(libraryView && !libraryView.classList.contains("hidden")){
     closeLibrary();
-    document.body.classList.toggle("show-global-back",!document.body.classList.contains("home-mode"));
     return;
   }
   navigate("home");
@@ -2800,6 +2799,9 @@ window.addEventListener("popstate",(event)=>{
   }
   if(!libraryView?.classList.contains("hidden")){
     closeLibrary(true);
+    // Re-sync the page mode before restoring scroll; otherwise category CSS can
+    // remain active after Back and shift the home hero on every visit.
+    syncLunoActiveNavigation();
     restoreLunoHistoryPosition(state);
     return;
   }
