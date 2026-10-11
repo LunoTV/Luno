@@ -221,3 +221,12 @@ test("home discovery begins directly after the hero without a duplicate divider 
   assert.ok(!html.includes('id="continueSection"'), "Continue Watching is not duplicated on Home");
   assert.ok(html.includes("<small>Я смотрю</small>"), "bottom navigation labels personal activity as Я смотрю");
 });
+
+test("home sections do not show decorative uppercase kicker labels", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  assert.ok(!html.includes('class="section-kicker"'), "home headings contain no decorative kicker labels");
+  for (const label of ["СЕЙЧАС СМОТРЯТ", "НА ВЕЧЕР", "ВЫБОР LUNO", "ПРОВЕРЕНО ВРЕМЕНЕМ"]) {
+    assert.ok(!app.includes('kicker:"' + label + '"'), "removed kicker metadata for " + label);
+  }
+});
