@@ -684,7 +684,6 @@ body.library-open .library-content{
 
   /* Keep the mobile home clean: dense catalogue sections become rails */
   #moviesSection,#seriesSection{display:block!important}
-  #favoritesSection{padding-bottom:20px!important}
 
   /* Genre tiles become compact horizontal chips */
   .genre-grid{
@@ -1028,9 +1027,6 @@ body.library-open .library-content{
   }
 
   /* A little more hierarchy for the first two rails */
-  #continueSection{
-    padding-top:22px!important;
-  }
 
   #trendingSection{
     padding-top:31px!important;
@@ -2133,9 +2129,6 @@ main > .section .cards .card-title{font-size:12px}
     padding-right:9px!important;
   }
 }
-
-
-#favoritesSection{display:none!important}
 @media(max-width:700px){
   .mobile-tabbar{left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:min(420px,calc(100% - 32px))!important;justify-content:space-between!important}
   .mobile-tab{flex:1 1 0!important;min-width:0!important;padding-left:2px!important;padding-right:2px!important}
@@ -2555,7 +2548,6 @@ html,body{
     background:linear-gradient(180deg,transparent,rgba(0,0,0,.9))!important;
   }
   #lunoPicksSection .cards .card-info { top:8px!important; right:8px!important; }
-  #continueSection:has(.cards:empty) { display:none!important; }
 }
 
 
@@ -2973,7 +2965,6 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 .section .cards>.card .card-art{box-shadow:0 5px 18px rgba(0,0,0,.12);transition:box-shadow .22s ease,border-color .22s ease}
 .section .cards>.card:hover .card-art,.section .cards>.card:focus-visible .card-art,.section .cards>.card.tv-remote-focus .card-art{box-shadow:0 12px 32px rgba(0,0,0,.32)}
 .discovery-section{padding-top:clamp(3px,1vw,12px)}
-#continueSection{margin-top:0}
 #trendingSection{margin-top:clamp(18px,3vw,38px)}
 .home-hero~.section{transition:opacity .25s ease}
 @media(max-width:700px){
