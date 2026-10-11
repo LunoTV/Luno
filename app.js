@@ -2952,14 +2952,6 @@ function syncLunoActiveNavigation(){
 window.addEventListener("pageshow",syncLunoActiveNavigation);
 window.addEventListener("load",syncLunoActiveNavigation);
 
-const lunoMenuTrigger=document.querySelector("#lunoMenuTrigger"),lunoMenuDrawer=document.querySelector("#lunoMenuDrawer"),lunoMenuBackdrop=document.querySelector("#lunoMenuBackdrop");
-const closeLunoMenu=()=>{lunoMenuDrawer?.classList.remove("is-open");lunoMenuDrawer?.setAttribute("aria-hidden","true");lunoMenuTrigger?.setAttribute("aria-expanded","false");lunoMenuBackdrop?.setAttribute("hidden","");document.body.classList.remove("luno-menu-open");};
-const openLunoMenu=()=>{lunoMenuDrawer?.classList.add("is-open");lunoMenuDrawer?.setAttribute("aria-hidden","false");lunoMenuTrigger?.setAttribute("aria-expanded","true");lunoMenuBackdrop?.removeAttribute("hidden");document.body.classList.add("luno-menu-open");};
-lunoMenuTrigger?.addEventListener("click",openLunoMenu);document.querySelector("#lunoMenuClose")?.addEventListener("click",closeLunoMenu);lunoMenuBackdrop?.addEventListener("click",closeLunoMenu);
-document.querySelectorAll(".luno-menu-item[data-section]").forEach(btn=>btn.addEventListener("click",()=>{closeLunoMenu();navigate(btn.dataset.section);}));
-document.querySelector("#lunoMenuSources")?.addEventListener("click",()=>{closeLunoMenu();(document.querySelector("#openAddonManagerTop")||document.querySelector("#openAddonManager"))?.click();});
-document.addEventListener("keydown",event=>{if(event.key==="Escape")closeLunoMenu();});
-
 document.querySelector("#homeHero")?.addEventListener("click",event=>{
   const button=event.target.closest("[data-hero-action]");
   if(!button)return;
