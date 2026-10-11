@@ -1556,7 +1556,7 @@ function renderCatalogSections(){
   try{savedHero=JSON.parse(localStorage.getItem(heroStorageKey)||"null");}catch{}
   const savedIndex=savedHero?.cycle===heroCycle ? heroPool.findIndex(item=>String(item.id)===String(savedHero.id)) : -1;
   const heroStart=savedIndex>=0 ? savedIndex : (heroPool.length ? (heroCycle*5)%heroPool.length : 0);
-  homeHeroItems=heroPool.length ? Array.from({length:Math.min(5,heroPool.length)},(_,index)=>heroPool[(heroStart+index)%heroPool.length]) : [];
+  homeHeroItems=heroPool.length ? Array.from({length:Math.min(9,heroPool.length)},(_,index)=>heroPool[(heroStart+index)%heroPool.length]) : [];
   homeHeroIndex=0;
   homeHeroBackdropLayer=0;
   if(homeHeroItems[0]){
