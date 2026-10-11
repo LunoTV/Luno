@@ -1450,8 +1450,8 @@ function renderDiscovery(){
 
   if(trendingCards) setHTMLIfChanged(trendingCards,trending.map(card).join(""));
   if(highRatedCards) setHTMLIfChanged(highRatedCards,top.slice(0,9).map(card).join(""));
-  const topMovies=all.filter(item=>mediaCategory(item)==="movies").sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,10);
-  const topSeries=all.filter(item=>mediaCategory(item)==="series").sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,10);
+  const topMovies=all.filter(item=>mediaCategory(item)==="movies").sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,9);
+  const topSeries=all.filter(item=>mediaCategory(item)==="series").sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,9);
   if(topMoviesCards) setHTMLIfChanged(topMoviesCards,topMovies.map(card).join(""));
   if(topSeriesCards) setHTMLIfChanged(topSeriesCards,topSeries.map(card).join(""));
   if(newCards) setHTMLIfChanged(newCards,fresh.map(card).join(""));
@@ -1501,23 +1501,21 @@ function setHomeHeroBackdrop(background,{animate=false}={}){
 function startHomeHeroRotation(){
   if(homeHeroTimer){clearInterval(homeHeroTimer);homeHeroTimer=null;}
   if(homeHeroTransitionTimer){clearTimeout(homeHeroTransitionTimer);homeHeroTransitionTimer=null;}
-  if(homeHeroItems.length<2)return;
-  homeHeroTimer=setInterval(()=>{
-    if(document.hidden||!window.matchMedia("(max-width: 700px)").matches)return;
-    homeHeroIndex=(homeHeroIndex+1)%homeHeroItems.length;
-    renderHomeHero(homeHeroItems[homeHeroIndex],{animate:true});
-  },8000);
+  // Keep the featured title stable until the 48-hour selection cycle advances.
 }
 function homeHeroBackdrop(item){
   if(!item)return "";
-  const explicitPath=String(item.backdrop_path||item.backdropPath||"").trim();
-  if(explicitPath)return "https://image.tmdb.org/t/p/w1280/"+explicitPath.replace(/^\//,"");
+  const explicitPath=String(item.backdrop_path||item.backdropPath||"").trim().replace(/^\//,"");
+  if(explicitPath && /^[A-Za-z0-9]+\.(jpg|jpeg|png|webp)$/i.test(explicitPath)){
+    return "https://image.tmdb.org/t/p/w1280/"+explicitPath;
+  }
   const candidates=[item.background,item.backdrop].map(value=>String(value||"").trim()).filter(Boolean);
   return candidates.find(value=>{
     const path=tmdbImagePath(value);
     if(!path)return false;
-    const size=path.split("/")[0];
-    return size==="original"||size==="w1280"||size==="w1920"||size==="w780";
+    const parts=path.split("/");
+    const size=parts[0],file=parts.slice(1).join("/");
+    return /^(original|w780|w1280|w1920)$/.test(size) && /^[A-Za-z0-9]+\.(jpg|jpeg|png|webp)$/i.test(file);
   })||"";
 }
 function renderHomeHero(item,{animate=false}={}){
@@ -1549,15 +1547,25 @@ function renderHomeHero(item,{animate=false}={}){
 
 function renderCatalogSections(){
   const heroPool=catalogItems.slice()
-    .filter(item=>item?.id && item.poster && homeHeroBackdrop(item) && (Number(item.rating)||0)>=6.2 && (Number(item.popularity)||0)>0)
+    .filter(item=>item?.id && homeHeroBackdrop(item) && (Number(item.rating)||0)>=6.2 && (Number(item.popularity)||0)>0)
     .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0))
     .slice(0,30);
   const heroCycle=Math.floor(Date.now()/(48*60*60*1000));
-  const heroStart=heroPool.length ? (heroCycle*5)%heroPool.length : 0;
-  homeHeroItems=heroPool.length ? Array.from({length:Math.min(5,heroPool.length)},(_,index)=>heroPool[(heroStart+index)%heroPool.length]) : catalogItems.slice().filter(item=>item?.id && homeHeroBackdrop(item)).sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,5);
+  const heroStorageKey="luno-home-hero-selection";
+  let savedHero=null;
+  try{savedHero=JSON.parse(localStorage.getItem(heroStorageKey)||"null");}catch{}
+  const savedIndex=savedHero?.cycle===heroCycle ? heroPool.findIndex(item=>String(item.id)===String(savedHero.id)) : -1;
+  const heroStart=savedIndex>=0 ? savedIndex : (heroPool.length ? (heroCycle*5)%heroPool.length : 0);
+  homeHeroItems=heroPool.length ? [heroPool[heroStart]] : [];
   homeHeroIndex=0;
   homeHeroBackdropLayer=0;
-  renderHomeHero(homeHeroItems[0]||catalogItems[0]);
+  if(homeHeroItems[0]){
+    try{localStorage.setItem(heroStorageKey,JSON.stringify({cycle:heroCycle,id:homeHeroItems[0].id}));}catch{}
+    renderHomeHero(homeHeroItems[0]);
+  }else{
+    document.querySelector("#homeHero")?.classList.remove("is-ready");
+    setHomeHeroBackdrop("");
+  }
   startHomeHeroRotation();
   // Discovery is an enhancement, not a dependency for the primary poster rails.
   // A malformed discovery field must never prevent the home rows from rendering.
