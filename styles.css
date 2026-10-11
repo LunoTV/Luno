@@ -5100,3 +5100,8 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
     padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))!important;
   }
 }
+
+
+/* Fast catalog batches: keep first paint light on iPhone Safari. */
+.luno-catalog-load-more{display:block;width:100%;min-height:44px;margin:18px 0 24px;padding:10px 16px;border:1px solid var(--luno-border,#30313C);border-radius:14px;background:var(--luno-surface,#14151D);color:var(--luno-text,#E7E8EF);font:inherit;font-size:14px;font-weight:550;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.luno-catalog-load-more:active{background:var(--luno-surface-raised,#242334)}
