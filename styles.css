@@ -5241,3 +5241,11 @@ body.library-open.catalog-open .luno-catalog-tab{
   min-height:42px!important;padding:0 0 10px!important;
   font-size:14px!important;font-weight:550!important;
 }
+
+
+/* LUNO catalog experiment: landscape 16:9 cards, isolated from home poster rails. */
+@media(max-width:700px){
+  body.catalog-open #lunoCatalogResults.luno-catalog-results.is-grid>.card .card-art{
+    aspect-ratio:16/9!important;
+  }
+}
