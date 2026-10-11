@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=151">
+  <link rel="stylesheet" href="./styles.css?v=152">
   <link rel="stylesheet" href="./ui/design-system.css?v=7">
   <link rel="stylesheet" href="./ui/detail-page.css?v=8">
   <link rel="stylesheet" href="./ui/settings.css?v=1">
@@ -31,24 +31,7 @@
 
 <script>window.setTimeout(function(){var s=document.getElementById("splash");if(s)s.classList.add("is-hidden");},7000);</script>
 <div id="app">
-    <header class="topbar luno-nav-shutter">
-      <button class="global-header-back" id="globalHeaderBack" type="button" aria-label="Назад">‹</button>
-      <button class="brand" data-section="home" aria-label="Luno — Главная">
-        <span class="brand-wordmark">Luno</span>
-      </button>
-
-      <nav id="nav" class="nav" aria-label="Навигация">
-        <button class="nav-item active" data-section="home">Главная</button>
-        <button class="nav-item" data-section="history">История</button>
-        <button class="nav-item" data-section="movies">Фильмы</button>
-        <button class="nav-item" data-section="series">Сериалы</button>
-        <button class="nav-item" data-section="cartoons">Мультфильмы</button>
-        <button class="nav-item" data-section="anime">Аниме</button>
-        
-
-      </nav>
-      <div class="tv-header-tools"><button class="global-header-search" id="globalHeaderSearch" type="button" aria-label="Поиск"><span class="search-icon"></span></button><button class="global-header-settings" id="topHeaderSettings" data-section="settings" type="button" aria-label="Настройки"><span aria-hidden="true">⚙︎</span></button></div>
-    </header>
+    
 
     <nav class="mobile-tabbar luno-reference-tabbar" aria-label="Основная навигация">
       <button class="mobile-tab active" data-section="home" aria-current="page"><span class="tab-icon" aria-hidden="true">⌂</span><small>Главная</small></button>
@@ -58,14 +41,7 @@
       <button class="mobile-tab" id="globalHeaderSettings" data-section="profile" type="button" aria-label="Профиль"><span class="tab-icon" aria-hidden="true">♙</span><small>Профиль</small></button>
     </nav>
 
-<button id="lunoMenuTrigger" class="luno-menu-trigger" type="button" aria-label="Открыть меню" aria-expanded="false"><span class="luno-menu-glyph" aria-hidden="true">☰</span><span class="luno-menu-trigger-label">Меню</span></button>
-<div id="lunoMenuBackdrop" class="luno-menu-backdrop" hidden></div>
-<aside id="lunoMenuDrawer" class="luno-menu-drawer" aria-label="Главная навигация" aria-hidden="true">
-<div class="luno-menu-head"><div class="luno-menu-brand"><span class="brand-orbit"><span class="brand-moon"></span></span><b>LUNO</b></div><button id="lunoMenuClose" class="luno-menu-close" type="button" aria-label="Закрыть меню">×</button></div>
-<div class="luno-menu-caption">НАВИГАЦИЯ</div><nav class="luno-menu-items">
-<button class="luno-menu-item active" data-section="home"><span>⌂</span>Главная</button><button class="luno-menu-item" data-section="history"><span>◷</span>История</button><button class="luno-menu-item" data-section="movies"><span>▣</span>Фильмы</button><button class="luno-menu-item" data-section="series"><span>▤</span>Сериалы</button><button class="luno-menu-item" data-section="cartoons"><span>▧</span>Мультфильмы</button><button class="luno-menu-item" data-section="anime"><span>✧</span>Аниме</button><button class="luno-menu-item" data-section="shows"><span>▦</span>Шоу</button>
-</nav></aside>
-    <main>
+<main>
       <section id="homeHero" class="home-hero" aria-label="Рекомендуем посмотреть">
         <div class="home-hero-backdrop" aria-hidden="true"></div>
         <div class="home-hero-copy">
