@@ -227,6 +227,7 @@ test("home sections do not show decorative uppercase kicker labels", async () =>
   const app = await readFile(new URL("app.js", root), "utf8");
   const home = html.slice(html.indexOf('id="trendingSection"'), html.indexOf('id="catalogSentinel"'));
   assert.ok(!home.includes('class="section-kicker"'), "home headings contain no decorative kicker labels");
+  assert.ok(!home.includes('class="home-hero-eyebrow"'), "home hero has no decorative eyebrow label");
   for (const label of ["СЕЙЧАС СМОТРЯТ", "НА ВЕЧЕР", "ВЫБОР LUNO", "ПРОВЕРЕНО ВРЕМЕНЕМ"]) {
     assert.ok(!app.includes('kicker:"' + label + '"'), "removed kicker metadata for " + label);
   }
