@@ -661,6 +661,46 @@ function bindCards(){
   });
 }
 
+let detailLogoRequestId=0;
+async function loadDetailLogo(value,title){
+  const requestId=++detailLogoRequestId;
+  if(!detailTitle)return;
+  detailTitle.textContent=title;
+  detailTitle.classList.remove("has-tmdb-logo");
+  const id=String(value?.id||"").trim();
+  if(!id)return;
+  const type=(value?.type==="series"||value?.type==="tv"||(!value?.title&&Boolean(value?.name)))?"tv":"movie";
+  const language=String(value?.original_language||"").trim();
+  const params=new URLSearchParams({language:"ru",include_image_language:[language,"ru","en","null"].filter(Boolean).join(",")});
+  const attempts=LUNO_TMDB_API_MIRRORS.map(async base=>{
+    const response=await fetch(base+type+"/"+encodeURIComponent(id)+"/images?"+params.toString(),{cache:"no-store",headers:{accept:"application/json"}});
+    if(!response.ok)throw new Error("TMDB logo HTTP "+response.status);
+    const data=await response.json();
+    const logos=Array.isArray(data?.logos)?data.logos:[];
+    if(!logos.length)throw new Error("No title logos");
+    logos.sort((a,b)=>{
+      const rank=x=>x.iso_639_1==="ru"?0:x.iso_639_1==="en"?1:x.iso_639_1===null?2:3;
+      return rank(a)-rank(b);
+    });
+    return String(logos[0]?.file_path||"");
+  });
+  let logoPath="";
+  try{logoPath=await Promise.any(attempts);}catch{return;}
+  if(requestId!==detailLogoRequestId||!logoPath)return;
+  const logoUrl="https://image.tmdb.org/t/p/w500"+logoPath.replace(/\.svg$/i,".png");
+  const image=new Image();
+  image.alt=title;
+  image.className="luno-card-title-logo";
+  image.decoding="async";
+  image.onload=()=>{
+    if(requestId!==detailLogoRequestId||!detailTitle)return;
+    detailTitle.replaceChildren(image);
+    detailTitle.classList.add("has-tmdb-logo");
+  };
+  image.onerror=()=>{if(requestId===detailLogoRequestId&&detailTitle){detailTitle.textContent=title;detailTitle.classList.remove("has-tmdb-logo");}};
+  image.src=logoUrl;
+}
+
 function paintDetail(value){
   const title=value?.name || "Без названия";
   const image=preferredTmdbImage(value?.poster || value?.background || "");
@@ -688,7 +728,7 @@ function paintDetail(value){
   if(detailSeasonsTitle) detailSeasonsTitle.textContent=title+" — сезоны и серии";
   const detailKicker=document.querySelector(".luno-card-hero-copy .luno-card-eyebrow");
   if(detailKicker) detailKicker.textContent="LUNO  •  "+(value?.type==="series"?"СЕРИАЛ":"ФИЛЬМ");
-  if(detailTitle) detailTitle.textContent=title;
+  if(detailTitle){detailTitle.textContent=title;loadDetailLogo(value,title);}
   if(detailMeta) detailMeta.innerHTML=[
     score>0 ? '<span class="detail-meta-rating">★ '+score.toFixed(1)+' <small>TMDB</small></span>' : "",
     year!=="—" ? escapeHtml(year) : "",
