@@ -1508,11 +1508,23 @@ function startHomeHeroRotation(){
     renderHomeHero(homeHeroItems[homeHeroIndex],{animate:true});
   },8000);
 }
+function homeHeroBackdrop(item){
+  if(!item)return "";
+  const explicitPath=String(item.backdrop_path||item.backdropPath||"").trim();
+  if(explicitPath)return "https://image.tmdb.org/t/p/w1280/"+explicitPath.replace(/^\\//,"");
+  const candidates=[item.background,item.backdrop].map(value=>String(value||"").trim()).filter(Boolean);
+  return candidates.find(value=>{
+    const path=tmdbImagePath(value);
+    if(!path)return false;
+    const size=path.split("/")[0];
+    return size==="original"||size==="w1280"||size==="w1920"||size==="w780";
+  })||"";
+}
 function renderHomeHero(item,{animate=false}={}){
   const hero=document.querySelector("#homeHero");
   if(!hero||!item)return;
   const title=String(item.name||item.title||"Открой новое кино");
-  const background=String(item.background||item.backdrop||item.poster||"");
+  const background=homeHeroBackdrop(item);
   const year=getYear(item);
   const rating=Number(item.rating)||0;
   const type=mediaCategory(item)==="series"?"Сериал":"Фильм";
@@ -1537,7 +1549,7 @@ function renderHomeHero(item,{animate=false}={}){
 
 function renderCatalogSections(){
   homeHeroItems=catalogItems.slice()
-    .filter(item=>item?.id && (item.background||item.backdrop||item.poster))
+    .filter(item=>item?.id && homeHeroBackdrop(item))
     .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0))
     .slice(0,5);
   homeHeroIndex=0;
