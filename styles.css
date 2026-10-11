@@ -5344,3 +5344,40 @@ main > .section .cards .card:focus-visible {
 main > .section .cards .card.tv-remote-focus {
   transform: none !important;
 }
+
+
+/* Search screen: anchor discovery directly under the fixed field and keep app navigation visible. */
+@media(max-width:700px){
+  body.search-open .overlay{
+    align-items:flex-start!important;
+    justify-content:flex-start!important;
+  }
+  body.search-open .luno-search-screen.luno-search-discovery{
+    position:relative!important;
+    min-height:calc(100dvh - 58px)!important;
+    height:calc(100dvh - 58px)!important;
+    padding:0 34px calc(118px + env(safe-area-inset-bottom))!important;
+  }
+  body.search-open .search-discovery-block{
+    position:absolute!important;
+    top:285px!important;
+    left:34px!important;
+    right:34px!important;
+    margin:0!important;
+  }
+  body.search-open .search-discovery-heading{
+    margin:0 -1px 22px!important;
+  }
+  body.search-open .search-genre-card{
+    border-radius:8px!important;
+    border-color:rgba(231,232,239,.14)!important;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)!important;
+  }
+  body.search-open .mobile-tabbar{
+    display:flex!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+    z-index:150!important;
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  }
+}
