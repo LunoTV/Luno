@@ -276,10 +276,10 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   assert.ok(app.includes('document.body.classList.add("library-open","catalog-open")'), "catalog retains its own screen state");
   assert.ok(css.includes(".luno-catalog-results.is-grid") && css.includes(".luno-catalog-results.is-list"), "grid and cinematic list styles are defined");
   assert.ok(css.includes("grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px"), "mobile poster grid is compact with clear spacing");
-  assert.ok(html.includes("./styles.css?v=190"), "compact catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=191"), "compact catalog CSS has a fresh cache version");
   assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
   assert.ok(css.includes("body.library-open.catalog-open #app>.mobile-tabbar.luno-reference-tabbar"), "catalog overrides the library screen tab-bar hide rule");
   assert.ok(html.includes("./styles.css?v=191"), "catalog navigation CSS has a fresh cache version");
   assert.ok(!app.includes("luno-catalog-intro"), "old tile-based category hub is removed");
-  assert.ok(html.includes("./styles.css?v=189"), "new catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=191"), "new catalog CSS has a fresh cache version");
 });
