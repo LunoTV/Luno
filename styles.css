@@ -2686,7 +2686,6 @@ html,body{
   pointer-events:none;
 }
 .home-hero-backdrop.is-active{opacity:1}
-.home-hero-backdrop-next{z-index:-1!important}
 .home-hero.is-ready .home-hero-backdrop:not(.is-active){opacity:0}
 .home-hero:before{
   content:"";
