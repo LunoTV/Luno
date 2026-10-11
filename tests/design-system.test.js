@@ -193,7 +193,9 @@ test("returning from a category restores home mode before restoring scroll posit
   const restore = app.indexOf("restoreLunoHistoryPosition(state);", libraryClose);
   assert.ok(libraryClose >= 0, "popstate closes the active category");
   assert.ok(sync > libraryClose && sync < restore, "page mode and navigation are restored before scroll position");
-  assert.ok(app.includes('if(libraryView && !libraryView.classList.contains("hidden")){\n    closeLibrary();\n    return;'), "header back does not toggle stale home/back state");
+  const backHandler = app.slice(app.indexOf('document.querySelector("#globalHeaderBack")?.addEventListener("click"'), app.indexOf("let searchTimer="));
+  assert.ok(backHandler.includes('if(history.state?.luno && history.state.luno!=="home"){\n      history.back();'), "header back lets popstate close category before restoring scroll");
+  assert.ok(backHandler.indexOf("history.back();") < backHandler.indexOf("closeLibrary(true);"), "history navigation is preferred over hiding the category early");
 });
 
 
