@@ -2989,12 +2989,12 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   main>.section .section-head h2{font-size:21px}
   main>.section .section-kicker{font-size:8px;letter-spacing:.15em}
   main>.section .section-more{padding:7px 10px;font-size:10px}
-  main>.discovery-section .cards,main>.resume-section .cards{grid-auto-columns:56vw!important;gap:24px!important;column-gap:24px!important;row-gap:22px!important;padding:9px 28px 15px 28px!important;margin-left:0!important;margin-right:0!important}
+  main>.discovery-section .cards,main>.resume-section .cards{grid-auto-columns:128px!important;gap:16px!important;column-gap:16px!important;row-gap:22px!important;padding:9px 16px 15px 16px!important;margin-left:0!important;margin-right:0!important}
   main>.section:not(:first-child):before{margin-bottom:19px}
   main>.favorites-section .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media(max-width:380px){
-  main>.discovery-section .cards,main>.resume-section .cards{grid-auto-columns:minmax(118px,33%)!important}
+  main>.discovery-section .cards,main>.resume-section .cards{grid-auto-columns:128px!important;gap:14px!important;column-gap:14px!important}
   main>.section .section-head h2{font-size:19px}
 }
 @media(prefers-reduced-motion:reduce){
