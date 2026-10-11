@@ -232,3 +232,14 @@ test("home sections do not show decorative uppercase kicker labels", async () =>
     assert.ok(!app.includes('kicker:"' + label + '"'), "removed kicker metadata for " + label);
   }
 });
+
+
+test("home uses nine cards in discovery rails and refreshes hero lineup every two days", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(app.includes(".slice(0,9)"), "main rails are capped at nine posters");
+  assert.ok(app.includes("Math.floor(Date.now()/(48*60*60*1000))"), "featured lineup changes in a two-day cycle");
+  assert.ok(app.includes("(Number(item.rating)||0)>=6.2"), "hero prefers well-rated titles with backdrop art");
+  assert.ok(css.includes("font-weight:560!important"), "hero actions use lighter typography");
+  assert.ok(css.includes("aspect-ratio:2/3!important"), "poster art keeps consistent portrait ratio");
+});
