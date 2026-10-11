@@ -18,7 +18,11 @@ const openCinemaCards=document.querySelector("#openCinemaCards");
 const seriesCards=document.querySelector("#seriesCards");
 const lunoPicksCards=document.querySelector("#lunoPicksCards");
 const eveningCards=document.querySelector("#eveningCards");
-const classicsCards=document.querySelector("#classicsCards");\nconst topRatedCards=document.querySelector("#topRatedCards");\nconst topMoviesCards=document.querySelector("#topMoviesCards");\nconst topSeriesCards=document.querySelector("#topSeriesCards");\nconst doramasCards=document.querySelector("#doramasCards");
+const classicsCards=document.querySelector("#classicsCards");
+const topRatedCards=document.querySelector("#topRatedCards");
+const topMoviesCards=document.querySelector("#topMoviesCards");
+const topSeriesCards=document.querySelector("#topSeriesCards");
+const doramasCards=document.querySelector("#doramasCards");
 const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
@@ -1483,7 +1487,9 @@ function renderHomeHero(item){
   const heading=hero.querySelector(".luno-home-title");if(heading)heading.textContent=title;
   const meta=hero.querySelector(".luno-home-meta");if(meta)meta.textContent=[type,year||"",rating?"TMDB ★ "+rating.toFixed(1):""].filter(Boolean).join("  ·  ");
   hero.dataset.itemId=String(item.id||"");
-  hero.classList.add("is-ready");\n  const description=hero.querySelector(".luno-home-description");\n  if(description) description.textContent=String(item.overview||item.description||"");
+  hero.classList.add("is-ready");
+  const description=hero.querySelector(".luno-home-description");
+  if(description) description.textContent=String(item.overview||item.description||"");
   const favorite=hero.querySelector(".luno-home-favorite");
   if(favorite){
     const active=isFavorite(item.id);
