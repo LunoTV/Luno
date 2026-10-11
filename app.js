@@ -1511,7 +1511,7 @@ function startHomeHeroRotation(){
 function homeHeroBackdrop(item){
   if(!item)return "";
   const explicitPath=String(item.backdrop_path||item.backdropPath||"").trim();
-  if(explicitPath)return "https://image.tmdb.org/t/p/w1280/"+explicitPath.replace(/^\\//,"");
+  if(explicitPath)return "https://image.tmdb.org/t/p/w1280/"+explicitPath.replace(/^\//,"");
   const candidates=[item.background,item.backdrop].map(value=>String(value||"").trim()).filter(Boolean);
   return candidates.find(value=>{
     const path=tmdbImagePath(value);
