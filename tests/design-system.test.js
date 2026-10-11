@@ -282,7 +282,7 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   assert.ok(html.includes("./styles.css?v=193"), "compact catalog CSS has a fresh cache version");
   assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
   assert.ok(css.includes("body.library-open.catalog-open #app>.mobile-tabbar.luno-reference-tabbar"), "catalog overrides the library screen tab-bar hide rule");
-  assert.ok(html.includes("./styles.css?v=192"), "catalog navigation CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=193"), "catalog navigation CSS has a fresh cache version");
   assert.ok(!app.includes("luno-catalog-intro"), "old tile-based category hub is removed");
-  assert.ok(html.includes("./styles.css?v=192"), "new catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=193"), "new catalog CSS has a fresh cache version");
 });
