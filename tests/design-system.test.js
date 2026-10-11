@@ -262,3 +262,20 @@ test("home keeps poster sizing and provides nine stable hero banners", async () 
   assert.ok(heroRotation.includes("},8000)"), "hero automatically changes banners every eight seconds");
   assert.ok(css.includes("aspect-ratio:2/3!important"), "poster art keeps consistent portrait ratio");
 });
+
+
+test("catalog replaces the old category hub with two selectable poster layouts", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(app.includes('function renderLunoCatalog()'), "catalog has one dedicated renderer");
+  assert.ok(app.includes('data-catalog-view="grid"') && app.includes('data-catalog-view="list"'), "both poster styles are selectable");
+  assert.ok(app.includes('data-catalog-sort="newest"') && app.includes('data-catalog-sort="rating"'), "newness and rating sorting are wired");
+  assert.ok(app.includes('id="lunoCatalogGenre"'), "genre filter is present");
+  assert.ok(app.includes('data-catalog-category'), "category tabs are interactive");
+  assert.ok(app.includes('document.body.classList.add("library-open","catalog-open")'), "catalog retains its own screen state");
+  assert.ok(css.includes(".luno-catalog-results.is-grid") && css.includes(".luno-catalog-results.is-list"), "grid and cinematic list styles are defined");
+  assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
+  assert.ok(!app.includes("luno-catalog-intro"), "old tile-based category hub is removed");
+  assert.ok(html.includes("./styles.css?v=189"), "new catalog CSS has a fresh cache version");
+});
