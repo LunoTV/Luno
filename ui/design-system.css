@@ -74,7 +74,7 @@ select:focus-visible, textarea:focus-visible {
 .luno-catalog-eyebrow, .category-hub-card .luno-category-overline {
   color: var(--luno-text-muted) !important;
 }
-.primary, .home-hero-actions .home-hero-primary,
+.primary,
 .luno-detail-actions .primary, #detailOpenEpisodes, .settings-primary {
   border: 1px solid rgba(183,180,212,.28) !important;
   border-radius: 12px !important;
@@ -82,7 +82,7 @@ select:focus-visible, textarea:focus-visible {
   color: #FFFFFF !important;
   box-shadow: none !important;
 }
-.secondary, .home-hero-actions button:not(.home-hero-primary),
+.secondary,
 .luno-detail-actions .secondary, .settings-secondary {
   border: 1px solid var(--luno-border-strong) !important;
   border-radius: 12px !important;
