@@ -91,6 +91,16 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
 });
 
 
+test("LUNO detail card supports TMDB title logos with text fallback", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  assert.ok(app.includes("async function loadDetailLogo(value,title)"), "loads the title logo from TMDB images");
+  assert.ok(app.includes('"/images?"')===false, "uses the TMDB image endpoint directly");
+  assert.ok(app.includes('detailTitle.classList.add("has-tmdb-logo")'), "marks the title only after the logo loads");
+  assert.ok(app.includes('detailTitle.textContent=title'), "retains readable title text as fallback");
+  assert.ok(css.includes(".luno-card-title-logo"), "styles the title logo within LUNO's detail card");
+});
+
 test("detail card hides the app shell header and mobile tab bar while open", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(css.includes("body.detail-open #app > .topbar"), "app shutter is hidden while detail is open");
