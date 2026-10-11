@@ -1399,7 +1399,7 @@ function navigate(section){
   document.body.classList.remove("settings-open");
   document.body.classList.toggle("home-mode",section==="home");
   document.body.classList.toggle("show-global-back",section!=="home");
-  document.querySelectorAll(".nav-item,.mobile-tab,.home-category-tab").forEach(x=>{
+  document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>{
     x.classList.remove("active");
     x.removeAttribute("aria-current");
   });
@@ -2930,7 +2930,7 @@ document.addEventListener("keydown",(event)=>{
   if(next!==index){event.preventDefault();cards[next].focus({preventScroll:true});cards[next].scrollIntoView({block:"nearest",inline:"nearest",behavior:"smooth"});}
 });
 
-document.querySelectorAll(".nav-item,.mobile-tab,.home-category-tab").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
+document.querySelectorAll(".nav-item,.mobile-tab").forEach((btn)=>btn.addEventListener("click",()=>navigate(btn.dataset.section)));
 
 function syncLunoActiveNavigation(){
   const detailOpen=!!detail && !detail.classList.contains("hidden");
@@ -2948,7 +2948,7 @@ function syncLunoActiveNavigation(){
   const isHomeView=!detailOpen&&!libraryOpen&&!searchOpen&&!settingsOpen&&!playerOpen;
   document.body.classList.toggle("home-mode",isHomeView);
   document.body.classList.toggle("show-global-back",!isHomeView);
-  document.querySelectorAll(".nav-item,.mobile-tab,.home-category-tab").forEach(btn=>{
+  document.querySelectorAll(".nav-item,.mobile-tab").forEach(btn=>{
     const active=btn.dataset.section===section;
     btn.classList.toggle("active",active);
     if(active) btn.setAttribute("aria-current","page");
