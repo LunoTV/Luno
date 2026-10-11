@@ -195,3 +195,11 @@ test("returning from a category restores home mode before restoring scroll posit
   assert.ok(sync > libraryClose && sync < restore, "page mode and navigation are restored before scroll position");
   assert.ok(app.includes('if(libraryView && !libraryView.classList.contains("hidden")){\n    closeLibrary();\n    return;'), "header back does not toggle stale home/back state");
 });
+
+
+test("home discovery begins directly after the hero without a duplicate divider gap", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(!css.includes("  .home-hero{\n    min-height:0;height:clamp(310px,82vw,390px);"), "duplicate mobile hero sizing is removed");
+  assert.ok(css.includes("body.home-mode #trendingSection:before{display:none!important}"), "first discovery rail does not add a divider-sized gap");
+  assert.ok(css.includes("body.home-mode #trendingSection{margin-top:18px!important;padding-top:0!important}"), "popular rail has a compact, explicit home spacing");
+});
