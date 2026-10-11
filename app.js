@@ -1440,16 +1440,16 @@ function setHTMLIfChanged(node,html){
 }
 function renderDiscovery(){
   const all=catalogItems.slice();
-  const trending=all.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,18);
+  const trending=all.slice().sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,9);
   const fresh=all.filter(item=>getYear(item)>=new Date().getFullYear()-1)
     .sort((a,b)=>getYear(b)-getYear(a) || (Number(b.popularity)||0)-(Number(a.popularity)||0))
-    .slice(0,18);
+    .slice(0,9);
   const top=all.filter(item=>(Number(item.rating)||0)>0)
     .sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0) || (Number(b.popularity)||0)-(Number(a.popularity)||0))
-    .slice(0,18);
+    .slice(0,9);
 
   if(trendingCards) setHTMLIfChanged(trendingCards,trending.map(card).join(""));
-  if(highRatedCards) setHTMLIfChanged(highRatedCards,top.slice(0,18).map(card).join(""));
+  if(highRatedCards) setHTMLIfChanged(highRatedCards,top.slice(0,9).map(card).join(""));
   const topMovies=all.filter(item=>mediaCategory(item)==="movies").sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,10);
   const topSeries=all.filter(item=>mediaCategory(item)==="series").sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,10);
   if(topMoviesCards) setHTMLIfChanged(topMoviesCards,topMovies.map(card).join(""));
@@ -1548,10 +1548,13 @@ function renderHomeHero(item,{animate=false}={}){
 }
 
 function renderCatalogSections(){
-  homeHeroItems=catalogItems.slice()
-    .filter(item=>item?.id && homeHeroBackdrop(item))
+  const heroPool=catalogItems.slice()
+    .filter(item=>item?.id && item.poster && homeHeroBackdrop(item) && (Number(item.rating)||0)>=6.2 && (Number(item.popularity)||0)>0)
     .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0))
-    .slice(0,5);
+    .slice(0,30);
+  const heroCycle=Math.floor(Date.now()/(48*60*60*1000));
+  const heroStart=heroPool.length ? (heroCycle*5)%heroPool.length : 0;
+  homeHeroItems=heroPool.length ? Array.from({length:Math.min(5,heroPool.length)},(_,index)=>heroPool[(heroStart+index)%heroPool.length]) : catalogItems.slice().filter(item=>item?.id && homeHeroBackdrop(item)).sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,5);
   homeHeroIndex=0;
   homeHeroBackdropLayer=0;
   renderHomeHero(homeHeroItems[0]||catalogItems[0]);
