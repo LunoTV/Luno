@@ -203,6 +203,7 @@ test("category tabs replace sibling history entries and restore a real home stat
 
 
 test("home discovery begins directly after the hero without a duplicate divider gap", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.ok(!css.includes("  .home-hero{\n    min-height:0;height:clamp(310px,82vw,390px);"), "duplicate mobile hero sizing is removed");
   assert.ok(css.includes("body.home-mode #trendingSection:before{display:none!important}"), "first discovery rail does not add a divider-sized gap");
