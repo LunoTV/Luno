@@ -2640,7 +2640,7 @@ function renderSearchSections(items,query){
       ? (searchError
         ? '<div class="search-empty search-empty-modern"><strong>Не удалось подключиться к TMDB</strong><span>'+escapeHtml(searchError)+'</span></div>'
         : '<div class="search-empty search-empty-modern"><strong>Ничего не нашли</strong><span>Попробуй другое название или убери год из запроса.</span></div>')
-      : '<div class="search-discover"><strong>Что будем смотреть?</strong><span>Введи название фильма, сериала или франшизы.</span></div>';
+      : "";
     return;
   }
   resultBox.innerHTML=
