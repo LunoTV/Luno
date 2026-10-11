@@ -207,7 +207,7 @@ test("home discovery begins directly after the hero without a duplicate divider 
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.ok(!css.includes("  .home-hero{\n    min-height:0;height:clamp(310px,82vw,390px);"), "duplicate mobile hero sizing is removed");
   assert.ok(css.includes("body.home-mode #trendingSection:before{display:none!important}"), "first discovery rail does not add a divider-sized gap");
-  assert.ok(css.includes("height:clamp(560px,70svh,680px)!important"), "mobile hero is large and cinematic");
+  assert.ok(css.includes("height:clamp(590px,76svh,700px)!important"), "mobile hero is large and cinematic");
   assert.ok(html.includes('id="highRatedCards"') && html.includes('id="topMoviesCards"') && html.includes('id="topSeriesCards"'), "home includes the requested ranking rails");
   assert.ok(!html.includes('id="continueSection"'), "Continue Watching is not duplicated on Home");
   assert.ok(html.includes("<small>Я смотрю</small>"), "bottom navigation labels personal activity as Я смотрю");
