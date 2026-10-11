@@ -156,7 +156,7 @@ test("home screen uses poster-led featured carousel and mobile category navigati
   assert.ok(!html.includes('class="home-category-tabs"'), "duplicate category strip is removed from Home");
   assert.ok(html.includes('id="homeHeroDots"'), "featured carousel has slide indicators");
   assert.ok(html.includes('data-hero-action="favorite"'), "featured item has a favorite action");
-  assert.ok(app.includes("homeHeroItems=catalogItems.slice()"), "featured items come from the catalog");
+  assert.ok(app.includes("const heroPool=catalogItems.slice()"), "featured items are curated from the catalog");
   assert.ok(app.includes('if(button.dataset.heroAction==="favorite")'), "featured favorite button is wired");
   assert.ok(app.includes('data-hero-slide'), "carousel indicators are wired");
   assert.ok(css.includes(".home-hero-backdrop{"), "featured artwork fills the hero");
