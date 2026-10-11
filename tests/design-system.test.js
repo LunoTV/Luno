@@ -208,3 +208,20 @@ test("home discovery begins directly after the hero without a duplicate divider 
   assert.ok(css.includes("body.home-mode #trendingSection:before{display:none!important}"), "first discovery rail does not add a divider-sized gap");
   assert.ok(css.includes("body.home-mode #trendingSection{margin-top:18px!important;padding-top:0!important}"), "popular rail has a compact, explicit home spacing");
 });
+
+
+test("cinematic home markup has no legacy category tabs or continue-watching rail", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  assert.match(html, /styles\.css\?v=150/);
+  assert.match(html, /id="homeHero"/);
+  assert.match(html, /id="trendingSection"/);
+  assert.doesNotMatch(html, /class="home-category-tabs"/);
+  assert.doesNotMatch(html, /id="continueSection"/);
+  assert.match(html, /<small>Я смотрю<\/small>/);
+  assert.equal((css.match(/HOME — single canonical implementation/g) || []).length, 1);
+  assert.match(css, /min-height:clamp\(520px,78svh,860px\)/);
+  assert.match(app, /home-hero-description/);
+  assert.match(app, /if\(!continueSection\) return;/);
+});
