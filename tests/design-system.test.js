@@ -183,3 +183,15 @@ test("featured home screen has no unused legacy poster element or old hero sizin
   assert.ok(!css.includes("#homeHero{\n    min-height:500px!important"), "old fixed-height hero is removed");
   assert.ok(css.includes("home-hero-dots"), "active carousel indicators remain");
 });
+
+
+test("returning from a category restores home mode before restoring scroll position", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const popstateStart = app.indexOf('window.addEventListener("popstate"');
+  const libraryClose = app.indexOf('if(!libraryView?.classList.contains("hidden"))', popstateStart);
+  const sync = app.indexOf("syncLunoActiveNavigation();", libraryClose);
+  const restore = app.indexOf("restoreLunoHistoryPosition(state);", libraryClose);
+  assert.ok(libraryClose >= 0, "popstate closes the active category");
+  assert.ok(sync > libraryClose && sync < restore, "page mode and navigation are restored before scroll position");
+  assert.ok(app.includes('if(libraryView && !libraryView.classList.contains("hidden")){\n    closeLibrary();\n    return;'), "header back does not toggle stale home/back state");
+});
