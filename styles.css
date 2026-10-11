@@ -5381,3 +5381,15 @@ main > .section .cards .card.tv-remote-focus {
     bottom:calc(8px + env(safe-area-inset-bottom))!important;
   }
 }
+
+
+/* Match the exposed top area to the search canvas; remove the black horizontal band. */
+@media(max-width:700px){
+  html:has(body.search-open),
+  body.search-open,
+  body.search-open main,
+  body.search-open .overlay,
+  body.search-open .luno-search-screen.luno-search-discovery{
+    background:#101010!important;
+  }
+}
