@@ -1191,8 +1191,8 @@ function openLibrary(type,pushHistory=true){
     const stableKey=item=>{const value=String(item.id||item.name||item.title||"");let hash=2166136261;for(const ch of value){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}return hash>>>0;};
     const popular=all.slice().sort((x,y)=>(Number(y.popularity)||0)-(Number(x.popularity)||0));
     const topRated=all.filter(item=>(Number(item.rating)||0)>0).sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)||(Number(y.popularity)||0)-(Number(x.popularity)||0));
-    const topMovies=all.filter(item=>mediaCategory(item)==="movies").sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)||(Number(y.popularity)||0)-(Number(x.popularity)||0)).slice(0,10);
-    const topSeries=all.filter(item=>mediaCategory(item)==="series").sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)||(Number(y.popularity)||0)-(Number(x.popularity)||0)).slice(0,10);
+    const topMovies=all.filter(item=>mediaCategory(item)==="movies").sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)||(Number(y.popularity)||0)-(Number(x.popularity)||0)).slice(0,9);
+    const topSeries=all.filter(item=>mediaCategory(item)==="series").sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)||(Number(y.popularity)||0)-(Number(x.popularity)||0)).slice(0,9);
     const topIds=new Set(popular.slice(0,6).map(item=>item.id));
     const recommendations=all.filter(item=>!topIds.has(item.id)).sort((x,y)=>stableKey(x)-stableKey(y));
     const genres=item=>Array.isArray(item.genres)?item.genres.map(x=>String(x).toLowerCase()):[];
