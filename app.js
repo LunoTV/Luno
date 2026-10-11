@@ -1188,6 +1188,7 @@ function catalogItemsForView(){
 function renderLunoCatalog(){
   if(!libraryContent)return;
   const items=catalogItemsForView();
+  const visibleItems=items.slice(0,24);
   const genres=[...new Set((lunoCatalogState.category==="collections"?catalogItems:catalogItems.filter(item=>mediaCategory(item)===lunoCatalogState.category)).flatMap(item=>(Array.isArray(item.genres)?item.genres:[]).map(genre=>String(typeof genre==="string"?genre:genre?.name||"").trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,"ru"));
   const heading=LUNO_CATALOG_CATEGORIES.find(item=>item.id===lunoCatalogState.category)?.label||"Каталог";
   libraryTitle.textContent="Каталог";
@@ -1208,10 +1209,10 @@ function renderLunoCatalog(){
   const results=libraryContent.querySelector("#lunoCatalogResults");
   if(results){
     if(lunoCatalogState.view==="grid"){
-      results.innerHTML=items.map((item,index)=>card(item,index<4)).join("");
+      results.innerHTML=visibleItems.map((item,index)=>card(item,index<4)).join("");
       bindCards();
     }else{
-      results.innerHTML=items.map(item=>{
+      results.innerHTML=visibleItems.map(item=>{
         const title=item.name||"Без названия";
         const art=String(item.background||item.backdrop||(item.backdrop_path?("https://image.tmdb.org/t/p/w1280/"+String(item.backdrop_path).replace(/^\//,"")):"")||item.poster||"");
         const rating=Number(item.rating)>0?Number(item.rating).toFixed(1):"—";
