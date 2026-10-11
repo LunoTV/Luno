@@ -3617,10 +3617,7 @@ html,body{
   .home-category-tab.active{
     border-color:var(--luno-border);background:var(--luno-surface-raised);color:var(--luno-text);
   }
-  .home-hero{
-    min-height:0;height:clamp(310px,82vw,390px);
-    margin:0 14px;padding:18px 15px 15px;border-radius:16px;
-  }
+  /* Home hero geometry is owned by the consolidated home-mode block below. */
   .home-hero-backdrop{background-position:center 20%}
   .home-hero:before{
     background:linear-gradient(180deg,rgba(8,9,13,.01) 0%,rgba(8,9,13,.02) 30%,rgba(8,9,13,.35) 53%,rgba(8,9,13,.9) 77%,#08090D 100%);
@@ -3857,7 +3854,6 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 @media(max-width:700px){
 
   .section .cards{scroll-padding-inline:4px}
-  #trendingSection{margin-top:24px}
 }
 @media(prefers-reduced-motion:reduce){.section .cards>.card .card-art{transition:none!important}}
 
@@ -5999,8 +5995,9 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
   }
   body.home-mode .home-hero-copy{padding:0!important;max-width:100%!important;animation:none!important}
   body.home-mode .home-hero-description{display:none!important}
-  body.home-mode main>.section{margin-top:27px!important;margin-bottom:0!important;padding:0 14px!important}
-  body.home-mode #trendingSection{margin-top:27px!important}
+  body.home-mode main>.section{margin-top:22px!important;margin-bottom:0!important;padding:0 14px!important}
+  body.home-mode #trendingSection{margin-top:18px!important;padding-top:0!important}
+  body.home-mode #trendingSection:before{display:none!important}
   body.home-mode main>.section .section-head{margin-bottom:12px!important}
   body.home-mode main>.section .cards{padding:2px 14px 9px 0!important}
   body.home-mode .mobile-tabbar.luno-reference-tabbar{
