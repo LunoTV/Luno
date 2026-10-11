@@ -5261,10 +5261,10 @@ body.library-open.catalog-open .luno-catalog-tab{
   }
   body.search-open .search-topbar,body.search-open .search-close-x{display:none!important}
   body.search-open .luno-search-field{
-    position:fixed!important;top:calc(62px + env(safe-area-inset-top))!important;left:34px!important;right:34px!important;
-    width:auto!important;height:62px!important;z-index:130!important;margin:0!important;padding:0 18px 0 22px!important;
-    border:2px solid #303035!important;border-radius:38px!important;background:#090909!important;box-shadow:none!important;
-    gap:12px!important;
+    position:fixed!important;top:calc(66px + env(safe-area-inset-top))!important;left:12%!important;right:12%!important;
+    width:auto!important;height:52px!important;z-index:130!important;margin:0 auto!important;padding:0 14px 0 18px!important;
+    border:1px solid #303035!important;border-radius:30px!important;background:#090909!important;box-shadow:none!important;
+    gap:10px!important;
   }
   body.search-open .luno-search-field:focus-within{border-color:#45454b!important;box-shadow:0 0 0 2px rgba(255,255,255,.025)!important}
   body.search-open .luno-search-field .search-icon{display:none!important}
@@ -5360,7 +5360,7 @@ main > .section .cards .card.tv-remote-focus {
   }
   body.search-open .search-discovery-block{
     position:absolute!important;
-    top:180px!important;
+    top:170px!important;
     left:34px!important;
     right:34px!important;
     margin:0!important;
