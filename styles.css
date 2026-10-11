@@ -5256,12 +5256,12 @@ body.library-open.catalog-open .luno-catalog-tab{
   body.search-open .overlay{background:#101010!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
   body.search-open .luno-search-screen.luno-search-discovery{
     position:relative!important;box-sizing:border-box!important;min-height:100dvh!important;height:100dvh!important;
-    overflow-y:auto!important;padding:calc(122px + env(safe-area-inset-top)) 34px calc(118px + env(safe-area-inset-bottom))!important;
+    overflow-y:auto!important;padding:calc(244px + env(safe-area-inset-top)) 34px calc(118px + env(safe-area-inset-bottom))!important;
     background:#101010!important;
   }
   body.search-open .search-topbar,body.search-open .search-close-x{display:none!important}
   body.search-open .luno-search-field{
-    position:fixed!important;top:calc(42px + env(safe-area-inset-top))!important;left:34px!important;right:34px!important;
+    position:fixed!important;top:calc(62px + env(safe-area-inset-top))!important;left:34px!important;right:34px!important;
     width:auto!important;height:62px!important;z-index:130!important;margin:0!important;padding:0 18px 0 22px!important;
     border:2px solid #303035!important;border-radius:38px!important;background:#090909!important;box-shadow:none!important;
     gap:12px!important;
