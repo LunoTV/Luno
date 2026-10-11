@@ -5327,3 +5327,20 @@ body.library-open.catalog-open .luno-catalog-tab{
   .search-mic{display:none!important}
   .search-discovery-block{display:none}
 }
+
+
+/* Remove the disruptive neon-lime focus frame from every card and remote-focused control. */
+.tv-remote-focus,
+button.tv-remote-focus,
+a.tv-remote-focus,
+.card.tv-remote-focus,
+main > .section .cards .card.tv-remote-focus,
+main > .section .cards .card:focus-visible {
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+.card.tv-remote-focus,
+main > .section .cards .card.tv-remote-focus {
+  transform: none !important;
+}
