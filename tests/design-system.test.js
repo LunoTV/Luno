@@ -87,6 +87,9 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   }
   assert.ok(css.includes(".luno-card-page") && css.includes("@media(max-width:700px)"), "new page has isolated responsive styles");
   assert.ok(app.includes('document.querySelector(".luno-card-search")'), "new card search control is wired");
+  assert.ok(html.includes("search-discovery-block") && html.includes("data-search-genre") && html.includes("search-mic"), "search uses the new genre discovery interface");
+  assert.ok(app.includes("searchMediaCategory") && app.includes('document.querySelectorAll("[data-search-genre]")'), "genre cards and media category tabs are interactive");
+  assert.ok(css.includes(".search-genre-card") && css.includes("body.search-open .luno-search-screen.luno-search-discovery"), "old search screen is replaced by the mobile discovery layout");
   assert.ok(app.includes('document.querySelectorAll(".luno-card-links [data-section]")'), "new card navigation is wired");
 });
 
@@ -282,10 +285,10 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   assert.ok(css.includes(".luno-catalog-results.is-grid") && css.includes(".luno-catalog-results.is-list"), "grid and cinematic list styles are defined");
   assert.ok(css.includes("grid-template-columns:repeat(2,minmax(0,1fr))!important") && css.includes("body.catalog-open #lunoCatalogResults.luno-catalog-results.is-grid>.card .card-art"), "mobile poster grid is compact with clear spacing");
   assert.ok(css.includes("aspect-ratio:16/9!important") && css.includes("LUNO catalog experiment: landscape 16:9 cards"), "catalog grid can be previewed in landscape 16:9 without changing home posters");
-  assert.ok(html.includes("./styles.css?v=197"), "compact catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=198"), "compact catalog CSS has a fresh cache version");
   assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
   assert.ok(css.includes("body.library-open.catalog-open #app>.mobile-tabbar.luno-reference-tabbar"), "catalog overrides the library screen tab-bar hide rule");
-  assert.ok(html.includes("./styles.css?v=197"), "catalog navigation CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=198"), "catalog navigation CSS has a fresh cache version");
   assert.ok(!app.includes("luno-catalog-intro"), "old tile-based category hub is removed");
-  assert.ok(html.includes("./styles.css?v=197"), "new catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=198"), "new catalog CSS has a fresh cache version");
 });
