@@ -1501,7 +1501,11 @@ function setHomeHeroBackdrop(background,{animate=false}={}){
 function startHomeHeroRotation(){
   if(homeHeroTimer){clearInterval(homeHeroTimer);homeHeroTimer=null;}
   if(homeHeroTransitionTimer){clearTimeout(homeHeroTransitionTimer);homeHeroTransitionTimer=null;}
-  // Keep the featured title stable until the 48-hour selection cycle advances.
+  if(homeHeroItems.length<2)return;
+  homeHeroTimer=setInterval(()=>{
+    homeHeroIndex=(homeHeroIndex+1)%homeHeroItems.length;
+    renderHomeHero(homeHeroItems[homeHeroIndex],{animate:true});
+  },8000);
 }
 function homeHeroBackdrop(item){
   if(!item)return "";
