@@ -1477,7 +1477,38 @@ function renderDiscovery(){
 
 let homeHeroItems=[];
 let homeHeroIndex=0;
-function renderHomeHero(item){
+let homeHeroBackdropLayer=0;
+let homeHeroTimer=null;
+let homeHeroTransitionTimer=null;
+function setHomeHeroBackdrop(background,{animate=false}={}){
+  const hero=document.querySelector("#homeHero");
+  if(!hero)return;
+  const layers=[hero.querySelector(".home-hero-backdrop:not(.home-hero-backdrop-next)"),hero.querySelector(".home-hero-backdrop-next")];
+  if(!layers[0]||!layers[1])return;
+  const url=background ? "url("+JSON.stringify(String(background).replace(/"/g,"%22"))+")" : "none";
+  if(!animate||!window.matchMedia("(max-width: 700px)").matches){
+    layers.forEach((layer,index)=>{layer.style.backgroundImage=url;layer.classList.toggle("is-active",index===0);});
+    homeHeroBackdropLayer=0;
+    return;
+  }
+  const next=1-homeHeroBackdropLayer;
+  const incoming=layers[next],outgoing=layers[homeHeroBackdropLayer];
+  incoming.style.backgroundImage=url;
+  incoming.classList.add("is-active");
+  outgoing.classList.remove("is-active");
+  homeHeroBackdropLayer=next;
+}
+function startHomeHeroRotation(){
+  if(homeHeroTimer){clearInterval(homeHeroTimer);homeHeroTimer=null;}
+  if(homeHeroTransitionTimer){clearTimeout(homeHeroTransitionTimer);homeHeroTransitionTimer=null;}
+  if(homeHeroItems.length<2)return;
+  homeHeroTimer=setInterval(()=>{
+    if(document.hidden||!window.matchMedia("(max-width: 700px)").matches)return;
+    homeHeroIndex=(homeHeroIndex+1)%homeHeroItems.length;
+    renderHomeHero(homeHeroItems[homeHeroIndex],{animate:true});
+  },8000);
+}
+function renderHomeHero(item,{animate=false}={}){
   const hero=document.querySelector("#homeHero");
   if(!hero||!item)return;
   const title=String(item.name||item.title||"Открой новое кино");
@@ -1485,8 +1516,7 @@ function renderHomeHero(item){
   const year=getYear(item);
   const rating=Number(item.rating)||0;
   const type=mediaCategory(item)==="series"?"Сериал":"Фильм";
-  const backdrop=hero.querySelector(".home-hero-backdrop");
-  if(backdrop)backdrop.style.backgroundImage=background ? "url("+JSON.stringify(background.replace(/"/g,"%22"))+")" : "none";
+  setHomeHeroBackdrop(background,{animate});
   const heading=hero.querySelector(".home-hero-title");if(heading)heading.textContent=title;
   const meta=hero.querySelector(".home-hero-meta");if(meta)meta.textContent=[type,year||"",rating?"TMDB ★ "+rating.toFixed(1):""].filter(Boolean).join("  ·  ");
   const description=hero.querySelector(".home-hero-description");if(description)description.textContent=String(item.overview||item.description||"");
@@ -1511,7 +1541,9 @@ function renderCatalogSections(){
     .sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0))
     .slice(0,5);
   homeHeroIndex=0;
+  homeHeroBackdropLayer=0;
   renderHomeHero(homeHeroItems[0]||catalogItems[0]);
+  startHomeHeroRotation();
   // Discovery is an enhancement, not a dependency for the primary poster rails.
   // A malformed discovery field must never prevent the home rows from rendering.
   try{
@@ -2970,7 +3002,7 @@ document.querySelector("#homeHeroDots")?.addEventListener("click",event=>{
   const index=Number(button.dataset.heroSlide);
   if(!Number.isInteger(index)||!homeHeroItems[index])return;
   homeHeroIndex=index;
-  renderHomeHero(homeHeroItems[index]);
+  renderHomeHero(homeHeroItems[index],{animate:true});
 });
 
 // TV navigation follows the active screen/sheet, with per-screen focus memory.
