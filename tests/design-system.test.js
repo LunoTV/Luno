@@ -185,17 +185,20 @@ test("featured home screen has no unused legacy poster element or old hero sizin
 });
 
 
-test("returning from a category restores home mode before restoring scroll position", async () => {
+test("category tabs replace sibling history entries and restore a real home state", async () => {
   const app = await readFile(new URL("app.js", root), "utf8");
+  assert.ok(app.includes('if(current===view || (isLunoLibraryRoute(current)&&isLunoLibraryRoute(view))) history.replaceState(next,"",url);'), "switching between categories does not stack extra Back entries");
+  assert.ok(app.includes('function isLunoLibraryRoute(view){'), "category history views are classified centrally");
+  const syncStart = app.indexOf("function syncLunoActiveNavigation()");
+  const syncEnd = app.indexOf("window.addEventListener(\"pageshow\",syncLunoActiveNavigation)",syncStart);
+  const sync = app.slice(syncStart,syncEnd);
+  assert.ok(sync.includes('const isHomeView=!detailOpen&&!libraryOpen&&!searchOpen&&!settingsOpen&&!playerOpen;'), "home mode depends on visible views, not the active home tab");
+  assert.ok(sync.includes('document.body.classList.toggle("home-mode",isHomeView);'), "detail and other internal pages cannot accidentally retain home layout");
   const popstateStart = app.indexOf('window.addEventListener("popstate"');
   const libraryClose = app.indexOf('if(!libraryView?.classList.contains("hidden"))', popstateStart);
-  const sync = app.indexOf("syncLunoActiveNavigation();", libraryClose);
+  const navSync = app.indexOf("syncLunoActiveNavigation();", libraryClose);
   const restore = app.indexOf("restoreLunoHistoryPosition(state);", libraryClose);
-  assert.ok(libraryClose >= 0, "popstate closes the active category");
-  assert.ok(sync > libraryClose && sync < restore, "page mode and navigation are restored before scroll position");
-  const backHandler = app.slice(app.indexOf('document.querySelector("#globalHeaderBack")?.addEventListener("click"'), app.indexOf("let searchTimer="));
-  assert.ok(backHandler.includes('if(history.state?.luno && history.state.luno!=="home"){\n      history.back();'), "header back lets popstate close category before restoring scroll");
-  assert.ok(backHandler.indexOf("history.back();") < backHandler.indexOf("closeLibrary(true);"), "history navigation is preferred over hiding the category early");
+  assert.ok(libraryClose >= 0 && navSync > libraryClose && navSync < restore, "navigation state is reconciled before scroll restoration");
 });
 
 
