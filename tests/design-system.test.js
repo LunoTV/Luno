@@ -23,7 +23,8 @@ test("mobile settings sections open in a focused sheet with a return control", a
   const app = await readFile(new URL("app.js", root), "utf8");
   assert.ok(css.includes(".settings-view.settings-section-open .settings-content"), "settings content has a focused mobile sheet");
   assert.ok(css.includes(".settings-view.settings-section-open .settings-menu"), "the menu is hidden while a section is open");
-  assert.ok(css.includes(".settings-view .settings-content {\n    display: none !important;"), "mobile settings list is shown without a panel below it");
+  assert.ok(css.includes(".settings-view .settings-content {
+    display: none !important;"), "mobile settings list is shown without a panel below it");
   assert.ok(app.includes('data-settings-sections-back'), "the section sheet has a return control");
   assert.ok(app.includes('openSettingsView(button.dataset.settingsSection,true)'), "selecting a section opens the focused view");
   assert.ok(app.includes('settingsView.querySelectorAll("[data-settings-panel]").forEach(panel=>panel.classList.add("hidden"))'), "returning to the menu clears every section panel");
@@ -168,7 +169,8 @@ test("home screen uses poster-led featured carousel and mobile category navigati
 test("legacy tall-hero and four-column home navigation overrides are removed", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.ok(!css.includes("body.home-mode .home-hero{margin-top:-60px!important"), "old hero bleed patch is removed");
-  assert.ok(!css.includes("#homeHero{\n    min-height:500px!important"), "old fixed tall hero patch is removed");
+  assert.ok(!css.includes("#homeHero{
+    min-height:500px!important"), "old fixed tall hero patch is removed");
   assert.ok(!css.includes("grid-template-columns:repeat(4,minmax(0,1fr))!important"), "old four-column nav override is removed");
   assert.ok(css.includes("body.home-mode .mobile-tabbar.luno-reference-tabbar"), "single five-column home nav rule remains");
   assert.ok(css.includes("body.show-global-back .topbar.luno-nav-shutter .brand"), "wordmark is hidden only on inner screens");
@@ -180,7 +182,8 @@ test("featured home screen has no unused legacy poster element or old hero sizin
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.ok(!html.includes("home-hero-poster-wrap"), "unused side-poster markup is removed");
   assert.ok(!css.includes(".home-hero-poster-wrap"), "unused side-poster CSS is removed");
-  assert.ok(!css.includes("#homeHero{\n    min-height:500px!important"), "old fixed-height hero is removed");
+  assert.ok(!css.includes("#homeHero{
+    min-height:500px!important"), "old fixed-height hero is removed");
   assert.ok(css.includes("home-hero-dots"), "active carousel indicators remain");
 });
 
@@ -204,9 +207,19 @@ test("category tabs replace sibling history entries and restore a real home stat
 
 test("home discovery begins directly after the hero without a duplicate divider gap", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.ok(!css.includes("  .home-hero{\n    min-height:0;height:clamp(310px,82vw,390px);"), "duplicate mobile hero sizing is removed");
+  assert.ok(!css.includes("  .home-hero{
+    min-height:0;height:clamp(310px,82vw,390px);"), "duplicate mobile hero sizing is removed");
   assert.ok(css.includes("body.home-mode #trendingSection:before{display:none!important}"), "first discovery rail does not add a divider-sized gap");
   assert.ok(css.includes("body.home-mode #trendingSection{margin-top:18px!important;padding-top:0!important}"), "popular rail has a compact, explicit home spacing");
 });
 
-\ntest("home is rebuilt from one dedicated stylesheet and keeps the approved rail order", async () => {\n const html=await readFile(new URL("index.html",root),"utf8");\n const homeCss=await readFile(new URL("ui/home.css",root),"utf8");\n assert.ok(html.includes('href="./ui/home.css?v=1"'));\n assert.ok(html.includes('class="luno-home-hero"'));\n assert.ok(html.indexOf('id="trendingCards"')<html.indexOf('id="topRatedCards"'));\n assert.ok(!html.includes('id="continueSection"'));\n assert.ok(homeCss.includes(".luno-home-hero{"));\n});\n
+
+test("home is rebuilt from one dedicated stylesheet and keeps the approved rail order", async () => {
+ const html=await readFile(new URL("index.html",root),"utf8");
+ const homeCss=await readFile(new URL("ui/home.css",root),"utf8");
+ assert.ok(html.includes('href="./ui/home.css?v=1"'));
+ assert.ok(html.includes('class="luno-home-hero"'));
+ assert.ok(html.indexOf('id="trendingCards"')<html.indexOf('id="topRatedCards"'));
+ assert.ok(!html.includes('id="continueSection"'));
+ assert.ok(homeCss.includes(".luno-home-hero{"));
+});
