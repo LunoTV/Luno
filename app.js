@@ -568,8 +568,8 @@ async function recoverCardPoster(cardElement,image){
   return true;
 }
 
-function bindCards(){
-  document.querySelectorAll(".card-art img").forEach((img)=>{
+function bindCards(root=document){
+  root.querySelectorAll(".card-art img").forEach((img)=>{
     // Smart-TV browsers frequently fail to trigger native lazy loading in horizontal rails.
     // Promote already-rendered poster images to eager loading on TVs and force a reload if needed.
     if(isLowPowerTV()){
@@ -599,7 +599,7 @@ function bindCards(){
       img.addEventListener("error",()=>img.classList.remove("is-poster-ready"),{once:true});
     }
   });
-  document.querySelectorAll(".card").forEach((c)=>{
+  root.querySelectorAll(".card").forEach((c)=>{
     const image=c.querySelector(".card-art img");
     if(!image){
       recoverCardPoster(c,null);
@@ -1168,6 +1168,7 @@ function renderLibraryBatch(){
 }
 
 let lunoCatalogState={category:"series",genre:"all",sort:"newest",view:"grid"};
+let lunoCatalogVisible=24;
 const LUNO_CATALOG_CATEGORIES=[
   {id:"series",label:"Сериалы"},
   {id:"movies",label:"Фильмы"},
@@ -1188,7 +1189,7 @@ function catalogItemsForView(){
 function renderLunoCatalog(){
   if(!libraryContent)return;
   const items=catalogItemsForView();
-  const visibleItems=items.slice(0,24);
+  const visibleItems=items.slice(0,lunoCatalogVisible);
   const genres=[...new Set((lunoCatalogState.category==="collections"?catalogItems:catalogItems.filter(item=>mediaCategory(item)===lunoCatalogState.category)).flatMap(item=>(Array.isArray(item.genres)?item.genres:[]).map(genre=>String(typeof genre==="string"?genre:genre?.name||"").trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,"ru"));
   const heading=LUNO_CATALOG_CATEGORIES.find(item=>item.id===lunoCatalogState.category)?.label||"Каталог";
   libraryTitle.textContent="Каталог";
@@ -1205,12 +1206,12 @@ function renderLunoCatalog(){
           '<button type="button" data-catalog-view="list" class="'+(lunoCatalogState.view==="list"?'active':'')+'" aria-label="Большие постеры с описанием" aria-pressed="'+(lunoCatalogState.view==="list")+'"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="15" rx="2"/><path d="M7 21h10"/></svg></button></div></div>'+
       '<div class="luno-catalog-results-meta"><span>'+escapeHtml(heading)+'</span><span>'+items.length+' материалов</span></div>'+
       '<div class="luno-catalog-results '+(lunoCatalogState.view==="list"?'is-list':'is-grid')+'" id="lunoCatalogResults"></div>'+
-      (items.length?'':'<div class="luno-catalog-empty">В этой категории пока нет подходящих материалов.</div>')+'</div>';
+      (items.length?'':'<div class="luno-catalog-empty">В этой категории пока нет подходящих материалов.</div>')+(items.length>lunoCatalogVisible?'<button type="button" class="luno-catalog-load-more" id="lunoCatalogLoadMore">Показать ещё</button>':'')+'</div>';
   const results=libraryContent.querySelector("#lunoCatalogResults");
   if(results){
     if(lunoCatalogState.view==="grid"){
       results.innerHTML=visibleItems.map((item,index)=>card(item,index<4)).join("");
-      bindCards();
+      bindCards(results);
     }else{
       results.innerHTML=visibleItems.map(item=>{
         const title=item.name||"Без названия";
@@ -1230,16 +1231,17 @@ function renderLunoCatalog(){
     }
   }
   libraryContent.querySelectorAll("[data-catalog-category]").forEach(button=>button.addEventListener("click",()=>{
-    lunoCatalogState.category=button.dataset.catalogCategory;lunoCatalogState.genre="all";renderLunoCatalog();libraryContent.scrollTop=0;
+    lunoCatalogState.category=button.dataset.catalogCategory;lunoCatalogState.genre="all";lunoCatalogVisible=24;renderLunoCatalog();libraryContent.scrollTop=0;
   }));
-  libraryContent.querySelector("#lunoCatalogGenre")?.addEventListener("change",event=>{lunoCatalogState.genre=event.target.value;renderLunoCatalog();});
-  libraryContent.querySelectorAll("[data-catalog-sort]").forEach(button=>button.addEventListener("click",()=>{lunoCatalogState.sort=button.dataset.catalogSort;renderLunoCatalog();}));
-  libraryContent.querySelectorAll("[data-catalog-view]").forEach(button=>button.addEventListener("click",()=>{lunoCatalogState.view=button.dataset.catalogView;renderLunoCatalog();}));
+  libraryContent.querySelector("#lunoCatalogGenre")?.addEventListener("change",event=>{lunoCatalogState.genre=event.target.value;lunoCatalogVisible=24;renderLunoCatalog();});
+  libraryContent.querySelectorAll("[data-catalog-sort]").forEach(button=>button.addEventListener("click",()=>{lunoCatalogState.sort=button.dataset.catalogSort;lunoCatalogVisible=24;renderLunoCatalog();}));
+  libraryContent.querySelectorAll("[data-catalog-view]").forEach(button=>button.addEventListener("click",()=>{lunoCatalogState.view=button.dataset.catalogView;lunoCatalogVisible=24;renderLunoCatalog();}));
+  libraryContent.querySelector("#lunoCatalogLoadMore")?.addEventListener("click",()=>{lunoCatalogVisible+=24;renderLunoCatalog();});
 }
 function openCategoryHub(){
   setLunoHistory("catalog");
   if(!libraryView||!libraryContent)return;
-  lunoCatalogState={category:"series",genre:"all",sort:"newest",view:lunoCatalogState.view||"grid"};
+  lunoCatalogState={category:"series",genre:"all",sort:"newest",view:lunoCatalogState.view||"grid"};lunoCatalogVisible=24;
   libraryType="catalog";libraryTitle.textContent="Каталог";libraryKicker.textContent="";libraryContent.scrollTop=0;
   libraryView.classList.remove("hidden");
   document.body.classList.add("library-open","catalog-open");
