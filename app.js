@@ -2589,6 +2589,7 @@ window.LUNOPlayer={openStream:setLunoStream};
 // Remove the legacy LUNO catalog search tab if an older cached HTML shell still contains it.
 document.querySelectorAll('.search-source[data-search-source="luno"], #searchLunoCount').forEach(node=>node.remove());
 let searchSource="tmdb";
+let searchMediaCategory="series";
 let searchResultsState={tmdb:[],ai:[]};
 let searchError="";
 
@@ -2656,8 +2657,10 @@ function renderActiveSearch(query){
   let items=[];
   // Search results come only from TMDB; never mix in the bundled LUNO catalog.
   items=searchSourceItems("tmdb");
+  if(searchMediaCategory!=="all") items=items.filter(item=>mediaCategory(item)===searchMediaCategory);
   renderSearchSections(items,query);
   updateSearchSourceUI();
+  document.querySelector("#searchDiscovery")?.classList.toggle("is-searching",Boolean(String(query||"").trim()));
 }
 
 
@@ -2764,6 +2767,33 @@ function closeSearchPanel(){
   document.body.classList.toggle("show-global-back",!document.body.classList.contains("home-mode") || libraryIsOpen);
 }
 document.querySelector("#searchBack")?.addEventListener("click",closeSearchPanel);
+document.querySelectorAll("[data-search-category]").forEach(button=>button.addEventListener("click",()=>{
+  searchMediaCategory=button.dataset.searchCategory||"series";
+  document.querySelectorAll("[data-search-category]").forEach(tab=>{
+    const active=tab===button;
+    tab.classList.toggle("active",active);
+    tab.setAttribute("aria-selected",String(active));
+  });
+  renderActiveSearch(searchInput.value.trim());
+}));
+document.querySelectorAll("[data-search-genre]").forEach(button=>button.addEventListener("click",()=>{
+  searchInput.value=button.dataset.searchGenre||"";
+  searchInput.dispatchEvent(new Event("input",{bubbles:true}));
+  searchInput.focus();
+}));
+document.querySelector("#searchMic")?.addEventListener("click",()=>{
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){searchInput.focus();return;}
+  const recognition=new SpeechRecognition();
+  recognition.lang="ru-RU";
+  recognition.interimResults=false;
+  recognition.maxAlternatives=1;
+  recognition.onresult=event=>{
+    const transcript=event.results?.[0]?.[0]?.transcript||"";
+    if(transcript){searchInput.value=transcript;searchInput.dispatchEvent(new Event("input",{bubbles:true}));}
+  };
+  try{recognition.start();}catch{searchInput.focus();}
+});
 document.querySelector("#searchClear")?.addEventListener("click",()=>{
   searchInput.value="";
   searchResultsState={tmdb:[],ai:[]};
