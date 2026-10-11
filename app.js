@@ -1211,7 +1211,7 @@ function renderLunoCatalog(){
   if(results){
     if(lunoCatalogState.view==="grid"){
       results.innerHTML=visibleItems.map((item,index)=>{
-        const landscape=String(item.background||item.backdrop|| (item.backdrop_path?("https://image.tmdb.org/t/p/w1280/"+String(item.backdrop_path).replace(/^\\//,"")):"")).trim();
+        const landscape=String(item.background||item.backdrop|| (item.backdrop_path?("https://image.tmdb.org/t/p/w1280/"+String(item.backdrop_path).replace(/^\//,"")):"")).trim();
         const displayItem=landscape?{...item,poster:landscape,poster_path:"",posterPath:""}:item;
         return card(displayItem,index<4);
       }).join("");
