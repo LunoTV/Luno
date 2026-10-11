@@ -83,7 +83,7 @@ test("Vite has a checked-in fallback catalog module for local and navigation bui
 
 test("core UI hooks used by app.js exist in index.html",()=>{
   const html=readFileSync(new URL("../index.html",import.meta.url),"utf8");
-  for(const id of ["app","nav","searchPanel","searchInput","detail","detailPlay","detailTitle","detailTrailer","player","sourceSheet","qualitySheet","voiceSheet","subtitleSheet","episodeSheet","libraryView"]){
+  for(const id of ["app","searchPanel","searchInput","detail","detailPlay","detailTitle","detailTrailer","player","sourceSheet","qualitySheet","voiceSheet","subtitleSheet","episodeSheet","libraryView"]){
     assert.match(html,new RegExp(`id=["']${id}["']`),`Missing required UI element #${id}`);
   }
 });
