@@ -208,7 +208,7 @@ test("home discovery begins directly after the hero without a duplicate divider 
   assert.ok(!css.includes("  .home-hero{\n    min-height:0;height:clamp(310px,82vw,390px);"), "duplicate mobile hero sizing is removed");
   assert.ok(html.indexOf('id="homeHeroDots"') < html.indexOf("</section>", html.indexOf('id="homeHero"')), "carousel indicators stay inside the cinematic hero");
   assert.ok(css.includes(".discovery-section{margin-top:34px}"), "first discovery rail uses the compact mobile spacing rule");
-  assert.ok(css.includes("height:100svh!important") && css.includes("align-items:flex-end!important"), "mobile hero fills the available viewport with content anchored inside");
+  assert.ok(css.includes("height:82svh!important") && css.includes("justify-content:flex-end!important"), "mobile hero uses compact cinematic height with content anchored inside");
   assert.ok(html.includes('id="highRatedCards"') && html.includes('id="topMoviesCards"') && html.includes('id="topSeriesCards"'), "home includes the requested ranking rails");
   assert.ok(!html.includes('id="continueSection"'), "Continue Watching is not duplicated on Home");
   assert.ok(html.includes("<small>Я смотрю</small>"), "bottom navigation labels personal activity as Я смотрю");
