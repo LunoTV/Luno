@@ -5052,10 +5052,10 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
     letter-spacing:.01em!important;white-space:nowrap!important;color:inherit!important;
   }
   html body #app > .mobile-tabbar.luno-reference-tabbar .mobile-tab.active{
-    color:#FFD43B!important;
-    background:radial-gradient(ellipse at 50% 45%,rgba(255,212,59,.22),rgba(255,212,59,.10) 58%,rgba(255,212,59,.025) 100%)!important;
-    border-color:rgba(255,212,59,.09)!important;
-    box-shadow:0 0 20px rgba(255,212,59,.08),inset 0 1px 0 rgba(255,255,255,.06)!important;
+    color:#8581AD!important;
+    background:radial-gradient(ellipse at 50% 45%,rgba(133,129,173,.24),rgba(133,129,173,.12) 58%,rgba(133,129,173,.035) 100%)!important;
+    border-color:rgba(133,129,173,.14)!important;
+    box-shadow:0 0 20px rgba(133,129,173,.10),inset 0 1px 0 rgba(255,255,255,.06)!important;
   }
   html body #app > .mobile-tabbar.luno-reference-tabbar .mobile-tab.active .tab-icon svg{stroke-width:2.15!important}
   body.home-mode #app main,body.home-mode main{padding-bottom:calc(116px + env(safe-area-inset-bottom,0px))!important}
