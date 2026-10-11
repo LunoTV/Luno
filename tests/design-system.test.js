@@ -276,10 +276,11 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   assert.ok(app.includes('data-catalog-sort="newest"') && app.includes('data-catalog-sort="rating"'), "newness and rating sorting are wired");
   assert.ok(app.includes('id="lunoCatalogGenre"'), "genre filter is present");
   assert.ok(app.includes('data-catalog-category'), "category tabs are interactive");
+  assert.ok(app.includes('class="luno-catalog-sticky"><div class="luno-catalog-sticky-title">Каталог</div><div class="luno-catalog-tabs"'), "catalog title is integrated with sticky category tabs");
   assert.ok(app.includes('document.body.classList.add("library-open","catalog-open")'), "catalog retains its own screen state");
   assert.ok(css.includes(".luno-catalog-results.is-grid") && css.includes(".luno-catalog-results.is-list"), "grid and cinematic list styles are defined");
   assert.ok(css.includes("grid-template-columns:repeat(2,minmax(0,1fr))!important") && css.includes("body.catalog-open #lunoCatalogResults.luno-catalog-results.is-grid>.card .card-art"), "mobile poster grid is compact with clear spacing");
-  assert.ok(html.includes("./styles.css?v=193"), "compact catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=194"), "compact catalog CSS has a fresh cache version");
   assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
   assert.ok(css.includes("body.library-open.catalog-open #app>.mobile-tabbar.luno-reference-tabbar"), "catalog overrides the library screen tab-bar hide rule");
   assert.ok(html.includes("./styles.css?v=193"), "catalog navigation CSS has a fresh cache version");
