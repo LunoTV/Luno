@@ -170,7 +170,7 @@ test("legacy tall-hero and four-column home navigation overrides are removed", a
   assert.ok(!css.includes("body.home-mode .home-hero{margin-top:-60px!important"), "old hero bleed patch is removed");
   assert.ok(!css.includes("#homeHero{\n    min-height:500px!important"), "old fixed tall hero patch is removed");
   assert.ok(!css.includes("grid-template-columns:repeat(4,minmax(0,1fr))!important"), "old four-column nav override is removed");
-  assert.ok(css.includes("body.home-mode .mobile-tabbar.luno-reference-tabbar"), "single five-column home nav rule remains");
+  assert.ok(css.includes(".mobile-tabbar.luno-reference-tabbar") && css.includes("grid-template-columns: repeat(5,minmax(0,1fr)) !important"), "single five-column mobile nav rule remains");
   assert.ok(css.includes("body.show-global-back .topbar.luno-nav-shutter .brand"), "wordmark is hidden only on inner screens");
 });
 
@@ -206,8 +206,9 @@ test("home discovery begins directly after the hero without a duplicate divider 
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.ok(!css.includes("  .home-hero{\n    min-height:0;height:clamp(310px,82vw,390px);"), "duplicate mobile hero sizing is removed");
-  assert.ok(css.includes("body.home-mode #trendingSection:before{display:none!important}"), "first discovery rail does not add a divider-sized gap");
-  assert.ok(css.includes("height:clamp(590px,76svh,700px)!important"), "mobile hero is large and cinematic");
+  assert.ok(html.indexOf('id="homeHeroDots"') < html.indexOf("</section>", html.indexOf('id="homeHero"')), "carousel indicators stay inside the cinematic hero");
+  assert.ok(css.includes(".discovery-section{margin-top:34px}"), "first discovery rail uses the compact mobile spacing rule");
+  assert.ok(css.includes("height:100svh!important") && css.includes("align-items:flex-end!important"), "mobile hero fills the available viewport with content anchored inside");
   assert.ok(html.includes('id="highRatedCards"') && html.includes('id="topMoviesCards"') && html.includes('id="topSeriesCards"'), "home includes the requested ranking rails");
   assert.ok(!html.includes('id="continueSection"'), "Continue Watching is not duplicated on Home");
   assert.ok(html.includes("<small>Я смотрю</small>"), "bottom navigation labels personal activity as Я смотрю");
