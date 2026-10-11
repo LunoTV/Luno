@@ -175,7 +175,7 @@ main{padding-top:92px;padding-bottom:100px}
   .mobile-tab{border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#777b86}
   .mobile-tab.active{color:#fff;background:rgba(255,255,255,.09)}
   .tab-icon{font-size:19px;line-height:1}.mobile-tab small{font-size:9px}
-  .primary,.secondary{min-height:46px;padding:0 12px}
+  .primary, .secondary{min-height:46px;padding:0 12px}
   .section{margin:32px 0 0;padding-left:14px}
   .section-head{padding-right:14px;margin-bottom:12px}
   .section-head h2{font-size:20px}
@@ -198,7 +198,7 @@ main{padding-top:92px;padding-bottom:100px}
   .detail-copy{max-width:680px}
   .detail-copy h2{font-size:37px;margin-bottom:13px}.detail-meta{font-size:13px;margin-bottom:16px}
   .detail-copy p{font-size:14px;line-height:1.55;-webkit-line-clamp:8}
-  .detail-actions{display:grid;grid-template-columns:1fr 1fr;margin-top:22px}.detail-actions .primary,.detail-actions .secondary{width:100%;padding:0 10px}
+  .detail-actions{display:grid;grid-template-columns:1fr 1fr;margin-top:22px}.detail-actions .primary, .detail-actions .secondary{width:100%;padding:0 10px}
   .detail-overlay .close{right:14px;top:13px;width:43px;height:43px}
   .player-shell{width:100%;height:100%;border-radius:0;border:0}.close{right:14px;top:14px}
   .favorites-empty{margin-right:14px;min-height:190px}
@@ -207,7 +207,7 @@ main{padding-top:92px;padding-bottom:100px}
 @media(max-width:390px){.hero-copy{padding-top:190px}.hero h1{font-size:38px}
   .cards .card{flex-basis:120px;width:120px}.cards .card-art{height:180px}
 }
-@media(hover:none){.card:hover,.hero-poster-wrap:hover .hero-poster{transform:none}.card:active{transform:scale(.985)}}
+@media(hover:none){.card:hover, .hero-poster-wrap:hover .hero-poster{transform:none}.card:active{transform:scale(.985)}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
 /* ---------- DISCOVERY LAYER ---------- */
@@ -498,7 +498,6 @@ body.library-open .library-head, body.library-open .library-content{
   .dialog-card h2{font-size:23px}.dialog-actions{grid-template-columns:1fr 1fr}
 }
 
-
 /* =========================================================
    LUNO MOBILE — cinematic streaming home
    TV/Desktop layout remains unchanged above 700px.
@@ -574,21 +573,6 @@ body.library-open .library-head, body.library-open .library-content{
   }
 
   /* Large cinematic hero */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /* Home rails */
   .section{
@@ -864,7 +848,6 @@ body.library-open .library-head, body.library-open .library-content{
   }
 }
 
-
 /* =========================================================
    LUNO MOBILE CINEMATIC UI — v7
    Phone-first presentation inspired by premium streaming UX.
@@ -942,23 +925,6 @@ body.library-open .library-head, body.library-open .library-content{
   }
 
   /* Hero becomes the mobile landing screen */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /* Rails: clean premium streaming rhythm */
   .section{
@@ -1142,7 +1108,6 @@ body.library-open .library-head, body.library-open .library-content{
   .tmdb-attribution{display:none!important}
 }
 
-
 /* ---------- CINEMATIC DETAIL CARD v8 ---------- */
 .detail-kicker{font-size:9px;letter-spacing:.18em;color:#8b909b;text-transform:uppercase}
 .detail-badges{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px}
@@ -1251,15 +1216,15 @@ body.library-open .library-head, body.library-open .library-content{
     margin:20px 0 0!important;
     max-width:none!important;
   }
-  .detail-rating-main,.detail-rating{
+  .detail-rating-main, .detail-rating{
     min-height:68px!important;
     padding:9px 4px!important;
     border-radius:12px!important;
     align-items:center!important;
     text-align:center!important;
   }
-  .detail-rating-main strong,.detail-rating strong{font-size:15px!important}
-  .detail-rating-main span,.detail-rating span{font-size:7px!important;margin-top:4px!important}
+  .detail-rating-main strong, .detail-rating strong{font-size:15px!important}
+  .detail-rating-main span, .detail-rating span{font-size:7px!important;margin-top:4px!important}
   .detail-actions{
     display:flex!important;
     align-items:center!important;
@@ -1298,7 +1263,6 @@ body.library-open .library-head, body.library-open .library-content{
   .detail-review-add{width:40%!important;min-height:105px!important;border-radius:16px!important}
   .detail-review-empty{min-height:105px!important;font-size:11px!important}
 }
-
 
 /* ---------- GLOBAL NAVIGATION HARDENING v11 ---------- */
 .detail-overlay{
@@ -1356,12 +1320,10 @@ body.detail-open{
   .category-hub-card small{font-size:9px}
 }
 
-
 /* ---------- CLEAN BRANDING v12 ---------- */
 .eyebrow:empty, .detail-kicker:empty, .library-head .section-kicker:empty{
   display:none!important;
 }
-
 
 /* ---------- LUNO PLAYER v13 ---------- */
 .player-shell{
@@ -1436,7 +1398,6 @@ body.detail-open{
   .player-placeholder h2{font-size:25px}
 }
 
-
 /* ---------- LUNO SOURCE SELECTOR v14 ---------- */
 .source-sheet{
   position:absolute;
@@ -1475,7 +1436,6 @@ body.detail-open{
   .source-sheet-head strong{font-size:16px}
   .source-option{min-height:56px}
 }
-
 
 /* ---------- LUNO ADDON MANAGER v15 ---------- */
 .addon-manager{
@@ -1524,7 +1484,6 @@ body.detail-open{
   .addon-row{align-items:flex-start;flex-direction:column;gap:7px}
 }
 
-
 /* ---------- LUNO PLAYER — CINEMATIC FULLSCREEN ---------- */
 #player.overlay{
   align-items:stretch;
@@ -1559,7 +1518,6 @@ body.detail-open{
   #player .player-close{top:14px;right:14px}
 }
 
-
 /* ---------- CINEMATIC CATALOG CARDS ---------- */
 .card{background:transparent;border-radius:15px;overflow:visible;box-shadow:none}
 .card:hover, .card:focus-visible{background:transparent;box-shadow:none;transform:translateY(-4px)}
@@ -1584,7 +1542,6 @@ body.detail-open{
   .card-type{font-size:7px;left:6px;top:6px}
   .card-info{left:7px;right:7px;bottom:7px;font-size:8px}
 }
-
 
 /* ---------- SERIES PREPLAY / EPISODE BROWSER ---------- */
 .player-shell:has(#playerBrowse:not(.hidden)){background:#07080b}
@@ -1621,7 +1578,6 @@ body.detail-open{
 @media(max-width:700px){
  .player-browse{position:fixed;inset:0;grid-template-rows:34vh auto;overflow:auto}.player-browse-hero{min-height:0}.player-browse-copy{padding:18px 18px 22px}.player-browse-copy h2{font-size:32px}.player-browse-meta{font-size:11px}.player-browse-copy p{font-size:12px}.player-browse-panel{padding:16px 14px 80px}.player-browse-source{margin-bottom:12px}.player-source-select{min-width:0;flex:1}.player-browse-episodes{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.player-episode-card{min-height:112px}.player-episode-thumb{height:68px}
 }
-
 
 /* ---------- LUNO WATCH SCREEN v15 ---------- */
 #player .player-shell{display:flex!important;flex-direction:column!important;background:radial-gradient(90% 70% at 70% 0%,rgba(130,150,190,.08),transparent 60%),#050609!important}
@@ -1755,7 +1711,6 @@ body.detail-open{
  .watch-actions button{padding:0 9px}
 }
 
-
 /* =========================================================
    LUNO DETAIL V2 — card opens the full cinematic information page
    ========================================================= */
@@ -1821,10 +1776,10 @@ body.detail-open{overflow:hidden}
 @media(max-width:700px){
   .luno-detail-nav{height:62px;padding:0 13px;gap:8px;background:linear-gradient(180deg,rgba(5,7,10,.96),transparent)}.luno-detail-brand{font-size:13px}.luno-detail-links{display:none}.luno-detail-search{margin-left:auto;width:39px;height:39px}
   .luno-detail-hero{min-height:690px;display:block;padding:0 18px 34px}.luno-detail-hero .detail-backdrop{height:65%;opacity:.52}.luno-detail-hero-vignette{background:linear-gradient(180deg,rgba(7,9,13,.04),rgba(7,9,13,.1) 26%,#07090d 67%,#07090d 100%)}
-  .luno-detail-poster{position:relative;right:auto;bottom:auto;width:min(52vw,210px);margin:76px auto 26px;transform:none}.luno-detail-hero-copy{width:100%}.luno-detail-hero-copy h2{font-size:43px}.luno-detail-actions{display:grid;grid-template-columns:1fr 1fr}.luno-detail-actions .primary,.luno-detail-actions .secondary{width:100%}.detail-circle-action{display:none}
+  .luno-detail-poster{position:relative;right:auto;bottom:auto;width:min(52vw,210px);margin:76px auto 26px;transform:none}.luno-detail-hero-copy{width:100%}.luno-detail-hero-copy h2{font-size:43px}.luno-detail-actions{display:grid;grid-template-columns:1fr 1fr}.luno-detail-actions .primary, .luno-detail-actions .secondary{width:100%}.detail-circle-action{display:none}
   .luno-detail-ratings{position:relative;right:auto;bottom:auto;transform:none;grid-template-columns:repeat(4,1fr);margin-top:20px;width:100%;gap:5px}.luno-detail-ratings strong{font-size:17px}
   .luno-detail-section{padding:0 15px;margin-top:32px}.luno-section-title h3{font-size:20px}.luno-section-title span{font-size:8px}
-  .luno-review-row{display:flex;overflow:auto;gap:9px}.luno-review-add,.luno-review-card{flex:0 0 230px;min-height:125px}
+  .luno-review-row{display:flex;overflow:auto;gap:9px}.luno-review-add, .luno-review-card{flex:0 0 230px;min-height:125px}
   .luno-about-grid{display:block}.luno-about-main>p{font-size:14px}.luno-about-side{grid-template-columns:1fr 1fr;margin-top:12px}.luno-budget-card{grid-column:1/-1}
   .luno-actor-row{display:flex;overflow:auto;gap:9px}.luno-actor-card{flex:0 0 235px}
   .luno-detail-hero::after{top:4%;width:72%;height:55%;right:-8%;opacity:.18;filter:blur(.4px);mask-image:linear-gradient(90deg,transparent,#000);-webkit-mask-image:linear-gradient(90deg,transparent,#000)}
@@ -1841,7 +1796,7 @@ body.detail-open{overflow:hidden}
 }
 @media (max-width:700px){
   .luno-detail-nav{height:70px;padding:0 14px;gap:8px}
-  .luno-detail-back,.luno-detail-search{width:40px;height:40px;font-size:26px}
+  .luno-detail-back, .luno-detail-search{width:40px;height:40px;font-size:26px}
   .luno-detail-brand{font-size:15px;letter-spacing:.2em;gap:7px}
   .luno-detail-brand .brand-orbit{width:27px;height:27px}.luno-detail-brand .brand-moon{width:15px;height:15px}
   .luno-detail-links{position:absolute;left:12px;right:12px;top:62px;max-width:none;margin:0;padding:4px;border-radius:22px;background:rgba(8,10,14,.76)}
@@ -1881,7 +1836,6 @@ main > .section .cards .card-title{font-size:12px}
 /* LUNO HERO BANNER V4 — cinematic, layered, no flash */.hero-backdrop.is-active{opacity:1}
 @media(max-width:700px){.hero-dots button.active{width:34px}
 }
-
 
 /* LUNO CARD CLEAN V2 — artwork stays clean; all metadata sits below it */
 .card{
@@ -1970,7 +1924,6 @@ main > .section .cards .card-title{font-size:12px}
   .card-meta-dot{font-size:8px}
 }
 
-
 /* LUNO CARD STRIP V3 — poster + compact bottom metadata rail */
 .card{overflow:visible!important;background:transparent!important;box-shadow:none!important}
 .card-art{overflow:hidden;position:relative;border-radius:15px;border:1px solid rgba(255,255,255,.12);background:#10131b;box-shadow:0 10px 28px rgba(0,0,0,.3)}
@@ -2000,9 +1953,9 @@ main > .section .cards .card-title{font-size:12px}
 @media(max-width:700px){
  .card-info{min-height:31px;padding:6px 8px 7px;gap:5px}
  .card-info .card-type{left:7px;top:7px;padding:4px 6px;font-size:7px}
- .card-info .card-quality,.card-info .card-rating,.card-info .card-year{font-size:8.5px}
+ .card-info .card-quality, .card-info .card-rating, .card-info .card-year{font-size:8.5px}
  .card-info .card-quality{margin-left:auto}
- .card-info .card-quality+.card-rating:before,.card-info .card-rating+.card-year:before{margin-right:5px}
+ .card-info .card-quality+.card-rating:before, .card-info .card-rating+.card-year:before{margin-right:5px}
  .card-title{font-size:12px!important;padding:8px 1px 2px!important}
 }
 
@@ -2195,12 +2148,6 @@ main > .section .cards .card-title{font-size:12px}
   border-left:1px solid rgba(255,255,255,.32)!important;
   border-radius:0!important;
 }
-body.home-mode .luno-nav-shutter{
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  transform:translate(-50%,-18px)!important;
-}
 @media(max-width:900px){
   .luno-nav-shutter{
     top:14px!important;
@@ -2234,10 +2181,6 @@ body.home-mode .luno-nav-shutter{
 .card-art, .card-art img, .card-title, .card-info, .card-type{
   pointer-events:none;
 }
-body.home-mode .hero{
-  margin-top:0!important;
-}
-
 
 /* LUNO SEARCH — cinematic, fast and thumb-friendly */
 .luno-search-screen{position:relative;max-width:1180px!important}
@@ -2296,9 +2239,6 @@ body.home-mode .hero{
   .search-results-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:18px 18px!important}
   .search-results-grid .card-title{font-size:13px!important}
 }
-
-
-
 
 /* LUNO SEARCH COMPACT — reduce oversized mobile search controls */
 @media(max-width:700px){
@@ -2416,7 +2356,6 @@ body.home-mode .hero{
   }
 }
 
-
 /* LUNO SEARCH COMPACT V2 — tighter mobile scale */
 @media(max-width:700px){
   .luno-search-screen{padding:48px 18px 82px!important}
@@ -2446,7 +2385,6 @@ body.home-mode .hero{
   .mobile-tab .tab-icon{font-size:16px!important;line-height:17px!important}
   .mobile-tab small{font-size:7px!important;line-height:8px!important}
 }
-
 
 /* LUNO SEARCH V3 — fixed search viewport + horizontal category rows */
 @media(max-width:700px){
@@ -2527,7 +2465,6 @@ body.home-mode .hero{
   }
 }
 
-
 /* LUNO MOBILE — no floating desktop capsule over the content */
 @media(max-width:700px){
   .luno-nav-shutter{
@@ -2567,7 +2504,6 @@ body.home-mode .hero{
   }
 }
 
-
 /* TV / remote navigation: high-contrast focus, visible from the sofa. */
 .tv-remote-focus, button.tv-remote-focus, a.tv-remote-focus, input.tv-remote-focus, select.tv-remote-focus, textarea.tv-remote-focus, [tabindex].tv-remote-focus{
   outline:3px solid #fff!important;
@@ -2578,7 +2514,6 @@ body.home-mode .hero{
 }
 .card.tv-remote-focus{transform:translateY(-4px) scale(1.025)!important}
 .nav-item.tv-remote-focus, .mobile-tab.tv-remote-focus{background:rgba(255,255,255,.16)!important;color:#fff!important}
-
 
 /* ---------- LUNO APP FEEL / MOTION SYSTEM ---------- */
 /* Keep transitions deliberate and compositor-friendly: avoid animating layout. */
@@ -2650,19 +2585,18 @@ img{backface-visibility:hidden}
   .section{scroll-margin-top:76px}
   .card{border-radius:13px}
   .card-art img{transition:transform 360ms var(--luno-ease)}
-  .detail-overlay,.library-view,.overlay{overscroll-behavior:contain}
+  .detail-overlay, .library-view, .overlay{overscroll-behavior:contain}
   .luno-detail-hero-copy{animation:lunoContentIn 360ms var(--luno-ease) both}
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto!important}
-  *,*::before,*::after{
+  *, *::before, *::after{
     animation-duration:.01ms!important;
     animation-iteration-count:1!important;
     scroll-behavior:auto!important;
     transition-duration:.01ms!important;
   }
 }
-
 
 /* Custom source endpoint form */
 .source-install-form{
@@ -2850,11 +2784,10 @@ img{backface-visibility:hidden}
   line-height:1.5;
 }
 @media (max-width:700px) {
-  .home-intro { padding:18px 0 16px; }
-  .home-intro h1 { font-size:32px; }
-  .home-intro p { font-size:13px; }
+  .home-intro{ padding:18px 0 16px; }
+  .home-intro h1{ font-size:32px; }
+  .home-intro p{ font-size:13px; }
 }
-
 
 /* Stable TV home: preserve the shutter and row geometry while posters load. */
 @media (min-width:701px) and (hover:none){
@@ -2901,7 +2834,6 @@ body.luno-menu-open .luno-menu-drawer, body.luno-menu-open .luno-menu-backdrop{p
   .luno-menu-item{min-height:46px}
 }
 
-
 /* Poster stability: never hide a loaded poster while async image events/classes settle. */
 .card-art{background-color:#101218!important}
 .card-art img{
@@ -2913,9 +2845,7 @@ body.luno-menu-open .luno-menu-drawer, body.luno-menu-open .luno-menu-backdrop{p
 }
 .card-art img.is-poster-ready{opacity:1!important}
 @media(hover:none){
-  .card-art img,
-  .card:hover .card-art img,
-  .card:active .card-art img{
+  .card-art img, .card:hover .card-art img, .card:active .card-art img{
     opacity:1!important;
     transform:none!important;
     filter:none!important;
@@ -2923,9 +2853,8 @@ body.luno-menu-open .luno-menu-drawer, body.luno-menu-open .luno-menu-backdrop{p
     animation:none!important;
     will-change:auto!important;
   }
-  .card,.card-art{transform:none!important;transition:none!important}
+  .card, .card-art{transform:none!important;transition:none!important}
 }
-
 
 /* Final top navigation: Lampa-like horizontal glass bar, no duplicate hamburger or bottom tabs. */
 .luno-nav-shutter{
@@ -2937,7 +2866,6 @@ body.luno-menu-open .luno-menu-drawer, body.luno-menu-open .luno-menu-backdrop{p
   border-radius:22px!important;box-shadow:0 10px 32px rgba(0,0,0,.34)!important;
   backdrop-filter:blur(24px) saturate(130%)!important;-webkit-backdrop-filter:blur(24px) saturate(130%)!important;
 }
-body.home-mode .luno-nav-shutter{opacity:1!important;visibility:visible!important;pointer-events:auto!important;transform:translateX(-50%)!important}
 .luno-menu-trigger{display:none!important}
 .mobile-tabbar{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
 body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!important;pointer-events:none!important}
@@ -2979,7 +2907,6 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
   .mobile-tab small{white-space:nowrap!important}
 }
 
-
 /* Match the compact edge spacing from the reference video; spacing only. */
 @media(max-width:700px){
   main{padding-left:0!important;padding-right:0!important}
@@ -3009,8 +2936,6 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
   main > .section{margin-top:28px!important}
   main > .section .section-head h2{margin-top:3px!important}
 }
-
-
 
 /* Lock the document to the viewport on iPhone; only poster rails may scroll sideways. */
 @media(max-width:700px){
@@ -3051,7 +2976,6 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
     -webkit-overflow-scrolling:touch;
   }
 }
-
 
 /* iPhone search: prevent input zoom, lock the panel to viewport, preserve vertical swipe from posters. */
 @media(max-width:700px){
@@ -3102,7 +3026,6 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
   }
 }
 
-
 /* TV experience: larger cards, full-height drawer, and obvious remote focus. */
 @media(min-width:1000px) and (hover:none), (min-width:1200px){
   .luno-menu-drawer{
@@ -3131,14 +3054,13 @@ body.luno-menu-open .mobile-tabbar{display:none!important;visibility:hidden!impo
   .card.tv-remote-focus{transform:scale(1.06)!important;z-index:5!important}
 }
 
-
 /* Cross-device layout stabilization: TV detail view uses the same full-width canvas as home. */
 html, body{
   max-width:100%;
   overflow-x:hidden;
 }
 @supports (overflow:clip){
-  html,body{overflow-x:clip}
+  html, body{overflow-x:clip}
 }
 .detail-overlay{
   position:fixed!important;
@@ -3165,7 +3087,7 @@ html, body{
   .luno-detail-hero-copy{width:min(760px,58%);min-width:0}
   .luno-detail-hero-copy h2{font-size:clamp(44px,4.2vw,82px);line-height:.98;overflow-wrap:anywhere}
   .luno-detail-hero-copy .detail-meta{font-size:clamp(14px,1.05vw,20px)}
-  .luno-detail-actions .primary,.luno-detail-actions .secondary{min-height:clamp(48px,3.6vw,64px);font-size:clamp(14px,1vw,19px)}
+  .luno-detail-actions .primary, .luno-detail-actions .secondary{min-height:clamp(48px,3.6vw,64px);font-size:clamp(14px,1vw,19px)}
   .luno-detail-ratings{right:clamp(24px,5vw,90px);bottom:clamp(28px,3vw,60px);transform:none;gap:clamp(12px,1.5vw,24px);padding:clamp(12px,1.2vw,22px)}
   .luno-detail-ratings strong{font-size:clamp(20px,1.8vw,32px)}
   .luno-detail-section{padding-inline:clamp(24px,5vw,90px);margin-top:clamp(28px,3vw,52px)}
@@ -3179,7 +3101,6 @@ html, body{
   .luno-detail-hero{min-height:650px;min-height:72dvh;padding-top:110px}
   .luno-detail-ratings{bottom:20px}
 }
-
 
 /* LUNO TV layout inspired by Lampa's horizontal content rails and clear remote navigation.
    Keep phone/tablet layout unchanged; apply only to wide, non-pointer TV browsers. */
@@ -3257,7 +3178,6 @@ html, body{
   .luno-detail-hero-copy h2 { max-width:100%; overflow-wrap:anywhere; }
 }
 
-
 /* Detail page: cinematic Lampa-inspired structure, with LUNO-owned controls. */
 .luno-detail-seasons-panel{
   display:flex;align-items:center;justify-content:space-between;gap:24px;
@@ -3283,7 +3203,6 @@ html, body{
   .luno-detail-seasons-panel{align-items:stretch;flex-direction:column;gap:16px;padding:18px}
   #detailOpenEpisodes{width:100%;white-space:normal}
 }
-
 
 /* Prisma TV-inspired browsing layout for LUNO: clean black canvas, poster rail, rating/year corner labels and a wider editorial trend rail. Keep LUNO branding/player.
    Apply the same desktop browsing model to TV remotes and mouse/keyboard users. */
@@ -3394,7 +3313,6 @@ html, body{
   #continueSection:has(.cards:empty) { display:none!important; }
 }
 
-
 /* ---------- PRISMA-INSPIRED LUNO CINEMA + PLAYER ---------- */
 /* Keep LUNO branding and playback engine; change only the presentation layer. */
 @media (min-width: 701px){
@@ -3466,18 +3384,18 @@ html, body{
   #player .player-source { border:1px solid rgba(255,255,255,.22)!important;border-radius:5px!important;background:rgba(15,15,15,.76)!important;color:#f1f1f1!important; }
 }
 @media (max-width:700px) {
-  #player.overlay { align-items:stretch!important;justify-content:stretch!important;padding:0!important;background:#030303!important;backdrop-filter:none!important; }
-  #player .player-shell { width:100vw!important;max-width:none!important;height:100dvh!important;max-height:none!important;border:0!important;border-radius:0!important;background:#050505!important; }
-  #player .player-stage { min-height:38dvh!important;max-height:44dvh!important;background:#000!important; }
-  #player .player-browse { padding:0 15px 22px!important;background:#0a0a0a!important;border-top:1px solid #242424!important; }
-  #player .watch-topline { padding-top:15px!important; }
-  #player .watch-identity h2 { font-size:25px!important; }
-  #player .watch-description { color:#aaa!important; }
-  #player .player-source-select,#player .watch-filter-button,#player .watch-actions button { background:#171717!important;border-color:#333!important;border-radius:6px!important;color:#f2f2f2!important; }
-  #player .player-browse-tabs button.active,#player .watch-episode-numbers button.active { background:#f0f0f0!important;color:#090909!important;border-color:#f0f0f0!important; }
-  #player .player-episode-card { border-color:#292929!important;border-radius:6px!important;background:#151515!important; }
-  #player .player-episode-card.active { border-color:#eee!important; }
-  #player .player-close { top:10px!important;right:10px!important;background:rgba(0,0,0,.72)!important; }
+  #player.overlay{ align-items:stretch!important;justify-content:stretch!important;padding:0!important;background:#030303!important;backdrop-filter:none!important; }
+  #player .player-shell{ width:100vw!important;max-width:none!important;height:100dvh!important;max-height:none!important;border:0!important;border-radius:0!important;background:#050505!important; }
+  #player .player-stage{ min-height:38dvh!important;max-height:44dvh!important;background:#000!important; }
+  #player .player-browse{ padding:0 15px 22px!important;background:#0a0a0a!important;border-top:1px solid #242424!important; }
+  #player .watch-topline{ padding-top:15px!important; }
+  #player .watch-identity h2{ font-size:25px!important; }
+  #player .watch-description{ color:#aaa!important; }
+  #player .player-source-select, #player .watch-filter-button, #player .watch-actions button{ background:#171717!important;border-color:#333!important;border-radius:6px!important;color:#f2f2f2!important; }
+  #player .player-browse-tabs button.active, #player .watch-episode-numbers button.active{ background:#f0f0f0!important;color:#090909!important;border-color:#f0f0f0!important; }
+  #player .player-episode-card{ border-color:#292929!important;border-radius:6px!important;background:#151515!important; }
+  #player .player-episode-card.active{ border-color:#eee!important; }
+  #player .player-close{ top:10px!important;right:10px!important;background:rgba(0,0,0,.72)!important; }
 }
 
 /* Prisma-inspired catalogue polish: restrained monochrome chrome, poster-first rails. */
@@ -3490,7 +3408,6 @@ html, body{
   .section-more { color:#c5c5c5!important; }
   .section-more:hover { color:#fff!important; }
 }
-
 
 /* Cinematic playback state: video takes the whole canvas while playing. */
 #player .player-browse-toggle[hidden]{display:none!important}
@@ -3511,105 +3428,8 @@ html, body{
   #player .player-browse-toggle{top:10px!important;left:10px!important;min-height:36px!important;padding:0 11px!important;font-size:11px!important}
   #player.is-playing:not(.player-browse-pinned) .player-close{top:10px!important;right:10px!important}
 }
-
-
-/* Home screen — poster-led editorial layout. Uses only the approved LUNO palette. */
-.home-category-tabs{
-  display:none;
-}
-.home-hero{
-  position:relative;
-  isolation:isolate;
-  display:flex;
-  align-items:flex-end;
-  min-height:clamp(300px,43vw,470px);
-  margin:0 clamp(18px,5vw,80px) 0;
-  padding:clamp(18px,3vw,30px);
-  overflow:hidden;
-  border:1px solid var(--luno-border);
-  border-radius:20px;
-  background:var(--luno-surface);
-}
-.home-hero-backdrop{
-  position:absolute;
-  z-index:-2;
-  inset:0;
-  background-position:center 24%;
-  background-size:cover;
-  background-repeat:no-repeat;
-  opacity:0;
-  transition:opacity .24s ease;
-}
-.home-hero.is-ready .home-hero-backdrop{opacity:1}
-.home-hero:before{
-  content:"";
-  position:absolute;
-  z-index:-1;
-  inset:0;
-  background:linear-gradient(180deg,rgba(8,9,13,.02) 0%,rgba(8,9,13,.06) 32%,rgba(8,9,13,.62) 63%,#08090D 100%);
-}
-.home-hero-copy{width:100%;max-width:760px;align-self:flex-end;min-width:0}
-.home-hero-eyebrow{
-  display:flex;align-items:center;gap:8px;margin:0 0 10px;
-  color:var(--luno-ice);font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
-}
-.home-hero-eyebrow:before{content:"";width:22px;height:1px;background:currentColor}
-.home-hero-title{
-  max-width:760px;margin:0;color:var(--luno-text);
-  font-size:clamp(27px,4vw,48px);font-weight:800;letter-spacing:-.045em;line-height:1.02;text-wrap:balance;
-}
-.home-hero-meta{margin-top:9px;color:var(--luno-text-muted);font-size:12px;font-weight:650;letter-spacing:.02em}
-.home-hero-description{display:none}
-.home-hero-actions{display:flex;align-items:center;gap:9px;margin-top:14px}
-.home-hero-actions button{
-  min-height:44px;border:1px solid var(--luno-border-strong);border-radius:12px;
-  background:var(--luno-surface);color:var(--luno-text);font-size:14px;font-weight:750;
-  cursor:pointer;transition:background .16s ease,border-color .16s ease;
-}
-.home-hero-actions .home-hero-primary{
-  display:flex;align-items:center;justify-content:center;gap:9px;flex:1;
-  border-color:transparent;background:var(--luno-violet);color:#fff;
-}
-.home-hero-actions .home-hero-favorite{width:48px;flex:none;font-size:23px;line-height:1}
-.home-hero-actions button:active{transform:scale(.985)}
-.home-hero-dots{display:flex;justify-content:center;align-items:center;gap:6px;min-height:25px;margin:3px 0 0}
-.home-hero-dot{
-  width:6px;height:6px;padding:0;border:0;border-radius:50%;
-  background:var(--luno-border-strong);cursor:pointer;
-}
-.home-hero-dot[aria-current="true"]{width:17px;border-radius:6px;background:var(--luno-violet)}
-.home-hero-dot:focus-visible{outline:2px solid var(--luno-ice);outline-offset:3px}
 @media(max-width:700px){
   main{padding-top:64px;padding-bottom:calc(104px + env(safe-area-inset-bottom))}
-  .home-category-tabs{
-    display:flex;align-items:center;gap:6px;
-    margin:0;padding:10px 14px 12px;overflow-x:auto;overflow-y:hidden;
-    scrollbar-width:none;scroll-snap-type:x proximity;
-  }
-  .home-category-tabs::-webkit-scrollbar{display:none}
-  .home-category-tab{
-    flex:0 0 auto;min-height:30px;padding:0 12px;
-    border:1px solid transparent;border-radius:999px;
-    background:transparent;color:var(--luno-text-muted);
-    font-size:11px;font-weight:650;white-space:nowrap;cursor:pointer;scroll-snap-align:start;
-  }
-  .home-category-tab.active{
-    border-color:var(--luno-border);background:var(--luno-surface-raised);color:var(--luno-text);
-  }
-  /* Home hero geometry is owned by the consolidated home-mode block below. */
-  .home-hero-backdrop{background-position:center 20%}
-  .home-hero:before{
-    background:linear-gradient(180deg,rgba(8,9,13,.01) 0%,rgba(8,9,13,.02) 30%,rgba(8,9,13,.35) 53%,rgba(8,9,13,.9) 77%,#08090D 100%);
-  }
-  .home-hero-copy{padding:0}
-  .home-hero-eyebrow{font-size:9px;letter-spacing:.15em;margin-bottom:8px}
-  .home-hero-title{font-size:clamp(25px,7.1vw,34px);line-height:1.02}
-  .home-hero-meta{font-size:11px;margin-top:8px}
-  .home-hero-actions{gap:8px;margin-top:12px}
-  .home-hero-actions button{min-height:42px}
-  .home-hero-actions .home-hero-primary{font-size:13px}
-  .home-hero-actions .home-hero-favorite{width:44px;font-size:22px}
-  .home-hero-dots{min-height:22px;margin:2px 0 0}
   .section{margin:27px 0 0;padding-left:14px}
   .section-head{padding-right:14px;margin-bottom:12px;align-items:center}
   .section-head h2{font-size:21px;line-height:1.12}
@@ -3624,7 +3444,6 @@ html, body{
   .resume-section .card-art{height:192px}
   .section-more{font-size:12px;white-space:nowrap}
 }
-
 
 /* Rich poster cards: information appears in-context without changing the card action. */
 .card{position:relative;overflow:visible!important;text-align:left;isolation:isolate}
@@ -3652,9 +3471,9 @@ html, body{
  .card-hover-title{font-size:11px}
  .card-hover-cta{font-size:9px;padding-top:6px}
  .card-hover-cta>span{width:18px;height:18px}
- .card:hover .card-art img,.card:focus-visible .card-art img{transform:none}
+ .card:hover .card-art img, .card:focus-visible .card-art img{transform:none}
 }
-@media(prefers-reduced-motion:reduce){.card-hover-panel,.card-gradient,.card-art img,.card-title{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.card-hover-panel, .card-gradient, .card-art img, .card-title{transition:none!important}}
 
 /* LUNO detail screen: cinematic hierarchy and sharper metadata */
 .luno-detail{background:#07080b!important;color:#f5f5f5!important}
@@ -3712,7 +3531,7 @@ html, body{
  .luno-detail-hero-copy .detail-meta{font-size:12px!important;gap:6px!important;margin-top:12px!important}
  .detail-badges{margin-top:11px!important}
  .luno-detail-actions{gap:7px!important;margin-top:18px!important}
- .luno-detail-actions .primary,.luno-detail-actions .secondary{min-height:44px!important;padding:0 13px!important;font-size:12px!important}
+ .luno-detail-actions .primary, .luno-detail-actions .secondary{min-height:44px!important;padding:0 13px!important;font-size:12px!important}
  .luno-detail-ratings{left:18px!important;right:18px!important;bottom:18px!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;padding:10px!important}
  .luno-detail-ratings>div{min-width:0!important;text-align:center!important}
  .luno-detail-ratings strong{font-size:17px!important}
@@ -3720,8 +3539,7 @@ html, body{
  .luno-section-title{align-items:flex-start!important;flex-direction:column!important;gap:4px!important}
  .luno-detail-section{padding-inline:17px!important}
 }
-@media(prefers-reduced-motion:reduce){.luno-detail-hero .detail-backdrop,.luno-detail-links button:after,.luno-detail-actions button,.luno-actor-card{transition:none!important}}
-
+@media(prefers-reduced-motion:reduce){.luno-detail-hero .detail-backdrop, .luno-detail-links button:after, .luno-detail-actions button, .luno-actor-card{transition:none!important}}
 
 /* LUNO catalogue sorting */
 .library-sort{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 20px}
@@ -3733,14 +3551,12 @@ html, body{
 @media(max-width:600px){.library-sort{gap:7px;padding-bottom:15px}.library-sort button{padding:9px 12px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){.library-sort button{transition:none}}
 
-
 /* Clear focus and selection states for keyboard / TV remote */
 .nav-item:focus-visible, .mobile-tab:focus-visible{outline:2px solid rgba(255,255,255,.92)!important;outline-offset:3px!important}
 .nav-item[aria-current="page"], .mobile-tab[aria-current="page"]{color:#fff}
 .card:focus-visible{outline:2px solid #f5f5f5!important;outline-offset:3px!important;transform:translateY(-3px);box-shadow:0 0 0 5px rgba(255,255,255,.12),0 16px 35px rgba(0,0,0,.35)!important;z-index:2}
 .library-infinite-grid .card:focus-visible{z-index:4}
 @media(prefers-reduced-motion:reduce){.card:focus-visible{transform:none}}
-
 
 /* Smooth, lightweight catalog scrolling and poster reveal */
 body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable}
@@ -3756,7 +3572,6 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 @media(max-width:700px){body.library-open .library-content{scroll-padding-top:12px}.library-infinite-grid{row-gap:16px}}
 @media(prefers-reduced-motion:reduce){.card-art img{transition:none}}
 
-
 /* Restrained cinematic entrance for detail pages */
 .detail-overlay.is-entering .luno-detail-hero-copy, .detail-overlay.is-entering .luno-detail-ratings, .detail-overlay.is-entering .luno-detail-section{
   opacity:0;
@@ -3770,9 +3585,8 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 .detail-overlay .luno-detail-hero .detail-backdrop{transition:transform .65s cubic-bezier(.2,.7,.2,1),opacity .35s ease}
 .detail-overlay.is-entering .detail-backdrop{transform:scale(1.045)!important}
 @media(prefers-reduced-motion:reduce){
-  .detail-overlay .luno-detail-hero-copy,.detail-overlay .luno-detail-ratings,.detail-overlay .luno-detail-section,.detail-overlay .detail-backdrop{transition:none!important;transform:none!important;opacity:1!important}
+  .detail-overlay .luno-detail-hero-copy, .detail-overlay .luno-detail-ratings, .detail-overlay .luno-detail-section, .detail-overlay .detail-backdrop{transition:none!important;transform:none!important;opacity:1!important}
 }
-
 
 /* Detail-page recommendations: cinematic horizontal rails */
 .luno-recommend-row{
@@ -3824,7 +3638,6 @@ body.library-open .library-content{overscroll-behavior:contain;-webkit-overflow-
 .discovery-section{padding-top:clamp(3px,1vw,12px)}
 #continueSection{margin-top:0}
 #trendingSection{margin-top:clamp(18px,3vw,38px)}
-.home-hero~.section{transition:opacity .25s ease}
 @media(max-width:700px){
 
   .section .cards{scroll-padding-inline:4px}
@@ -3859,10 +3672,10 @@ main>.section:not(:first-child):before{content:"";display:block;height:1px;margi
 main>.resume-section:before{display:none}
 main>.favorites-section .cards{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;grid-auto-flow:row!important;overflow:visible!important}
 @media(min-width:1300px){
-  main>.discovery-section .cards,main>.resume-section .cards{grid-auto-columns:minmax(145px,13.8%)!important}
+  main>.discovery-section .cards, main>.resume-section .cards{grid-auto-columns:minmax(145px,13.8%)!important}
 }
 @media(max-width:900px){
-  main>.discovery-section .cards,main>.resume-section .cards{grid-auto-columns:minmax(140px,22%)!important}
+  main>.discovery-section .cards, main>.resume-section .cards{grid-auto-columns:minmax(140px,22%)!important}
 }
 @media(max-width:700px){
   main>.section{margin:35px 17px 0}
@@ -3870,16 +3683,16 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   main>.section .section-head h2{font-size:21px}
   main>.section .section-kicker{font-size:8px;letter-spacing:.15em}
   main>.section .section-more{padding:7px 10px;font-size:10px}
-  main>.discovery-section .cards,main>.resume-section .cards{grid-auto-columns:minmax(126px,38%)!important;gap:11px!important;padding-bottom:15px!important}
+  main>.discovery-section .cards, main>.resume-section .cards{grid-auto-columns:minmax(126px,38%)!important;gap:11px!important;padding-bottom:15px!important}
   main>.section:not(:first-child):before{margin-bottom:19px}
   main>.favorites-section .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media(max-width:380px){
-  main>.discovery-section .cards,main>.resume-section .cards{grid-auto-columns:minmax(118px,43%)!important}
+  main>.discovery-section .cards, main>.resume-section .cards{grid-auto-columns:minmax(118px,43%)!important}
   main>.section .section-head h2{font-size:19px}
 }
 @media(prefers-reduced-motion:reduce){
-  main>.section .section-more,main>.section .section-more span{transition:none!important}
+  main>.section .section-more, main>.section .section-more span{transition:none!important}
 }
 
 /* LUNO title screen refinement: stronger action hierarchy and readable metadata */
@@ -3937,10 +3750,8 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-section+.luno-detail-section{margin-top:36px!important}
 }
 @media(prefers-reduced-motion:reduce){
-  .luno-detail-actions .primary,.luno-detail-actions .secondary,.luno-actor-card{transition:none!important}
+  .luno-detail-actions .primary, .luno-detail-actions .secondary, .luno-actor-card{transition:none!important}
 }
-
-
 
 /* ---------- LUNO PLAYER POLISH v17 ---------- */
 #player .player-stage{
@@ -4074,12 +3885,10 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   #player .source-option{min-height:56px}
 }
 @media(prefers-reduced-motion:reduce){
-  #player .player-source,#player .player-episode-card,#player .player-source-select,
-  #player .watch-filter-button,#player .watch-actions button,#player .watch-episode-numbers button{
+  #player .player-source, #player .player-episode-card, #player .player-source-select, #player .watch-filter-button, #player .watch-actions button, #player .watch-episode-numbers button{
     transition:none!important;scroll-behavior:auto!important
   }
 }
-
 
 /* ---------- POSTER CLEAN ARTWORK v18 ---------- */
 /* Keep artwork uncluttered: title is already shown below every poster. */
@@ -4104,7 +3913,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 .card-title{
   display:block!important;
 }
-
 
 /* ---------- MOBILE TITLE PAGE: SPACED CONTENT FLOW v19 ---------- */
 @media(max-width:700px){
@@ -4182,9 +3990,8 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 }
 @media(max-width:380px){
   .luno-detail-hero{padding-left:16px!important;padding-right:16px!important}
-  .luno-detail-actions .primary,.luno-detail-actions .secondary{font-size:12px!important;padding:0 8px!important}
+  .luno-detail-actions .primary, .luno-detail-actions .secondary{font-size:12px!important;padding:0 8px!important}
 }
-
 
 /* ---------- POSTER CORNER METADATA v20 ---------- */
 .card-art .card-type.card-corner{
@@ -4217,9 +4024,8 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .card-art .poster-rating{top:7px;right:7px}
   .card-art .poster-quality{left:7px;bottom:7px}
   .card-art .poster-year{right:7px;bottom:7px}
-  .card-art .poster-rating,.card-art .poster-quality,.card-art .poster-year{min-height:22px;padding:4px 6px;font-size:9px}
+  .card-art .poster-rating, .card-art .poster-quality, .card-art .poster-year{min-height:22px;padding:4px 6px;font-size:9px}
 }
-
 
 /* ---------- LUNO CINEMA MOBILE DETAIL v21 ---------- */
 .luno-detail-hero .detail-trailer-video{
@@ -4246,18 +4052,17 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 @media(max-width:700px){
   .luno-detail{background:#080b0e}
   .luno-detail-nav{height:64px;padding:0 16px;background:linear-gradient(180deg,rgba(5,8,10,.82),transparent)}
-  .luno-detail-back,.luno-detail-search{width:36px;height:36px;font-size:25px}
+  .luno-detail-back, .luno-detail-search{width:36px;height:36px;font-size:25px}
   .luno-detail-brand{font-size:15px;letter-spacing:.2em}
   .luno-detail-brand .brand-orbit{width:29px;height:29px}
-  .luno-detail-links,.luno-detail-tool{display:none}
+  .luno-detail-links, .luno-detail-tool{display:none}
   .luno-detail-tools{margin-left:auto}
   .luno-detail-hero{
     display:flex!important;flex-direction:column!important;justify-content:flex-end!important;
     min-height:0!important;height:auto!important;padding:clamp(290px,94vw,490px) 18px 25px!important;
     overflow:hidden!important;isolation:isolate;
   }
-  .luno-detail-hero .detail-backdrop,
-  .luno-detail-hero .detail-trailer-video{inset:0 0 auto!important;width:100%!important;height:100%!important;min-height:0!important;object-fit:cover!important}
+  .luno-detail-hero .detail-backdrop, .luno-detail-hero .detail-trailer-video{inset:0 0 auto!important;width:100%!important;height:100%!important;min-height:0!important;object-fit:cover!important}
   .luno-detail-hero .detail-backdrop{background-position:center 25%!important;opacity:.96!important}
   .luno-detail-hero::after{display:none!important}
   .luno-detail-hero-vignette{
@@ -4275,7 +4080,7 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:7px!important;
     margin-top:17px!important;width:100%!important;
   }
-  .luno-detail-actions .primary,.luno-detail-actions .secondary{
+  .luno-detail-actions .primary, .luno-detail-actions .secondary{
     min-width:0!important;min-height:43px!important;width:auto!important;padding:0 10px!important;
     border-radius:12px!important;font-size:11px!important;white-space:nowrap!important;
     justify-content:center!important;flex:0 0 auto!important;
@@ -4295,10 +4100,9 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 @media(max-width:360px){
   .luno-detail-hero{padding-left:15px!important;padding-right:15px!important}
   .luno-detail-actions{gap:5px!important}
-  .luno-detail-actions .primary,.luno-detail-actions .secondary{padding:0 8px!important;font-size:10px!important}
-  .luno-detail-actions #detailFavorite,.luno-detail-actions #detailEpisodes{width:39px!important}
+  .luno-detail-actions .primary, .luno-detail-actions .secondary{padding:0 8px!important;font-size:10px!important}
+  .luno-detail-actions #detailFavorite, .luno-detail-actions #detailEpisodes{width:39px!important}
 }
-
 
 /* ---------- MOBILE DETAIL ICON-ONLY ACTIONS v22 ---------- */
 @media(max-width:700px){
@@ -4318,14 +4122,11 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-actions #detailFavorite{width:43px!important;min-width:43px!important;padding:0!important}
 }
 @media(max-width:360px){
-  .luno-detail-actions #detailEpisodes,
-  .luno-detail-actions #detailFavorite{width:39px!important;min-width:39px!important}
+  .luno-detail-actions #detailEpisodes, .luno-detail-actions #detailFavorite{width:39px!important;min-width:39px!important}
 }
-
 
 /* ---------- REMOVE REVIEWS FROM TITLE PAGE v23 ---------- */
 .luno-detail .reviews-section, .luno-detail .luno-review-row, .luno-detail .luno-review-add, .luno-detail .luno-review-card{display:none!important}
-
 
 /* ---------- POSTER RATING LOWER-LEFT v24 ---------- */
 .card-art .poster-rating{display:none!important}
@@ -4338,7 +4139,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 @media(max-width:600px){
   .card-art .poster-quality.poster-card-rating{left:7px!important;bottom:7px!important;font-size:10px!important}
 }
-
 
 /* ---------- SHARED LUNO HEADER SYSTEM v25 ---------- */
 .global-header-back, .global-header-search{display:none}
@@ -4385,7 +4185,7 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-brand .brand-orbit{width:56px!important;height:56px!important;border-width:2px!important}
   .luno-detail-brand .brand-moon{width:40px!important;height:40px!important}
   .luno-detail-brand .brand-orbit:after{width:9px!important;height:9px!important;right:-3px!important;top:5px!important}
-  .luno-detail-links,.luno-detail-tool{display:none!important}
+  .luno-detail-links, .luno-detail-tool{display:none!important}
   .luno-detail-tools{margin-left:auto!important;flex:0 0 108px!important}
   .luno-detail-search{width:108px!important;height:108px!important;max-width:108px!important;max-height:108px!important;
     border:2px solid rgba(255,255,255,.2)!important;border-radius:22px!important;background:rgba(255,255,255,.055)!important;
@@ -4394,18 +4194,17 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .luno-detail-search:after{content:"";position:absolute;width:11px;height:3px;background:currentColor;transform:rotate(45deg);left:59px;top:60px;border-radius:3px}
 }
 @media(max-width:430px){
-  .topbar,.luno-detail-nav{padding-left:16px!important;padding-right:16px!important;gap:clamp(12px,4vw,22px)!important}
-  .global-header-back,.luno-detail-back{flex-basis:58px!important;width:58px!important;height:58px!important;max-width:58px!important;max-height:58px!important;font-size:36px!important}
-  .global-header-search,.luno-detail-tools{flex-basis:58px!important;width:58px!important;height:58px!important;max-width:58px!important;max-height:58px!important}
+  .topbar, .luno-detail-nav{padding-left:16px!important;padding-right:16px!important;gap:clamp(12px,4vw,22px)!important}
+  .global-header-back, .luno-detail-back{flex-basis:58px!important;width:58px!important;height:58px!important;max-width:58px!important;max-height:58px!important;font-size:36px!important}
+  .global-header-search, .luno-detail-tools{flex-basis:58px!important;width:58px!important;height:58px!important;max-width:58px!important;max-height:58px!important}
   .luno-detail-tools{flex-basis:58px!important}
   .luno-detail-search{width:58px!important;height:58px!important;max-width:58px!important;max-height:58px!important}
   .luno-detail-search:before{width:17px;height:17px;border-width:2px;left:18px;top:17px}
   .luno-detail-search:after{width:8px;height:2px;left:34px;top:34px}
-  .topbar .brand-orbit,.luno-detail-brand .brand-orbit{width:43px!important;height:43px!important}
-  .topbar .brand-moon,.luno-detail-brand .brand-moon{width:30px!important;height:30px!important}
-  .topbar .brand-orbit:after,.luno-detail-brand .brand-orbit:after{width:7px!important;height:7px!important}
+  .topbar .brand-orbit, .luno-detail-brand .brand-orbit{width:43px!important;height:43px!important}
+  .topbar .brand-moon, .luno-detail-brand .brand-moon{width:30px!important;height:30px!important}
+  .topbar .brand-orbit:after, .luno-detail-brand .brand-orbit:after{width:7px!important;height:7px!important}
 }
-
 
 /* Back control is contextual: never show it on the home screen. */
 @media(max-width:700px){
@@ -4413,7 +4212,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   body:not(.show-global-back) .topbar{gap:0!important}
   body:not(.show-global-back) .topbar .brand{margin-right:auto!important}
 }
-
 
 /* Smart TV poster fallback visibility and fixed artwork geometry */
 @media(min-width:1000px) and (hover:none){
@@ -4435,7 +4233,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     color:#c4cbd7!important;font-size:clamp(13px,1.1vw,20px)!important;
   }
 }
-
 
 /* ---------- LUNO SMART TV TOP SHUTTER v26 ---------- */
 .tv-header-tools{display:none}
@@ -4460,15 +4257,14 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     color:#d2dbe4!important;font-size:clamp(14px,1.08vw,19px)!important;white-space:nowrap!important;
     border:1px solid transparent!important;background:transparent!important;flex:0 0 auto!important;
   }
-  .topbar .nav-item.active,.topbar .nav-item[aria-current="page"]{
+  .topbar .nav-item.active, .topbar .nav-item[aria-current="page"]{
     color:#72e4cf!important;background:rgba(36,75,72,.34)!important;border-color:rgba(114,228,207,.55)!important;
   }
-  .topbar .nav-item:focus-visible,.topbar .brand:focus-visible,
-  .tv-header-tools button:focus-visible{
+  .topbar .nav-item:focus-visible, .topbar .brand:focus-visible, .tv-header-tools button:focus-visible{
     outline:3px solid #72e4cf!important;outline-offset:3px!important;
   }
   .tv-header-tools{display:flex!important;align-items:center!important;gap:12px!important;flex:0 0 auto!important}
-  .tv-header-tools .global-header-search,.tv-header-tools .global-header-settings{
+  .tv-header-tools .global-header-search, .tv-header-tools .global-header-settings{
     display:grid!important;place-items:center!important;width:44px!important;height:44px!important;
     max-width:44px!important;max-height:44px!important;min-width:44px!important;min-height:44px!important;
     padding:0!important;border:1px solid #35414d!important;border-radius:11px!important;
@@ -4479,7 +4275,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .tv-header-tools .global-header-settings{font-size:22px!important;line-height:1!important}
   .mobile-tabbar{display:none!important}
 }
-
 
 /* Mobile top shutter: moon-only brand, edge-aligned compact tools. TV untouched. */
 @media(max-width:700px){
@@ -4542,7 +4337,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   main{padding-top:52px!important}
 }
 
-
 /* iPhone Safari: keep the mobile shutter as an opaque clipping edge while scrolling. */
 @media(max-width:700px){
   html,body,#app{max-width:100%!important;overflow-x:clip!important}
@@ -4569,7 +4363,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   .topbar.luno-nav-shutter .global-header-settings span{font-size:17px!important}
   main{padding-top:0!important}
 }
-
 
 /* Mobile titles only: restore original poster size; truncate long names cleanly. */
 @media(max-width:700px){
@@ -4602,7 +4395,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     box-sizing:border-box!important;
   }
 }
-
 
 /* Mobile shutter: black header joined to the top edge, with turquoise outline and rounded lower corners. */
 @media(max-width:700px){
@@ -4706,7 +4498,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   }
 }
 
-
 /* ---------- LUNO CRESCENT MOON MARK ---------- */
 /* Turn the existing lunar orb into a crescent; keep its ring and dimensions unchanged. */
 .brand-moon{
@@ -4730,31 +4521,25 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   background:#080808!important;
 }
 
-
 /* ---------- LUNO SHUTTER LINE COLOR MATCH ---------- */
 /* Match the screenshot's muted lunar-violet outline instead of the brighter accent. */
 :root{--luno-moon-line:#444452}
 @media(max-width:700px){
-  .topbar.luno-nav-shutter,
-  body.home-mode .topbar.luno-nav-shutter{
+  .topbar.luno-nav-shutter{
     border-color:#444452!important;
     box-shadow:0 8px 22px rgba(0,0,0,.35),0 0 12px rgba(68,68,82,.12)!important;
   }
-  .topbar.luno-nav-shutter .brand,
-  .topbar.luno-nav-shutter .global-header-search,
-  .topbar.luno-nav-shutter .global-header-settings{
+  .topbar.luno-nav-shutter .brand, .topbar.luno-nav-shutter .global-header-search, .topbar.luno-nav-shutter .global-header-settings{
     border-color:#444452!important;
   }
   .topbar.luno-nav-shutter .brand{
     box-shadow:inset 0 0 0 1px rgba(140,184,204,.05),0 0 8px rgba(68,68,82,.12)!important;
   }
-  .topbar.luno-nav-shutter .global-header-search,
-  .topbar.luno-nav-shutter .global-header-settings{
+  .topbar.luno-nav-shutter .global-header-search, .topbar.luno-nav-shutter .global-header-settings{
     box-shadow:inset 0 0 0 1px rgba(140,184,204,.05),0 0 7px rgba(68,68,82,.1)!important;
   }
   .mobile-tabbar{border-color:#444452!important}
 }
-
 
 /* ---------- LUNO SHUTTER TOP EDGE FIX ---------- */
 /* Restore the missing top horizontal stroke on the mobile shutter. */
@@ -4767,7 +4552,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     border-bottom:1px solid #444452!important;
   }
 }
-
 
 /* ---------- CENTER LUNO WORDMARK IN MOBILE SHUTTER ---------- */
 @media(max-width:700px){
@@ -4786,7 +4570,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     pointer-events:none!important;white-space:nowrap!important;
   }
 }
-
 
 /* ---------- LUNO NEBULA + ECLIPSE FINISH ---------- */
 /* Refine the existing lunar palette: cleaner violet, restrained glow, premium eclipse feel. */
@@ -4811,8 +4594,7 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   box-shadow:inset 0 0 0 1px rgba(133,129,173,.28),0 0 14px rgba(133,129,173,.08)!important;
 }
 @media(max-width:700px){
-  .topbar.luno-nav-shutter,
-  body.home-mode .topbar.luno-nav-shutter{
+  .topbar.luno-nav-shutter{
     border-color:#444452!important;
     background:#000!important;
     box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 15px rgba(133,129,173,.1)!important;
@@ -4822,8 +4604,7 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     text-shadow:0 0 14px rgba(133,129,173,.38)!important;
     letter-spacing:.28em!important;
   }
-  .topbar.luno-nav-shutter .brand,
-  .topbar.luno-nav-shutter .global-header-search{
+  .topbar.luno-nav-shutter .brand, .topbar.luno-nav-shutter .global-header-search{
     border-color:#444452!important;
   }
   .topbar.luno-nav-shutter .global-header-search{
@@ -4836,7 +4617,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   }
 }
 
-
 /* ---------- THIN LUNO WORDMARK ---------- */
 /* A lighter, elegant wordmark; keep all existing shutter geometry untouched. */
 @media(max-width:700px){
@@ -4848,7 +4628,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     text-shadow:0 0 10px rgba(133,129,173,.24)!important;
   }
 }
-
 
 /* ---------- LUNO MOBILE LAYOUT RECOVERY ---------- */
 /* Keep the top shutter fixed to the viewport and force the complete four-item bottom bar on-screen. */
@@ -4885,7 +4664,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   }
   #app main{padding-top:calc(56px + env(safe-area-inset-top,0px))!important}
 }
-
 
 /* ---------- LUNO CINEMA HEADER / MOCKUP MATCH ---------- */
 /* Compact editorial wordmark header: no pill outline, no centered duplicate logo. */
@@ -4937,7 +4715,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   body.home-mode .home-hero{margin-top:0!important}
 }
 
-
 /* iOS Safari toolbar-aware bottom navigation positioning */
 @media(max-width:700px){
   .mobile-tabbar,
@@ -4946,7 +4723,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
     bottom:calc(var(--luno-vv-bottom,0px) + env(safe-area-inset-bottom,0px))!important;
   }
 }
-
 
 /* ---------- LUNO ALWAYS-VISIBLE FROSTED HEADER ---------- */
 @media(max-width:700px){
@@ -4980,7 +4756,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   }
 }
 
-
 /* ---------- LUNO VIEWING HISTORY PAGE ---------- */
 .history-watch-grid{padding-bottom:24px}
 .history-empty{
@@ -5000,7 +4775,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
   margin-top:8px;padding:12px 20px;border:1px solid rgba(205,208,235,.2);
   border-radius:14px;background:rgba(133,129,173,.17);color:#f3f4ff;font-weight:700
 }
-
 
 /* ---------- LUNO PREMIUM CATALOG HUB ---------- */
 .luno-catalog-intro{position:relative;overflow:hidden;padding:18px 4px 26px;margin:0 auto 4px;max-width:1120px}
@@ -5038,7 +4812,6 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 .luno-catalog-foot small{font-size:10px;color:#858797}
 @media(min-width:700px){.category-hub.luno-category-hub{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.luno-category-hub .category-hub-card{min-height:210px;padding:23px;border-radius:24px}.luno-category-hub .category-hub-card strong{font-size:23px}.luno-category-hub .category-hub-card .luno-category-desc{font-size:12px}.luno-category-overline{font-size:9px!important}}
 @media(max-width:380px){.category-hub.luno-category-hub{gap:9px}.luno-category-hub .category-hub-card{min-height:160px;padding:13px;border-radius:18px}.luno-category-hub .category-hub-card strong{font-size:17px}.luno-category-hub .category-hub-card .luno-category-desc{font-size:9px}.luno-category-arrow{right:11px;bottom:11px}}
-
 
 /* ---------- LUNO UNIFIED LUNAR PALETTE + COMPACT INNER HEADER v123 ---------- */
 :root{
@@ -5109,7 +4882,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   }
 }
 
-
 /* ---------- INNER HEADER: SAME GLASS TREATMENT AS LUNO HOME v124 ---------- */
 @media(max-width:700px){
   body.show-global-back .topbar,
@@ -5137,7 +4909,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   }
   body.show-global-back main{padding-top:56px!important}
 }
-
 
 /* ---------- LUNO SEARCH: PREMIUM LUNAR GLASS REDESIGN v125 ---------- */
 @media(max-width:700px){
@@ -5264,7 +5035,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   body.search-open .mobile-tabbar{z-index:80!important}
 }
 
-
 /* ---------- LUNO SIGNATURE GLASS SHUTTER ON EVERY MOBILE PAGE v126 ---------- */
 @media(max-width:700px){
   body.search-open .topbar{display:flex!important}
@@ -5341,7 +5111,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   body.search-open .search-topbar{margin-top:0!important}
 }
 
-
 /* ---------- MATCHING LUNO GLASS BOTTOM NAVIGATION v127 ---------- */
 @media(max-width:700px){
   .mobile-tabbar{
@@ -5392,7 +5161,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   body.library-open .mobile-tabbar{display:none!important}
 }
 
-
 /* ---------- LUNO WORDMARK LEFT, AS IN THE ORIGINAL SHUTTER ---------- */
 @media(max-width:700px){
   .topbar.luno-nav-shutter .brand{
@@ -5419,7 +5187,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   .topbar.luno-nav-shutter .tv-header-tools{position:relative!important;z-index:3!important}
 }
 
-
 /* ---------- SEARCH EXIT + SCREEN STACKING FIX ---------- */
 @media(max-width:700px){
   body.search-open{overflow:hidden!important}
@@ -5440,7 +5207,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   body.search-open .search-close-x{display:none!important}
 }
 
-
 /* ---------- LUNO WORDMARK — replace moon icon with text ---------- */
 @media(max-width:700px){
   .topbar .brand{
@@ -5455,7 +5221,6 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
   .topbar .brand .brand-wordmark{display:inline!important;}
   .topbar .brand .brand-orbit{display:none!important;}
 }
-
 
 /* LUNO mobile shutter wordmark: override legacy moon-only rules without changing shutter layout. */
 @media(max-width:700px){
@@ -5573,7 +5338,7 @@ body.settings-open{overflow-x:hidden}
 @media(min-width:761px){
  .settings-menu-item{min-height:76px}
 }
-@media(prefers-reduced-motion:reduce){.settings-menu-item,.settings-row i,.settings-row i:after{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.settings-menu-item, .settings-row i, .settings-row i:after{transition:none!important}}
 
 /* Settings is a viewport-level screen, not a section below the home page. */
 .settings-view{
@@ -5681,18 +5446,18 @@ body{color:var(--luno-text)}
 .brand-orbit:after{background:var(--luno-ice);box-shadow:0 0 5px rgba(140,184,204,.2)}
 .brand-moon{background:linear-gradient(135deg,#E7E8EF,var(--luno-violet));box-shadow:inset -5px -3px 7px rgba(0,0,0,.3)}
 .section-kicker, .eyebrow, .search-kicker, .library-kicker, .luno-catalog-eyebrow, .library-toolbar, .category-hub-card .luno-category-overline{color:#B7B4D4!important}
-.primary, .home-hero-actions .home-hero-primary, .luno-detail-actions .primary, #detailOpenEpisodes, .settings-primary{
+.primary, .luno-detail-actions .primary, #detailOpenEpisodes, .settings-primary{
   background:var(--luno-violet)!important;
   color:#FFFFFF!important;
   border:1px solid rgba(183,180,212,.35)!important;
   border-radius:12px!important;
   box-shadow:none!important;
 }
-.primary:hover, .home-hero-actions .home-hero-primary:hover, .luno-detail-actions .primary:hover, #detailOpenEpisodes:hover, .settings-primary:hover{
+.primary:hover, .luno-detail-actions .primary:hover, #detailOpenEpisodes:hover, .settings-primary:hover{
   background:#918DB7!important;
   box-shadow:0 4px 16px rgba(133,129,173,.12)!important;
 }
-.secondary, .home-hero-actions button:not(.home-hero-primary), .luno-detail-actions .secondary, .settings-secondary{
+.secondary, .luno-detail-actions .secondary, .settings-secondary{
   border:1px solid var(--luno-border-strong)!important;
   border-radius:12px!important;
   background:var(--luno-surface)!important;
@@ -5786,7 +5551,7 @@ body.search-open .search-source.search-ai.active{
   .luno-detail-hero-copy .detail-badge{border-radius:9px!important}
 }
 @media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  *, *::before, *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
 /* Shared control and surface audit: search, settings, catalog, dialogs and source panels. */
@@ -5838,10 +5603,9 @@ input[type="checkbox"], input[type="radio"]{accent-color:var(--luno-violet)}
   background:var(--luno-input)!important;color:var(--luno-text)!important;border-color:var(--luno-border)!important;
 }
 @media(max-width:700px){
-  .settings-menu-item,.settings-choice,.settings-row,.settings-action-row{min-height:44px}
-  .library-sort button,.catalog-toolbar button{min-height:40px}
+  .settings-menu-item, .settings-choice, .settings-row, .settings-action-row{min-height:44px}
+  .library-sort button, .catalog-toolbar button{min-height:40px}
 }
-
 
 /* Mobile header behavior: keep the LUNO wordmark on Home; inner screens use Back + Search. */
 @media(max-width:700px){
@@ -5902,57 +5666,5 @@ input[type="checkbox"], input[type="radio"]{accent-color:var(--luno-violet)}
   background: var(--luno-surface-raised) !important;
 }
 @media(min-width:701px) {
-  .mobile-tabbar.luno-reference-tabbar { display:none !important; }
-}
-
-
-/* Home layout owns its geometry; legacy home-mode patches above are removed. */
-@media(max-width:700px){
-  body.home-mode #app main,body.home-mode main{
-    padding-top:64px!important;
-    padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))!important;
-  }
-  body.home-mode .home-hero{
-    height:clamp(310px,82vw,390px)!important;
-    min-height:0!important;max-height:none!important;
-    margin:0 14px!important;padding:18px 15px 15px!important;
-    border:1px solid var(--luno-border)!important;border-radius:16px!important;
-    background:var(--luno-surface)!important;box-shadow:none!important;
-  }
-  body.home-mode .home-hero-backdrop{opacity:0;transform:none!important}
-  body.home-mode .home-hero.is-ready .home-hero-backdrop{opacity:1!important;animation:none!important}
-  body.home-mode .home-hero:before{
-    background:linear-gradient(180deg,rgba(8,9,13,.01) 0%,rgba(8,9,13,.02) 30%,rgba(8,9,13,.35) 53%,rgba(8,9,13,.9) 77%,#08090D 100%)!important;
-  }
-  body.home-mode .home-hero-copy{padding:0!important;max-width:100%!important;animation:none!important}
-  body.home-mode .home-hero-description{display:none!important}
-  body.home-mode main>.section{margin-top:22px!important;margin-bottom:0!important;padding:0 14px!important}
-  body.home-mode #trendingSection{margin-top:18px!important;padding-top:0!important}
-  body.home-mode #trendingSection:before{display:none!important}
-  body.home-mode main>.section .section-head{margin-bottom:12px!important}
-  body.home-mode main>.section .cards{padding:2px 14px 9px 0!important}
-  body.home-mode .mobile-tabbar.luno-reference-tabbar{
-    position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;
-    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
-    width:100%!important;height:calc(76px + env(safe-area-inset-bottom,0px))!important;
-    min-height:calc(76px + env(safe-area-inset-bottom,0px))!important;max-height:none!important;
-    padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))!important;
-    margin:0!important;gap:2px!important;overflow:hidden!important;
-    border:0!important;border-top:1px solid var(--luno-border)!important;border-radius:18px 18px 0 0!important;
-    background:rgba(20,21,29,.94)!important;box-shadow:0 -8px 28px rgba(0,0,0,.22)!important;
-    -webkit-backdrop-filter:blur(22px)!important;backdrop-filter:blur(22px)!important;z-index:3000!important;
-  }
-  body.home-mode .mobile-tabbar.luno-reference-tabbar>.mobile-tab{
-    display:flex!important;min-width:0!important;width:100%!important;height:100%!important;min-height:0!important;
-    margin:0!important;padding:4px 1px!important;gap:4px!important;flex:none!important;
-    align-items:center!important;justify-content:center!important;overflow:hidden!important;
-    border:1px solid transparent!important;border-radius:13px!important;background:transparent!important;
-    color:var(--luno-text-muted)!important;
-  }
-  body.home-mode .mobile-tabbar.luno-reference-tabbar>.mobile-tab.active{
-    color:var(--luno-text)!important;background:var(--luno-surface-raised)!important;
-    border-color:var(--luno-border-strong)!important;box-shadow:none!important;
-  }
-  body.home-mode .mobile-tabbar.luno-reference-tabbar>.mobile-tab .tab-icon{font-size:21px!important;line-height:1!important}
-  body.home-mode .mobile-tabbar.luno-reference-tabbar>.mobile-tab small{display:block!important;font-size:10px!important;white-space:nowrap!important}
+  .mobile-tabbar.luno-reference-tabbar{ display:none !important; }
 }
