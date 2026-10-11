@@ -234,13 +234,14 @@ test("home sections do not show decorative uppercase kicker labels", async () =>
 });
 
 
-test("home uses nine cards in discovery rails and refreshes hero lineup every two days", async () => {
+test("home keeps poster sizing and provides nine stable hero banners", async () => {
   const app = await readFile(new URL("app.js", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.ok(app.includes(".slice(0,9)"), "main rails are capped at nine posters");
+  assert.ok(app.includes("length:Math.min(9,heroPool.length)"), "hero carousel has up to nine banners");
   assert.ok(app.includes("Math.floor(Date.now()/(48*60*60*1000))"), "featured selection changes in a two-day cycle");
   assert.ok(app.includes("localStorage.getItem(heroStorageKey)"), "featured title is restored across reloads");
   assert.ok(app.includes("(Number(item.rating)||0)>=6.2"), "hero prefers well-rated titles with backdrop art");
+  assert.ok(css.includes("grid-auto-columns:minmax(126px,38%)!important"), "poster sizing remains unchanged");
   assert.ok(css.includes("font-weight:560"), "hero actions use lighter typography");
   const heroRotation = app.slice(app.indexOf("function startHomeHeroRotation()"), app.indexOf("function homeHeroBackdrop(item)"));
   assert.ok(!heroRotation.includes("setInterval"), "hero does not switch every few seconds");
