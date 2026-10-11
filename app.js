@@ -1483,6 +1483,7 @@ function renderHomeHero(item){
   if(backdrop)backdrop.style.backgroundImage=background ? "url("+JSON.stringify(background.replace(/"/g,"%22"))+")" : "none";
   const heading=hero.querySelector(".home-hero-title");if(heading)heading.textContent=title;
   const meta=hero.querySelector(".home-hero-meta");if(meta)meta.textContent=[type,year||"",rating?"TMDB ★ "+rating.toFixed(1):""].filter(Boolean).join("  ·  ");
+  const description=hero.querySelector(".home-hero-description");if(description)description.textContent=String(item.overview||item.description||"");
   hero.dataset.itemId=String(item.id||"");
   hero.classList.add("is-ready");
   const favorite=hero.querySelector(".home-hero-favorite");
