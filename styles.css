@@ -5158,3 +5158,46 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
     -webkit-box-orient:vertical!important;
   }
 }
+
+
+/* Catalog: compact fixed header shared by title and category tabs. */
+body.catalog-open .library-head{display:none!important}
+body.catalog-open .luno-catalog-shell{padding-top:0!important}
+body.catalog-open .luno-catalog-sticky{
+  position:sticky;top:0;z-index:1200;
+  margin:0 -14px 12px;padding:7px 14px 0;
+  background:rgba(8,9,13,.96);
+  -webkit-backdrop-filter:blur(18px) saturate(125%);
+  backdrop-filter:blur(18px) saturate(125%);
+  border-bottom:1px solid rgba(231,232,239,.08);
+}
+body.catalog-open .luno-catalog-sticky-title{
+  height:23px;display:flex;align-items:center;
+  color:var(--luno-text,#E7E8EF);font-size:15px;font-weight:650;
+  letter-spacing:-.025em;line-height:1;
+}
+body.catalog-open .luno-catalog-tabs{
+  gap:21px;margin:0 -14px;padding:0 14px;
+  border-bottom:0;scroll-padding-inline:14px;
+}
+body.catalog-open .luno-catalog-tab{
+  min-height:39px;padding:0 0 9px;
+  font-size:14px;font-weight:550;
+}
+body.catalog-open .luno-catalog-genre{
+  min-height:42px;margin-bottom:10px;border-radius:12px;
+}
+body.catalog-open .luno-catalog-genre select{height:40px;font-size:13px;padding-left:13px}
+body.catalog-open .luno-catalog-genre>span:last-child{right:13px;font-size:16px}
+body.catalog-open .luno-catalog-controls{gap:8px;margin-bottom:13px}
+body.catalog-open .luno-catalog-sort,
+body.catalog-open .luno-catalog-view-toggle{min-height:40px;padding:2px}
+body.catalog-open .luno-catalog-sort button{min-height:34px;font-size:11px;font-weight:500}
+body.catalog-open .luno-catalog-view-toggle button{width:35px;height:34px}
+body.catalog-open .luno-catalog-view-toggle svg{width:19px;height:19px}
+body.catalog-open .luno-catalog-results-meta{margin-bottom:9px;font-size:10px}
+body.catalog-open .luno-catalog-results-meta span:first-child{font-size:13px;font-weight:600}
+@media(min-width:700px){
+ body.catalog-open .luno-catalog-sticky{margin-inline:0;padding-inline:0}
+ body.catalog-open .luno-catalog-tabs{margin-inline:0;padding-inline:0}
+}
