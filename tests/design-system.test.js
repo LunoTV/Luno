@@ -202,9 +202,10 @@ test("category tabs replace sibling history entries and restore a real home stat
 });
 
 
-test("poster rails recede only at the top-left while the bottom edge stays level", async () => {
+test("poster rails use straight, untransformed poster edges", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.ok(css.includes("clip-path:polygon(0 3%,100% 0,100% 100%,0 100%)"), "poster top-left corner recedes subtly while the bottom edge stays straight");
+  assert.ok(!css.includes("clip-path:polygon(0 3%,100% 0,100% 100%,0 100%)"), "poster corners are not artificially clipped to create a tilt");
+  assert.ok(css.includes("main>.section .cards>.card .card-art{border-radius:9px}"), "poster art keeps its normal rounded rectangle shape");
   assert.ok(!css.includes("main>.section .cards>.card .card-art{border-radius:9px;transform:rotate(-2deg)"), "poster images are not rotated as a whole");
 });
 
