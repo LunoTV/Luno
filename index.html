@@ -11,8 +11,8 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=149">
-  <link rel="stylesheet" href="./ui/design-system.css?v=7">
+  <link rel="stylesheet" href="./styles.css?v=150">
+  <link rel="stylesheet" href="./ui/design-system.css?v=8">
   <link rel="stylesheet" href="./ui/detail-page.css?v=8">
   <link rel="stylesheet" href="./ui/settings.css?v=1">
 </head>
@@ -54,7 +54,7 @@
       <button class="mobile-tab active" data-section="home" aria-current="page"><span class="tab-icon" aria-hidden="true">⌂</span><small>Главная</small></button>
       <button class="mobile-tab" data-section="catalog"><span class="tab-icon" aria-hidden="true">☷</span><small>Каталог</small></button>
       <button class="mobile-tab" data-section="search"><span class="tab-icon" aria-hidden="true">⌕</span><small>Поиск</small></button>
-      <button class="mobile-tab" data-section="library"><span class="tab-icon" aria-hidden="true">▣</span><small>Библиотека</small></button>
+      <button class="mobile-tab" data-section="library"><span class="tab-icon" aria-hidden="true">▣</span><small>Я смотрю</small></button>
       <button class="mobile-tab" id="globalHeaderSettings" data-section="profile" type="button" aria-label="Профиль"><span class="tab-icon" aria-hidden="true">♙</span><small>Профиль</small></button>
     </nav>
 
@@ -66,13 +66,6 @@
 <button class="luno-menu-item active" data-section="home"><span>⌂</span>Главная</button><button class="luno-menu-item" data-section="history"><span>◷</span>История</button><button class="luno-menu-item" data-section="movies"><span>▣</span>Фильмы</button><button class="luno-menu-item" data-section="series"><span>▤</span>Сериалы</button><button class="luno-menu-item" data-section="cartoons"><span>▧</span>Мультфильмы</button><button class="luno-menu-item" data-section="anime"><span>✧</span>Аниме</button><button class="luno-menu-item" data-section="shows"><span>▦</span>Шоу</button>
 </nav></aside>
     <main>
-      <nav class="home-category-tabs" aria-label="Категории">
-        <button class="home-category-tab active" data-section="home" aria-current="page">Главная</button>
-        <button class="home-category-tab" data-section="movies">Фильмы</button>
-        <button class="home-category-tab" data-section="series">Сериалы</button>
-        <button class="home-category-tab" data-section="cartoons">Мультфильмы</button>
-        <button class="home-category-tab" data-section="anime">Аниме</button>
-      </nav>
       <section id="homeHero" class="home-hero" aria-label="Рекомендуем посмотреть">
         <div class="home-hero-backdrop" aria-hidden="true"></div>
         <div class="home-hero-copy">
@@ -95,28 +88,27 @@
         <div class="cards" id="trendingCards"></div>
       </section>
 
+      <section class="section discovery-section" id="highRatedSection">
+        <div class="section-head"><div><h2>Высокий рейтинг</h2></div><button class="section-more" data-home-collection="topRated">Смотреть все <span>›</span></button></div>
+        <div class="cards" id="highRatedCards"></div>
+      </section>
+
+      <section class="section discovery-section" id="topMoviesSection">
+        <div class="section-head"><div><h2>Топ 10 фильмов</h2></div><button class="section-more" data-home-collection="topMovies">Смотреть все <span>›</span></button></div>
+        <div class="cards" id="topMoviesCards"></div>
+      </section>
+
+      <section class="section discovery-section" id="topSeriesSection">
+        <div class="section-head"><div><h2>Топ 10 сериалов</h2></div><button class="section-more" data-home-collection="topSeries">Смотреть все <span>›</span></button></div>
+        <div class="cards" id="topSeriesCards"></div>
+      </section>
+
       <section class="section discovery-section" id="eveningSection">
         <div class="section-head">
           <div><span class="section-kicker">НА ВЕЧЕР</span><h2>Что посмотреть сегодня</h2></div>
           <button class="section-more" data-home-collection="evening">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="eveningCards"></div>
-      </section>
-
-      <section class="section resume-section" id="continueSection">
-        <div class="section-head">
-          <div><span class="section-kicker">ВОЗВРАЩАЙСЯ</span><h2>Продолжить просмотр</h2></div>
-          <button class="section-more" data-home-collection="continue">Все <span>›</span></button>
-        </div>
-        <div class="cards" id="continueCards"></div>
-      </section>
-
-      <section class="section discovery-section" id="openCinemaSection">
-        <div class="section-head">
-          <div><span class="section-kicker">ОТКРЫТОЕ КИНО</span><h2>Open Cinema</h2></div>
-          <button class="section-more" data-home-collection="openCinema">Смотреть все <span>›</span></button>
-        </div>
-        <div class="cards" id="openCinemaCards"></div>
       </section>
 
       <section class="section discovery-section" id="lunoPicksSection">
@@ -133,19 +125,6 @@
           <button class="section-more" data-home-collection="classics">Смотреть все <span>›</span></button>
         </div>
         <div class="cards" id="classicsCards"></div>
-      </section>
-
-      <section class="section favorites-section" id="favoritesSection">
-        <div class="section-head">
-          <div><span class="section-kicker">ТВОЁ</span><h2>Избранное</h2></div>
-          <button class="section-more" data-home-collection="favorites">Смотреть все <span>›</span></button>
-        </div>
-        <div class="cards" id="favoriteCards"></div>
-        <div class="favorites-empty" id="favoritesEmpty">
-          <div class="empty-moon">◐</div>
-          <strong>Здесь будет твоё кино</strong>
-          <span>Открой карточку фильма и добавь его в избранное.</span>
-        </div>
       </section>
 
       <div id="catalogSentinel" class="catalog-sentinel" aria-hidden="true"></div>
