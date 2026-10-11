@@ -135,7 +135,7 @@ test("detail backdrop tries available TMDB image candidates until one loads", as
 });
 
 
-test("mobile navigation follows the five-section reference layout while retaining LUNO styling", async () => {
+test("mobile navigation uses a floating glass bar with five SVG icon tabs", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("app.js", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
@@ -143,9 +143,12 @@ test("mobile navigation follows the five-section reference layout while retainin
   for (const section of ["home","catalog","search","library","profile"]) {
     assert.ok(html.includes('data-section="'+section+'"'), "includes "+section+" navigation");
   }
+  assert.ok((html.match(/<svg viewBox="0 0 24 24"/g)||[]).length>=5, "all five navigation items use clean SVG icons");
   assert.ok(app.includes('if(section==="library"){openLibrary("favorites");return;}'), "library opens saved favorites");
   assert.ok(app.includes('if(section==="profile" || section==="settings"){openSettingsView("profile");return;}'), "profile opens the existing profile/settings view");
-  assert.ok(css.includes(".mobile-tabbar.luno-reference-tabbar"), "navigation uses LUNO's shared styling");
+  assert.ok(css.includes("bottom:calc(14px + env(safe-area-inset-bottom,0px))"), "navigation floats above the bottom safe area");
+  assert.ok(css.includes("rgba(22,23,29,.70)"), "navigation uses a translucent glass background");
+  assert.ok(css.includes("#FFD43B"), "active navigation item uses the reference yellow accent");
 });
 
 
