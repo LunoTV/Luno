@@ -2681,9 +2681,13 @@ html,body{
   background-size:cover;
   background-repeat:no-repeat;
   opacity:0;
-  transition:opacity .24s ease;
+  transition:opacity .9s ease;
+  will-change:opacity;
+  pointer-events:none;
 }
-.home-hero.is-ready .home-hero-backdrop{opacity:1}
+.home-hero-backdrop.is-active{opacity:1}
+.home-hero-backdrop-next{z-index:-1!important}
+.home-hero.is-ready .home-hero-backdrop:not(.is-active){opacity:0}
 .home-hero:before{
   content:"";
   position:absolute;
@@ -4994,7 +4998,8 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
   body.home-mode #app main,body.home-mode main{width:100%!important;max-width:none!important;box-sizing:border-box!important;padding:0 0 calc(28px + env(safe-area-inset-bottom,0px))!important} body.home-mode main>.section:last-child{margin-bottom:0!important;padding-bottom:0!important}
   body.home-mode .home-hero{position:relative!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-end!important;width:100%!important;height:72svh!important;min-height:560px!important;max-height:680px!important;box-sizing:border-box!important;overflow:hidden!important;isolation:isolate!important;margin:0!important;padding:0 20px calc(20px + env(safe-area-inset-bottom,0px))!important;border:0!important;border-radius:0!important;background:var(--luno-bg)!important;box-shadow:none!important}
   body.home-mode .home-hero-backdrop{position:absolute!important;z-index:-2!important;inset:0!important;opacity:0;transform:none!important;background-position:center 22%!important;background-size:cover!important;background-repeat:no-repeat!important}
-  body.home-mode .home-hero.is-ready .home-hero-backdrop{opacity:1!important;animation:none!important}
+  body.home-mode .home-hero.is-ready .home-hero-backdrop.is-active{opacity:1!important;animation:none!important}
+  body.home-mode .home-hero.is-ready .home-hero-backdrop:not(.is-active){opacity:0!important;animation:none!important}
   body.home-mode .home-hero:before{content:""!important;position:absolute!important;z-index:-1!important;inset:0!important;background:linear-gradient(180deg,rgba(8,9,13,.02) 0%,rgba(8,9,13,.02) 28%,rgba(8,9,13,.18) 43%,rgba(8,9,13,.68) 61%,rgba(8,9,13,.96) 82%,#08090D 100%)!important}
   body.home-mode .home-hero-copy{position:relative!important;z-index:1!important;display:flex!important;flex-direction:column!important;width:100%!important;max-width:none!important;min-width:0!important;align-self:stretch!important;padding:0!important;margin:0 0 18px!important;animation:none!important}
   body.home-mode .home-hero-eyebrow{font-size:11px!important;letter-spacing:.12em!important;margin:0 0 10px!important}
