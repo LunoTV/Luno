@@ -208,3 +208,5 @@ test("home discovery begins directly after the hero without a duplicate divider 
   assert.ok(css.includes("body.home-mode #trendingSection:before{display:none!important}"), "first discovery rail does not add a divider-sized gap");
   assert.ok(css.includes("body.home-mode #trendingSection{margin-top:18px!important;padding-top:0!important}"), "popular rail has a compact, explicit home spacing");
 });
+
+\ntest("home is rebuilt from one dedicated stylesheet and keeps the approved rail order", async () => {\n const html=await readFile(new URL("index.html",root),"utf8");\n const homeCss=await readFile(new URL("ui/home.css",root),"utf8");\n assert.ok(html.includes('href="./ui/home.css?v=1"'));\n assert.ok(html.includes('class="luno-home-hero"'));\n assert.ok(html.indexOf('id="trendingCards"')<html.indexOf('id="topRatedCards"'));\n assert.ok(!html.includes('id="continueSection"'));\n assert.ok(homeCss.includes(".luno-home-hero{"));\n});\n
