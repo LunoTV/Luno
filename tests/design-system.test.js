@@ -269,6 +269,9 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   const css = await readFile(new URL("styles.css", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(app.includes('function renderLunoCatalog()'), "catalog has one dedicated renderer");
+  assert.ok(app.includes("items.slice(0,lunoCatalogVisible)") && app.includes("lunoCatalogVisible=24"), "catalog paints a small first batch instead of every poster at once");
+  assert.ok(app.includes("function bindCards(root=document)") && app.includes("bindCards(results)"), "poster event binding is scoped to the catalog batch");
+  assert.ok(app.includes("lunoCatalogLoadMore") && app.includes("lunoCatalogVisible+=24"), "additional posters load in batches");
   assert.ok(app.includes('data-catalog-view="grid"') && app.includes('data-catalog-view="list"'), "both poster styles are selectable");
   assert.ok(app.includes('data-catalog-sort="newest"') && app.includes('data-catalog-sort="rating"'), "newness and rating sorting are wired");
   assert.ok(app.includes('id="lunoCatalogGenre"'), "genre filter is present");
@@ -276,7 +279,7 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   assert.ok(app.includes('document.body.classList.add("library-open","catalog-open")'), "catalog retains its own screen state");
   assert.ok(css.includes(".luno-catalog-results.is-grid") && css.includes(".luno-catalog-results.is-list"), "grid and cinematic list styles are defined");
   assert.ok(css.includes("grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px"), "mobile poster grid is compact with clear spacing");
-  assert.ok(html.includes("./styles.css?v=191"), "compact catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=192"), "compact catalog CSS has a fresh cache version");
   assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
   assert.ok(css.includes("body.library-open.catalog-open #app>.mobile-tabbar.luno-reference-tabbar"), "catalog overrides the library screen tab-bar hide rule");
   assert.ok(html.includes("./styles.css?v=191"), "catalog navigation CSS has a fresh cache version");
