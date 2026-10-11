@@ -19,6 +19,9 @@ const seriesCards=document.querySelector("#seriesCards");
 const lunoPicksCards=document.querySelector("#lunoPicksCards");
 const eveningCards=document.querySelector("#eveningCards");
 const classicsCards=document.querySelector("#classicsCards");
+const highRatedCards=document.querySelector("#highRatedCards");
+const topMoviesCards=document.querySelector("#topMoviesCards");
+const topSeriesCards=document.querySelector("#topSeriesCards");
 const searchPanel=document.querySelector("#searchPanel");
 const searchInput=document.querySelector("#searchInput");
 const searchBox=document.querySelector(".search-box");
@@ -1440,6 +1443,11 @@ function renderDiscovery(){
     .slice(0,18);
 
   if(trendingCards) setHTMLIfChanged(trendingCards,trending.map(card).join(""));
+  if(highRatedCards) setHTMLIfChanged(highRatedCards,top.slice(0,18).map(card).join(""));
+  const topMovies=all.filter(item=>mediaCategory(item)==="movies").sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,10);
+  const topSeries=all.filter(item=>mediaCategory(item)==="series").sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0)).slice(0,10);
+  if(topMoviesCards) setHTMLIfChanged(topMoviesCards,topMovies.map(card).join(""));
+  if(topSeriesCards) setHTMLIfChanged(topSeriesCards,topSeries.map(card).join(""));
   if(newCards) setHTMLIfChanged(newCards,fresh.map(card).join(""));
   if(topCards) setHTMLIfChanged(topCards,top.map(card).join(""));
 
