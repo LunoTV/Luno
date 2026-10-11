@@ -1167,43 +1167,85 @@ function renderLibraryBatch(){
   if(loader) loader.textContent=libraryVisible>=libraryItems.length?"Вы просмотрели весь каталог":"Прокрути вниз для продолжения";
 }
 
-function openCategoryHub(){
-  setLunoHistory("catalog");
-  if(!libraryView || !libraryContent) return;
-  libraryType="catalog";
+let lunoCatalogState={category:"series",genre:"all",sort:"newest",view:"grid"};
+const LUNO_CATALOG_CATEGORIES=[
+  {id:"series",label:"Сериалы"},
+  {id:"movies",label:"Фильмы"},
+  {id:"cartoons",label:"Мультфильмы"},
+  {id:"anime",label:"Аниме"},
+  {id:"shows",label:"Шоу"},
+  {id:"collections",label:"Подборки"}
+];
+function catalogItemsForView(){
+  const all=[...new Map(catalogItems.filter(item=>item?.id).map(item=>[String(item.id),item])).values()];
+  let items=lunoCatalogState.category==="collections"?all:all.filter(item=>mediaCategory(item)===lunoCatalogState.category);
+  if(lunoCatalogState.genre!=="all")items=items.filter(item=>(Array.isArray(item.genres)?item.genres:[]).some(genre=>String(typeof genre==="string"?genre:genre?.name||"").toLocaleLowerCase("ru-RU")===lunoCatalogState.genre));
+  if(lunoCatalogState.sort==="rating")items.sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0)||(Number(b.popularity)||0)-(Number(a.popularity)||0));
+  else if(lunoCatalogState.sort==="newest")items.sort((a,b)=>getYear(b)-getYear(a)||(Number(b.popularity)||0)-(Number(a.popularity)||0));
+  else items.sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
+  return items;
+}
+function renderLunoCatalog(){
+  if(!libraryContent)return;
+  const items=catalogItemsForView();
+  const genres=[...new Set((lunoCatalogState.category==="collections"?catalogItems:catalogItems.filter(item=>mediaCategory(item)===lunoCatalogState.category)).flatMap(item=>(Array.isArray(item.genres)?item.genres:[]).map(genre=>String(typeof genre==="string"?genre:genre?.name||"").trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,"ru"));
+  const heading=LUNO_CATALOG_CATEGORIES.find(item=>item.id===lunoCatalogState.category)?.label||"Каталог";
   libraryTitle.textContent="Каталог";
   libraryKicker.textContent="";
   libraryContent.innerHTML=
-    '<div class="luno-catalog-intro">'+
-      '<span class="luno-catalog-eyebrow"><i></i> ТВОЯ ВСЕЛЕННАЯ КИНО</span>'+
-      '<h2>Что будем <em>смотреть?</em></h2>'+
-      '<p>Большие истории начинаются с одного выбора.</p>'+
-    '</div>'+
-    '<div class="category-hub luno-category-hub">'+
-      '<button class="category-hub-card luno-category-film" data-category="movies"><span class="luno-category-icon">▰</span><small class="luno-category-overline">БОЛЬШОЙ ЭКРАН</small><strong>Фильмы</strong><small class="luno-category-desc">Истории на один вечер</small><b class="luno-category-arrow">↗</b></button>'+
-      '<button class="category-hub-card luno-category-series" data-category="series"><span class="luno-category-icon">▤</span><small class="luno-category-overline">СЛЕДУЮЩАЯ СЕРИЯ</small><strong>Сериалы</strong><small class="luno-category-desc">Истории, в которые погружаешься</small><b class="luno-category-arrow">↗</b></button>'+
-      '<button class="category-hub-card luno-category-cartoons" data-category="cartoons"><span class="luno-category-icon">✦</span><small class="luno-category-overline">ДЛЯ ВСЕХ ВОЗРАСТОВ</small><strong>Мультфильмы</strong><small class="luno-category-desc">Яркие миры и герои</small><b class="luno-category-arrow">↗</b></button>'+
-      '<button class="category-hub-card luno-category-anime" data-category="anime"><span class="luno-category-icon">◇</span><small class="luno-category-overline">МИР АНИМАЦИИ</small><strong>Аниме</strong><small class="luno-category-desc">Эмоции без границ</small><b class="luno-category-arrow">↗</b></button>'+
-      '<button class="category-hub-card luno-category-shows" data-category="shows"><span class="luno-category-icon">◉</span><small class="luno-category-overline">В ПРЯМОМ ЭФИРЕ</small><strong>Шоу</strong><small class="luno-category-desc">Развлечения и открытия</small><b class="luno-category-arrow">↗</b></button>'+
-      '<button class="category-hub-card luno-category-favorites" data-category="favorites"><span class="luno-category-icon">♡</span><small class="luno-category-overline">ТВОЯ КОЛЛЕКЦИЯ</small><strong>Моё кино</strong><small class="luno-category-desc">Избранное и продолжение</small><b class="luno-category-arrow">↗</b></button>'+
-    '</div>'+
-    '<div class="luno-catalog-foot"><span class="luno-catalog-foot-orbit">◐</span><span><strong>Твой вечер. Твой выбор.</strong><small>Открывай новое в LUNO</small></span></div>';
+    '<div class="luno-catalog-shell">'+
+      '<div class="luno-catalog-tabs" role="tablist" aria-label="Категории каталога">'+LUNO_CATALOG_CATEGORIES.map(category=>'<button type="button" role="tab" class="luno-catalog-tab'+(lunoCatalogState.category===category.id?' active':'')+'" data-catalog-category="'+category.id+'" aria-selected="'+(lunoCatalogState.category===category.id)+'">'+escapeHtml(category.label)+'</button>').join("")+'</div>'+
+      '<label class="luno-catalog-genre"><span class="luno-sr-only">Жанр</span><select id="lunoCatalogGenre" aria-label="Фильтр по жанру"><option value="all">Все жанры</option>'+genres.map(genre=>'<option value="'+escapeHtml(genre.toLocaleLowerCase("ru-RU"))+'"'+(lunoCatalogState.genre===genre.toLocaleLowerCase("ru-RU")?' selected':'')+'>'+escapeHtml(genre)+'</option>').join("")+'</select><span aria-hidden="true">⌄</span></label>'+
+      '<div class="luno-catalog-controls"><div class="luno-catalog-sort" role="group" aria-label="Сортировка">'+
+        '<button type="button" data-catalog-sort="newest" class="'+(lunoCatalogState.sort==="newest"?'active':'')+'" aria-pressed="'+(lunoCatalogState.sort==="newest")+'">По новизне</button>'+
+        '<button type="button" data-catalog-sort="rating" class="'+(lunoCatalogState.sort==="rating"?'active':'')+'" aria-pressed="'+(lunoCatalogState.sort==="rating")+'">По рейтингу</button></div>'+
+        '<div class="luno-catalog-view-toggle" role="group" aria-label="Вид постеров">'+
+          '<button type="button" data-catalog-view="grid" class="'+(lunoCatalogState.view==="grid"?'active':'')+'" aria-label="Сетка постеров" aria-pressed="'+(lunoCatalogState.view==="grid")+'"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>'+
+          '<button type="button" data-catalog-view="list" class="'+(lunoCatalogState.view==="list"?'active':'')+'" aria-label="Большие постеры с описанием" aria-pressed="'+(lunoCatalogState.view==="list")+'"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="15" rx="2"/><path d="M7 21h10"/></svg></button></div></div>'+
+      '<div class="luno-catalog-results-meta"><span>'+escapeHtml(heading)+'</span><span>'+items.length+' материалов</span></div>'+
+      '<div class="luno-catalog-results '+(lunoCatalogState.view==="list"?'is-list':'is-grid')+'" id="lunoCatalogResults"></div>'+
+      (items.length?'':'<div class="luno-catalog-empty">В этой категории пока нет подходящих материалов.</div>')+'</div>';
+  const results=libraryContent.querySelector("#lunoCatalogResults");
+  if(results){
+    if(lunoCatalogState.view==="grid"){
+      results.innerHTML=items.map((item,index)=>card(item,index<4)).join("");
+      bindCards();
+    }else{
+      results.innerHTML=items.map(item=>{
+        const title=item.name||"Без названия";
+        const art=String(item.background||item.backdrop||(item.backdrop_path?("https://image.tmdb.org/t/p/w1280/"+String(item.backdrop_path).replace(/^\//,"")):"")||item.poster||"");
+        const rating=Number(item.rating)>0?Number(item.rating).toFixed(1):"—";
+        const year=String(item.releaseInfo||"").match(/\d{4}/)?.[0]||"";
+        const genres=(Array.isArray(item.genres)?item.genres:[]).map(genre=>String(typeof genre==="string"?genre:genre?.name||"")).filter(Boolean).slice(0,3).join(" · ");
+        const description=String(item.description||"Описание пока не добавлено.");
+        const image=art?'<img src="'+escapeHtml(art)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">':'';
+        return '<button type="button" class="luno-catalog-list-card" data-catalog-item="'+escapeHtml(item.id)+'" aria-label="Открыть '+escapeHtml(title)+'"><span class="luno-catalog-list-art">'+image+'<span class="luno-catalog-list-fade"></span></span><span class="luno-catalog-list-copy"><strong class="luno-catalog-list-title">'+escapeHtml(title)+'</strong><span class="luno-catalog-list-meta"><b>★ '+rating+'</b>'+(year?'<span>'+year+'</span>':'')+'<span>'+escapeHtml(categoryLabel(item))+'</span></span>'+(genres?'<span class="luno-catalog-list-genres">'+escapeHtml(genres)+'</span>':'')+'<span class="luno-catalog-list-description">'+escapeHtml(description)+'</span></span></button>';
+      }).join("");
+      results.querySelectorAll("[data-catalog-item]").forEach(button=>button.addEventListener("click",()=>{
+        const item=items.find(candidate=>String(candidate.id)===String(button.dataset.catalogItem));
+        if(item)openDetail(item);
+      }));
+      results.querySelectorAll(".luno-catalog-list-art img").forEach(image=>image.addEventListener("error",()=>image.remove(),{once:true}));
+    }
+  }
+  libraryContent.querySelectorAll("[data-catalog-category]").forEach(button=>button.addEventListener("click",()=>{
+    lunoCatalogState.category=button.dataset.catalogCategory;lunoCatalogState.genre="all";renderLunoCatalog();libraryContent.scrollTop=0;
+  }));
+  libraryContent.querySelector("#lunoCatalogGenre")?.addEventListener("change",event=>{lunoCatalogState.genre=event.target.value;renderLunoCatalog();});
+  libraryContent.querySelectorAll("[data-catalog-sort]").forEach(button=>button.addEventListener("click",()=>{lunoCatalogState.sort=button.dataset.catalogSort;renderLunoCatalog();}));
+  libraryContent.querySelectorAll("[data-catalog-view]").forEach(button=>button.addEventListener("click",()=>{lunoCatalogState.view=button.dataset.catalogView;renderLunoCatalog();}));
+}
+function openCategoryHub(){
+  setLunoHistory("catalog");
+  if(!libraryView||!libraryContent)return;
+  lunoCatalogState={category:"series",genre:"all",sort:"newest",view:lunoCatalogState.view||"grid"};
+  libraryType="catalog";libraryTitle.textContent="Каталог";libraryKicker.textContent="";libraryContent.scrollTop=0;
   libraryView.classList.remove("hidden");
-  document.body.classList.add("library-open");
-  libraryContent.scrollTop=0;
-  libraryContent.querySelectorAll("[data-category]").forEach(button=>{
-    button.addEventListener("click",()=>{
-      const category=button.dataset.category;
-      if(category==="favorites"){
-        closeLibrary();
-        favoritesSection?.scrollIntoView({behavior:"smooth",block:"start"});
-      }else{
-        openLibrary(category);
-      }
-    });
-  });
+  document.body.classList.add("library-open","catalog-open");
+  renderLunoCatalog();
 }
 function openLibrary(type,pushHistory=true){
+  document.body.classList.remove("catalog-open");
   const config={
     movies:{title:"Фильмы",kicker:""},
     series:{title:"Сериалы",kicker:""},
@@ -1316,7 +1358,7 @@ function openLibrary(type,pushHistory=true){
 
 function closeLibrary(fromHistory=false){
   libraryView?.classList.add("hidden");
-  document.body.classList.remove("library-open");
+  document.body.classList.remove("library-open","catalog-open");
   if(!fromHistory){
     try{
       if(history.state?.luno && history.state.luno!=="home" && history.state.luno!=="detail") history.back();
