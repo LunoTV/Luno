@@ -2963,7 +2963,7 @@ main>.section .section-more:hover span{transform:translateX(2px)}
 main>.discovery-section .cards,main>.resume-section .cards{
   display:grid!important;grid-auto-flow:column!important;grid-auto-columns:minmax(145px,16.2%)!important;
   grid-template-columns:none!important;align-items:start;gap:clamp(10px,1.2vw,17px)!important;
-  overflow-x:auto;overflow-y:hidden;padding:2px 3px 19px!important;margin:0 -3px;
+  overflow-x:auto;overflow-y:hidden;padding:9px 8px 22px!important;margin:0 -8px;
   scroll-snap-type:x proximity;scroll-padding-inline:3px;overscroll-behavior-x:contain;
   -webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;
 }
@@ -2971,7 +2971,7 @@ main>.discovery-section .cards>.card,main>.resume-section .cards>.card{width:100
 main>.section .cards>.card{border-radius:9px;background:transparent}
 main>.section .cards>.card .card-title{padding:10px 2px 3px;font-size:12px;letter-spacing:-.01em}
 main>.section .cards>.card .card-meta{padding:0 2px 8px;font-size:10px}
-main>.section .cards>.card .card-art{border-radius:9px}
+main>.section .cards>.card .card-art{border-radius:9px;transform:rotate(-2deg);transform-origin:center center}
 main>.section .cards>.card:focus-visible{outline-offset:2px}
 main>.section:not(:first-child):before{content:"";display:block;height:1px;margin:0 0 25px;background:linear-gradient(90deg,rgba(255,255,255,.12),rgba(255,255,255,.025) 68%,transparent)}
 main>.resume-section:before{display:none}
