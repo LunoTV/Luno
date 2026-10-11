@@ -1171,15 +1171,15 @@ function openLibrary(type,pushHistory=true){
     anime:{title:"Аниме",kicker:""},
     shows:{title:"Шоу",kicker:""},
     history:{title:"История просмотра",kicker:"ТВОИ ПРОСМОТРЫ"},
-    popular:{title:"Популярное",kicker:"СЕЙЧАС СМОТРЯТ"},
+    popular:{title:"Популярное"},
     topRated:{title:"Высокий рейтинг",kicker:"ЛУЧШЕ ОЦЕНЁННОЕ"},
     topMovies:{title:"Топ 10 фильмов",kicker:"ЛУЧШИЕ ФИЛЬМЫ"},
     topSeries:{title:"Топ 10 сериалов",kicker:"ЛУЧШИЕ СЕРИАЛЫ"},
     continue:{title:"Продолжить просмотр",kicker:"ВОЗВРАЩАЙСЯ"},
     openCinema:{title:"Open Cinema",kicker:"ОТКРЫТОЕ КИНО"},
-    recommendations:{title:"Рекомендуем тебе",kicker:"ВЫБОР LUNO"},
-    evening:{title:"Что посмотреть сегодня",kicker:"НА ВЕЧЕР"},
-    classics:{title:"Культовое кино",kicker:"ПРОВЕРЕНО ВРЕМЕНЕМ"},
+    recommendations:{title:"Рекомендуем тебе"},
+    evening:{title:"Что посмотреть сегодня"},
+    classics:{title:"Культовое кино"},
     favorites:{title:"Избранное",kicker:"ТВОЯ КОЛЛЕКЦИЯ"}
   }[type];
   if(!config || !libraryView) return;
