@@ -1172,7 +1172,7 @@ function openLibrary(type,pushHistory=true){
     anime:{title:"Аниме",kicker:""},
     shows:{title:"Шоу",kicker:""},
     history:{title:"История просмотра",kicker:"ТВОИ ПРОСМОТРЫ"},
-    popular:{title:"Популярное",kicker:"СЕЙЧАС СМОТРЯТ"},
+    popular:{title:"Популярное",kicker:"СЕЙЧАС СМОТРЯТ"},\n    topRated:{title:"Высокий рейтинг",kicker:"ВЫБОР ПО РЕЙТИНГУ"},\n    topMovies:{title:"Топ 10 фильмов",kicker:"ЛУЧШИЕ ФИЛЬМЫ"},\n    topSeries:{title:"Топ 10 сериалов",kicker:"ЛУЧШИЕ СЕРИАЛЫ"},\n    doramas:{title:"Дорамы",kicker:"КОРЕЙСКИЕ ИСТОРИИ"},
     continue:{title:"Продолжить просмотр",kicker:"ВОЗВРАЩАЙСЯ"},
     openCinema:{title:"Open Cinema",kicker:"ОТКРЫТОЕ КИНО"},
     recommendations:{title:"Рекомендуем тебе",kicker:"ВЫБОР LUNO"},
@@ -1184,7 +1184,7 @@ function openLibrary(type,pushHistory=true){
 
   document.body.classList.add("show-global-back");
   if(pushHistory) setLunoHistory(type);
-  if(["popular","continue","openCinema","recommendations","evening","classics","favorites"].includes(type)){
+  if(["popular","topRated","topMovies","topSeries","doramas","continue","openCinema","recommendations","evening","classics","favorites"].includes(type)){
     const all=[...new Map(catalogItems.filter(item=>item?.id).map(item=>[item.id,item])).values()];
     const stableKey=item=>{const value=String(item.id||item.name||item.title||"");let hash=2166136261;for(const ch of value){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}return hash>>>0;};
     const popular=all.slice().sort((x,y)=>(Number(y.popularity)||0)-(Number(x.popularity)||0));
@@ -1193,7 +1193,7 @@ function openLibrary(type,pushHistory=true){
     const genres=item=>Array.isArray(item.genres)?item.genres.map(x=>String(x).toLowerCase()):[];
     const evening=all.filter(item=>genres(item).some(g=>/комеди|роман|приключ|семейн|фэнтези|мелодрам/.test(g))).sort((x,y)=>stableKey(x)-stableKey(y));
     const classics=all.filter(item=>getYear(item)>0&&getYear(item)<=2010).sort((x,y)=>stableKey(x)-stableKey(y));
-    const source={popular,continue:loadResume(),openCinema:openCinemaItems,recommendations,evening,classics,favorites:loadFavorites()}[type]||[];
+    const rated=all.filter(item=>(Number(item.rating)||0)>0).sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0));\n    const topMovies=all.filter(item=>mediaCategory(item)==="movies").sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)).slice(0,10);\n    const topSeries=all.filter(item=>mediaCategory(item)==="series").sort((x,y)=>(Number(y.rating)||0)-(Number(x.rating)||0)).slice(0,10);\n    const doramas=all.filter(item=>/дорам|korean|k-drama|корейск/i.test([item.name,item.title,...genres(item)].join(" ")));\n    const source={popular,topRated:rated,topMovies,topSeries,doramas,continue:loadResume(),openCinema:openCinemaItems,recommendations,evening,classics,favorites:loadFavorites()}[type]||[];
     libraryType=type;librarySourceItems=source.slice();libraryItems=librarySourceItems.slice();librarySort="popular";
     if(type!=="continue"&&type!=="favorites")libraryItems=sortLibraryItems(libraryItems,"popular");
     libraryVisible=0;libraryTitle.textContent=config.title;libraryKicker.textContent=config.kicker;
@@ -1499,7 +1499,7 @@ function renderHomeHero(item){
   }
   const dots=document.querySelector("#homeHeroDots");
   if(dots){
-    dots.innerHTML=homeHeroItems.map((entry,index)=>'<button class="home-hero-dot" type="button" data-hero-slide="'+index+'" aria-label="Рекомендация '+(index+1)+'" aria-current="'+String(index===homeHeroIndex)+'"></button>').join("");
+    dots.innerHTML=homeHeroItems.map((entry,index)=>'<button class="luno-home-dot" type="button" data-hero-slide="'+index+'" aria-label="Рекомендация '+(index+1)+'" aria-current="'+String(index===homeHeroIndex)+'"></button>').join("");
   }
 }
 
