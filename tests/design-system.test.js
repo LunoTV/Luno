@@ -309,7 +309,7 @@ test("mobile search discovery aligns below the search field and keeps navigation
   const css = await readFile(new URL("styles.css", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("Search screen: anchor discovery directly under the fixed field"), "reference-aligned search layout is defined");
-  assert.ok(css.includes("top:180px!important"), "genre discovery sits directly below the fixed search field");
+  assert.ok(css.includes("top:170px!important"), "genre discovery sits directly below the fixed search field");
   assert.ok(css.includes("body.search-open .mobile-tabbar{\n    display:flex!important;"), "bottom navigation remains visible during search");
   assert.ok(html.includes("./styles.css?v=203"), "search layout uses the current stylesheet cache version");
 });
