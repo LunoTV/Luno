@@ -5978,7 +5978,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--luno-violet)}
 /* LUNO Home layout v2 — authoritative responsive home layout. */
 @media(max-width:700px){
   body.home-mode #app main,body.home-mode main{padding-top:calc(env(safe-area-inset-top,0px) + 12px)!important;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))!important}
-  body.home-mode .home-hero{height:clamp(570px,84svh,760px)!important;min-height:570px!important;max-height:760px!important;margin:0!important;padding:24px 20px 22px!important;border:0!important;border-radius:0!important;background:var(--luno-bg)!important;box-shadow:none!important}
+  body.home-mode .home-hero{height:clamp(560px,70svh,680px)!important;min-height:560px!important;max-height:680px!important;margin:0!important;padding:24px 20px 22px!important;border:0!important;border-radius:0!important;background:var(--luno-bg)!important;box-shadow:none!important}
   body.home-mode .home-hero-backdrop{inset:0!important;opacity:0;transform:none!important;background-position:center 24%!important;background-size:cover!important}
   body.home-mode .home-hero.is-ready .home-hero-backdrop{opacity:1!important;animation:none!important}
   body.home-mode .home-hero:before{background:linear-gradient(180deg,rgba(8,9,13,.02) 0%,rgba(8,9,13,.05) 32%,rgba(8,9,13,.48) 58%,rgba(8,9,13,.92) 82%,#08090D 100%)!important}
