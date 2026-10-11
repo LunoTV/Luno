@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=197">
+  <link rel="stylesheet" href="./styles.css?v=198">
   <link rel="stylesheet" href="./ui/design-system.css?v=7">
   <link rel="stylesheet" href="./ui/detail-page.css?v=9">
   <link rel="stylesheet" href="./ui/settings.css?v=1">
@@ -121,7 +121,7 @@
     </div>
 
     <div id="searchPanel" class="overlay hidden">
-      <div class="search-box luno-search-screen">
+      <div class="search-box luno-search-screen luno-search-discovery">
         <button id="closeSearch" class="search-close-x" aria-label="Закрыть поиск">×</button>
         <div class="search-topbar">
           <button id="searchBack" class="search-back" type="button" aria-label="Назад">‹</button>
@@ -129,15 +129,35 @@
           <span class="search-top-spacer"></span>
         </div>
         <div class="search-field luno-search-field">
-          <span class="search-icon"></span>
-          <input id="searchInput" autofocus autocomplete="off" placeholder="Название фильма или сериала">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="searchInput" autofocus autocomplete="off" placeholder="Сериал, фильм или жанр">
+          <button id="searchMic" class="search-mic" type="button" aria-label="Голосовой поиск">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"></path></svg>
+          </button>
           <button id="searchClear" class="search-clear" type="button" aria-label="Очистить">×</button>
         </div>
-        <div id="searchHistoryBlock" class="search-history-block">
-          <div class="search-subtitle">История просмотров</div>
+        <section class="search-discovery-block" id="searchDiscovery">
+          <div class="search-discovery-heading">
+            <h2>Популярные жанры</h2>
+            <div class="search-discovery-tabs" role="tablist" aria-label="Тип контента">
+              <button type="button" class="active" data-search-category="series" aria-selected="true">Сериалы</button>
+              <button type="button" data-search-category="movies" aria-selected="false">Фильмы</button>
+            </div>
+          </div>
+          <div class="search-genre-cards" id="searchGenreCards">
+            <button type="button" class="search-genre-card genre-detective" data-search-genre="Детективы"><span>Детективы</span></button>
+            <button type="button" class="search-genre-card genre-comedy" data-search-genre="Комедии"><span>Комедии</span></button>
+            <button type="button" class="search-genre-card genre-drama" data-search-genre="Драмы"><span>Драмы</span></button>
+            <button type="button" class="search-genre-card genre-action" data-search-genre="Боевики"><span>Боевики</span></button>
+            <button type="button" class="search-genre-card genre-fantasy" data-search-genre="Фантастика"><span>Фантастика</span></button>
+            <button type="button" class="search-genre-card genre-anime" data-search-genre="Аниме"><span>Аниме</span></button>
+          </div>
+        </section>
+        <div id="searchHistoryBlock" class="search-history-block hidden">
+          <div class="search-subtitle">История поиска</div>
           <div id="searchHistory" class="search-history"></div>
         </div>
-        <div class="search-sources" role="tablist" aria-label="Источники поиска">
+        <div class="search-sources hidden" role="tablist" aria-label="Источники поиска">
           <button class="search-source active" type="button" data-search-source="tmdb">TMDB <b id="searchTmdbCount">0</b></button>
           <button class="search-source search-ai" type="button" data-search-source="ai">✦ AI-поиск</button>
         </div>
@@ -406,6 +426,6 @@
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
-  <script type="module" src="./app.js?v=catalog-landscape-backdrops-fix"></script>
+  <script type="module" src="./app.js?v=search-discovery-redesign"></script>
 </body>
 </html>
