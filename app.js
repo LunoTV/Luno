@@ -1556,7 +1556,7 @@ function renderCatalogSections(){
   try{savedHero=JSON.parse(localStorage.getItem(heroStorageKey)||"null");}catch{}
   const savedIndex=savedHero?.cycle===heroCycle ? heroPool.findIndex(item=>String(item.id)===String(savedHero.id)) : -1;
   const heroStart=savedIndex>=0 ? savedIndex : (heroPool.length ? (heroCycle*5)%heroPool.length : 0);
-  homeHeroItems=heroPool.length ? [heroPool[heroStart]] : [];
+  homeHeroItems=heroPool.length ? Array.from({length:Math.min(5,heroPool.length)},(_,index)=>heroPool[(heroStart+index)%heroPool.length]) : [];
   homeHeroIndex=0;
   homeHeroBackdropLayer=0;
   if(homeHeroItems[0]){
@@ -3025,6 +3025,10 @@ document.querySelector("#homeHeroDots")?.addEventListener("click",event=>{
   const index=Number(button.dataset.heroSlide);
   if(!Number.isInteger(index)||!homeHeroItems[index])return;
   homeHeroIndex=index;
+  try{localStorage.setItem("luno-home-hero-selection",JSON.stringify({
+    cycle:Math.floor(Date.now()/(48*60*60*1000)),
+    id:homeHeroItems[index].id
+  }));}catch{}
   renderHomeHero(homeHeroItems[index],{animate:true});
 });
 
