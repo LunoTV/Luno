@@ -202,6 +202,13 @@ test("category tabs replace sibling history entries and restore a real home stat
 });
 
 
+test("poster rails recede only at the top-left while the bottom edge stays level", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(css.includes("clip-path:polygon(0 3%,100% 0,100% 100%,0 100%)"), "poster top-left corner recedes subtly while the bottom edge stays straight");
+  assert.ok(!css.includes("main>.section .cards>.card .card-art{border-radius:9px;transform:rotate(-2deg)"), "poster images are not rotated as a whole");
+});
+
+
 test("home discovery begins directly after the hero without a duplicate divider gap", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
