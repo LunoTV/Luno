@@ -95,7 +95,7 @@ test("LUNO detail card supports TMDB title logos with text fallback", async () =
   const app = await readFile(new URL("app.js", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(app.includes("async function loadDetailLogo(value,title)"), "loads the title logo from TMDB images");
-  assert.ok(app.includes('"/images?"')===false, "uses the TMDB image endpoint directly");
+  assert.ok(app.includes('"/images?"+params'), "uses the TMDB image endpoint directly");
   assert.ok(app.includes('detailTitle.classList.add("has-tmdb-logo")'), "marks the title only after the logo loads");
   assert.ok(app.includes('detailTitle.textContent=title'), "retains readable title text as fallback");
   assert.ok(css.includes(".luno-card-title-logo"), "styles the title logo within LUNO's detail card");
@@ -156,7 +156,7 @@ test("mobile navigation uses a floating glass bar with five SVG icon tabs", asyn
   assert.ok((html.match(/<svg viewBox="0 0 24 24"/g)||[]).length>=5, "all five navigation items use clean SVG icons");
   assert.ok(app.includes('if(section==="library"){openLibrary("favorites");return;}'), "library opens saved favorites");
   assert.ok(app.includes('if(section==="profile" || section==="settings"){openSettingsView("profile");return;}'), "profile opens the existing profile/settings view");
-  assert.ok(css.includes("bottom:calc(14px + env(safe-area-inset-bottom,0px))"), "navigation floats above the bottom safe area");
+  assert.ok(css.includes("bottom:calc(72px + env(safe-area-inset-bottom,0px))"), "navigation floats above the bottom safe area");
   assert.ok(css.includes("rgba(22,23,29,.70)"), "navigation uses a translucent glass background");
   assert.ok(css.includes("#8581AD"), "active navigation item uses LUNO violet");
   assert.ok(css.includes("rgba(140,184,204"), "navigation preserves the LUNO ice-blue accent");
