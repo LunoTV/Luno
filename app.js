@@ -938,12 +938,6 @@ function restoreLunoHistoryPosition(state){
 }
 function openDetail(item){
   if(!item) return;
-  // On phones skip the separate title page and open playback directly.
-  // Keep the full detail experience on desktop and Smart TVs.
-  if(window.matchMedia("(max-width:700px)").matches){
-    openPlayer(item.id,item.type,item.name);
-    return;
-  }
   detailReturnLibrary=libraryView && !libraryView.classList.contains("hidden") ? libraryType : "";
   if(detailReturnLibrary) closeLibrary(true);
   currentItem=item;
