@@ -332,7 +332,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=search-rows-v1"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=detail-artwork-immediate-v1"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=222"), "updated tab styling bypasses the browser cache");
 });
 
@@ -360,4 +360,13 @@ test("mobile detail card keeps title and actions visible over the backdrop", asy
   assert.ok(css.includes("force the LUNO detail content above its cinematic artwork on mobile"), "mobile detail recovery rules are present");
   assert.ok(css.includes(".luno-card-hero-copy>*") && css.includes("visibility:visible!important;opacity:1!important"), "title and actions remain visible over artwork");
   assert.ok(html.includes("./ui/detail-page.css?v=13"), "detail recovery CSS uses a fresh cache version");
+});
+
+
+test("detail backdrop is applied immediately before image preload completes", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(app.includes("Apply immediately so Safari can paint the artwork"), "detail backdrop has immediate rendering fallback");
+  assert.ok(app.includes("if(candidates.length) applyBackdrop(0);"), "first available artwork candidate is applied immediately");
+  assert.ok(html.includes("./app.js?v=detail-artwork-immediate-v1"), "app uses a fresh cache version");
 });
