@@ -1494,9 +1494,19 @@ document.querySelector("#settingsClearPreferences")?.addEventListener("click",()
   if(status)status.textContent="Настройки сброшены. Избранное и история не затронуты.";
 });
 
+function setMobileNavigationActive(section){
+  document.querySelectorAll(".nav-item,.mobile-tab").forEach(x=>{
+    const active=x.dataset.section===section;
+    x.classList.toggle("active",active);
+    if(active)x.setAttribute("aria-current","page");
+    else x.removeAttribute("aria-current");
+  });
+}
+
 function navigate(section){
-  if(section==="profile" || section==="settings"){openSettingsView("profile");return;}
-  if(section==="library"){openLibrary("history");return;}
+  if(section==="profile" || section==="settings"){setMobileNavigationActive("profile");openSettingsView("profile");return;}
+  if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}
+  setMobileNavigationActive(section);
   settingsView?.classList.add("hidden");
   document.body.classList.remove("settings-open");
   document.body.classList.toggle("home-mode",section==="home");
