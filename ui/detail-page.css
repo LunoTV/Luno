@@ -380,3 +380,73 @@ body.detail-open #detail .luno-banner-header #closeDetail {
     background-size:cover !important;
   }
 }
+
+
+/* Phone title view: artwork only, with a small back control. */
+@media(max-width:700px) {
+  body.detail-open #detail.luno-card-page {
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    height:100vh !important;
+    height:100dvh !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    background:#08090D !important;
+    z-index:999 !important;
+  }
+  body.detail-open #detail .luno-card-backdrop {
+    position:absolute !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    background:#08090D !important;
+  }
+  body.detail-open #detail #detailBackdrop {
+    position:absolute !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+    background:#08090D !important;
+    background-position:center center !important;
+    background-repeat:no-repeat !important;
+    background-size:contain !important;
+  }
+  body.detail-open #detail .luno-card-backdrop-shade,
+  body.detail-open #detail .luno-card-trailer,
+  body.detail-open #detail .luno-card-content,
+  body.detail-open #detail #detailHiddenData,
+  body.detail-open #detail .luno-card-actions,
+  body.detail-open #detail .luno-card-links {
+    display:none !important;
+  }
+  body.detail-open #detail .luno-banner-header {
+    position:absolute !important;
+    inset:0 0 auto !important;
+    display:flex !important;
+    min-height:0 !important;
+    height:auto !important;
+    padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px !important;
+    background:transparent !important;
+    border:0 !important;
+    z-index:1000 !important;
+  }
+  body.detail-open #detail #closeDetail {
+    display:grid !important;
+    visibility:visible !important;
+    place-items:center !important;
+    width:44px !important;
+    height:44px !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:50% !important;
+    background:rgba(8,9,13,.28) !important;
+    color:#fff !important;
+    font-size:38px !important;
+    line-height:1 !important;
+    backdrop-filter:blur(6px) !important;
+  }
+}
