@@ -428,7 +428,7 @@ function detailPosterCandidates(item){
     background:""
   };
   const posters=posterCandidates(posterItem);
-  const explicitPoster=rawPoster&&/^https?:\\/\\//i.test(rawPoster)?[rawPoster]:[];
+  const explicitPoster=rawPoster&&(rawPoster.startsWith("http://")||rawPoster.startsWith("https://"))?[rawPoster]:[];
   const backdrops=backdropPath?posterCandidates({
     ...item,
     poster:"",
