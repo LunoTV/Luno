@@ -393,10 +393,11 @@ function posterCandidates(item){
     const file=(first==="original" || first.startsWith("w")) ? parts.slice(1).join("/") : remotePath;
     const imagePath="t/p/"+size+"/"+file;
     const imageProxyBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
-    // Prefer the canonical TMDB image URL; public mirrors and the Worker are fallbacks.
-    values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
+    // Prefer the previously working public image mirrors, then Worker fallback,
+    // and try the canonical TMDB host last for Safari/network compatibility.
     values.push(...tmdbImageMirrorCandidates(imagePath));
     values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
+    values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
   }
   if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
   // Some catalogue/source adapters provide artwork URLs from public image mirrors
@@ -959,22 +960,20 @@ function openDetail(item){
     ])];
     detailBackdrop.style.backgroundImage="";
     detailBackdrop.dataset.imageIndex="0";
-    const applyBackdrop=(index)=>{
-      if(index>=candidates.length) return;
-      const url=candidates[index];
-      // Apply immediately so Safari can paint the artwork without waiting for
-      // a detached Image preload to fire its onload callback.
-      detailBackdrop.style.backgroundImage='url("'+url.replace(/"/g,"\\\"")+'")';
-      detailBackdrop.dataset.imageIndex=String(index);
+    const tryBackdrop=(index)=>{
+      if(index>=candidates.length){
+        detailBackdrop.style.backgroundImage="";
+        return;
+      }
       const image=new Image();
       image.onload=()=>{
-        detailBackdrop.style.backgroundImage='url("'+url.replace(/"/g,"\\\"")+'")';
+        detailBackdrop.style.backgroundImage='url("'+candidates[index].replace(/"/g,"&quot;")+'")';
         detailBackdrop.dataset.imageIndex=String(index);
       };
-      image.onerror=()=>applyBackdrop(index+1);
-      image.src=url;
+      image.onerror=()=>tryBackdrop(index+1);
+      image.src=candidates[index];
     };
-    if(candidates.length) applyBackdrop(0);
+    tryBackdrop(0);
   }
   const trailerVideo=document.querySelector("#detailTrailerVideo");
   const trailerSound=document.querySelector("#detailTrailerSound");
