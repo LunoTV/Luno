@@ -415,12 +415,14 @@ test("Smart TV home rails render full-size poster artwork", async () => {
 });
 
 
-test("phones skip the title detail page and open playback directly", async () => {
+test("phones open a poster-only title view instead of the detail card or player", async () => {
   const app = await readFile(new URL("app.js", root), "utf8");
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(app.includes('window.matchMedia("(max-width:700px)").matches'), "phone layout bypasses the detail page");
-  assert.ok(app.includes("openPlayer(item.id,item.type,item.name);"), "tapping a title opens playback directly");
-  assert.ok(html.includes("./app.js?v=phone-poster-only-v2"), "phone detail behavior bypasses browser cache");
+  assert.ok(!app.includes('if(window.matchMedia("(max-width:700px)").matches){\n    openPlayer(item.id,item.type,item.name);'), "phone cards do not bypass to player");
+  assert.ok(css.includes("Phone title view: artwork only, with a small back control"), "poster-only phone view is present");
+  assert.ok(css.includes("background-size:contain !important"), "full poster is not cropped on phones");
+  assert.ok(html.includes("./ui/detail-page.css?v=17") && html.includes("./app.js?v=phone-poster-only-v2"), "phone poster view bypasses browser cache");
 });
 
 
