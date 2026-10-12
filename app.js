@@ -948,11 +948,12 @@ function openDetail(item){
     console.error("[LUNO] paintDetail failed",error);
   }
   if(detailBackdrop){
+    const posterPath=String(item?.poster_path||item?.posterPath||"").trim();
     const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").trim();
     const backdropSource={
       ...item,
-      poster: item?.background || item?.backdrop || item?.poster || "",
-      poster_path: backdropPath || item?.poster_path || item?.posterPath || ""
+      poster: item?.poster || item?.posterUrl || item?.poster_url || item?.image || item?.cover || "",
+      poster_path: posterPath || backdropPath
     };
     const candidates=[...new Set([
       ...posterCandidates(backdropSource),
