@@ -1504,6 +1504,11 @@ function setMobileNavigationActive(section){
 }
 
 function navigate(section){
+  // The search screen is a peer page: close it before handling every other
+  // destination, including the early-return Profile and Watch History routes.
+  if(section!=="search" && searchPanel && !searchPanel.classList.contains("hidden")){
+    closeSearchPanel();
+  }
   if(section==="profile" || section==="settings"){setMobileNavigationActive("profile");openSettingsView("profile");return;}
   if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}
   setMobileNavigationActive(section);
