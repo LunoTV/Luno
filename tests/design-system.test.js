@@ -82,7 +82,7 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
   assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
-  assert.ok(html.includes("./ui/detail-page.css?v=12"), "isolated detail stylesheet is linked");
+  assert.ok(html.includes("./ui/detail-page.css?v=13"), "isolated detail stylesheet is linked");
   for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
@@ -351,4 +351,13 @@ test("search results are separated into horizontal media rows", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.ok(app.includes('section("Фильмы",movies)+section("Сериалы",series)+section("Мультфильмы",cartoons)+section("Аниме",anime)+section("Шоу",shows)'), "all five media categories render separately");
   assert.ok(css.includes("flex-flow:row nowrap!important") && css.includes("scroll-snap-type:x mandatory!important"), "search result cards scroll horizontally in each category");
+});
+
+
+test("mobile detail card keeps title and actions visible over the backdrop", async () => {
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(css.includes("force the LUNO detail content above its cinematic artwork on mobile"), "mobile detail recovery rules are present");
+  assert.ok(css.includes(".luno-card-hero-copy>*") && css.includes("visibility:visible!important;opacity:1!important"), "title and actions remain visible over artwork");
+  assert.ok(html.includes("./ui/detail-page.css?v=13"), "detail recovery CSS uses a fresh cache version");
 });
