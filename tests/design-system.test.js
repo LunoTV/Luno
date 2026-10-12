@@ -82,7 +82,7 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
   assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
-  assert.ok(html.includes("./ui/detail-page.css?v=16"), "isolated detail stylesheet is linked");
+  assert.ok(html.includes("./ui/detail-page.css?v=17"), "isolated detail stylesheet is linked");
   for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
@@ -332,7 +332,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=phone-skip-detail-v1"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=phone-poster-only-v2"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=224"), "updated tab styling bypasses the browser cache");
 });
 
@@ -359,7 +359,7 @@ test("mobile detail card keeps title and actions visible over the backdrop", asy
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("force the LUNO detail content above its cinematic artwork on mobile"), "mobile detail recovery rules are present");
   assert.ok(css.includes(".luno-card-hero-copy>*") && css.includes("visibility:visible!important;opacity:1!important"), "title and actions remain visible over artwork");
-  assert.ok(html.includes("./ui/detail-page.css?v=16"), "detail recovery CSS uses a fresh cache version");
+  assert.ok(html.includes("./ui/detail-page.css?v=17"), "detail recovery CSS uses a fresh cache version");
 });
 
 
@@ -368,7 +368,7 @@ test("detail backdrop waits for image preload and retries mirrors", async () => 
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(app.includes("image.onload=()=>{"), "artwork is applied after image load");
   assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "failed artwork candidate falls back to the next mirror");
-  assert.ok(html.includes("./app.js?v=phone-skip-detail-v1"), "app uses a fresh cache version");
+  assert.ok(html.includes("./app.js?v=phone-poster-only-v2"), "app uses a fresh cache version");
 });
 
 
@@ -390,7 +390,7 @@ test("poster-only detail prioritizes the portrait poster over the wide backdrop"
   const app = await readFile(new URL("app.js", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(app.includes("poster_path: posterPath || backdropPath"), "portrait poster path is preferred");
-  assert.ok(html.includes("./app.js?v=phone-skip-detail-v1"), "poster selection uses a fresh app cache version");
+  assert.ok(html.includes("./app.js?v=phone-poster-only-v2"), "poster selection uses a fresh app cache version");
 });
 
 
@@ -420,5 +420,16 @@ test("phones skip the title detail page and open playback directly", async () =>
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(app.includes('window.matchMedia("(max-width:700px)").matches'), "phone layout bypasses the detail page");
   assert.ok(app.includes("openPlayer(item.id,item.type,item.name);"), "tapping a title opens playback directly");
-  assert.ok(html.includes("./app.js?v=phone-skip-detail-v1"), "phone detail behavior bypasses browser cache");
+  assert.ok(html.includes("./app.js?v=phone-poster-only-v2"), "phone detail behavior bypasses browser cache");
+});
+
+
+test("phone title detail shows only poster artwork and back control", async () => {
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(!app.includes('window.matchMedia("(max-width:700px)").matches){\n    openPlayer'), "phone cards do not bypass to player");
+  assert.ok(css.includes("Phone title view: artwork only, with a small back control"), "poster-only phone view is present");
+  assert.ok(css.includes("background-size:contain !important"), "full poster is not cropped on phones");
+  assert.ok(html.includes("./ui/detail-page.css?v=17") && html.includes("./app.js?v=phone-poster-only-v2"), "phone poster view bypasses browser cache");
 });
