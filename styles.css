@@ -3987,7 +3987,7 @@ main>.favorites-section .cards{display:grid!important;grid-template-columns:repe
 /* A lighter, elegant wordmark; keep all existing shutter geometry untouched. */
 @media(max-width:700px){
   .topbar.luno-nav-shutter:after{
-    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
     font-size:17px!important;
     font-weight:300!important;
     letter-spacing:.32em!important;
@@ -4522,7 +4522,7 @@ body, #app, main, .library-view, .overlay, .detail-overlay{
     margin:0 auto 0 0!important;padding:0!important;
     background:transparent!important;border:0!important;box-shadow:none!important;
     color:#E7E8EF!important;
-    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
     font-size:25px!important;font-weight:300!important;
     letter-spacing:.30em!important;line-height:1!important;
     white-space:nowrap!important;text-shadow:0 0 12px rgba(133,129,173,.20)!important;
