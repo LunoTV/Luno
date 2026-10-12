@@ -288,12 +288,12 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   assert.ok(css.includes(".luno-catalog-results.is-grid") && css.includes(".luno-catalog-results.is-list"), "grid and cinematic list styles are defined");
   assert.ok(css.includes("grid-template-columns:repeat(2,minmax(0,1fr))!important") && css.includes("body.catalog-open #lunoCatalogResults.luno-catalog-results.is-grid>.card .card-art"), "mobile poster grid is compact with clear spacing");
   assert.ok(css.includes("aspect-ratio:16/9!important") && css.includes("LUNO catalog experiment: landscape 16:9 cards"), "catalog grid can be previewed in landscape 16:9 without changing home posters");
-  assert.ok(html.includes("./styles.css?v=221"), "compact catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=222"), "compact catalog CSS has a fresh cache version");
   assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
   assert.ok(css.includes("body.library-open.catalog-open #app>.mobile-tabbar.luno-reference-tabbar"), "catalog overrides the library screen tab-bar hide rule");
-  assert.ok(html.includes("./styles.css?v=221"), "catalog navigation CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=222"), "catalog navigation CSS has a fresh cache version");
   assert.ok(!app.includes("luno-catalog-intro"), "old tile-based category hub is removed");
-  assert.ok(html.includes("./styles.css?v=221"), "new catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=222"), "new catalog CSS has a fresh cache version");
 });
 
 
@@ -303,7 +303,7 @@ test("poster cards never use the disruptive neon focus frame", async () => {
   assert.ok(css.includes("Remove the disruptive neon-lime focus frame"), "neon focus override is documented");
   assert.ok(css.includes(".card.tv-remote-focus") && css.includes("outline: 0 !important;"), "remote focus no longer draws an outline");
   assert.ok(css.includes("transform: none !important;"), "focused cards do not jump or scale");
-  assert.ok(html.includes("./styles.css?v=221"), "updated stylesheet bypasses the browser cache");
+  assert.ok(html.includes("./styles.css?v=222"), "updated stylesheet bypasses the browser cache");
 });
 
 
@@ -313,7 +313,7 @@ test("mobile search discovery aligns below the search field and keeps navigation
   assert.ok(css.includes("Search screen: anchor discovery directly under the fixed field"), "reference-aligned search layout is defined");
   assert.ok(css.includes("top:170px!important"), "genre discovery sits directly below the fixed search field");
   assert.ok(css.includes("body.search-open .mobile-tabbar{\n    display:flex!important;"), "bottom navigation remains visible during search");
-  assert.ok(html.includes("./styles.css?v=221"), "search layout uses the current stylesheet cache version");
+  assert.ok(html.includes("./styles.css?v=222"), "search layout uses the current stylesheet cache version");
 });
 
 
@@ -322,7 +322,7 @@ test("mobile search field uses a slim centered width", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("left:12%!important;right:12%!important;"), "search field is narrower and centered");
   assert.ok(css.includes("height:52px!important;") && css.includes("border-radius:30px!important;"), "search field is slim with rounded corners");
-  assert.ok(html.includes("./styles.css?v=221"), "slim search style uses a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=222"), "slim search style uses a fresh cache version");
 });
 
 
@@ -332,8 +332,8 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=search-all-results-v1"), "updated tab behavior bypasses the browser cache");
-  assert.ok(html.includes("./styles.css?v=221"), "updated tab styling bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=search-rows-v1"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./styles.css?v=222"), "updated tab styling bypasses the browser cache");
 });
 
 
@@ -343,4 +343,12 @@ test("search shows all media types by default", async () => {
   assert.ok(app.includes('let searchMediaCategory="all";'), "search defaults to all content categories");
   assert.ok(html.includes('data-search-category="all" aria-selected="true">Всё</button>'), "All tab is selected by default");
   assert.ok(html.includes('data-search-category="series"') && html.includes('data-search-category="movies"'), "series and movies remain separately selectable");
+});
+
+
+test("search results are separated into horizontal media rows", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.ok(app.includes('section("Фильмы",movies)+section("Сериалы",series)+section("Мультфильмы",cartoons)+section("Аниме",anime)+section("Шоу",shows)'), "all five media categories render separately");
+  assert.ok(css.includes("flex-flow:row nowrap!important") && css.includes("scroll-snap-type:x mandatory!important"), "search result cards scroll horizontally in each category");
 });
