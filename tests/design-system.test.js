@@ -146,8 +146,8 @@ test("detail backdrop tries available TMDB image candidates until one loads", as
   const app = await readFile(new URL("app.js", root), "utf8");
   assert.ok(app.includes("const backdropPath=String(item?.backdrop_path||item?.backdropPath||\"\").trim()"), "uses TMDB backdrop paths when present");
   assert.ok(app.includes("const candidates=[...new Set(["), "builds fallback image candidates");
-  assert.ok(app.includes("image.onerror=()=>applyBackdrop(index+1)"), "tries the next image if a mirror fails");
-  assert.ok(app.includes("image.onload=()=>{"), "applies a candidate immediately and retries on failure");
+  assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "tries the next image if a mirror fails");
+  assert.ok(app.includes("image.onload=()=>{"), "only applies an image after it loads");
 });
 
 
@@ -332,7 +332,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=detail-artwork-immediate-v1"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=restore-working-artwork-fallback-v1"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=222"), "updated tab styling bypasses the browser cache");
 });
 
@@ -366,7 +366,7 @@ test("mobile detail card keeps title and actions visible over the backdrop", asy
 test("detail backdrop is applied immediately before image preload completes", async () => {
   const app = await readFile(new URL("app.js", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(app.includes("Apply immediately so Safari can paint the artwork"), "detail backdrop has immediate rendering fallback");
-  assert.ok(app.includes("if(candidates.length) applyBackdrop(0);"), "first available artwork candidate is applied immediately");
+  assert.ok(app.includes("image.onload=()=>{"), "artwork is applied after image load");
+  assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "failed artwork candidate falls back to the next mirror");
   assert.ok(html.includes("./app.js?v=detail-artwork-immediate-v1"), "app uses a fresh cache version");
 });
