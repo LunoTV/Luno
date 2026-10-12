@@ -5701,13 +5701,16 @@ button[class*="-back"]:not(.settings-back):not(.settings-section-back):not(.sett
   body.search-open #searchPanel .search-result-section{width:100%!important;min-width:0!important;margin:0 0 24px!important}
   body.search-open #searchPanel .search-result-section h3{display:flex!important;align-items:center!important;gap:8px!important;margin:0 0 12px!important;font-size:17px!important;line-height:1.3!important;color:#E7E8EF!important}
   body.search-open #searchPanel .search-results .search-results-grid{
-    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:14px 12px!important;width:100%!important;max-width:100%!important;
-    overflow:visible!important;
+    display:flex!important;flex-flow:row nowrap!important;gap:12px!important;
+    width:100%!important;max-width:100%!important;padding:0 0 8px!important;
+    overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-x:contain!important;
+    scroll-snap-type:x mandatory!important;scrollbar-width:none!important;
   }
+  body.search-open #searchPanel .search-results .search-results-grid::-webkit-scrollbar{display:none!important}
   body.search-open #searchPanel .search-results .search-results-grid>.card{
-    display:block!important;flex:none!important;width:100%!important;min-width:0!important;max-width:100%!important;
-    margin:0!important;transform:none!important;border:1px solid rgba(255,255,255,.07)!important;
+    display:block!important;flex:0 0 42%!important;width:42%!important;min-width:0!important;max-width:42%!important;
+    margin:0!important;transform:none!important;scroll-snap-align:start!important;
+    border:1px solid rgba(255,255,255,.07)!important;
     border-radius:12px!important;background:#111319!important;overflow:hidden!important;
   }
   body.search-open #searchPanel .search-results .search-results-grid>.card .card-art{
