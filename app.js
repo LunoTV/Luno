@@ -2671,7 +2671,8 @@ function renderSearchSections(items,query){
   if(!resultBox) return;
   const movies=items.filter(x=>mediaCategory(x)==="movies");
   const series=items.filter(x=>mediaCategory(x)==="series");
-  const cartoons=items.filter(x=>["cartoons","anime"].includes(mediaCategory(x)));
+  const cartoons=items.filter(x=>mediaCategory(x)==="cartoons");
+  const anime=items.filter(x=>mediaCategory(x)==="anime");
   const shows=items.filter(x=>mediaCategory(x)==="shows");
   const section=(title,list)=>list.length
     ? '<section class="search-result-section"><h3>'+escapeHtml(title)+'<span>'+list.length+'</span></h3><div class="search-results-grid">'+list.slice(0,18).map(card).join("")+'</div></section>'
@@ -2686,7 +2687,7 @@ function renderSearchSections(items,query){
   }
   resultBox.innerHTML=
     '<div class="search-results-heading">Результаты для «'+escapeHtml(query)+'»</div>'+
-    section("Фильмы",movies)+section("Сериалы",series)+section("Мультфильмы и аниме",cartoons)+section("Шоу",shows);
+    section("Фильмы",movies)+section("Сериалы",series)+section("Мультфильмы",cartoons)+section("Аниме",anime)+section("Шоу",shows);
   bindCards();
 }
 function updateSearchSourceUI(){
