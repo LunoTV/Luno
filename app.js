@@ -1265,7 +1265,7 @@ function openCategoryHub(){
   renderLunoCatalog();
 }
 function openLibrary(type,pushHistory=true){
-  document.body.classList.remove("catalog-open");
+  document.body.classList.remove("catalog-open","watch-history-open");
   const config={
     movies:{title:"Фильмы",kicker:""},
     series:{title:"Сериалы",kicker:""},
@@ -1314,6 +1314,7 @@ function openLibrary(type,pushHistory=true){
     return;
   }
   if(type==="history"){
+    document.body.classList.add("watch-history-open");
     libraryType="history";
     libraryItems=loadHistory().sort((a,b)=>(Number(b.updatedAt)||0)-(Number(a.updatedAt)||0));
     libraryVisible=libraryItems.length;
@@ -1380,7 +1381,7 @@ function openLibrary(type,pushHistory=true){
 
 function closeLibrary(fromHistory=false){
   libraryView?.classList.add("hidden");
-  document.body.classList.remove("library-open","catalog-open");
+  document.body.classList.remove("library-open","catalog-open","watch-history-open");
   if(!fromHistory){
     try{
       if(history.state?.luno && history.state.luno!=="home" && history.state.luno!=="detail") history.back();
