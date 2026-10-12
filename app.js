@@ -394,6 +394,9 @@ function posterCandidates(item){
     values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
   }
   if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
+  // Some catalogue/source adapters provide artwork URLs from public image mirrors
+  // instead of a TMDB poster_path. Keep that usable as a final fallback.
+  if(rawPoster && /^https?:\\/\\//i.test(rawPoster) && !values.includes(rawPoster)) values.push(rawPoster);
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
 // Shared device capability check used by poster loading and prefetching.
