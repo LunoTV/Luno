@@ -288,12 +288,12 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   assert.ok(css.includes(".luno-catalog-results.is-grid") && css.includes(".luno-catalog-results.is-list"), "grid and cinematic list styles are defined");
   assert.ok(css.includes("grid-template-columns:repeat(2,minmax(0,1fr))!important") && css.includes("body.catalog-open #lunoCatalogResults.luno-catalog-results.is-grid>.card .card-art"), "mobile poster grid is compact with clear spacing");
   assert.ok(css.includes("aspect-ratio:16/9!important") && css.includes("LUNO catalog experiment: landscape 16:9 cards"), "catalog grid can be previewed in landscape 16:9 without changing home posters");
-  assert.ok(html.includes("./styles.css?v=224"), "compact catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=225"), "compact catalog CSS has a fresh cache version");
   assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
   assert.ok(css.includes("body.library-open.catalog-open #app>.mobile-tabbar.luno-reference-tabbar"), "catalog overrides the library screen tab-bar hide rule");
-  assert.ok(html.includes("./styles.css?v=224"), "catalog navigation CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=225"), "catalog navigation CSS has a fresh cache version");
   assert.ok(!app.includes("luno-catalog-intro"), "old tile-based category hub is removed");
-  assert.ok(html.includes("./styles.css?v=224"), "new catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=225"), "new catalog CSS has a fresh cache version");
 });
 
 
@@ -303,7 +303,7 @@ test("poster cards never use the disruptive neon focus frame", async () => {
   assert.ok(css.includes("Remove the disruptive neon-lime focus frame"), "neon focus override is documented");
   assert.ok(css.includes(".card.tv-remote-focus") && css.includes("outline: 0 !important;"), "remote focus no longer draws an outline");
   assert.ok(css.includes("transform: none !important;"), "focused cards do not jump or scale");
-  assert.ok(html.includes("./styles.css?v=224"), "updated stylesheet bypasses the browser cache");
+  assert.ok(html.includes("./styles.css?v=225"), "updated stylesheet bypasses the browser cache");
 });
 
 
@@ -313,7 +313,7 @@ test("mobile search discovery aligns below the search field and keeps navigation
   assert.ok(css.includes("Search screen: anchor discovery directly under the fixed field"), "reference-aligned search layout is defined");
   assert.ok(css.includes("top:170px!important"), "genre discovery sits directly below the fixed search field");
   assert.ok(css.includes("body.search-open .mobile-tabbar{\n    display:flex!important;"), "bottom navigation remains visible during search");
-  assert.ok(html.includes("./styles.css?v=224"), "search layout uses the current stylesheet cache version");
+  assert.ok(html.includes("./styles.css?v=225"), "search layout uses the current stylesheet cache version");
 });
 
 
@@ -322,7 +322,7 @@ test("mobile search field uses a slim centered width", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("left:12%!important;right:12%!important;"), "search field is narrower and centered");
   assert.ok(css.includes("height:52px!important;") && css.includes("border-radius:30px!important;"), "search field is slim with rounded corners");
-  assert.ok(html.includes("./styles.css?v=224"), "slim search style uses a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=225"), "slim search style uses a fresh cache version");
 });
 
 
@@ -333,7 +333,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
   assert.ok(html.includes("./app.js?v=phone-poster-only-v2"), "updated tab behavior bypasses the browser cache");
-  assert.ok(html.includes("./styles.css?v=224"), "updated tab styling bypasses the browser cache");
+  assert.ok(html.includes("./styles.css?v=225"), "updated tab styling bypasses the browser cache");
 });
 
 
@@ -402,7 +402,7 @@ test("Smart TV layout supports readable poster rails and remote focus", async ()
   assert.ok(css.includes("grid-auto-flow:column!important") && css.includes("grid-auto-columns:clamp(170px,13.2vw,252px)!important"), "TV catalog uses readable horizontal poster rails");
   assert.ok(css.includes("outline:3px solid var(--luno-ice,#8CB8CC)!important"), "focused remote control has a visible LUNO focus ring");
   assert.ok(app.includes('event.key==="ArrowLeft"') && app.includes('event.key==="ArrowDown"'), "remote directional navigation is wired");
-  assert.ok(html.includes("./styles.css?v=224"), "TV styles bypass the browser cache");
+  assert.ok(html.includes("./styles.css?v=225"), "TV styles bypass the browser cache");
 });
 
 
@@ -411,7 +411,7 @@ test("Smart TV home rails render full-size poster artwork", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("Smart TV hotfix: restore actual poster area in home rails"), "TV poster fix is present");
   assert.ok(css.includes("aspect-ratio:2/3!important") && css.includes("display:block!important"), "TV poster images receive visible portrait dimensions");
-  assert.ok(html.includes("./styles.css?v=224"), "TV poster fix bypasses cache");
+  assert.ok(html.includes("./styles.css?v=225"), "TV poster fix bypasses cache");
 });
 
 
@@ -434,4 +434,16 @@ test("phone title detail shows only poster artwork and back control", async () =
   assert.ok(css.includes("Phone title view: artwork only, with a small back control"), "poster-only phone view is present");
   assert.ok(css.includes("background-size:contain !important"), "full poster is not cropped on phones");
   assert.ok(html.includes("./ui/detail-page.css?v=17") && html.includes("./app.js?v=phone-poster-only-v2"), "phone poster view bypasses browser cache");
+});
+
+
+test("Smart TV approved layout uses a collapsible left sidebar and five large posters", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(css.includes("LUNO Smart TV redesign — approved layout"), "approved TV redesign is present");
+  assert.ok(css.includes("width:var(--tv-sidebar-collapsed)!important") && css.includes(":focus-within"), "TV sidebar collapses and expands on focus");
+  assert.ok(css.includes("grid-auto-flow:column!important") && css.includes("grid-auto-columns:calc((100vw - var(--tv-sidebar-collapsed)"), "TV rails fit five large posters");
+  assert.ok(css.includes("transform:scale(1.055)!important") && css.includes("0 0 22px rgba(85,174,255,.5)"), "remote focus enlarges and glows");
+  assert.ok(css.includes("linear-gradient(90deg,rgba(5,7,13,.96)"), "hero uses cinematic text gradient");
+  assert.ok(html.includes("./styles.css?v=225"), "TV redesign bypasses browser cache");
 });
