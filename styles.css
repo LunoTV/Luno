@@ -5479,3 +5479,23 @@ body.library-open.watch-history-open .library-head h2{
   line-height:1.2!important;
   text-align:center!important;
 }
+
+
+/* Global rule: keep the shared five-item bottom navigation visible in every LUNO screen/state. */
+@media(max-width:700px){
+  html body #app>.mobile-tabbar.luno-reference-tabbar{
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    position:fixed!important;
+    z-index:2147483001!important;
+    left:16px!important;right:16px!important;width:auto!important;
+    bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  }
+  html body #app>.mobile-tabbar.luno-reference-tabbar .mobile-tab{
+    display:flex!important;visibility:visible!important;opacity:1!important;
+    pointer-events:auto!important;min-width:0!important;
+  }
+}
