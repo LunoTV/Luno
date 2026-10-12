@@ -280,3 +280,35 @@ body.detail-open #detail #detailRecommendations{display:none!important;}
     flex-direction:column!important;align-items:stretch!important;
   }
 }
+
+/* Banner-only detail view: remove the visible inner information card and secondary content. */
+body.detail-open #detail.luno-card-page { background:#08090D !important; }
+body.detail-open #detail .luno-card-backdrop { position:fixed !important; inset:0 !important; width:100% !important; height:100svh !important; height:100dvh !important; min-height:0 !important; z-index:0 !important; }
+body.detail-open #detail .luno-card-backdrop-image { background-position:center 24% !important; background-size:cover !important; opacity:1 !important; filter:saturate(.9) !important; }
+body.detail-open #detail .luno-card-backdrop-shade { background:linear-gradient(180deg,rgba(8,9,13,.10) 0%,rgba(8,9,13,.04) 35%,rgba(8,9,13,.24) 53%,rgba(8,9,13,.88) 76%,#08090D 100%) !important; }
+body.detail-open #detail .luno-banner-header { position:absolute !important; inset:0 0 auto !important; min-height:64px !important; padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 8px !important; background:transparent !important; border:0 !important; backdrop-filter:none !important; z-index:20 !important; }
+body.detail-open #detail .luno-banner-header #closeDetail { display:grid !important; visibility:visible !important; place-items:center !important; width:44px !important; height:44px !important; border:0 !important; border-radius:50% !important; background:rgba(10,10,14,.35) !important; color:#fff !important; font-size:38px !important; backdrop-filter:blur(8px) !important; }
+body.detail-open #detail .luno-card-content { position:relative !important; z-index:2 !important; display:block !important; width:100% !important; max-width:none !important; min-height:100svh !important; min-height:100dvh !important; padding:0 22px calc(30px + env(safe-area-inset-bottom)) !important; margin:0 !important; }
+body.detail-open #detail .luno-card-hero { display:flex !important; align-items:flex-end !important; min-height:100svh !important; min-height:100dvh !important; padding:0 0 28px !important; margin:0 !important; }
+body.detail-open #detail .luno-card-hero-copy { width:100% !important; max-width:780px !important; padding:0 !important; text-shadow:0 2px 16px rgba(0,0,0,.55) !important; }
+body.detail-open #detail .luno-card-eyebrow,
+body.detail-open #detail .luno-card-ratings,
+body.detail-open #detail #detailHiddenData { display:none !important; }
+body.detail-open #detail .luno-card-hero h2 { margin:0 0 12px !important; color:#fff !important; font-size:clamp(32px,8vw,54px) !important; line-height:1.02 !important; }
+body.detail-open #detail .luno-card-meta { margin:0 0 12px !important; color:rgba(255,255,255,.86) !important; }
+body.detail-open #detail .luno-card-badges { margin:0 0 18px !important; }
+body.detail-open #detail .luno-card-badges .detail-badge { background:rgba(8,9,13,.28) !important; border-color:rgba(255,255,255,.24) !important; color:#fff !important; }
+body.detail-open #detail .luno-card-actions { display:grid !important; grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; gap:10px !important; }
+body.detail-open #detail .luno-card-actions #detailPlay { grid-column:1 / -1 !important; min-height:56px !important; border-radius:14px !important; background:#ffbb27 !important; border-color:#ffbb27 !important; color:#17130a !important; }
+body.detail-open #detail .luno-card-actions #detailTrailer,
+body.detail-open #detail .luno-card-actions #detailEpisodes,
+body.detail-open #detail .luno-card-actions #detailTrailerSound { display:none !important; }
+body.detail-open #detail .luno-card-actions #detailFavorite { grid-column:1 / -1 !important; min-height:48px !important; background:rgba(32,33,40,.84) !important; border-color:rgba(255,255,255,.12) !important; color:#fff !important; }
+@media(max-width:700px) {
+ body.detail-open #detail .luno-card-content { padding:0 20px calc(26px + env(safe-area-inset-bottom)) !important; }
+ body.detail-open #detail .luno-card-backdrop-image { background-position:center top !important; }
+ body.detail-open #detail .luno-card-hero { min-height:100svh !important; min-height:100dvh !important; padding-bottom:24px !important; }
+ body.detail-open #detail .luno-card-actions { grid-template-columns:minmax(0,1fr) !important; }
+ body.detail-open #detail .luno-card-actions #detailPlay,
+ body.detail-open #detail .luno-card-actions #detailFavorite { grid-column:1 !important; }
+}
