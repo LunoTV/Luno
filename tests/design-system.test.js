@@ -332,7 +332,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=restore-working-artwork-fallback-v1"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=poster-only-screen-v2"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=222"), "updated tab styling bypasses the browser cache");
 });
 
@@ -383,4 +383,12 @@ test("opening a title shows only the full-screen banner, not the inner informati
   const detailEnd = html.indexOf('id="detailHiddenData"', detailStart);
   assert.ok(detailStart >= 0 && detailEnd > detailStart, "banner detail markup contains no visible inner navigation");
   assert.ok(!html.slice(detailStart, detailEnd).includes('class="luno-card-links"'), "separate detail navigation is removed");
+});
+
+
+test("poster-only detail prioritizes the portrait poster over the wide backdrop", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(app.includes("poster_path: posterPath || backdropPath"), "portrait poster path is preferred");
+  assert.ok(html.includes("./app.js?v=poster-only-screen-v2"), "poster selection uses a fresh app cache version");
 });
