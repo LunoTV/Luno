@@ -332,7 +332,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=poster-only-screen-v2"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=phone-skip-detail-v1"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=224"), "updated tab styling bypasses the browser cache");
 });
 
@@ -368,7 +368,7 @@ test("detail backdrop waits for image preload and retries mirrors", async () => 
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(app.includes("image.onload=()=>{"), "artwork is applied after image load");
   assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "failed artwork candidate falls back to the next mirror");
-  assert.ok(html.includes("./app.js?v=poster-only-screen-v2"), "app uses a fresh cache version");
+  assert.ok(html.includes("./app.js?v=phone-skip-detail-v1"), "app uses a fresh cache version");
 });
 
 
@@ -390,7 +390,7 @@ test("poster-only detail prioritizes the portrait poster over the wide backdrop"
   const app = await readFile(new URL("app.js", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(app.includes("poster_path: posterPath || backdropPath"), "portrait poster path is preferred");
-  assert.ok(html.includes("./app.js?v=poster-only-screen-v2"), "poster selection uses a fresh app cache version");
+  assert.ok(html.includes("./app.js?v=phone-skip-detail-v1"), "poster selection uses a fresh app cache version");
 });
 
 
@@ -412,4 +412,13 @@ test("Smart TV home rails render full-size poster artwork", async () => {
   assert.ok(css.includes("Smart TV hotfix: restore actual poster area in home rails"), "TV poster fix is present");
   assert.ok(css.includes("aspect-ratio:2/3!important") && css.includes("display:block!important"), "TV poster images receive visible portrait dimensions");
   assert.ok(html.includes("./styles.css?v=224"), "TV poster fix bypasses cache");
+});
+
+
+test("phones skip the title detail page and open playback directly", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(app.includes('window.matchMedia("(max-width:700px)").matches'), "phone layout bypasses the detail page");
+  assert.ok(app.includes("openPlayer(item.id,item.type,item.name);"), "tapping a title opens playback directly");
+  assert.ok(html.includes("./app.js?v=phone-skip-detail-v1"), "phone detail behavior bypasses browser cache");
 });
