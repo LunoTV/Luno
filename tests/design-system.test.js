@@ -289,9 +289,9 @@ test("catalog replaces the old category hub with two selectable poster layouts",
   assert.ok(html.includes("./styles.css?v=204"), "compact catalog CSS has a fresh cache version");
   assert.ok(css.includes("body.catalog-open .mobile-tabbar"), "LUNO navigation remains visible on the catalog screen");
   assert.ok(css.includes("body.library-open.catalog-open #app>.mobile-tabbar.luno-reference-tabbar"), "catalog overrides the library screen tab-bar hide rule");
-  assert.ok(html.includes("./styles.css?v=203"), "catalog navigation CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=204"), "catalog navigation CSS has a fresh cache version");
   assert.ok(!app.includes("luno-catalog-intro"), "old tile-based category hub is removed");
-  assert.ok(html.includes("./styles.css?v=203"), "new catalog CSS has a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=204"), "new catalog CSS has a fresh cache version");
 });
 
 
@@ -301,7 +301,7 @@ test("poster cards never use the disruptive neon focus frame", async () => {
   assert.ok(css.includes("Remove the disruptive neon-lime focus frame"), "neon focus override is documented");
   assert.ok(css.includes(".card.tv-remote-focus") && css.includes("outline: 0 !important;"), "remote focus no longer draws an outline");
   assert.ok(css.includes("transform: none !important;"), "focused cards do not jump or scale");
-  assert.ok(html.includes("./styles.css?v=203"), "updated stylesheet bypasses the browser cache");
+  assert.ok(html.includes("./styles.css?v=204"), "updated stylesheet bypasses the browser cache");
 });
 
 
@@ -311,7 +311,7 @@ test("mobile search discovery aligns below the search field and keeps navigation
   assert.ok(css.includes("Search screen: anchor discovery directly under the fixed field"), "reference-aligned search layout is defined");
   assert.ok(css.includes("top:170px!important"), "genre discovery sits directly below the fixed search field");
   assert.ok(css.includes("body.search-open .mobile-tabbar{\n    display:flex!important;"), "bottom navigation remains visible during search");
-  assert.ok(html.includes("./styles.css?v=203"), "search layout uses the current stylesheet cache version");
+  assert.ok(html.includes("./styles.css?v=204"), "search layout uses the current stylesheet cache version");
 });
 
 
@@ -320,5 +320,5 @@ test("mobile search field uses a slim centered width", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("left:12%!important;right:12%!important;"), "search field is narrower and centered");
   assert.ok(css.includes("height:52px!important;") && css.includes("border-radius:30px!important;"), "search field is slim with rounded corners");
-  assert.ok(html.includes("./styles.css?v=203"), "slim search style uses a fresh cache version");
+  assert.ok(html.includes("./styles.css?v=204"), "slim search style uses a fresh cache version");
 });
