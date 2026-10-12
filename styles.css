@@ -5425,3 +5425,17 @@ main > .section .cards .card.tv-remote-focus {
   .luno-watch-tabs{gap:26px;margin-bottom:18px}
   .luno-watch-tabs [data-watch-tab]{min-height:44px;font-size:16px}
 }
+
+
+/* Viewing history: keep the shared bottom navigation and center the page title. */
+@media(max-width:700px){
+  html body.watch-history-open .library-head{justify-content:center!important;}
+  html body.watch-history-open .library-head #libraryBack{display:none!important;}
+  html body.watch-history-open .library-head>div{flex:1 1 100%!important;text-align:center!important;}
+  html body.watch-history-open .library-head h2{font-size:28px!important;line-height:1.2!important;margin:0!important;}
+  html body.watch-history-open #app>.mobile-tabbar.luno-reference-tabbar{
+    display:flex!important;visibility:visible!important;pointer-events:auto!important;
+    z-index:2147483001!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  }
+  html body.watch-history-open #app>.mobile-tabbar.luno-reference-tabbar .mobile-tab{visibility:visible!important;pointer-events:auto!important;}
+}
