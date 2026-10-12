@@ -2630,7 +2630,7 @@ window.LUNOPlayer={openStream:setLunoStream};
 // Remove the legacy LUNO catalog search tab if an older cached HTML shell still contains it.
 document.querySelectorAll('.search-source[data-search-source="luno"], #searchLunoCount').forEach(node=>node.remove());
 let searchSource="tmdb";
-let searchMediaCategory="series";
+let searchMediaCategory="all";
 let searchResultsState={tmdb:[],ai:[]};
 let searchError="";
 
@@ -2811,7 +2811,7 @@ function closeSearchPanel(){
 }
 document.querySelector("#searchBack")?.addEventListener("click",closeSearchPanel);
 document.querySelectorAll("[data-search-category]").forEach(button=>button.addEventListener("click",()=>{
-  searchMediaCategory=button.dataset.searchCategory||"series";
+  searchMediaCategory=button.dataset.searchCategory||"all";
   document.querySelectorAll("[data-search-category]").forEach(tab=>{
     const active=tab===button;
     tab.classList.toggle("active",active);
