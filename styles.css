@@ -5648,34 +5648,5 @@ button[class*="-back"]:not(.settings-back):not(.settings-section-back):not(.sett
   body.search-open #searchPanel.overlay{z-index:2147483000!important;}
 }
 
-/* Mobile detail hero: keep the artwork covering the entire hero, not a top strip. */
-@media(max-width:700px){
-  .luno-detail-hero{
-    position:relative!important;
-    overflow:hidden!important;
-    isolation:isolate!important;
-  }
-  .luno-detail-hero .detail-backdrop{
-    position:absolute!important;
-    inset:0!important;
-    width:100%!important;
-    height:100%!important;
-    min-height:100%!important;
-    background-size:cover!important;
-    background-position:center 25%!important;
-    opacity:1!important;
-    z-index:0!important;
-  }
-  .luno-detail-hero .luno-detail-hero-vignette{
-    position:absolute!important;
-    inset:0!important;
-    z-index:1!important;
-    pointer-events:none!important;
-    background:linear-gradient(180deg,rgba(8,9,13,.02) 0%,rgba(8,9,13,.08) 30%,rgba(8,9,13,.52) 58%,#08090D 92%,#08090D 100%)!important;
-  }
-  .luno-detail-hero .luno-detail-hero-copy{
-    position:relative!important;
-    z-index:3!important;
-  }
-}
+/* Removed obsolete detail-hero override: active detail page uses .luno-card-* selectors. */
 
