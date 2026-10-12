@@ -5584,3 +5584,21 @@ button[class*="-back"]:not(.settings-back):not(.settings-section-back):not(.sett
   .settings-panel{padding:19px 15px;border-radius:18px;}
   .settings-panel-heading h2{font-size:18px;letter-spacing:-.025em;font-weight:650;}
 }
+
+
+/* Settings visual cleanup requested from mobile screenshots. */
+.settings-view .settings-eyebrow{display:none!important;}
+.settings-view .settings-orbit{display:none!important;}
+.settings-view{border:0!important;outline:0!important;box-shadow:none!important;}
+.settings-view .settings-layout,.settings-view .settings-content{border:0!important;outline:0!important;box-shadow:none!important;}
+.settings-view .settings-panel{border:1px solid rgba(150,153,192,.10)!important;box-shadow:none!important;background:linear-gradient(145deg,rgba(18,20,30,.98),rgba(10,11,17,.98))!important;}
+.settings-view .settings-account-card{border-color:rgba(148,150,192,.10)!important;}
+@media(max-width:760px){
+  .settings-view .settings-head{display:block;text-align:center;margin-bottom:18px;}
+  .settings-view.settings-section-open .settings-head{display:none!important;}
+  .settings-view.settings-section-open .settings-sections-back{display:inline-flex!important;}
+  .settings-view .settings-sections-back{display:none;}
+  .settings-view .settings-content{padding-top:0;}
+  .settings-view.settings-section-open .settings-panel{padding-top:18px;}
+  .settings-view .settings-panel-heading h2{font-size:21px!important;}
+}
