@@ -5896,3 +5896,296 @@ button[class*="-back"]:not(.settings-back):not(.settings-section-back):not(.sett
     text-overflow:ellipsis!important;
   }
 }
+
+
+/* LUNO Smart TV redesign — approved layout: collapsing left rail, cinematic hero, five large posters. */
+@media (min-width:1100px) and (hover:none) {
+  body { --tv-sidebar-collapsed:78px; --tv-sidebar-expanded:218px; }
+  body #app { min-height:100vh; }
+  body .mobile-tabbar.luno-reference-tabbar {
+    position:fixed!important;
+    inset:0 auto 0 0!important;
+    width:var(--tv-sidebar-collapsed)!important;
+    height:100dvh!important;
+    padding:24px 10px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:12px!important;
+    overflow:hidden!important;
+    z-index:120!important;
+    background:linear-gradient(180deg,rgba(8,10,18,.98),rgba(8,9,14,.97))!important;
+    border-right:1px solid rgba(150,165,220,.13)!important;
+    box-shadow:10px 0 36px rgba(0,0,0,.18)!important;
+    transition:width .18s ease!important;
+  }
+  body .mobile-tabbar.luno-reference-tabbar:focus-within {
+    width:var(--tv-sidebar-expanded)!important;
+    padding-inline:14px!important;
+    background:rgba(8,10,18,.99)!important;
+  }
+  body .mobile-tabbar.luno-reference-tabbar::before {
+    content:"LUNO";
+    display:block!important;
+    flex:0 0 auto!important;
+    padding:6px 0 24px!important;
+    color:#9da4ff!important;
+    font-size:clamp(20px,1.55vw,30px)!important;
+    font-weight:900!important;
+    letter-spacing:.15em!important;
+    text-align:center!important;
+  }
+  body .mobile-tabbar.luno-reference-tabbar .mobile-tab {
+    display:flex!important;
+    flex:0 0 auto!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:14px!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:56px!important;
+    padding:0 13px!important;
+    border:1px solid transparent!important;
+    border-radius:14px!important;
+    background:transparent!important;
+    color:#c4c9d8!important;
+    text-align:left!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    outline:3px solid transparent!important;
+    outline-offset:2px!important;
+    transition:background .16s ease,outline-color .16s ease,transform .16s ease!important;
+  }
+  body .mobile-tabbar.luno-reference-tabbar .mobile-tab:nth-last-child(2) { margin-top:auto!important; }
+  body .mobile-tabbar.luno-reference-tabbar .mobile-tab .tab-icon {
+    display:grid!important;
+    flex:0 0 28px!important;
+    width:28px!important;
+    height:28px!important;
+    place-items:center!important;
+  }
+  body .mobile-tabbar.luno-reference-tabbar .mobile-tab .tab-icon svg {
+    display:block!important;
+    width:26px!important;
+    height:26px!important;
+    fill:none!important;
+    stroke:currentColor!important;
+    stroke-width:1.8!important;
+    stroke-linecap:round!important;
+    stroke-linejoin:round!important;
+  }
+  body .mobile-tabbar.luno-reference-tabbar .mobile-tab small {
+    display:none!important;
+    color:inherit!important;
+    font-size:clamp(15px,1vw,19px)!important;
+    font-weight:650!important;
+  }
+  body .mobile-tabbar.luno-reference-tabbar:focus-within .mobile-tab small { display:block!important; }
+  body .mobile-tabbar.luno-reference-tabbar .mobile-tab.active {
+    color:#fff!important;
+    background:linear-gradient(115deg,#555fbd,#797bd0)!important;
+    box-shadow:0 0 24px rgba(101,112,231,.22)!important;
+  }
+  body .mobile-tabbar.luno-reference-tabbar .mobile-tab:focus-visible {
+    outline:3px solid #a5dcff!important;
+    outline-offset:1px!important;
+    transform:translateX(2px)!important;
+    box-shadow:0 0 0 5px rgba(95,174,255,.14),0 0 22px rgba(95,174,255,.25)!important;
+    z-index:5!important;
+  }
+  body main {
+    padding-top:0!important;
+    padding-bottom:54px!important;
+    padding-left:calc(var(--tv-sidebar-collapsed) + clamp(22px,2.2vw,42px))!important;
+    padding-right:clamp(22px,2.2vw,42px)!important;
+    min-width:0!important;
+    transition:padding-left .18s ease!important;
+  }
+  body .mobile-tabbar:focus-within ~ main { padding-left:calc(var(--tv-sidebar-expanded) + 28px)!important; }
+  body #homeHero.home-hero {
+    position:relative!important;
+    width:calc(100% + clamp(22px,2.2vw,42px))!important;
+    height:clamp(390px,48vh,610px)!important;
+    min-height:390px!important;
+    margin:0 calc(-1 * clamp(22px,2.2vw,42px)) 10px!important;
+    overflow:hidden!important;
+    border:0!important;
+    border-radius:0 0 20px 20px!important;
+    background:#101622!important;
+    isolation:isolate!important;
+  }
+  body #homeHero .home-hero-backdrop {
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    background-position:center 38%!important;
+    background-size:cover!important;
+    opacity:1!important;
+  }
+  body #homeHero .home-hero-backdrop::after {
+    content:""!important;
+    position:absolute!important;
+    inset:0!important;
+    background:
+      linear-gradient(90deg,rgba(5,7,13,.96) 0%,rgba(5,7,13,.78) 28%,rgba(5,7,13,.22) 65%,rgba(5,7,13,.08) 100%),
+      linear-gradient(0deg,#08090D 0%,rgba(8,9,13,.15) 35%,rgba(8,9,13,.03) 100%)!important;
+  }
+  body #homeHero .home-hero-copy {
+    position:absolute!important;
+    left:clamp(24px,3vw,56px)!important;
+    bottom:clamp(40px,5vh,68px)!important;
+    width:min(48%,720px)!important;
+    max-width:720px!important;
+    padding:0!important;
+    z-index:3!important;
+  }
+  body #homeHero .home-hero-title {
+    margin:0 0 12px!important;
+    font-size:clamp(42px,4.5vw,82px)!important;
+    line-height:.98!important;
+    letter-spacing:-.045em!important;
+    font-weight:900!important;
+    color:#fff!important;
+    text-shadow:0 3px 24px rgba(0,0,0,.42)!important;
+  }
+  body #homeHero .home-hero-meta {
+    margin:0 0 13px!important;
+    color:#e0e4ee!important;
+    font-size:clamp(15px,1.15vw,21px)!important;
+  }
+  body #homeHero .home-hero-description {
+    margin:0 0 22px!important;
+    color:#e0e2e9!important;
+    font-size:clamp(15px,1.1vw,20px)!important;
+    line-height:1.45!important;
+    max-width:650px!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:3!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+  body #homeHero .home-hero-actions { display:flex!important;gap:14px!important;align-items:center!important; }
+  body #homeHero .home-hero-primary,
+  body #homeHero .home-hero-favorite {
+    min-height:58px!important;
+    padding:0 clamp(20px,2vw,36px)!important;
+    border-radius:999px!important;
+    font-size:clamp(16px,1.1vw,21px)!important;
+    font-weight:750!important;
+  }
+  body #homeHero .home-hero-primary { background:#7478d0!important;color:#fff!important;border:1px solid transparent!important; }
+  body #homeHero .home-hero-favorite { background:rgba(7,9,14,.56)!important;color:#fff!important;border:1px solid rgba(255,255,255,.62)!important; }
+  body #homeHero .home-hero-dots { margin-top:22px!important; }
+  body main > .section {
+    margin:clamp(25px,3vh,42px) 0 0!important;
+    scroll-margin-top:20px!important;
+  }
+  body main > .section .section-head { margin-bottom:16px!important; }
+  body main > .section .section-head h2 {
+    margin:0!important;
+    color:#f4f5fb!important;
+    font-size:clamp(22px,1.65vw,31px)!important;
+    line-height:1.2!important;
+    letter-spacing:-.025em!important;
+  }
+  body main > .section .section-more { font-size:clamp(13px,.85vw,16px)!important;color:#b6bbcb!important; }
+  body main > .section .cards {
+    display:grid!important;
+    grid-auto-flow:column!important;
+    grid-template-columns:none!important;
+    grid-template-rows:1fr!important;
+    grid-auto-columns:calc((100vw - var(--tv-sidebar-collapsed) - clamp(22px,2.2vw,42px)*2 - 4*clamp(12px,1vw,20px))/5)!important;
+    gap:clamp(12px,1vw,20px)!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:10px 7px 20px!important;
+    margin:-4px -7px 0!important;
+    scroll-padding-inline:7px!important;
+    scroll-snap-type:x proximity!important;
+    scrollbar-width:none!important;
+  }
+  body main > .section .cards::-webkit-scrollbar { display:none!important; }
+  body main > .section .cards > .card {
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:auto!important;
+    min-height:0!important;
+    padding:0!important;
+    border:3px solid transparent!important;
+    border-radius:15px!important;
+    overflow:visible!important;
+    background:transparent!important;
+    color:#f1f3f9!important;
+    scroll-snap-align:start!important;
+    outline:0 solid transparent!important;
+    outline-offset:3px!important;
+    box-shadow:none!important;
+    transform-origin:center center!important;
+    transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease!important;
+  }
+  body main > .section .cards > .card > .card-art {
+    position:relative!important;
+    display:block!important;
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    aspect-ratio:2/3!important;
+    overflow:hidden!important;
+    border-radius:11px!important;
+    background:#151927!important;
+  }
+  body main > .section .cards > .card > .card-art img {
+    display:block!important;
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:100%!important;
+    max-width:none!important;
+    object-fit:cover!important;
+    opacity:1!important;
+    visibility:visible!important;
+  }
+  body main > .section .cards > .card > .card-title {
+    display:-webkit-box!important;
+    padding:10px 3px 2px!important;
+    margin:0!important;
+    color:#eef0f7!important;
+    font-size:clamp(13px,.92vw,18px)!important;
+    font-weight:650!important;
+    line-height:1.3!important;
+    white-space:normal!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  body main > .section .cards > .card > .card-meta { padding:0 3px 4px!important;font-size:clamp(11px,.72vw,14px)!important;color:#a5a9b7!important; }
+  body main > .section .cards > .card:focus-visible,
+  body main > .section .cards > .card.tv-remote-focus {
+    border-color:#a4dfff!important;
+    transform:scale(1.055)!important;
+    z-index:8!important;
+    box-shadow:0 0 0 2px rgba(164,223,255,.8),0 0 22px rgba(85,174,255,.5),0 16px 32px rgba(0,0,0,.5)!important;
+    outline:none!important;
+  }
+  body main > .section .cards > .card:focus-visible .card-art,
+  body main > .section .cards > .card.tv-remote-focus .card-art { border-radius:10px!important; }
+  body .library-view { left:var(--tv-sidebar-collapsed)!important;width:calc(100% - var(--tv-sidebar-collapsed))!important;padding-left:clamp(22px,2.2vw,42px)!important;padding-right:clamp(22px,2.2vw,42px)!important; }
+  body .overlay .search-box { width:min(1100px,82vw)!important;max-height:86vh!important;padding:36px!important; }
+  body .mobile-tabbar.luno-reference-tabbar .mobile-tab[data-section="profile"] { margin-top:auto!important; }
+  @media (prefers-reduced-motion:reduce) {
+    body .mobile-tabbar.luno-reference-tabbar,body main > .section .cards > .card { transition:none!important; }
+  }
+}
