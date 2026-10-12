@@ -359,7 +359,7 @@ test("mobile detail card keeps title and actions visible over the backdrop", asy
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("force the LUNO detail content above its cinematic artwork on mobile"), "mobile detail recovery rules are present");
   assert.ok(css.includes(".luno-card-hero-copy>*") && css.includes("visibility:visible!important;opacity:1!important"), "title and actions remain visible over artwork");
-  assert.ok(html.includes("./ui/detail-page.css?v=14"), "detail recovery CSS uses a fresh cache version");
+  assert.ok(html.includes("./ui/detail-page.css?v=16"), "detail recovery CSS uses a fresh cache version");
 });
 
 
