@@ -5393,3 +5393,35 @@ main > .section .cards .card.tv-remote-focus {
     background:#101010!important;
   }
 }
+
+
+/* The "Я смотрю" area contains only History followed by Favorites. */
+.luno-watch-tabs{
+  display:flex;
+  align-items:stretch;
+  gap:28px;
+  margin:0 0 22px;
+  padding:0 2px;
+  border-bottom:1px solid var(--luno-border,#30313c);
+}
+.luno-watch-tabs [data-watch-tab]{
+  appearance:none;
+  flex:0 0 auto;
+  min-height:48px;
+  padding:0 2px 10px;
+  border:0;
+  border-bottom:2px solid transparent;
+  border-radius:0;
+  background:transparent;
+  color:var(--luno-text-secondary,#989baa);
+  font:inherit;
+  cursor:pointer;
+}
+.luno-watch-tabs [data-watch-tab].active{
+  color:var(--luno-text,#e7e8ef);
+  border-bottom-color:var(--luno-violet,#8581ad);
+}
+@media(max-width:700px){
+  .luno-watch-tabs{gap:26px;margin-bottom:18px}
+  .luno-watch-tabs [data-watch-tab]{min-height:44px;font-size:16px}
+}
