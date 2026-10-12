@@ -158,7 +158,7 @@ test("mobile navigation uses a floating glass bar with five SVG icon tabs", asyn
     assert.ok(html.includes('data-section="'+section+'"'), "includes "+section+" navigation");
   }
   assert.ok((html.match(/<svg viewBox="0 0 24 24"/g)||[]).length>=5, "all five navigation items use clean SVG icons");
-  assert.ok(app.includes('if(section==="library"){openLibrary("history");return;}'), "library opens saved favorites");
+  assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "library opens saved favorites");
   assert.ok(app.includes('if(section==="profile" || section==="settings"){openSettingsView("profile");return;}'), "profile opens the existing profile/settings view");
   assert.ok(css.includes("bottom:calc(8px + env(safe-area-inset-bottom,0px))"), "navigation floats above the bottom safe area");
   assert.ok(css.includes("rgba(22,23,29,.70)"), "navigation uses a translucent glass background");
@@ -329,7 +329,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
-  assert.ok(app.includes('if(section==="library"){openLibrary("history");return;}'), "Я смотрю opens history first");
+  assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
   assert.ok(html.includes("./app.js?v=watch-history-first"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=215"), "updated tab styling bypasses the browser cache");
 });
