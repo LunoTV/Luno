@@ -5505,3 +5505,26 @@ body.library-open.watch-history-open .library-head h2{
 @media(max-width:700px){
   body.library-open.watch-history-open .luno-watch-tabs{gap:14px!important;}
 }
+
+
+/* Keep the bottom-navigation selection in sync with the active viewing screen. */
+@media(max-width:700px){
+  body.library-open.watch-history-open #app>.mobile-tabbar.luno-reference-tabbar .mobile-tab[data-section="home"].active{
+    color:rgba(220,221,237,.67)!important;
+    border-color:transparent!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  body.library-open.watch-history-open #app>.mobile-tabbar.luno-reference-tabbar .mobile-tab[data-section="home"].active .tab-icon{
+    filter:none!important;
+  }
+  body.library-open.watch-history-open #app>.mobile-tabbar.luno-reference-tabbar .mobile-tab[data-section="library"]{
+    color:#f0f0ff!important;
+    border-color:rgba(158,155,255,.36)!important;
+    background:radial-gradient(ellipse at 50% 0%,rgba(140,184,204,.10),transparent 72%),linear-gradient(145deg,rgba(133,129,173,.23),rgba(133,129,173,.10) 60%,rgba(255,255,255,.035))!important;
+    box-shadow:inset 0 1px rgba(237,238,255,.12),0 0 16px rgba(133,129,173,.09)!important;
+  }
+  body.library-open.watch-history-open #app>.mobile-tabbar.luno-reference-tabbar .mobile-tab[data-section="library"] .tab-icon{
+    filter:drop-shadow(0 0 7px rgba(167,166,255,.28))!important;
+  }
+}
