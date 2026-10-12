@@ -392,3 +392,15 @@ test("poster-only detail prioritizes the portrait poster over the wide backdrop"
   assert.ok(app.includes("poster_path: posterPath || backdropPath"), "portrait poster path is preferred");
   assert.ok(html.includes("./app.js?v=poster-only-screen-v2"), "poster selection uses a fresh app cache version");
 });
+
+
+test("Smart TV layout supports readable poster rails and remote focus", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.ok(css.includes("@media (min-width:1000px) and (hover:none)"), "TV layout targets remote-controlled large screens");
+  assert.ok(css.includes("grid-auto-flow:column!important") && css.includes("grid-auto-columns:clamp(170px,13.2vw,252px)!important"), "TV catalog uses readable horizontal poster rails");
+  assert.ok(css.includes("outline:3px solid var(--luno-ice,#8CB8CC)!important"), "focused remote control has a visible LUNO focus ring");
+  assert.ok(app.includes('event.key==="ArrowLeft"') && app.includes('event.key==="ArrowDown"'), "remote directional navigation is wired");
+  assert.ok(html.includes("./styles.css?v=223"), "TV styles bypass the browser cache");
+});
