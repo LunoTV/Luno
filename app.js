@@ -959,20 +959,22 @@ function openDetail(item){
     ])];
     detailBackdrop.style.backgroundImage="";
     detailBackdrop.dataset.imageIndex="0";
-    const tryBackdrop=(index)=>{
-      if(index>=candidates.length){
-        detailBackdrop.style.backgroundImage="";
-        return;
-      }
+    const applyBackdrop=(index)=>{
+      if(index>=candidates.length) return;
+      const url=candidates[index];
+      // Apply immediately so Safari can paint the artwork without waiting for
+      // a detached Image preload to fire its onload callback.
+      detailBackdrop.style.backgroundImage='url("'+url.replace(/"/g,"\\\"")+'")';
+      detailBackdrop.dataset.imageIndex=String(index);
       const image=new Image();
       image.onload=()=>{
-        detailBackdrop.style.backgroundImage='url("'+candidates[index].replace(/"/g,"&quot;")+'")';
+        detailBackdrop.style.backgroundImage='url("'+url.replace(/"/g,"\\\"")+'")';
         detailBackdrop.dataset.imageIndex=String(index);
       };
-      image.onerror=()=>tryBackdrop(index+1);
-      image.src=candidates[index];
+      image.onerror=()=>applyBackdrop(index+1);
+      image.src=url;
     };
-    tryBackdrop(0);
+    if(candidates.length) applyBackdrop(0);
   }
   const trailerVideo=document.querySelector("#detailTrailerVideo");
   const trailerSound=document.querySelector("#detailTrailerSound");
