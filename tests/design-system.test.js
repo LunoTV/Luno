@@ -332,6 +332,6 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=watch-history-first"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=watch-history-first-backdrop-v2"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=220"), "updated tab styling bypasses the browser cache");
 });
