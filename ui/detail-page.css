@@ -312,3 +312,38 @@ body.detail-open #detail .luno-card-actions #detailFavorite { grid-column:1 / -1
  body.detail-open #detail .luno-card-actions #detailPlay,
  body.detail-open #detail .luno-card-actions #detailFavorite { grid-column:1 !important; }
 }
+
+
+/* Poster-only title screen: show the artwork and nothing layered over it. */
+body.detail-open #detail.luno-card-page {
+  background:#08090D !important;
+  overflow:hidden !important;
+}
+body.detail-open #detail .luno-card-backdrop {
+  position:fixed !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100vh !important;
+  height:100dvh !important;
+  min-height:0 !important;
+  background:#08090D !important;
+  z-index:1 !important;
+}
+body.detail-open #detail #detailBackdrop {
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  background-color:#08090D !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  background-size:contain !important;
+  opacity:1 !important;
+  filter:none !important;
+}
+body.detail-open #detail .luno-card-backdrop-shade,
+body.detail-open #detail .luno-card-trailer,
+body.detail-open #detail .luno-banner-header,
+body.detail-open #detail .luno-card-content {
+  display:none !important;
+}
