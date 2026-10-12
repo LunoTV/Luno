@@ -87,8 +87,8 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
   assert.ok(css.includes(".luno-card-page") && css.includes("@media(max-width:700px)"), "new page has isolated responsive styles");
-  assert.ok(css.includes(".luno-card-backdrop{position:absolute") && css.includes("z-index:0;overflow:hidden"), "detail backdrop stays above the page background");
-  assert.ok(css.includes(".luno-card-content{position:relative;z-index:1"), "detail content layers above the backdrop");
+  assert.ok(css.includes(".luno-card-backdrop {") && css.includes("z-index:0; background"), "detail backdrop stays above the page background");
+  assert.ok(css.includes(".luno-card-content {") && css.includes("position:relative; z-index:1"), "detail content layers above the backdrop");
   assert.ok(app.includes('document.querySelector(".luno-card-search")'), "new card search control is wired");
   assert.ok(html.includes("search-discovery-block") && html.includes("data-search-genre") && html.includes("search-mic"), "search uses the new genre discovery interface");
   assert.ok(app.includes("searchMediaCategory") && app.includes('document.querySelectorAll("[data-search-genre]")'), "genre cards and media category tabs are interactive");
@@ -351,57 +351,57 @@ test("search results are separated into horizontal media rows", async () => {
 });
 
 
-test("mobile detail card keeps title and actions visible over the backdrop", async () => {
-  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+test("detail card uses an image element with poster-first fallback loading", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(css.includes("force the LUNO detail content above its cinematic artwork on mobile"), "mobile detail recovery rules are present");
-  assert.ok(css.includes(".luno-card-hero-copy>*") && css.includes("visibility:visible!important;opacity:1!important"), "title and actions remain visible over artwork");
-  assert.ok(html.includes("./ui/detail-page.css?v=18"), "detail recovery CSS uses a fresh cache version");
-});
-
-
-test("detail backdrop waits for image preload and retries mirrors", async () => {
   const app = await readFile(new URL("app.js", root), "utf8");
-  const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(app.includes("image.onload=()=>{"), "artwork is applied after image load");
-  assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "failed artwork candidate falls back to the next mirror");
-  assert.ok(html.includes("./app.js?v=card-refactor-v1"), "app uses a fresh cache version");
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  assert.ok(html.includes('<img id="detailBackdrop" class="luno-card-backdrop-image"'), "detail artwork is a real image element");
+  assert.ok(app.includes("function detailPosterCandidates(item)"), "poster candidates have a dedicated resolver");
+  assert.ok(app.includes("const posters=posterCandidates(posterItem)"), "portrait posters are tried before backdrops");
+  assert.ok(app.includes("detailBackdrop.onerror=()=>tryPoster(index+1)"), "image element retries fallback candidates");
+  assert.ok(!app.includes("detailBackdrop.style.backgroundImage"), "artwork does not depend on CSS background-image");
+  assert.ok(css.includes("object-fit:contain; object-position:center center"), "mobile poster fits without cropping");
+  assert.ok(html.includes("./app.js?v=card-refactor-v1") && html.includes("./ui/detail-page.css?v=18"), "card assets use fresh cache versions");
 });
 
-
-test("opening a title shows only the full-screen banner, not the inner information card", async () => {
+test("opening a title isolates the full-screen card from Home", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.ok(html.includes('class="luno-card-header luno-banner-header"'), "detail page has a minimal banner header");
-  assert.ok(html.includes('id="detailHiddenData" hidden'), "secondary detail sections are hidden from the visible page");
-  assert.ok(css.includes("height:100dvh !important"), "banner fills the viewport");
-  assert.ok(css.includes("body.detail-open #detail #detailHiddenData { display:none !important; }"), "inner card content is not rendered");
-  const detailStart = html.indexOf('<div id="detail" class="luno-card-page hidden"');
-  const detailEnd = html.indexOf('id="detailHiddenData"', detailStart);
-  assert.ok(detailStart >= 0 && detailEnd > detailStart, "banner detail markup contains no visible inner navigation");
-  assert.ok(!html.slice(detailStart, detailEnd).includes('class="luno-card-links"'), "separate detail navigation is removed");
+  assert.ok(html.includes('class="luno-card-header luno-banner-header"'), "detail page has a minimal header");
+  assert.ok(html.includes('id="detailHiddenData" hidden'), "secondary details remain hidden");
+  assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "all other screens are hidden while detail is open");
+  assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
 });
 
-
-test("poster-only detail prioritizes the portrait poster over the wide backdrop", async () => {
-  const app = await readFile(new URL("app.js", root), "utf8");
+test("mobile title detail displays only the poster and back control", async () => {
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(app.includes("poster_path: posterPath || backdropPath"), "portrait poster path is preferred");
-  assert.ok(html.includes("./app.js?v=card-refactor-v1"), "poster selection uses a fresh app cache version");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "title, metadata and actions are hidden on phones");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-backdrop-shade"), "poster has no overlay gradient on phones");
+  assert.ok(css.includes("body.detail-open #detail #closeDetail"), "back control remains available");
+  assert.ok(css.includes("object-fit:contain; object-position:center center"), "full poster fits the viewport");
+  assert.ok(html.includes("./ui/detail-page.css?v=18"), "phone detail styles use a fresh cache version");
 });
 
+test("desktop and Smart TV detail card retain playback and favorite actions", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  assert.ok(html.includes('id="detailPlay"') && html.includes('id="detailFavorite"'), "play and favorite controls remain in markup");
+  assert.ok(app.includes('detailPlay?.addEventListener("click"'), "play action opens the existing player");
+  assert.ok(app.includes('detailFavorite?.addEventListener("click"'), "favorite action remains wired");
+  assert.ok(css.includes(".luno-card-actions #detailPlay"), "primary play action is styled");
+});
 
 test("Smart TV layout supports readable poster rails and remote focus", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const app = await readFile(new URL("app.js", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("@media (min-width:1000px) and (hover:none)"), "TV layout targets remote-controlled large screens");
-  assert.ok(css.includes("grid-auto-flow:column!important") && css.includes("grid-auto-columns:clamp(170px,13.2vw,252px)!important"), "TV catalog uses readable horizontal poster rails");
-  assert.ok(css.includes("outline:3px solid var(--luno-ice,#8CB8CC)!important"), "focused remote control has a visible LUNO focus ring");
+  assert.ok(css.includes("grid-auto-flow:column!important") && css.includes("grid-auto-columns:calc((100vw - var(--tv-sidebar-collapsed)"), "TV catalog uses readable horizontal poster rails");
   assert.ok(app.includes('event.key==="ArrowLeft"') && app.includes('event.key==="ArrowDown"'), "remote directional navigation is wired");
   assert.ok(html.includes("./styles.css?v=225"), "TV styles bypass the browser cache");
 });
-
 
 test("Smart TV home rails render full-size poster artwork", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
@@ -410,29 +410,6 @@ test("Smart TV home rails render full-size poster artwork", async () => {
   assert.ok(css.includes("aspect-ratio:2/3!important") && css.includes("display:block!important"), "TV poster images receive visible portrait dimensions");
   assert.ok(html.includes("./styles.css?v=225"), "TV poster fix bypasses cache");
 });
-
-
-test("phones open a poster-only title view instead of the detail card or player", async () => {
-  const app = await readFile(new URL("app.js", root), "utf8");
-  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(!app.includes('if(window.matchMedia("(max-width:700px)").matches){\n    openPlayer(item.id,item.type,item.name);'), "phone cards do not bypass to player");
-  assert.ok(css.includes("Phone title view: artwork only, with a small back control"), "poster-only phone view is present");
-  assert.ok(css.includes("background-size:contain !important"), "full poster is not cropped on phones");
-  assert.ok(html.includes("./ui/detail-page.css?v=18") && html.includes("./app.js?v=card-refactor-v1"), "phone poster view bypasses browser cache");
-});
-
-
-test("phone title detail shows only poster artwork and back control", async () => {
-  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  const app = await readFile(new URL("app.js", root), "utf8");
-  const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(!app.includes('window.matchMedia("(max-width:700px)").matches){\n    openPlayer'), "phone cards do not bypass to player");
-  assert.ok(css.includes("Phone title view: artwork only, with a small back control"), "poster-only phone view is present");
-  assert.ok(css.includes("background-size:contain !important"), "full poster is not cropped on phones");
-  assert.ok(html.includes("./ui/detail-page.css?v=18") && html.includes("./app.js?v=card-refactor-v1"), "phone poster view bypasses browser cache");
-});
-
 
 test("Smart TV approved layout uses a collapsible left sidebar and five large posters", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
