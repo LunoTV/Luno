@@ -393,10 +393,10 @@ function posterCandidates(item){
     const file=(first==="original" || first.startsWith("w")) ? parts.slice(1).join("/") : remotePath;
     const imagePath="t/p/"+size+"/"+file;
     const imageProxyBase=String(window.__LUNO_API_BASE__||"https://luno-api.bqrt30.workers.dev").replace(/\/$/,"");
-    // Use Lampa-compatible public image mirrors first; the Worker is only a fallback.
+    // Prefer the canonical TMDB image URL; public mirrors and the Worker are fallbacks.
+    values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
     values.push(...tmdbImageMirrorCandidates(imagePath));
     values.push(imageProxyBase+"/api/tmdb/image?path="+encodeURIComponent("/"+imagePath.slice("t/p/".length)));
-    values.push("https://image.tmdb.org/t/p/"+size+"/"+file);
   }
   if(rawPoster && isDirectTmdbImage(rawPoster)) values.push(rawPoster);
   // Some catalogue/source adapters provide artwork URLs from public image mirrors
