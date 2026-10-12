@@ -82,7 +82,7 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
   assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
-  assert.ok(html.includes("./ui/detail-page.css?v=13"), "isolated detail stylesheet is linked");
+  assert.ok(html.includes("./ui/detail-page.css?v=14"), "isolated detail stylesheet is linked");
   for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
@@ -369,4 +369,16 @@ test("detail backdrop waits for image preload and retries mirrors", async () => 
   assert.ok(app.includes("image.onload=()=>{"), "artwork is applied after image load");
   assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "failed artwork candidate falls back to the next mirror");
   assert.ok(html.includes("./app.js?v=restore-working-artwork-fallback-v1"), "app uses a fresh cache version");
+});
+
+
+test("opening a title shows only the full-screen banner, not the inner information card", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  const detail = html.slice(html.indexOf('<div id="detail"'), html.indexOf('<div id="confirmDialog"'));
+  assert.ok(detail.includes('class="luno-banner-header"'), "detail page has a minimal banner header");
+  assert.ok(detail.includes('id="detailHiddenData" hidden'), "secondary detail sections are hidden from the visible page");
+  assert.ok(css.includes("height:100dvh !important"), "banner fills the viewport");
+  assert.ok(css.includes("body.detail-open #detail #detailHiddenData { display:none !important; }"), "inner card content is not rendered");
+  assert.ok(!detail.includes('class="luno-card-links"'), "separate detail navigation is removed");
 });
