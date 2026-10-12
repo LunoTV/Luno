@@ -1,7 +1,7 @@
 /* LUNO detail card v2 — isolated from legacy detail-page selectors. */
 .luno-card-page{position:fixed;inset:0;z-index:80;overflow:auto;isolation:isolate;background:var(--luno-bg);color:var(--luno-text);overscroll-behavior:contain}
 .luno-card-page.hidden{display:none!important}
-.luno-card-backdrop{position:absolute;inset:0 0 auto;height:min(82vh,850px);min-height:520px;z-index:-1;overflow:hidden;background:var(--luno-bg)}
+.luno-card-backdrop{position:absolute;inset:0 0 auto;height:min(82vh,850px);min-height:520px;z-index:0;overflow:hidden;background:var(--luno-bg)}
 .luno-card-backdrop-image{position:absolute;inset:0;background-position:center 25%;background-size:cover;opacity:.64;filter:saturate(.78)}
 .luno-card-trailer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%;opacity:0;transition:opacity .2s}
 .luno-card-trailer.is-ready{opacity:.42}
@@ -16,7 +16,7 @@
 .luno-card-header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
 .luno-card-source-button,.luno-card-primary,.luno-card-secondary{min-height:44px;padding:0 16px;border:1px solid var(--luno-border-strong);border-radius:12px;background:var(--luno-surface);color:var(--luno-text);font:inherit;cursor:pointer}
 .luno-card-primary{background:var(--luno-violet);border-color:var(--luno-violet);color:#fff;font-weight:700}
-.luno-card-content{max-width:1440px;margin:0 auto;padding:0 clamp(16px,5vw,72px) 56px}
+.luno-card-content{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:0 clamp(16px,5vw,72px) 56px}
 .luno-card-hero{display:flex;align-items:flex-end;min-height:clamp(480px,66vh,700px);padding:100px 0 48px}
 .luno-card-hero-copy{width:min(760px,100%);padding-top:40px}
 .luno-card-eyebrow{font-size:11px;letter-spacing:.14em;color:var(--luno-ice);font-weight:700}
