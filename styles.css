@@ -5528,3 +5528,22 @@ body.library-open.watch-history-open .library-head h2{
     filter:drop-shadow(0 0 7px rgba(167,166,255,.28))!important;
   }
 }
+
+
+/* Back buttons are removed from the main LUNO interface; keep only in-section settings navigation controls. */
+button.library-back,
+button#libraryBack,
+button.search-back,
+button.detail-back,
+button.global-back,
+button.settings-back,
+button[class*="-back"]:not(.settings-section-back):not(.settings-subsection-back),
+#libraryBack,
+#searchBack,
+#detailBack,
+#globalBack,
+.settings-head>.settings-back{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
