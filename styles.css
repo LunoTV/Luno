@@ -5499,3 +5499,9 @@ body.library-open.watch-history-open .library-head h2{
     pointer-events:auto!important;min-width:0!important;
   }
 }
+
+
+/* Tighten spacing between History and Favorites tabs on the viewing screen. */
+@media(max-width:700px){
+  body.library-open.watch-history-open .luno-watch-tabs{gap:14px!important;}
+}
