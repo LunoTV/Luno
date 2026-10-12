@@ -375,8 +375,13 @@ function isDirectTmdbImage(value){
 }
 function posterCandidates(item){
   const values=[];
-  const rawPoster=String(item?.poster||"").trim();
-  let path=String(item?.poster_path||item?.posterPath||"").trim();
+  const rawPoster=String(
+    item?.poster || item?.posterUrl || item?.poster_url ||
+    item?.image || item?.imageUrl || item?.image_url ||
+    item?.cover || item?.coverUrl || item?.cover_url ||
+    item?.background || item?.backdrop || item?.backdropUrl || item?.backdrop_url || ""
+  ).trim();
+  let path=String(item?.poster_path||item?.posterPath||item?.backdrop_path||item?.backdropPath||"").trim();
   if(path.startsWith("/")) path=path.slice(1);
   // LUNO's own cached/custom poster fields are deliberately ignored. Only
   // TMDB poster paths or explicit TMDB image URLs may be used, including in search.
