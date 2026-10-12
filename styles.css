@@ -5634,3 +5634,16 @@ button[class*="-back"]:not(.settings-back):not(.settings-section-back):not(.sett
   body.search-open .search-results{padding-bottom:18px!important;}
   body.search-open #app>.mobile-tabbar.luno-reference-tabbar{z-index:2147483001!important;}
 }
+
+
+/* Keep the persistent tab bar above the search screen so tabs remain tappable. */
+@media(max-width:700px){
+  body.search-open #app>.mobile-tabbar.luno-reference-tabbar{
+    position:fixed!important;z-index:2147483647!important;pointer-events:auto!important;
+    isolation:isolate!important;touch-action:manipulation!important;
+  }
+  body.search-open #app>.mobile-tabbar.luno-reference-tabbar .mobile-tab{
+    position:relative!important;z-index:1!important;pointer-events:auto!important;touch-action:manipulation!important;
+  }
+  body.search-open #searchPanel.overlay{z-index:2147483000!important;}
+}
