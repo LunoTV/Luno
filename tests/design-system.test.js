@@ -368,7 +368,7 @@ test("detail backdrop waits for image preload and retries mirrors", async () => 
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(app.includes("image.onload=()=>{"), "artwork is applied after image load");
   assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "failed artwork candidate falls back to the next mirror");
-  assert.ok(html.includes("./app.js?v=restore-working-artwork-fallback-v1"), "app uses a fresh cache version");
+  assert.ok(html.includes("./app.js?v=poster-only-screen-v2"), "app uses a fresh cache version");
 });
 
 
