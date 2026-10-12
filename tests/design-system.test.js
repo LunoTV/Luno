@@ -359,7 +359,7 @@ test("mobile detail card keeps title and actions visible over the backdrop", asy
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("force the LUNO detail content above its cinematic artwork on mobile"), "mobile detail recovery rules are present");
   assert.ok(css.includes(".luno-card-hero-copy>*") && css.includes("visibility:visible!important;opacity:1!important"), "title and actions remain visible over artwork");
-  assert.ok(html.includes("./ui/detail-page.css?v=13"), "detail recovery CSS uses a fresh cache version");
+  assert.ok(html.includes("./ui/detail-page.css?v=14"), "detail recovery CSS uses a fresh cache version");
 });
 
 
@@ -375,10 +375,12 @@ test("detail backdrop waits for image preload and retries mirrors", async () => 
 test("opening a title shows only the full-screen banner, not the inner information card", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  const detail = html.slice(html.indexOf('<div id="detail"'), html.indexOf('<div id="confirmDialog"'));
-  assert.ok(detail.includes('class="luno-banner-header"'), "detail page has a minimal banner header");
-  assert.ok(detail.includes('id="detailHiddenData" hidden'), "secondary detail sections are hidden from the visible page");
+  assert.ok(html.includes('class="luno-card-header luno-banner-header"'), "detail page has a minimal banner header");
+  assert.ok(html.includes('id="detailHiddenData" hidden'), "secondary detail sections are hidden from the visible page");
   assert.ok(css.includes("height:100dvh !important"), "banner fills the viewport");
   assert.ok(css.includes("body.detail-open #detail #detailHiddenData { display:none !important; }"), "inner card content is not rendered");
-  assert.ok(!detail.includes('class="luno-card-links"'), "separate detail navigation is removed");
+  const detailStart = html.indexOf('<div id="detail" class="luno-card-page hidden"');
+  const detailEnd = html.indexOf('id="detailHiddenData"', detailStart);
+  assert.ok(detailStart >= 0 && detailEnd > detailStart, "banner detail markup contains no visible inner navigation");
+  assert.ok(!html.slice(detailStart, detailEnd).includes('class="luno-card-links"'), "separate detail navigation is removed");
 });
