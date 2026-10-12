@@ -5602,3 +5602,35 @@ button[class*="-back"]:not(.settings-back):not(.settings-section-back):not(.sett
   .settings-view.settings-section-open .settings-panel{padding-top:18px;}
   .settings-view .settings-panel-heading h2{font-size:21px!important;}
 }
+
+
+/* Search is a first-class LUNO screen, not a translucent overlay over the previous page. */
+@media(max-width:700px){
+  body.search-open{overflow:hidden!important;}
+  body.search-open main,
+  body.search-open #libraryView,
+  body.search-open #settingsView{visibility:hidden!important;pointer-events:none!important;}
+  body.search-open .topbar{display:none!important;}
+  body.search-open #searchPanel.overlay{
+    display:block!important;visibility:visible!important;opacity:1!important;
+    position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;min-height:100dvh!important;
+    margin:0!important;padding:0!important;box-sizing:border-box!important;overflow:hidden!important;
+    z-index:2147482990!important;border:0!important;border-radius:0!important;
+    background:#07080d!important;background-image:radial-gradient(ellipse at 88% 0%,rgba(133,129,173,.09),transparent 40%)!important;
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+  body.search-open #searchPanel .luno-search-screen{
+    display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;
+    margin:0!important;padding:calc(env(safe-area-inset-top,0px) + 22px) 18px calc(env(safe-area-inset-bottom,0px) + 112px)!important;
+    box-sizing:border-box!important;overflow-y:auto!important;overscroll-behavior:contain!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;
+    transform:none!important;
+  }
+  body.search-open .search-topbar{min-height:40px!important;margin:0 0 22px!important;justify-content:center!important;}
+  body.search-open .search-page-title{font-size:21px!important;font-weight:650!important;letter-spacing:-.035em!important;text-align:center!important;}
+  body.search-open .search-back,body.search-open .search-close-x{display:none!important;}
+  body.search-open .search-discovery-block{margin-top:24px!important;}
+  body.search-open .search-discovery-heading h2{font-size:16px!important;}
+  body.search-open .search-results{padding-bottom:18px!important;}
+  body.search-open #app>.mobile-tabbar.luno-reference-tabbar{z-index:2147483001!important;}
+}
