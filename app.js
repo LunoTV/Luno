@@ -1126,6 +1126,19 @@ function sortLibraryItems(items,sort=librarySort){
   return list.sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0));
 }
 
+
+function watchTabsMarkup(active){
+  return '<div class="luno-watch-tabs" role="tablist" aria-label="Я смотрю">'+
+    '<button type="button" role="tab" data-watch-tab="history" class="'+(active==="history"?'active':'')+'" aria-selected="'+(active==="history")+'">История</button>'+
+    '<button type="button" role="tab" data-watch-tab="favorites" class="'+(active==="favorites"?'active':'')+'" aria-selected="'+(active==="favorites")+'">Избранное</button>'+
+    '</div>';
+}
+function bindWatchTabs(){
+  libraryContent?.querySelectorAll("[data-watch-tab]").forEach(button=>button.addEventListener("click",()=>{
+    openLibrary(button.dataset.watchTab);
+  }));
+}
+
 function applyLibrarySort(sort){
   if(!["popular","rating","newest"].includes(sort)) return;
   librarySort=sort;
@@ -1290,9 +1303,10 @@ function openLibrary(type,pushHistory=true){
     const source={popular,topRated,topMovies,topSeries,continue:loadResume(),openCinema:openCinemaItems,recommendations,evening,classics,favorites:loadFavorites()}[type]||[];
     libraryType=type;librarySourceItems=source.slice();libraryItems=librarySourceItems.slice();librarySort="popular";
     if(type!=="continue"&&type!=="favorites")libraryItems=sortLibraryItems(libraryItems,"popular");
-    libraryVisible=0;libraryTitle.textContent=config.title;libraryKicker.textContent=config.kicker;
-    libraryContent.innerHTML='<div class="library-toolbar"><span>Все подборки · '+escapeHtml(config.title.toLocaleLowerCase("ru-RU"))+'</span><strong class="library-toolbar-count">'+libraryItems.length+'</strong></div><div class="library-sort" role="group" aria-label="Сортировка подборки"><button type="button" class="active" data-library-sort="popular" aria-pressed="true">Популярное</button><button type="button" data-library-sort="rating" aria-pressed="false">По рейтингу</button><button type="button" data-library-sort="newest" aria-pressed="false">Новинки</button></div><div class="library-infinite-grid"></div><div class="library-loader" id="libraryLoader">Загрузка…</div>';
+    libraryVisible=0;libraryTitle.textContent=type==="favorites"?"Я смотрю":config.title;libraryKicker.textContent=type==="favorites"?"":config.kicker;
+    libraryContent.innerHTML=(type==="favorites"?watchTabsMarkup("favorites"):"")+'<div class="library-toolbar"><span>Все подборки · '+escapeHtml(config.title.toLocaleLowerCase("ru-RU"))+'</span><strong class="library-toolbar-count">'+libraryItems.length+'</strong></div><div class="library-sort" role="group" aria-label="Сортировка подборки"><button type="button" class="active" data-library-sort="popular" aria-pressed="true">Популярное</button><button type="button" data-library-sort="rating" aria-pressed="false">По рейтингу</button><button type="button" data-library-sort="newest" aria-pressed="false">Новинки</button></div><div class="library-infinite-grid"></div><div class="library-loader" id="libraryLoader">Загрузка…</div>';
     libraryView.classList.remove("hidden");document.body.classList.add("library-open");libraryContent.scrollTop=0;
+    bindWatchTabs();
     libraryContent.querySelectorAll("[data-library-sort]").forEach(button=>button.addEventListener("click",()=>applyLibrarySort(button.dataset.librarySort)));
     renderLibraryBatch();if(libraryContent._observer)libraryContent._observer.disconnect();
     const loader=document.querySelector("#libraryLoader");
@@ -1303,9 +1317,9 @@ function openLibrary(type,pushHistory=true){
     libraryType="history";
     libraryItems=loadHistory().sort((a,b)=>(Number(b.updatedAt)||0)-(Number(a.updatedAt)||0));
     libraryVisible=libraryItems.length;
-    libraryTitle.textContent=config.title;
-    libraryKicker.textContent=config.kicker;
-    libraryContent.innerHTML=
+    libraryTitle.textContent="Я смотрю";
+    libraryKicker.textContent="";
+    libraryContent.innerHTML=watchTabsMarkup("history")+
       '<div class="library-toolbar"><span>Видео, которые ты начал смотреть</span>'+
       '<strong class="library-toolbar-count">'+libraryItems.length+'</strong></div>'+
       (libraryItems.length
@@ -1314,6 +1328,7 @@ function openLibrary(type,pushHistory=true){
     libraryView.classList.remove("hidden");
     document.body.classList.add("library-open");
     libraryContent.scrollTop=0;
+    bindWatchTabs();
     bindCards();
     libraryContent.querySelector('[data-section="home"]')?.addEventListener("click",()=>{closeLibrary();navigate("home");});
     return;
@@ -1480,7 +1495,7 @@ document.querySelector("#settingsClearPreferences")?.addEventListener("click",()
 
 function navigate(section){
   if(section==="profile" || section==="settings"){openSettingsView("profile");return;}
-  if(section==="library"){openLibrary("favorites");return;}
+  if(section==="library"){openLibrary("history");return;}
   settingsView?.classList.add("hidden");
   document.body.classList.remove("settings-open");
   document.body.classList.toggle("home-mode",section==="home");
