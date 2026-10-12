@@ -111,7 +111,7 @@ test("detail card hides the app shell header and mobile tab bar while open", asy
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "app shutter is hidden while detail is open");
   assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "mobile tab bar is hidden with all other app screens");
-  assert.ok(css.includes("body.detail-open #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
+  assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
 });
 
 
