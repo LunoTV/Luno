@@ -5723,3 +5723,98 @@ button[class*="-back"]:not(.settings-back):not(.settings-section-back):not(.sett
     padding:0 9px 10px!important;font-size:10px!important;
   }
 }
+
+
+/* LUNO Smart TV pass: ten-foot layout, readable rails, and remote-friendly focus. */
+@media (min-width:1000px) and (hover:none) {
+  html { scroll-behavior:auto; }
+  body { font-size:clamp(16px,1.15vw,22px); }
+  #app { min-height:100vh; }
+  main { padding-bottom:clamp(44px,5vh,84px)!important; }
+  main > .section { margin:0 0 clamp(28px,3.2vh,52px)!important; }
+  main > .section .section-head { margin-bottom:clamp(14px,1.6vh,24px)!important; }
+  main > .section .section-head h2,
+  .section h2 { font-size:clamp(22px,1.65vw,32px)!important; line-height:1.2!important; }
+  main > .section .cards {
+    display:grid!important;
+    grid-auto-flow:column!important;
+    grid-auto-columns:clamp(170px,13.2vw,252px)!important;
+    grid-template-rows:1fr!important;
+    gap:clamp(14px,1.35vw,26px)!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:10px 3.2vw 20px!important;
+    margin:0 -3.2vw!important;
+    scroll-padding-inline:3.2vw!important;
+    scroll-snap-type:x proximity!important;
+    scrollbar-width:none!important;
+  }
+  main > .section .cards::-webkit-scrollbar { display:none!important; }
+  main > .section .cards .card {
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    scroll-snap-align:start;
+    outline:3px solid transparent!important;
+    outline-offset:5px!important;
+    border-radius:14px!important;
+    transition:transform .14s ease,outline-color .14s ease,box-shadow .14s ease!important;
+  }
+  main > .section .cards .card-art {
+    aspect-ratio:2/3!important;
+    min-height:0!important;
+    border-radius:12px!important;
+    overflow:hidden!important;
+  }
+  main > .section .cards .card-title,
+  main > .section .cards .card-name {
+    font-size:clamp(14px,1vw,19px)!important;
+    line-height:1.35!important;
+    white-space:normal!important;
+  }
+  .topbar .nav-item,
+  .topbar .brand,
+  .tv-header-tools button,
+  button, a[href], [role=button] {
+    -webkit-tap-highlight-color:transparent;
+  }
+  .topbar .nav-item,
+  .topbar .brand,
+  .tv-header-tools button,
+  .library-view button,
+  .luno-catalog-tab,
+  .luno-catalog-sort button,
+  .mobile-tab,
+  .card,
+  #player button,
+  #searchPanel button {
+    scroll-margin:120px!important;
+  }
+  body.tv-remote-navigation :is(button,a[href],[role=button],.card,input,select,textarea):focus-visible,
+  :is(button,a[href],[role=button],.card).tv-remote-focus {
+    outline:3px solid var(--luno-ice,#8CB8CC)!important;
+    outline-offset:5px!important;
+    box-shadow:0 0 0 7px rgba(140,184,204,.18),0 10px 32px rgba(0,0,0,.38)!important;
+    position:relative;
+    z-index:4;
+  }
+  .card.tv-remote-focus,
+  main > .section .cards .card:focus-visible {
+    transform:scale(1.045)!important;
+  }
+  .topbar .nav-item:focus-visible,
+  .tv-header-tools button:focus-visible {
+    background:rgba(140,184,204,.15)!important;
+    color:#fff!important;
+  }
+  .library-view, .overlay, #searchPanel, #player {
+    overscroll-behavior:contain;
+  }
+  input,select,textarea { font-size:18px!important; }
+}
+@media (min-width:1400px) and (hover:none) {
+  main > .section .cards {
+    grid-auto-columns:clamp(205px,13.2vw,270px)!important;
+    gap:clamp(18px,1.4vw,30px)!important;
+  }
+}
