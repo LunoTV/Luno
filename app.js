@@ -1538,7 +1538,9 @@ function navigate(section){
     return;
   }
   if(section==="search"){
-    closeLibrary();
+    closeLibrary(true);
+    closeSearchPanel();
+    setMobileNavigationActive("search");
     openSearch();
     return;
   }
@@ -2781,7 +2783,9 @@ async function searchDynamic(query){
 function openSearch(){
   if(!searchPanel) return;
   searchPanel.classList.remove("hidden");
-  document.body.classList.add("search-open","show-global-back");
+  document.body.classList.add("search-open");
+  document.body.classList.remove("show-global-back","catalog-open","watch-history-open");
+  setMobileNavigationActive("search");
   renderSearchHistory();
   updateSearchSourceUI();
   window.setTimeout(()=>searchInput?.focus(),40);
