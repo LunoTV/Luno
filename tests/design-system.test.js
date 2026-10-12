@@ -82,11 +82,13 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
   assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
-  assert.ok(html.includes("./ui/detail-page.css?v=10"), "isolated detail stylesheet is linked");
+  assert.ok(html.includes("./ui/detail-page.css?v=11"), "isolated detail stylesheet is linked");
   for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
   assert.ok(css.includes(".luno-card-page") && css.includes("@media(max-width:700px)"), "new page has isolated responsive styles");
+  assert.ok(css.includes(".luno-card-backdrop{position:absolute") && css.includes("z-index:0;overflow:hidden"), "detail backdrop stays above the page background");
+  assert.ok(css.includes(".luno-card-content{position:relative;z-index:1"), "detail content layers above the backdrop");
   assert.ok(app.includes('document.querySelector(".luno-card-search")'), "new card search control is wired");
   assert.ok(html.includes("search-discovery-block") && html.includes("data-search-genre") && html.includes("search-mic"), "search uses the new genre discovery interface");
   assert.ok(app.includes("searchMediaCategory") && app.includes('document.querySelectorAll("[data-search-genre]")'), "genre cards and media category tabs are interactive");
