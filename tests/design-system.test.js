@@ -146,8 +146,8 @@ test("detail backdrop tries available TMDB image candidates until one loads", as
   const app = await readFile(new URL("app.js", root), "utf8");
   assert.ok(app.includes("const backdropPath=String(item?.backdrop_path||item?.backdropPath||\"\").trim()"), "uses TMDB backdrop paths when present");
   assert.ok(app.includes("const candidates=[...new Set(["), "builds fallback image candidates");
-  assert.ok(app.includes("image.onerror=()=>tryBackdrop(index+1)"), "tries the next image if a mirror fails");
-  assert.ok(app.includes("image.onload=()=>{"), "only applies an image after it loads");
+  assert.ok(app.includes("image.onerror=()=>applyBackdrop(index+1)"), "tries the next image if a mirror fails");
+  assert.ok(app.includes("image.onload=()=>{"), "applies a candidate immediately and retries on failure");
 });
 
 
