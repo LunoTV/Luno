@@ -314,17 +314,17 @@ body.detail-open #detail .luno-card-actions #detailFavorite { grid-column:1 / -1
 }
 
 
-/* Poster-only title screen: show the artwork and nothing layered over it. */
+/* Poster-only title screen: artwork on top, clean black space below, back arrow retained. */
 body.detail-open #detail.luno-card-page {
   background:#08090D !important;
   overflow:hidden !important;
 }
 body.detail-open #detail .luno-card-backdrop {
   position:fixed !important;
-  inset:0 !important;
+  inset:0 0 auto !important;
   width:100vw !important;
-  height:100vh !important;
-  height:100dvh !important;
+  height:68svh !important;
+  height:68dvh !important;
   min-height:0 !important;
   background:#08090D !important;
   z-index:1 !important;
@@ -335,15 +335,48 @@ body.detail-open #detail #detailBackdrop {
   width:100% !important;
   height:100% !important;
   background-color:#08090D !important;
-  background-position:center center !important;
+  background-position:center top !important;
   background-repeat:no-repeat !important;
-  background-size:contain !important;
+  background-size:cover !important;
   opacity:1 !important;
   filter:none !important;
 }
 body.detail-open #detail .luno-card-backdrop-shade,
 body.detail-open #detail .luno-card-trailer,
-body.detail-open #detail .luno-banner-header,
 body.detail-open #detail .luno-card-content {
   display:none !important;
+}
+body.detail-open #detail .luno-banner-header {
+  position:absolute !important;
+  inset:0 0 auto !important;
+  display:flex !important;
+  min-height:64px !important;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 8px !important;
+  background:transparent !important;
+  border:0 !important;
+  backdrop-filter:none !important;
+  z-index:20 !important;
+}
+body.detail-open #detail .luno-banner-header #closeDetail {
+  display:grid !important;
+  visibility:visible !important;
+  place-items:center !important;
+  width:44px !important;
+  height:44px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:rgba(10,10,14,.25) !important;
+  color:#fff !important;
+  font-size:38px !important;
+  backdrop-filter:blur(5px) !important;
+}
+@media(max-width:700px) {
+  body.detail-open #detail .luno-card-backdrop {
+    height:66svh !important;
+    height:66dvh !important;
+  }
+  body.detail-open #detail #detailBackdrop {
+    background-position:center top !important;
+    background-size:cover !important;
+  }
 }
