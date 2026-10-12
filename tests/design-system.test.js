@@ -158,7 +158,7 @@ test("mobile navigation uses a floating glass bar with five SVG icon tabs", asyn
     assert.ok(html.includes('data-section="'+section+'"'), "includes "+section+" navigation");
   }
   assert.ok((html.match(/<svg viewBox="0 0 24 24"/g)||[]).length>=5, "all five navigation items use clean SVG icons");
-  assert.ok(app.includes('if(section==="library"){openLibrary("favorites");return;}'), "library opens saved favorites");
+  assert.ok(app.includes('if(section==="library"){openLibrary("history");return;}'), "library opens saved favorites");
   assert.ok(app.includes('if(section==="profile" || section==="settings"){openSettingsView("profile");return;}'), "profile opens the existing profile/settings view");
   assert.ok(css.includes("bottom:calc(8px + env(safe-area-inset-bottom,0px))"), "navigation floats above the bottom safe area");
   assert.ok(css.includes("rgba(22,23,29,.70)"), "navigation uses a translucent glass background");
