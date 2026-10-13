@@ -352,6 +352,12 @@ test("search results are separated into horizontal media rows", async () => {
 });
 
 
+test("phone detail opens with Back focused; desktop and TV focus Play", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  assert.ok(app.includes('const detailFocusTarget=window.matchMedia("(max-width:700px)").matches?document.querySelector("#closeDetail"):detailPlay;'), "focus target follows the device layout");
+  assert.ok(app.includes("detailFocusTarget?.focus();"), "the selected control receives focus");
+});
+
 test("detail card uses an image element with poster-first fallback loading", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("app.js", root), "utf8");
