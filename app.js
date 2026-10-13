@@ -1015,7 +1015,8 @@ function openDetail(item){
     detail.addEventListener("transitionend",finishEntry,{once:true});
     window.setTimeout(finishEntry,420);
   }
-  detailPlay?.focus();
+  const detailFocusTarget=window.matchMedia("(max-width:700px)").matches?document.querySelector("#closeDetail"):detailPlay;
+  detailFocusTarget?.focus();
 }
 function closeDetail(fromHistory=false){
   if(!fromHistory && history.state?.luno==="detail"){
