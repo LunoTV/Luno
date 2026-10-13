@@ -242,45 +242,6 @@ body.detail-open #detail #detailRecommendations{display:none!important;}
 }
 
 
-/* Recovery: force the LUNO detail content above its cinematic artwork on mobile. */
-@media(max-width:700px){
-  body.detail-open #detail.luno-card-page .luno-card-header{
-    display:flex!important;visibility:visible!important;opacity:1!important;z-index:20!important;
-  }
-  body.detail-open #detail.luno-card-page .luno-card-content{
-    display:block!important;visibility:visible!important;opacity:1!important;
-    position:relative!important;z-index:10!important;overflow:visible!important;
-    color:#E7E8EF!important;
-  }
-  body.detail-open #detail.luno-card-page .luno-card-hero{
-    display:flex!important;visibility:visible!important;opacity:1!important;
-    position:relative!important;z-index:10!important;
-    min-height:min(78svh,760px)!important;
-  }
-  body.detail-open #detail.luno-card-page .luno-card-hero-copy{
-    display:block!important;visibility:visible!important;opacity:1!important;
-    position:relative!important;z-index:11!important;
-    width:100%!important;max-width:none!important;
-    color:#E7E8EF!important;
-    text-shadow:0 1px 12px rgba(0,0,0,.55)!important;
-  }
-  body.detail-open #detail.luno-card-page .luno-card-hero-copy>*{
-    visibility:visible!important;opacity:1!important;
-  }
-  body.detail-open #detail.luno-card-page .luno-card-hero h2,
-  body.detail-open #detail.luno-card-page .luno-card-meta,
-  body.detail-open #detail.luno-card-page .luno-card-badges,
-  body.detail-open #detail.luno-card-page .luno-card-actions{
-    display:flex!important;visibility:visible!important;opacity:1!important;
-  }
-  body.detail-open #detail.luno-card-page .luno-card-hero h2{
-    display:block!important;color:#F4F4F7!important;
-  }
-  body.detail-open #detail.luno-card-page .luno-card-actions{
-    flex-direction:column!important;align-items:stretch!important;
-  }
-}
-
 /* Banner-only detail view: remove the visible inner information card and secondary content. */
 body.detail-open #detail.luno-card-page { background:#08090D !important; }
 body.detail-open #detail .luno-card-backdrop { position:fixed !important; inset:0 !important; width:100% !important; height:100svh !important; height:100dvh !important; min-height:0 !important; z-index:0 !important; }
