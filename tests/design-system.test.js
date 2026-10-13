@@ -119,6 +119,7 @@ test("detail screen uses a real image element and prioritizes poster artwork", a
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("app.js", root), "utf8");
   assert.ok(html.includes('<img id="detailBackdrop" class="luno-card-backdrop-image"'), "detail artwork is a real image, not a CSS background");
+  assert.ok(!html.includes('<div <img id="detailBackdrop"'), "detail artwork is not nested inside malformed markup");
   assert.ok(app.includes("function detailPosterCandidates(item)"), "poster and backdrop candidate resolution is separate");
   assert.ok(app.includes("const posters=posterCandidates(posterItem)"), "portrait poster candidates are attempted first");
   assert.ok(app.includes("const backdrops=backdropPath?posterCandidates"), "wide backdrop is only a fallback");
@@ -356,6 +357,7 @@ test("detail card uses an image element with poster-first fallback loading", asy
   const app = await readFile(new URL("app.js", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(html.includes('<img id="detailBackdrop" class="luno-card-backdrop-image"'), "detail artwork is a real image element");
+  assert.ok(!html.includes('<div <img id="detailBackdrop"'), "the image element is valid standalone markup");
   assert.ok(app.includes("function detailPosterCandidates(item)"), "poster candidates have a dedicated resolver");
   assert.ok(app.includes("const posters=posterCandidates(posterItem)"), "portrait posters are tried before backdrops");
   assert.ok(app.includes("detailBackdrop.onerror=()=>tryPoster(index+1)"), "image element retries fallback candidates");
