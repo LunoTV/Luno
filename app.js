@@ -406,6 +406,51 @@ function posterCandidates(item){
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
 // Shared device capability check used by poster loading and prefetching.
+function detailPosterCandidates(item){
+  const posterPath=String(item?.poster_path||item?.posterPath||"").trim();
+  const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").trim();
+  const rawPoster=String(
+    item?.poster||item?.posterUrl||item?.poster_url||
+    item?.image||item?.imageUrl||item?.image_url||
+    item?.cover||item?.coverUrl||item?.cover_url||""
+  ).trim();
+  // Prefer portrait poster metadata and explicit poster URLs. A backdrop is
+  // only a last resort; never overwrite a real poster path with backdrop_path.
+  const posterItem={
+    ...item,
+    poster_path:posterPath,
+    posterPath,
+    backdrop_path:"",
+    backdropPath:"",
+    backdrop:"",
+    backdropUrl:"",
+    backdrop_url:"",
+    background:""
+  };
+  const posters=posterCandidates(posterItem);
+  const explicitPoster=rawPoster&&(rawPoster.startsWith("http://")||rawPoster.startsWith("https://"))?[rawPoster]:[];
+  const backdrops=backdropPath?posterCandidates({
+    ...item,
+    poster:"",
+    posterUrl:"",
+    poster_url:"",
+    image:"",
+    imageUrl:"",
+    image_url:"",
+    cover:"",
+    coverUrl:"",
+    cover_url:"",
+    poster_path:backdropPath,
+    posterPath:backdropPath,
+    backdrop_path:"",
+    backdropPath:"",
+    backdrop:"",
+    backdropUrl:"",
+    backdrop_url:"",
+    background:""
+  }):[];
+  return [...new Set([...posters,...explicitPoster,...backdrops].filter(Boolean))];
+}
 function isLowPowerTV(){
   const ua=String(navigator.userAgent||"");
   return /web0s|webos|netcast|tizen|smart-tv|smarttv|hbbtv|aftb|android tv|googletv/i.test(ua)
@@ -948,33 +993,32 @@ function openDetail(item){
     console.error("[LUNO] paintDetail failed",error);
   }
   if(detailBackdrop){
-    const posterPath=String(item?.poster_path||item?.posterPath||"").trim();
-    const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").trim();
-    const backdropSource={
-      ...item,
-      poster: item?.poster || item?.posterUrl || item?.poster_url || item?.image || item?.cover || "",
-      poster_path: posterPath || backdropPath
-    };
-    const candidates=[...new Set([
-      ...posterCandidates(backdropSource),
-      ...posterCandidates({...item,poster:item?.poster||"",poster_path:item?.poster_path||item?.posterPath||""})
-    ])];
-    detailBackdrop.style.backgroundImage="";
+    const candidates=detailPosterCandidates(item);
+    const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
+    detailBackdrop.dataset.requestId=requestId;
     detailBackdrop.dataset.imageIndex="0";
-    const tryBackdrop=(index)=>{
+    detailBackdrop.classList.remove("is-loaded","is-missing");
+    detailBackdrop.onload=null;
+    detailBackdrop.onerror=null;
+    detailBackdrop.removeAttribute("src");
+    const tryPoster=(index)=>{
+      if(detailBackdrop.dataset.requestId!==requestId) return;
       if(index>=candidates.length){
-        detailBackdrop.style.backgroundImage="";
+        detailBackdrop.classList.remove("is-loaded");
+        detailBackdrop.classList.add("is-missing");
         return;
       }
-      const image=new Image();
-      image.onload=()=>{
-        detailBackdrop.style.backgroundImage='url("'+candidates[index].replace(/"/g,"&quot;")+'")';
-        detailBackdrop.dataset.imageIndex=String(index);
+      detailBackdrop.dataset.imageIndex=String(index);
+      detailBackdrop.onerror=()=>tryPoster(index+1);
+      detailBackdrop.onload=()=>{
+        if(detailBackdrop.dataset.requestId===requestId){
+          detailBackdrop.classList.remove("is-missing");
+          detailBackdrop.classList.add("is-loaded");
+        }
       };
-      image.onerror=()=>tryBackdrop(index+1);
-      image.src=candidates[index];
+      detailBackdrop.src=candidates[index];
     };
-    tryBackdrop(0);
+    tryPoster(0);
   }
   const trailerVideo=document.querySelector("#detailTrailerVideo");
   const trailerSound=document.querySelector("#detailTrailerSound");
@@ -1015,7 +1059,8 @@ function openDetail(item){
     detail.addEventListener("transitionend",finishEntry,{once:true});
     window.setTimeout(finishEntry,420);
   }
-  detailPlay?.focus();
+  const detailFocusTarget=window.matchMedia("(max-width:700px)").matches?document.querySelector("#closeDetail"):detailPlay;
+  detailFocusTarget?.focus();
 }
 function closeDetail(fromHistory=false){
   if(!fromHistory && history.state?.luno==="detail"){
