@@ -241,7 +241,13 @@ function task(call){
 
     loadBlackList((black_list)=>{
         Account.Api.plugins((plugins)=>{
-            let puts = window.lampa_settings.plugins_use ? plugins.filter(plugin=>plugin.status).map(plugin=>plugin.url).concat(Storage.get('plugins','[]').filter(plugin=>plugin.status).map(plugin=>plugin.url)) : []
+            // LUNO intentionally loads only the three supported external plugins.
+            // Keep Lampa's local modification hook, but do not inherit arbitrary account/store plugins.
+            let puts = [
+                'http://z01.online/online.js',
+                'https://lampaplugins.github.io/store/logo.js',
+                'http://cub.red/plugin/tmdb-proxy'
+            ]
 
             puts.push('./plugins/modification.js')
 
