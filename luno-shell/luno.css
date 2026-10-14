@@ -46,3 +46,12 @@ body:has(.home-hero){background:#101012}
  .home-shelf{padding-left:max(30px,calc((100vw - 980px)/2))}
  .home-posters{grid-auto-columns:230px}
 }
+
+/* Keep LUNO's own purple/glass identity; borrow layout only, never reference-site button colors. */
+.home-hero .premiere{background:linear-gradient(110deg,#A75BE8,#C28AFF);color:#1B0D28;border-radius:10px}
+.home-hero .primary{background:linear-gradient(110deg,#A75BE8,#C28AFF);color:#1B0D28;border:0;border-radius:18px;box-shadow:0 0 25px #9e51dc30;font-weight:700}
+.home-hero .hero-add{background:#1b1624dc;border:1px solid #72538466;color:#F0DFFF;box-shadow:0 0 24px #a653dc10}
+.home-hero .hero-progress span{background:#72538488}
+.home-hero .hero-progress .current{background:#D6A5FF;box-shadow:0 0 12px #B56BFF88}
+.home-shelf .section-head button{color:var(--muted)}
+.home-posters .poster{border:1px solid #ffffff12;border-radius:17px}
