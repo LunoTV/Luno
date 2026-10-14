@@ -66,7 +66,7 @@
         <div class="feature-meta"><span>✦ ${feature?.vote_average?Number(feature.vote_average).toFixed(1):'—'}</span><span>18+</span><span>${safe(genres||feature?.meta||'ФИЛЬМЫ И СЕРИАЛЫ')}</span><span class="meta-chevron">⌄</span></div>
         <p>${safe(feature?.overview||'Новые истории, премьеры и любимые фильмы — в одной вселенной LUNO.')}</p>
         <div class="actions"><button class="primary" data-action="open-featured">▷ &nbsp; Смотреть</button><button class="hero-add" data-action="watch-featured" aria-label="Добавить в список">＋</button></div>
-        <div class="hero-progress" aria-hidden="true"><span class="current"></span> ${Array.from({length:Math.min(10,Math.max(1,list.length))},(_,i)=>`<button class="hero-dot ${i===state.featureIndex?'current':''}" data-slide="${i}" aria-label="Слайд ${i+1}"></button>`).join('')}</div>
+        <div class="hero-progress" aria-hidden="true"><span class="current"></span> ${Array.from({length:Math.min(10,Math.max(1,list.length))},(_,i)=>`<button class="hero-dot ${i===state.featureIndex % Math.max(1,list.length)?'current':''}" data-slide="${i}" aria-label="Слайд ${i+1}"></button>`).join('')}</div>
       </div>
     </section>
     <section class="home-shelf">${head('Новое в Амедиатеке')}<div class="poster-row home-posters">${cards(shelf)}</div></section>
@@ -110,5 +110,5 @@
   document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();doSearch(new FormData(e.target).get('q')||'');});
   render();
   loadCatalog('Фильмы');
-  window.setInterval(()=>{if(state.tab==='home'&&state.items.length>1){state.featureIndex=(state.featureIndex+1)%Math.min(10,state.items.length);render();}},10000);
+  window.setInterval(()=>{if(state.tab==='home'){const count=Math.min(10,state.items.filter(x=>x&&(x.backdrop_path||x.poster_path)).length);if(count>1){state.featureIndex=(state.featureIndex+1)%count;render();}}},10000);
 })();
