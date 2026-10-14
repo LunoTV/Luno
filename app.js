@@ -1015,7 +1015,9 @@ function openDetail(item){
     console.error("[LUNO] paintDetail failed",error);
   }
   if(detailBackdrop){
-    const candidates=detailPosterCandidates(item);
+    // Reuse the same resolver as the title artwork before trying catalog fallbacks.
+    const resolvedArtwork=preferredTmdbImage(item?.poster || item?.background || item?.image || item?.cover || "");
+    const candidates=[...new Set([resolvedArtwork,...detailPosterCandidates(item)].filter(Boolean))];
     const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
     detailBackdrop.dataset.requestId=requestId;
     detailBackdrop.dataset.imageIndex="0";
