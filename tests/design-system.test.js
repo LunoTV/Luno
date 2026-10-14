@@ -132,10 +132,11 @@ test("phone title view shows the full detail card and back control", async () =>
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(css.includes("object-fit:cover; object-position:center 24%"), "poster fills the phone viewport behind the detail content");
-  assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "title and action content are hidden on phones");
-  assert.ok(css.includes("body.detail-open #detail .luno-card-backdrop-shade"), "artwork is not obscured by a gradient on phones");
-  assert.ok(css.includes("body.detail-open #detail #closeDetail"), "the only control is the back button");
-  assert.ok(html.includes("./ui/detail-page.css?v=19"), "isolated detail styles use a fresh cache version");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "the full detail content is visible on phones");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions {\n    display:grid!important"), "mobile playback and favorite actions are visible");
+  assert.ok(css.includes("body.detail-open #detail #detailHiddenData {\n    display:block!important"), "synopsis, facts and recommendations are visible below the hero");
+  assert.ok(!css.includes("body.detail-open #detail #detailHiddenData { display:none!important; }"), "mobile layout does not hide secondary details");
+  assert.ok(html.includes("./ui/detail-page.css?v=20"), "isolated detail styles use a fresh cache version");
 });
 
 test("desktop and TV title detail retain playback and favorite actions", async () => {
