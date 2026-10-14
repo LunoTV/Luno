@@ -586,3 +586,114 @@ body.true--mobile .wrap {
         display: block;
     }
 }
+
+
+/* LUNO mobile shell v1: remove the visible Lampa chrome while retaining its data/runtime. */
+@media screen and (max-width: $media_md) {
+    body.true--mobile .head {
+        position: relative;
+        height: auto;
+        min-height: 0;
+        padding: 0.85em 1em 0.65em;
+        background: #0c0c0f;
+        border: 0;
+    }
+
+    body.true--mobile .head__body {
+        min-height: 2.8em;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    /* The menu icon and Lampa's notification/account/action cluster are not part of the LUNO shell. */
+    body.true--mobile .head__menu-icon,
+    body.true--mobile .head__actions,
+    body.true--mobile .head__backward {
+        display: none !important;
+    }
+
+    body.true--mobile .head__logo-icon {
+        display: none !important;
+    }
+
+    body.true--mobile .head__title {
+        display: block !important;
+        margin: 0;
+        font-size: 0 !important;
+        line-height: 1;
+        color: transparent !important;
+    }
+
+    body.true--mobile .head__title::after {
+        content: "LUNO";
+        color: #f4bd36;
+        display: block;
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1.25;
+        letter-spacing: 0.2em;
+    }
+
+    body.true--mobile .wrap__left {
+        display: none !important;
+    }
+
+    body.true--mobile .navigation-bar.luno-dock {
+        display: block !important;
+        z-index: 100;
+    }
+
+    body.true--mobile .navigation-bar.luno-dock .navigation-bar__body {
+        min-height: 4.2em;
+    }
+
+    body.true--mobile .navigation-bar.luno-dock .navigation-bar__item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.15em;
+    }
+
+    body.true--mobile .navigation-bar.luno-dock .navigation-bar__item.active {
+        background: rgba(244, 189, 54, 0.17);
+        color: #f4bd36;
+    }
+
+    body.true--mobile .navigation-bar.luno-dock .navigation-bar__item.active .navigation-bar__icon {
+        color: #f4bd36;
+    }
+
+    body.true--mobile .items-line__head {
+        display: flex;
+        align-items: center;
+    }
+
+    body.true--mobile .items-line__title {
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+
+    body.true--mobile .items-line__more {
+        border-radius: 99em;
+        padding: 0.4em 0.85em;
+        background: #1d1d23;
+        border-color: #33333b;
+    }
+
+    body.true--mobile .card__img {
+        border-radius: 0.8em;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    body.true--mobile .card__vote {
+        background: rgba(22,22,27,0.92);
+        border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    body.true--mobile .navigation-bar.luno-dock + .navigation-bar {
+        display: none !important;
+    }
+}
