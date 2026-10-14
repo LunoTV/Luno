@@ -51,8 +51,21 @@
     const list=state.items.slice(0,12);
     const feature=list[0];
     const bg=feature&&backdropOf(feature);
-    const heroStyle=bg?`style="background-image:linear-gradient(0deg,#0d0a14 0%,#0d0a1499 48%,#0d0a1433 100%),url('${safe(bg)}')"`:'';
-    return `<section class="hero" ${heroStyle}><span class="eyebrow">ПОДБОРКА LUNO</span><h1>${safe(feature?.title||'Твоя следующая история')}</h1><div class="meta">${safe(feature?.meta||'КИНО • СЕРИАЛЫ • 4K')}</div><p>${safe(feature?.overview||'Открой новую вселенную фильмов и сериалов. Всё, что хочется посмотреть, — в одном месте.')}</p><div class="actions"><button class="primary" data-action="open-featured">▷ &nbsp; Смотреть</button><button class="secondary" data-action="watch-featured">＋</button></div></section>${head('Популярное сейчас')}<div class="poster-row">${cards(list)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}`;
+    const heroStyle=bg?`style="background-image:linear-gradient(180deg,rgba(10,9,12,.04) 0%,rgba(10,9,12,.04) 38%,rgba(10,9,12,.76) 68%,#101012 100%),url('${safe(bg)}')"`:'';
+    const genres=(feature?.genre_ids||[]).map(id=>({16:'Анимация',35:'Комедия',28:'Боевик',14:'Фэнтези',18:'Драма',12:'Приключения',878:'Фантастика',53:'Триллер',80:'Криминал',10749:'Мелодрама',9648:'Детектив',27:'Ужасы',10751:'Семейный',99:'Документальный',10759:'Боевик',10765:'Фэнтези'}[id])).filter(Boolean).slice(0,4).join(', ');
+    return `<section class="home-hero" ${heroStyle}>
+      <div class="home-hero-content">
+        <span class="premiere">ПРЕМЬЕРА</span>
+        <h1>${safe(feature?.title||'Открой свою следующую историю')}</h1>
+        <div class="feature-meta"><span>✦ ${feature?.vote_average?Number(feature.vote_average).toFixed(1):'—'}</span><span>18+</span><span>${safe(genres||feature?.meta||'ФИЛЬМЫ И СЕРИАЛЫ')}</span><span class="meta-chevron">⌄</span></div>
+        <p>${safe(feature?.overview||'Новые истории, премьеры и любимые фильмы — в одной вселенной LUNO.')}</p>
+        <div class="actions"><button class="primary" data-action="open-featured">▷ &nbsp; Смотреть</button><button class="hero-add" data-action="watch-featured" aria-label="Добавить в список">＋</button></div>
+        <div class="hero-progress" aria-hidden="true"><span class="current"></span>${Array.from({length:9},()=>'<i></i>').join('')}</div>
+      </div>
+    </section>
+    <section class="home-shelf">${head('Новое в Амедиатеке')}<div class="poster-row home-posters">${cards(list)}</div></section>
+    <section class="home-shelf secondary-shelf">${head('Популярное сейчас')}<div class="poster-row">${cards(list.slice().reverse())}</div></section>
+    ${state.error?`<p class="quiet home-error">${safe(state.error)}</p>`:''}`;
   }
   function catalog(){return `<h1 class="page-title">Каталог</h1>${tabs(['Фильмы','Сериалы','DAZN','Коллекции','ТВ'],state.catalogType,'type')}<div class="controls"><button class="filter" data-sort="По новизне">Популярное</button><button class="filter" data-sort="По рейтингу">В тренде</button></div>${state.busy?'<p class="quiet">Загружаем каталог…</p>':''}<div class="grid">${cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}`; }
   function search(){return `<form id="search-form"><input class="searchbox" name="q" placeholder="Сериал, фильм или жанр" value="${safe(state.search)}" aria-label="Поиск фильмов и сериалов"></form><div class="grid">${state.busy?'<p class="quiet">Ищем…</p>':cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}`; }
