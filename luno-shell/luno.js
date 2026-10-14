@@ -4,7 +4,7 @@
   const TMDB_KEY = '4ef0d7355d9ffb5151e987764708ce96';
   const TMDB_API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
-  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],featureIndex:0};
+  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],featureIndex:0,homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
   const safe = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const titleOf = x => x.title || x.name || x.original_title || x.original_name || 'Без названия';
   const imageOf = (x,size='w500') => x?.poster_path ? IMG+size+x.poster_path : (x?.poster?.startsWith?.('http') ? x.poster : '');
@@ -50,6 +50,25 @@
     } catch(e){state.error=e.message||'Поиск временно недоступен.';}
     finally{state.busy=false;render();}
   }
+  async function loadHomeShelves(){
+    const shelves=state.homeShelves;
+    const jobs=[
+      ['popular','trending/all/week',{page:1}],
+      ['topMovies','movie/top_rated',{page:1}],
+      ['topShows','tv/top_rated',{page:1}],
+      ['forYou','movie/popular',{page:2}],
+      ['cult','movie/top_rated',{page:2}]
+    ];
+    await Promise.all(jobs.map(async ([key,path,params])=>{
+      if(shelves[key].length)return;
+      try{
+        const data=await tmdb(path,params);
+        shelves[key]=normalize(data).filter(x=>x.backdrop_path||x.poster_path).slice(0,10).map((x,i)=>({...x,_lunoId:key+'-'+i,source:'tmdb'}));
+      }catch(_){}
+    }));
+    if(state.tab==='home')render();
+  }
+  const shelfMarkup=(title,items,key)=>items.length?'<section class="home-shelf themed-shelf"><div class="section-head"><h2>'+safe(title)+'</h2><button class="quiet" data-home-shelf="'+key+'">Показать ещё ↗</button></div><div class="poster-row home-posters">'+cards(items)+'</div></section>':'';
   function home(){
     // Keep the hero and the first poster row in sync: only use titles with real artwork,
     // and put the currently featured title first in the shelf beneath the banner.
@@ -69,7 +88,11 @@
         <div class="hero-progress" aria-hidden="true"><span class="current"></span> ${Array.from({length:Math.min(10,Math.max(1,list.length))},(_,i)=>`<button class="hero-dot ${i===state.featureIndex % Math.max(1,list.length)?'current':''}" data-slide="${i}" aria-label="Слайд ${i+1}"></button>`).join('')}</div>
       </div>
     </section>
-    <section class="home-shelf secondary-shelf">${head('Популярное сейчас')}<div class="poster-row">${cards(list.slice().reverse())}</div></section>
+    ${shelfMarkup('Популярное сейчас',state.homeShelves.popular,'popular')}
+    ${shelfMarkup('Топ 10 фильмов',state.homeShelves.topMovies,'topMovies')}
+    ${shelfMarkup('Топ 10 сериалов',state.homeShelves.topShows,'topShows')}
+    ${shelfMarkup('Для вас',state.homeShelves.forYou,'forYou')}
+    ${shelfMarkup('Культовое кино',state.homeShelves.cult,'cult')}
     ${state.error?`<p class="quiet home-error">${safe(state.error)}</p>`:''}`;
   }
   function catalog(){return `<h1 class="page-title">Каталог</h1>${tabs(['Фильмы','Сериалы','DAZN','Коллекции','ТВ'],state.catalogType,'type')}<div class="controls"><button class="filter" data-sort="По новизне">Популярное</button><button class="filter" data-sort="По рейтингу">В тренде</button></div>${state.busy?'<p class="quiet">Загружаем каталог…</p>':''}<div class="grid">${cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}`; }
@@ -109,5 +132,6 @@
   document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();doSearch(new FormData(e.target).get('q')||'');});
   render();
   loadCatalog('Фильмы');
+  loadHomeShelves();
   window.setInterval(()=>{if(state.tab==='home'){const count=Math.min(10,state.items.filter(x=>x&&(x.backdrop_path||x.poster_path)).length);if(count>1){state.featureIndex=(state.featureIndex+1)%count;render();}}},10000);
 })();
