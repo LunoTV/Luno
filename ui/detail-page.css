@@ -111,7 +111,7 @@ body.detail-open #app > #detail.luno-card-page.hidden { display:none!important; 
   body.detail-open #detail .luno-card-content {
     display:block!important; position:relative; z-index:2; max-width:none;
     margin:0; padding:0 20px calc(28px + env(safe-area-inset-bottom,0px));
-    min-height:100%; box-sizing:border-box; pointer-events:none;
+    min-height:100%; box-sizing:border-box; pointer-events:auto;
     display:flex!important; flex-direction:column; justify-content:flex-end;
   }
   body.detail-open #detail .luno-card-hero {
@@ -163,7 +163,24 @@ body.detail-open #app > #detail.luno-card-page.hidden { display:none!important; 
   body.detail-open #detail .luno-card-actions #detailEpisodes,
   body.detail-open #detail .luno-card-actions #detailTrailerSound { display:none!important; }
   body.detail-open #detail .luno-card-ratings { display:block; margin-top:10px; }
-  body.detail-open #detail #detailHiddenData { display:none!important; }
+  body.detail-open #detail #detailHiddenData {
+    display:block!important; position:relative; z-index:2; pointer-events:auto;
+  }
+  body.detail-open #detail .luno-card-section {
+    display:block; padding:24px 0; border-top:1px solid rgba(255,255,255,.12);
+  }
+  body.detail-open #detail .luno-card-about {
+    display:grid; grid-template-columns:minmax(0,1fr); gap:16px;
+  }
+  body.detail-open #detail .luno-card-about p {
+    font-size:14px; line-height:1.65; color:#d6d7df;
+  }
+  body.detail-open #detail .luno-card-facts { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  body.detail-open #detail .luno-card-facts>div { min-width:0; padding:12px; }
+  body.detail-open #detail .luno-card-seasons { align-items:flex-start; flex-direction:column; padding:16px; }
+  body.detail-open #detail .luno-card-actors,
+  body.detail-open #detail .luno-card-recommendations,
+  body.detail-open #detail .luno-card-tags { margin-right:-20px; padding-right:20px; }
   body.detail-open #detail .luno-card-header {
     position:fixed; inset:0 0 auto; display:flex; min-height:0; height:auto;
     padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;
