@@ -109,8 +109,8 @@ test("LUNO detail card renders its title without a remote logo dependency", asyn
 
 test("detail card hides the app shell header and mobile tab bar while open", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "app shutter is hidden while detail is open");
-  assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "mobile tab bar is hidden with all other app screens");
+  assert.ok(css.includes("body.detail-open #app>:not(#detail)"), "app shutter is hidden while detail is open");
+  assert.ok(css.includes("body.detail-open #app>:not(#detail)"), "mobile tab bar is hidden with all other app screens");
   assert.ok(css.includes("body.detail-open #app>#detail.hidden"), "hidden detail card stays hidden");
 });
 
@@ -123,7 +123,7 @@ test("detail screen uses a real image element and prioritizes poster artwork", a
   assert.ok(app.includes("function detailPosterCandidates(item)"), "poster and backdrop candidate resolution is separate");
   assert.ok(app.includes("const posters=posterCandidates(posterItem)"), "portrait poster candidates are attempted first");
   assert.ok(app.includes("const backdrops=backdropPath?posterCandidates"), "wide backdrop is only a fallback");
-  assert.ok(app.includes("detailBackdrop.onerror=()=>tryPoster(index+1)"), "image element retries mirrors directly");
+  assert.ok(app.includes("detailBackdrop.onerror=attempt"), "image element retries the next artwork candidate");
   assert.ok(!app.includes("detailBackdrop.style.backgroundImage"), "image visibility does not depend on applying a CSS background");
   assert.ok(html.includes("./app.js?v=card-refactor-v4"), "poster loader cache is refreshed");
 });
@@ -147,7 +147,7 @@ test("desktop and TV title detail retain playback and favorite actions", async (
   assert.ok(app.includes('detailPlay?.addEventListener("click"'), "play action still opens the existing player");
   assert.ok(app.includes('detailFavorite?.addEventListener("click"'), "favorite action remains wired");
   assert.ok(css.includes(".luno-card-actions #detailPlay"), "primary playback action has a single component style");
-  assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "detail screen is isolated from Home");
+  assert.ok(css.includes("body.detail-open #app>:not(#detail)"), "detail screen is isolated from Home");
 });
 
 test("mobile navigation uses a floating glass bar with five SVG icon tabs", async () => {
