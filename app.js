@@ -985,70 +985,7 @@ function loadDetailArtwork(item){
 function openDetail(item){
   if(!item)return;detailReturnLibrary=libraryView&&!libraryView.classList.contains("hidden")?libraryType:"";if(detailReturnLibrary)closeLibrary(true);currentItem=item;
   try{setLunoHistory("detail");paintDetail(item);}catch(error){console.error("[LUNO] paintDetail failed",error);}
-  if(detailBackdrop){
-    // Reuse the same resolver as the title artwork before trying catalog fallbacks.
-    const resolvedArtwork=preferredTmdbImage(item?.poster || item?.background || item?.image || item?.cover || "");
-    let candidates=[...new Set([resolvedArtwork,...detailPosterCandidates(item)].filter(Boolean))];
-    let tmdbSearchFallbackTried=false;
-    const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
-    detailBackdrop.dataset.requestId=requestId;
-    detailBackdrop.dataset.imageIndex="0";
-    detailBackdrop.classList.remove("is-loaded","is-missing");
-    detailBackdrop.onload=null;
-    detailBackdrop.onerror=null;
-    detailBackdrop.removeAttribute("src");
-    const tryPoster=(index)=>{
-      if(detailBackdrop.dataset.requestId!==requestId) return;
-      if(index>=candidates.length){
-        if(!tmdbSearchFallbackTried){
-          tmdbSearchFallbackTried=true;
-          const title=String(item?.title||item?.name||item?.original_title||item?.original_name||"").trim();
-          if(title){
-            const year=String(item?.release_date||item?.first_air_date||"").slice(0,4);
-            fetchTmdbApi("search/multi",{query:title,year})
-              .then(data=>{
-                if(detailBackdrop.dataset.requestId!==requestId) return;
-                const normalized=title.toLocaleLowerCase();
-                const match=(data.results||[])
-                  .filter(entry=>entry && entry.poster_path && (entry.media_type==="movie"||entry.media_type==="tv"))
-                  .sort((a,b)=>{
-                    const aTitle=String(a.title||a.name||a.original_title||a.original_name||"").toLocaleLowerCase();
-                    const bTitle=String(b.title||b.name||b.original_title||b.original_name||"").toLocaleLowerCase();
-                    const aScore=(aTitle===normalized?4: aTitle.includes(normalized)||normalized.includes(aTitle)?2:0)+(year&&String(a.release_date||a.first_air_date||"").startsWith(year)?1:0);
-                    const bScore=(bTitle===normalized?4: bTitle.includes(normalized)||normalized.includes(bTitle)?2:0)+(year&&String(b.release_date||b.first_air_date||"").startsWith(year)?1:0);
-                    return bScore-aScore;
-                  })[0];
-                if(match){
-                  const found=detailPosterCandidates(match);
-                  candidates=[...new Set([...candidates,...found].filter(Boolean))];
-                  tryPoster(index);
-                  return;
-                }
-                detailBackdrop.classList.add("is-missing");
-              })
-              .catch(error=>{
-                console.warn("[LUNO] TMDB poster fallback failed",error);
-                if(detailBackdrop.dataset.requestId===requestId) detailBackdrop.classList.add("is-missing");
-              });
-            return;
-          }
-        }
-        detailBackdrop.classList.remove("is-loaded");
-        detailBackdrop.classList.add("is-missing");
-        return;
-      }
-      detailBackdrop.dataset.imageIndex=String(index);
-      detailBackdrop.onerror=()=>tryPoster(index+1);
-      detailBackdrop.onload=()=>{
-        if(detailBackdrop.dataset.requestId===requestId){
-          detailBackdrop.classList.remove("is-missing");
-          detailBackdrop.classList.add("is-loaded");
-        }
-      };
-      detailBackdrop.src=candidates[index];
-    };
-    tryPoster(0);
-  }
+  loadDetailArtwork(item);
   const trailerVideo=document.querySelector("#detailTrailerVideo"),trailerSound=document.querySelector("#detailTrailerSound"),trailerUrl=String(item?.trailerUrl||item?.trailer||"").trim();
   if(trailerVideo){trailerVideo.pause();trailerVideo.removeAttribute("src");trailerVideo.load();trailerVideo.classList.remove("is-ready");if(trailerUrl&&/^(https?:)?\/\//i.test(trailerUrl)&&/\.(mp4|webm|m3u8)(\?|$)/i.test(trailerUrl)){trailerVideo.src=trailerUrl;trailerVideo.muted=true;trailerVideo.playsInline=true;trailerVideo.load();const playTrailer=()=>trailerVideo.play().then(()=>trailerVideo.classList.add("is-ready")).catch(()=>{});trailerVideo.oncanplay=playTrailer;}}
   if(trailerSound){trailerSound.classList.remove("is-on");trailerSound.onclick=()=>{if(!trailerVideo||!trailerVideo.src)return;trailerVideo.muted=!trailerVideo.muted;trailerSound.classList.toggle("is-on",!trailerVideo.muted);trailerSound.setAttribute("aria-label",trailerVideo.muted?"Включить звук трейлера":"Выключить звук трейлера");if(!trailerVideo.paused)return;trailerVideo.play().catch(()=>{});};}
