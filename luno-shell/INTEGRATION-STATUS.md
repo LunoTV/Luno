@@ -1,19 +1,34 @@
 # LUNO runtime integration status
 
 ## Implemented in this branch
-- A separate LUNO UI shell with cosmic-purple design.
-- A runtime adapter boundary in `lampa-adapter.js`; it never mounts Lampa's stock UI.
+- Separate LUNO UI shell with the cosmic-purple design.
+- Runtime adapter boundary in `lampa-adapter.js`; it does not intentionally mount Lampa's stock UI.
 - The agreed plugin inventory in `plugins.json`.
+- Root `src/` matches the upstream `yumata/lampa-source` entrypoint currently pinned below.
+
+## Upstream baseline
+- Repository: https://github.com/yumata/lampa-source
+- Pinned commit: `5d715fc76667f988ff3d6a9e1ff5994e7856f234`
+- License declared upstream: GPL-2.0; preserve copyright/license notices and meet source-distribution obligations for derivative builds.
+
+## Verified integration blocker
+The upstream `src/app.js` exposes `window.Lampa`, but it also runs `Render.app()` inside `startApp()`, which mounts the stock Lampa interface. Loading the normal `app.js` bundle directly into the LUNO page would therefore violate the requirement that users never see Lampa UI. The adapter remains fail-closed while the runtime entry is unset; do not point it at the normal stock bundle.
 
 ## Not yet complete
-The adapter is deliberately fail-closed until a built and pinned Lampa runtime is supplied via `window.LUNO_CONFIG.runtimeEntry`. It does not pretend that Lampa's internals are already available, and it does not guess undocumented APIs for search, catalog, or playback.
+- A separate runtime build/entrypoint that initializes the required Lampa services without mounting the stock UI.
+- A tested LUNO service facade for metadata, catalog/search, source discovery, and player launch.
+- Loading and validating the three agreed plugins against the pinned runtime.
+- CI smoke tests for runtime readiness, catalog/search, source selection, and playback.
+- Production deployment of the LUNO shell. The current Pages workflow still builds and deploys the stock Lampa distribution; do not switch it to the incomplete shell or claim the player is ready.
 
 ## Required integration sequence
-1. Pin the upstream `yumata/lampa-source` commit and build it in CI with the repository's documented build task.
-2. Publish the generated runtime bundle as a same-origin asset. Review the stock entry point so the Lampa UI is not mounted; preserve runtime/services/source APIs needed by adapters.
+1. Create a dedicated runtime entrypoint based on the pinned upstream source, preserving the needed core/services/source APIs while replacing the stock UI render path.
+2. Build and publish that runtime as a same-origin asset.
 3. Add a small, tested LUNO service facade for TMDB metadata, catalog/search, source discovery, and player launch. Keep UI rendering in `luno-shell`.
-4. Load the agreed plugin URLs through a plugin manager compatible with the pinned runtime; validate HTTP/mixed-content/CORS behavior. Do not proxy video streams.
-5. Add CI checks for build output and smoke tests for runtime readiness, catalog/search, source selection, and playback.
+4. Load exactly the agreed plugins:
+   - `http://z01.online/online.js` — online source
+   - `https://lampaplugins.github.io/store/logo.js` — logos
+   - `http://cub.red/plugin/tmdb-proxy` — TMDB metadata proxy, not a video-stream proxy
+5. Validate browser mixed-content/CORS constraints and actual playback without proxying video streams through a Worker.
+6. Add CI smoke tests before changing the production Pages workflow.
 
-## License
-The upstream source declares GPL-2.0. Preserve its license and copyright notices and comply with source/distribution obligations for any derivative distribution.
