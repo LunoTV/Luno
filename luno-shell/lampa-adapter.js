@@ -23,6 +23,8 @@
     runtimePromise = (async () => {
       const entry = config.runtimeEntry;
       if (!entry) throw new Error('LUNO runtime is not built yet; stock Lampa bundle is intentionally not loaded.');
+      // Set this before loading the shared bundle so its stock UI boot path is skipped.
+      window.LUNO_HEADLESS_RUNTIME = true;
       const script = document.createElement('script');
       script.src = entry;
       script.async = true;
@@ -32,7 +34,7 @@
         document.head.appendChild(script);
       });
       const api = window.Lampa;
-      if (!api || !api.Api || !api.Parser || !api.Player) {
+      if (window.LUNO_RUNTIME_READY !== true || !api || !api.Api || !api.Parser || !api.Player) {
         throw new Error('Runtime bundle did not expose the required Lampa service APIs');
       }
       runtime = api;
