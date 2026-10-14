@@ -19,7 +19,8 @@ export function createDetailView({getCatalogItems,card,bindCards}={}){
   const detailSimilarTitle=document.querySelector("#detailSimilarTitle");
   const detailRecommendations=document.querySelector("#detailRecommendations");
 
-function paintDetail(value){\n  const catalogItems=getCatalogItems?.()||[];
+function paintDetail(value){
+  const catalogItems=getCatalogItems?.()||[];
   const title=value?.name || "Без названия";
   const year=String(value?.releaseInfo || "").match(/\d{4}/)?.[0] || "—";
   const score=Number(value?.rating)||0;
