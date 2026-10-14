@@ -136,7 +136,7 @@ test("phone title view shows the full detail card and back control", async () =>
   assert.ok(css.includes("object-fit:cover; object-position:center 22%"), "poster fills the phone viewport behind the detail content");
   assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "the full detail content is visible on phones");
   assert.ok(css.includes("body.detail-open #detail .luno-card-actions { display:grid!important"), "mobile playback and favorite actions are visible");
-  assert.ok(css.includes("body.detail-open #detail #detailHiddenData {\n    display:block!important"), "synopsis, facts and recommendations are visible below the hero");
+  assert.ok(css.includes("body.detail-open #detail #detailHiddenData { display:block!important"), "synopsis, facts and recommendations are visible below the hero");
   assert.ok(!css.includes("body.detail-open #detail #detailHiddenData { display:none!important; }"), "mobile layout does not hide secondary details");
   assert.ok(html.includes("./ui/detail-page.css?v=21"), "isolated detail styles use a fresh cache version");
 });
