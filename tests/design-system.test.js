@@ -77,7 +77,7 @@ test("catalog data pipeline and API deployment remain intact", async () => {
   const apiWorkflow = await read(".github/workflows/luno-api.yml");
   assert.ok(pkg.scripts.build.includes("build-tmdb-catalog.mjs"), "build regenerates TMDB catalog data");
   assert.ok((await read("scripts/build-tmdb-catalog.mjs")).includes("TMDB_API_TOKEN"), "catalog data is generated from TMDB");
-  assert.ok((await read("tmdb-catalog.generated.js")).includes("tmdb-catalog.json"), "the generated catalog loader is preserved");
+  assert.ok((await read("app.js")).includes('import bundledTmdbCatalog from "./tmdb-catalog.generated.js"'), "the app retains its generated catalog import");
   assert.ok(workflow.includes("Verify TMDB catalog is included in Pages artifact"), "deployment verifies catalog data");
   assert.ok(apiWorkflow.includes("npx wrangler deploy"), "the existing API Worker deployment remains intact");
   assert.ok(html.includes("tmdb-attribution"), "TMDB attribution remains in the interface");
