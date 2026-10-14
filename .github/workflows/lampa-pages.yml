@@ -50,6 +50,14 @@ jobs:
           test -s build/github/lampa/app.min.js
           test -s build/github/lampa/assembly.json
           echo "Lampa web build output verified."
+          # Publish the same compiled runtime separately for the LUNO shell.
+          mkdir -p build/github/luno
+          cp dest/app.min.js build/github/luno-runtime.js
+          cp -R luno-shell/. build/github/luno/
+          test -s build/github/luno/index.html
+          test -s build/github/luno/lampa-adapter.js
+          test -s build/github/luno-runtime.js
+          echo "LUNO shell and runtime artifact verified."
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
