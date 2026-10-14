@@ -414,6 +414,10 @@ function detailPosterCandidates(item){
     item?.image||item?.imageUrl||item?.image_url||
     item?.cover||item?.coverUrl||item?.cover_url||""
   ).trim();
+  const rawBackdrop=String(
+    item?.background||item?.backdrop||item?.backdropUrl||
+    item?.backdrop_url||item?.backdropImage||item?.backdrop_image||""
+  ).trim();
   // Prefer portrait poster metadata and explicit poster URLs. A backdrop is
   // only a last resort; never overwrite a real poster path with backdrop_path.
   const posterItem={
@@ -449,7 +453,25 @@ function detailPosterCandidates(item){
     backdrop_url:"",
     background:""
   }):[];
-  return [...new Set([...posters,...explicitPoster,...backdrops].filter(Boolean))];
+  // Catalog entries do not always carry poster_path: some adapters expose
+  // artwork only as background/backdrop URLs. Keep portrait posters first,
+  // then try every known direct artwork URL and finally TMDB backdrop paths.
+  const explicitBackdrop=rawBackdrop&&/^https?:\\/\\//i.test(rawBackdrop)?[rawBackdrop]:[];
+  const fallbackArtwork=posterCandidates({
+    ...item,
+    poster_path:"",
+    posterPath:"",
+    poster:"",
+    posterUrl:"",
+    poster_url:"",
+    image:"",
+    imageUrl:"",
+    image_url:"",
+    cover:"",
+    coverUrl:"",
+    cover_url:""
+  });
+  return [...new Set([...posters,...explicitPoster,...backdrops,...explicitBackdrop,...fallbackArtwork].filter(Boolean))];
 }
 function isLowPowerTV(){
   const ua=String(navigator.userAgent||"");
