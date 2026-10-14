@@ -1014,3 +1014,37 @@ body.true--mobile .wrap {
         display: flex !important;
     }
 }
+
+
+/* LUNO mobile shell: disable the legacy left sidebar visually without touching runtime/menu code. */
+@media screen and (max-width: 900px) {
+    html body .wrap__left,
+    html body .wrap__left--hidden,
+    html body .menu {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    html body.menu--open .wrap__left,
+    html body.menu--open .menu {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    html body.menu--open .wrap__content {
+        transform: none !important;
+        margin-left: 0 !important;
+    }
+
+    html body .wrap__content {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+}
