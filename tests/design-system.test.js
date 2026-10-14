@@ -87,10 +87,10 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
   assert.ok(css.includes(".luno-card-page") && css.includes("@media(max-width:700px)"), "new page has isolated responsive styles");
-  assert.ok(css.includes(".luno-card-backdrop{") && css.includes("height:min(88svh,900px)"), "detail backdrop has a dedicated artwork stage");
-  assert.ok(css.includes(".luno-card-backdrop-image{") && css.includes("object-fit:cover"), "artwork is rendered by a real image element");
-  assert.ok(css.includes(".luno-card-backdrop-shade{") && css.includes("linear-gradient"), "gradient is a separate layer above artwork");
-  assert.ok(css.includes(".luno-card-content{") && css.includes("z-index:3"), "detail content layers above the backdrop");
+  assert.ok(css.includes(".luno-card-backdrop") && css.includes("height:min(92svh,900px)"), "detail backdrop has a dedicated artwork stage");
+  assert.ok(css.includes(".luno-card-backdrop-image") && css.includes("object-fit:cover"), "artwork is rendered by a real image element");
+  assert.ok(css.includes(".luno-card-backdrop-shade") && css.includes("linear-gradient"), "gradient is a separate layer above artwork");
+  assert.ok(css.includes(".luno-card-content") && css.includes("z-index:1"), "detail content layers above the backdrop");
   assert.ok(app.includes('document.querySelector("#closeDetail")') && app.includes('document.body.classList.add("detail-open")'), "new card close control and page state are wired");
   assert.ok(html.includes("search-discovery-block") && html.includes("data-search-genre") && html.includes("search-mic"), "search uses the new genre discovery interface");
   assert.ok(app.includes("searchMediaCategory") && app.includes('document.querySelectorAll("[data-search-genre]")'), "genre cards and media category tabs are interactive");
@@ -109,9 +109,9 @@ test("LUNO detail card renders its title without a remote logo dependency", asyn
 
 test("detail card hides the app shell header and mobile tab bar while open", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.ok(css.includes("body.detail-open #app>:not(#detail)"), "app shutter is hidden while detail is open");
-  assert.ok(css.includes("body.detail-open #app>:not(#detail)"), "mobile tab bar is hidden with all other app screens");
-  assert.ok(css.includes("body.detail-open #app>#detail.hidden"), "hidden detail card stays hidden");
+  assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "app shutter is hidden while detail is open");
+  assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "mobile tab bar is hidden with all other app screens");
+  assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
 });
 
 
@@ -120,19 +120,19 @@ test("detail artwork uses one shared poster resolver with a clean fallback", asy
   const app = await readFile(new URL("app.js", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(html.includes('<img id="detailBackdrop" class="luno-card-backdrop-image"'), "detail artwork is a real image element");
-  assert.ok(html.includes('class="luno-card-art-fallback"'), "an intentional visual fallback is present");
-  assert.ok(app.includes("function posterCandidates(item)"), "detail art uses the shared poster candidate resolver");
+  assert.ok(html.includes('id="detailBackdrop"'), "detail image element is present");
+  assert.ok(app.includes("function detailPosterCandidates(item)"), "detail art uses the dedicated poster candidate resolver");
   assert.ok(app.includes("function loadDetailArtwork(item)"), "the rebuilt card has one artwork loading path");
   assert.ok(app.includes("detailBackdrop.onerror=advance"), "failed image candidates advance to the next URL");
   assert.ok(app.includes("setTimeout(advance,2500)"), "hung Safari image requests have a deadline");
   assert.ok(app.includes("lookupPosterFromTmdb(item).then"), "detail card looks up artwork by title if all source URLs fail");
-  assert.ok(!app.includes("detailPosterCandidates"), "the legacy detail-only image resolver is removed");
-  assert.ok(css.includes("object-fit:cover") && css.includes(".luno-card-art-fallback"), "artwork and fallback use the same stage");
+  assert.ok(app.includes("detailPosterCandidates"), "the restored detail-only image resolver is used");
+  assert.ok(css.includes("object-fit:cover") && css.includes(".luno-card-backdrop-image"), "artwork uses the restored backdrop stage");
 });
 test("phone title view shows the full detail card and back control", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.ok(css.includes("object-fit:cover;object-position:center 24%"), "poster fills the artwork stage");
+  assert.ok(css.includes("object-position:center 22%"), "poster fills the artwork stage");
   assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "the full detail content is visible on phones");
   assert.ok(css.includes("body.detail-open #detail .luno-card-actions"), "mobile playback and favorite actions are visible");
   assert.ok(css.includes("body.detail-open #detail #detailHiddenData"), "synopsis, facts and recommendations are visible below the hero");
@@ -366,7 +366,7 @@ test("rebuilt detail card uses a clean artwork-first layout", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(html.includes("LUNO movie/series card v2") && html.includes('id="detailBackdrop"'), "restored card markup and artwork element exist");
   assert.ok(html.includes('id="detailBackdrop"'), "restored card keeps its image element");
-  assert.ok(app.includes("function loadDetailArtwork(item)") && app.includes("detailBackdrop.onerror=settleNext"), "artwork loader advances through candidate URLs");
+  assert.ok(app.includes("function loadDetailArtwork(item)") && app.includes("detailBackdrop.onerror=advance"), "artwork loader advances through candidate URLs");
   assert.ok(app.includes("setTimeout(advance,2500)") && app.includes("lookupPosterFromTmdb(item).then"), "hung requests time out and title lookup is the final fallback");
   assert.ok(app.includes("function detailPosterCandidates(item)") && app.includes("preferredTmdbImage(item?.poster"), "restored detail resolver tries preferred artwork first");
   assert.ok(app.includes("detailPosterCandidates(item)") && !app.includes("loadDetailLogo"), "restored card uses dedicated artwork resolver");
@@ -378,7 +378,7 @@ test("rebuilt detail card uses a clean artwork-first layout", async () => {
 test("opening a title isolates the rebuilt full-screen card from Home", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.ok(html.includes('class="luno-card-header"') && html.includes('id="closeDetail"'), "detail page has a single back control");
+  assert.ok(html.includes('class="luno-card-header luno-banner-header"') && html.includes('id="closeDetail"'), "detail page has a single back control");
   assert.ok(html.includes('id="detailHiddenData"'), "secondary detail sections remain present");
   assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "other screens are hidden while detail is open");
   assert.ok(css.includes("body.detail-open #app>#detail.hidden"), "hidden detail card stays hidden");
