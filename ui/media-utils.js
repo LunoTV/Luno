@@ -86,7 +86,7 @@ const LUNO_TMDB_API_MIRRORS=[
   "https://apitmdb.cubnotrip.top/3/",
   "https://lampa.byskaz.ru/tmdb/api/3/"
 ];
-async function fetchTmdbApi(endpoint,params={}){
+export async function fetchTmdbApi(endpoint,params={}){
   const cleanEndpoint=String(endpoint||"").replace(/^\/+/, "");
   const query=new URLSearchParams();
   Object.entries(params||{}).forEach(([key,value])=>{
