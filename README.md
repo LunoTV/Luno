@@ -1,15 +1,28 @@
-# LUNO 🌑
+# LUNO
 
-LUNO is a new TV-first interface built around the Stremio Core architecture.
+LUNO is a Russian-first streaming interface for mobile Safari, desktop browsers and remote-controlled TVs.
 
-## Current target
-Media Station X on LG is used only as the launcher. Once LUNO starts, the user sees only LUNO.
+## Architecture
 
-## Direction
-- Russian-first UI
-- Moon-inspired dark visual language
-- TV/pointer/remote friendly navigation
-- Own LUNO UI and player surface
-- Stremio Core Web as the technical foundation for addon/catalog/meta/stream/library/player state
+- `index.html` — stable UI integration points for the app controller.
+- `ui/luno.css` — the single responsive UI stylesheet for Home, catalog, search, detail, settings and playback surfaces.
+- `app.js` — app orchestration and UI state; `source-engine.js` owns stream resolution and playback integration.
+- `sources/` — source registry, adapter loading, stream normalization, quality selection, subtitles and request policy.
+- `runtime/` — headless Lampa metadata and online-source adapters. Lampa's UI is not shown to users.
+- `scripts/build-tmdb-catalog.mjs` — generates the catalog dataset from TMDB during the production build.
+- `worker/` — the separate Cloudflare API worker.
+- `ui/remote-navigation.js` — directional navigation for remotes and keyboards.
 
-The core is MIT licensed. LUNO's UI is original.
+## Preserved runtime contracts
+
+The UI rebuild deliberately preserves player element IDs, source/runtime modules, HLS and DASH dependencies, TMDB catalog generation, and Worker deployment configuration. UI markup can change, but these integration contracts must remain covered by regression tests.
+
+## Development
+
+```sh
+npm install
+npm test
+npm run dev
+```
+
+The production build requires `TMDB_API_TOKEN` to generate the current catalog. GitHub Actions builds the Pages artifact, bundles the pinned headless Lampa runtimes, verifies the catalog, and deploys to GitHub Pages.
