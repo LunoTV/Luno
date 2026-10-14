@@ -223,3 +223,22 @@ button,input,select,textarea{font:inherit}
  .nav-icon,.nav-icon svg{width:20px;height:20px}
  .app{padding-bottom:calc(66px + var(--safe-bottom))}
 }
+
+/* Standardize poster proportions across every LUNO shelf and catalog grid */
+.poster-row,.home-posters{grid-auto-columns:clamp(118px,25vw,150px);gap:14px;align-items:start}
+.poster-row .poster,.home-posters .poster{width:100%;min-width:0}
+.poster-row .poster-art,.home-posters .poster-art{width:100%;aspect-ratio:2/3;overflow:hidden;border-radius:15px}
+.poster-row .poster-image,.home-posters .poster-image{width:100%;height:100%;object-fit:cover}
+.poster-row .poster-title,.home-posters .poster-title{display:block;margin:8px 2px 0;font-size:14px;line-height:1.25;font-weight:600}
+.poster-row .poster-kind,.poster-row .poster-rating,.poster-row .poster-year{font-size:9px}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px}
+.grid .poster{width:100%;min-width:0}
+.grid .poster-art{width:100%;aspect-ratio:2/3;overflow:hidden;border-radius:15px}
+.grid .poster-image{width:100%;height:100%;object-fit:cover}
+.grid .poster-title{display:block;margin:8px 2px 0;font-size:14px;line-height:1.25}
+@media(max-width:420px){
+ .poster-row,.home-posters{grid-auto-columns:clamp(118px,25vw,150px);gap:12px}
+ .poster-row .poster-art,.home-posters .poster-art,.grid .poster-art{aspect-ratio:2/3;border-radius:14px}
+ .poster-row .poster-title,.home-posters .poster-title,.grid .poster-title{font-size:13px;margin-top:7px}
+ .grid{gap:16px 12px}
+}
