@@ -381,14 +381,16 @@ test("opening a title isolates the full-screen card from Home", async () => {
   assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
 });
 
-test("mobile title detail displays only the poster and back control", async () => {
+test("mobile title detail shows poster, metadata, play and favorite controls", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "title, metadata and actions are hidden on phones");
-  assert.ok(css.includes("body.detail-open #detail .luno-card-backdrop-shade"), "poster has no overlay gradient on phones");
-  assert.ok(css.includes("body.detail-open #detail #closeDetail"), "back control remains available");
-  assert.ok(css.includes("object-fit:contain; object-position:center center"), "full poster fits the viewport");
-  assert.ok(html.includes("./ui/detail-page.css?v=18"), "phone detail styles use a fresh cache version");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "detail content has a mobile layout");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-backdrop-shade"), "poster has a readable lower gradient");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions {\n    display:grid!important"), "action buttons are visible on phones");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions #detailPlay"), "primary play button is styled for phones");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions #detailFavorite"), "favorite button is styled for phones");
+  assert.ok(css.includes("object-fit:cover; object-position:center 24%"), "poster fills the phone screen behind the card content");
+  assert.ok(html.includes("./ui/detail-page.css?v=19"), "phone detail styles use a fresh cache version");
 });
 
 test("desktop and Smart TV detail card retain playback and favorite actions", async () => {
