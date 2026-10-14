@@ -147,7 +147,7 @@ button,input,select,textarea{font:inherit}
 .home-posters .poster .poster-tag,.home-posters .poster .quiet{display:none}
 .home-posters .poster:focus-visible{outline-offset:2px}
 .home-posters .poster{margin-bottom:32px}
-.home-posters .poster:after{content:attr(aria-label);position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:3;color:var(--text);font-size:14px;line-height:1.25;font-weight:650;letter-spacing:-.02em;white-space:normal;pointer-events:none}
+.home-posters .poster:after{content:attr(data-title);position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:3;color:var(--text);font-size:14px;line-height:1.25;font-weight:650;letter-spacing:-.02em;white-space:normal;pointer-events:none}
 .home-posters{padding-bottom:38px}
 @media(max-width:420px){
  .home-posters{grid-auto-columns:minmax(150px,44%);gap:12px}
