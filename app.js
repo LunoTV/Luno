@@ -898,10 +898,69 @@ function restoreLunoHistoryPosition(state){
 function loadDetailArtwork(item){
   if(!detailBackdrop)return;
   const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
-  detailBackdrop.dataset.requestId=requestId;detailBackdrop.onload=null;detailBackdrop.onerror=null;
-  detailBackdrop.classList.remove("is-loaded","is-missing");detailBackdrop.removeAttribute("src");
-  const candidates=[...new Set([item?._lunoDisplayedArtwork,homeHeroBackdrop(item),item?.poster,item?.posterUrl,item?.poster_url,item?.image,item?.imageUrl,item?.image_url,item?.background,item?.backdrop,preferredTmdbImage(item?.poster||item?.background||item?.image||item?.cover||""),...posterCandidates(item)].filter(value=>typeof value==="string"&&value.trim()).map(value=>value.trim()))];
-  let index=0;const attempt=()=>{if(detailBackdrop.dataset.requestId!==requestId)return;if(index>=candidates.length){detailBackdrop.classList.remove("is-loaded");detailBackdrop.classList.add("is-missing");return;}detailBackdrop.onload=()=>{if(detailBackdrop.dataset.requestId!==requestId)return;detailBackdrop.classList.remove("is-missing");detailBackdrop.classList.add("is-loaded");};detailBackdrop.onerror=attempt;detailBackdrop.src=candidates[index++];};attempt();
+  detailBackdrop.dataset.requestId=requestId;
+  let imageTimer=0;
+  let lookupStarted=false;
+  const candidates=[...new Set([
+    item?._lunoDisplayedArtwork,
+    homeHeroBackdrop(item),
+    item?.poster,item?.posterUrl,item?.poster_url,
+    item?.image,item?.imageUrl,item?.image_url,
+    item?.background,item?.backdrop,
+    preferredTmdbImage(item?.poster||item?.background||item?.image||item?.cover||""),
+    ...posterCandidates(item)
+  ].filter(value=>typeof value==="string"&&value.trim()).map(value=>value.trim()))];
+  let index=0;
+  const clearImageTimer=()=>{if(imageTimer){window.clearTimeout(imageTimer);imageTimer=0;}};
+  const finishMissing=()=>{
+    if(detailBackdrop.dataset.requestId!==requestId)return;
+    detailBackdrop.classList.remove("is-loaded");
+    detailBackdrop.classList.add("is-missing");
+  };
+  const attempt=()=>{
+    if(detailBackdrop.dataset.requestId!==requestId)return;
+    clearImageTimer();
+    if(index>=candidates.length){
+      if(!lookupStarted && typeof lookupPosterFromTmdb==="function"){
+        lookupStarted=true;
+        lookupPosterFromTmdb(item).then(poster=>{
+          if(detailBackdrop.dataset.requestId!==requestId)return;
+          if(poster && !candidates.includes(poster)){
+            candidates.push(poster);
+            attempt();
+          }else finishMissing();
+        }).catch(()=>finishMissing());
+        return;
+      }
+      finishMissing();
+      return;
+    }
+    const candidate=candidates[index++];
+    let settled=false;
+    const settleNext=()=>{
+      if(settled || detailBackdrop.dataset.requestId!==requestId)return;
+      settled=true;
+      clearImageTimer();
+      attempt();
+    };
+    detailBackdrop.onload=()=>{
+      if(settled || detailBackdrop.dataset.requestId!==requestId)return;
+      settled=true;
+      clearImageTimer();
+      detailBackdrop.classList.remove("is-missing");
+      detailBackdrop.classList.add("is-loaded");
+    };
+    detailBackdrop.onerror=settleNext;
+    detailBackdrop.src=candidate;
+    // iOS Safari can leave a blocked image request pending forever without firing
+    // error. Give each candidate a deadline, then try the next mirror or TMDB lookup.
+    imageTimer=window.setTimeout(settleNext,2800);
+  };
+  detailBackdrop.onload=null;
+  detailBackdrop.onerror=null;
+  detailBackdrop.classList.remove("is-loaded","is-missing");
+  detailBackdrop.removeAttribute("src");
+  attempt();
 }
 function openDetail(item){
   if(!item)return;detailReturnLibrary=libraryView&&!libraryView.classList.contains("hidden")?libraryType:"";if(detailReturnLibrary)closeLibrary(true);currentItem=item;
