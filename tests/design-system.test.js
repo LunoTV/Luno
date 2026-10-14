@@ -82,7 +82,7 @@ test("movie detail uses the isolated card v2 instead of the legacy overlay", asy
   assert.ok(html.includes('class="luno-card-page hidden"'), "new detail card root is present");
   assert.ok(!html.includes('class="detail-overlay hidden"'), "legacy detail overlay markup is removed");
   assert.ok(!html.includes('class="luno-detail"'), "legacy detail page markup is removed");
-  assert.ok(html.includes("./ui/detail-page.css?v=18"), "isolated detail stylesheet is linked");
+  assert.ok(html.includes("./ui/detail-page.css?v=19"), "isolated detail stylesheet is linked");
   for (const id of ["detailTitle","detailMeta","detailBadges","detailPlay","detailTrailer","detailFavorite","detailDescription","detailTags","detailCredits","detailSimilar","detailRecommendations","detailSeasonsSection","detailOpenEpisodes"]) {
     assert.ok(html.includes('id="' + id + '"'), "new card preserves integration point #" + id);
   }
@@ -128,14 +128,14 @@ test("detail screen uses a real image element and prioritizes poster artwork", a
   assert.ok(html.includes("./app.js?v=card-refactor-v2"), "poster loader cache is refreshed");
 });
 
-test("phone title view shows only the poster and back control", async () => {
+test("phone title view shows the full detail card and back control", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.ok(css.includes("object-fit:contain; object-position:center center"), "the complete poster fits the phone viewport");
+  assert.ok(css.includes("object-fit:cover; object-position:center 24%"), "poster fills the phone viewport behind the detail content");
   assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "title and action content are hidden on phones");
   assert.ok(css.includes("body.detail-open #detail .luno-card-backdrop-shade"), "artwork is not obscured by a gradient on phones");
   assert.ok(css.includes("body.detail-open #detail #closeDetail"), "the only control is the back button");
-  assert.ok(html.includes("./ui/detail-page.css?v=18"), "isolated detail styles use a fresh cache version");
+  assert.ok(html.includes("./ui/detail-page.css?v=19"), "isolated detail styles use a fresh cache version");
 });
 
 test("desktop and TV title detail retain playback and favorite actions", async () => {
@@ -368,8 +368,8 @@ test("detail card uses an image element with poster-first fallback loading", asy
   assert.ok(app.includes("const posters=posterCandidates(posterItem)"), "portrait posters are tried before backdrops");
   assert.ok(app.includes("detailBackdrop.onerror=()=>tryPoster(index+1)"), "image element retries fallback candidates");
   assert.ok(!app.includes("detailBackdrop.style.backgroundImage"), "artwork does not depend on CSS background-image");
-  assert.ok(css.includes("object-fit:contain; object-position:center center"), "mobile poster fits without cropping");
-  assert.ok(html.includes("./app.js?v=card-refactor-v2") && html.includes("./ui/detail-page.css?v=18"), "card assets use fresh cache versions");
+  assert.ok(css.includes("object-fit:cover; object-position:center 24%"), "mobile poster fills the viewport behind the card content");
+  assert.ok(html.includes("./app.js?v=card-refactor-v2") && html.includes("./ui/detail-page.css?v=19"), "card assets use fresh cache versions");
 });
 
 test("opening a title isolates the full-screen card from Home", async () => {
@@ -381,14 +381,16 @@ test("opening a title isolates the full-screen card from Home", async () => {
   assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
 });
 
-test("mobile title detail displays only the poster and back control", async () => {
+test("mobile title detail shows poster, metadata, play and favorite controls", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   const html = await readFile(new URL("index.html", root), "utf8");
-  assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "title, metadata and actions are hidden on phones");
-  assert.ok(css.includes("body.detail-open #detail .luno-card-backdrop-shade"), "poster has no overlay gradient on phones");
-  assert.ok(css.includes("body.detail-open #detail #closeDetail"), "back control remains available");
-  assert.ok(css.includes("object-fit:contain; object-position:center center"), "full poster fits the viewport");
-  assert.ok(html.includes("./ui/detail-page.css?v=18"), "phone detail styles use a fresh cache version");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "detail content has a mobile layout");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-backdrop-shade"), "poster has a readable lower gradient");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions {\n    display:grid!important"), "action buttons are visible on phones");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions #detailPlay"), "primary play button is styled for phones");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions #detailFavorite"), "favorite button is styled for phones");
+  assert.ok(css.includes("object-fit:cover; object-position:center 24%"), "poster fills the phone screen behind the card content");
+  assert.ok(html.includes("./ui/detail-page.css?v=19"), "phone detail styles use a fresh cache version");
 });
 
 test("desktop and Smart TV detail card retain playback and favorite actions", async () => {
