@@ -365,9 +365,9 @@ test("rebuilt detail card uses a clean artwork-first layout", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(html.includes("LUNO movie/series card v2") && html.includes('id="detailBackdrop"'), "restored card markup and artwork element exist");
   assert.ok(html.includes('id="detailBackdrop"'), "restored card keeps its image element");
-  assert.ok(app.includes("function loadDetailArtwork(item)") && app.includes("detailBackdrop.onerror=advance"), "artwork loader advances through candidate URLs");
-  assert.ok(app.includes("setTimeout(advance,2500)") && app.includes("lookupPosterFromTmdb(item).then"), "hung requests time out and title lookup is the final fallback");
-  assert.ok(app.includes("function detailPosterCandidates(item)") && app.includes("preferredTmdbImage(item?.poster"), "restored detail resolver tries preferred artwork first");
+  assert.ok(app.includes("const tryPoster=(index)=>") && app.includes("detailBackdrop.onerror=()=>tryPoster(index+1)"), "detail uses the prior working poster retry flow");
+  assert.ok(app.includes('fetchTmdbApi("search/multi",{query:title,year})') && app.includes("const found=detailPosterCandidates(match)"), "detail searches TMDB by title when artwork URLs fail");
+  assert.ok(app.includes("function detailPosterCandidates(item)") && app.includes("preferredTmdbImage(item?.poster"), "detail resolver tries preferred artwork first");
   assert.ok(app.includes("detailPosterCandidates(item)") && !app.includes("loadDetailLogo"), "restored card uses dedicated artwork resolver");
   assert.ok(css.includes("object-fit:cover") && css.includes(".luno-card-backdrop-image"), "restored artwork stage is styled");
   assert.ok(css.includes(".luno-card-page") && css.includes(".luno-card-backdrop-image"), "restored card uses the earlier stylesheet");
