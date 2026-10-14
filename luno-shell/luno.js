@@ -21,7 +21,10 @@
     const img=imageOf(item);
     const style=img?'':'background-image:radial-gradient(circle at 30% 20%,#7542b8,transparent 60%),linear-gradient(145deg,#39234a,#15101c)';
     const artwork=img?`<img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">`:'';
-    return `<button class="poster" style="${style}" data-item="${safe(item._lunoId ?? i)}" aria-label="Открыть ${safe(item.title)}">${artwork}<span class="poster-tag">${safe(item.tag||'LUNO')}</span><strong>${safe(item.title)}</strong><span class="quiet">${safe(item.meta||'')}</span></button>`;
+    const kind=item.media_type==='tv'||item.name?'СЕРИАЛ':(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'ФИЛЬМ');
+    const year=dateOf(item)||'—';
+    const rating=item.vote_average?Number(item.vote_average).toFixed(1):'—';
+    return `<button class="poster" style="${style}" data-item="${safe(item._lunoId ?? i)}" aria-label="Открыть ${safe(item.title)}"><img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true" ${img?'':'hidden'}><span class="poster-kind">${kind}</span><span class="poster-rating">★ ${rating}</span><span class="poster-year">${safe(year)}</span><strong class="poster-title">${safe(item.title)}</strong></button>`;
   }
   const head=t=>`<div class="section-head"><h2>${t}</h2><button class="quiet" data-tab="catalog">Показать ещё ↗</button></div>`;
   const tabs=(items,active,key)=>`<div class="tabs">${items.map(v=>`<button class="tab-chip ${v===active?'selected':''}" data-${key}="${safe(v)}">${safe(v)}</button>`).join('')}</div>`;
