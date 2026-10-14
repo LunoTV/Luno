@@ -57,7 +57,11 @@ function component(object){
         })
 
         let scroll = instance.scroll && instance.scroll.render ? instance.scroll.render(true) : null
-        if(scroll && scroll.parentNode === instance.html) instance.html.insertBefore(featured, scroll)
+        let scrollContent = scroll && scroll.querySelector ? (scroll.querySelector('.scroll__content') || scroll.querySelector('.scroll__body') || scroll) : null
+
+        // The hero must live inside the same scrollable content as catalogue rows.
+        // Keeping it as a sibling of the scroll element makes the cards scroll while the hero stays behind.
+        if(scrollContent) scrollContent.insertBefore(featured, scrollContent.firstChild)
         else instance.html.insertBefore(featured, instance.html.firstChild)
     }
 
