@@ -411,3 +411,145 @@ body {
         transition: none;
     }
 }
+
+
+/* LUNO brand skin inspired by the supplied mobile cinema references. */
+:root {
+    --luno-accent: #f4bd36;
+    --luno-accent-strong: #ffca3a;
+    --luno-background: #0c0c0f;
+    --luno-surface: #1d1d23;
+    --luno-text-muted: #8b8c96;
+}
+
+body {
+    background: var(--luno-background);
+    color: #f8f8fa;
+}
+
+.wrap {
+    background: linear-gradient(180deg, #101014 0%, #0c0c0f 42%, #0c0c0f 100%);
+}
+
+.head {
+    background: linear-gradient(180deg, rgba(12, 12, 15, 0.97), rgba(12, 12, 15, 0.78) 70%, transparent);
+    border-bottom-color: rgba(255, 255, 255, 0.035);
+
+    &__action.focus,
+    &__action.hover {
+        background: var(--luno-accent);
+        border-color: var(--luno-accent);
+        color: #17130a;
+    }
+}
+
+.items-line__title {
+    color: #f7f7fa;
+}
+
+.items-line__more.focus,
+.items-line__more.hover {
+    background: var(--luno-accent);
+    border-color: var(--luno-accent);
+    color: #17130a;
+}
+
+.card__img {
+    background-color: #202027;
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+.card.focus .card__view::after {
+    border-color: var(--luno-accent);
+    box-shadow: 0 0 0 0.18em rgba(244, 189, 54, 0.14);
+}
+
+.card.focus .card__title,
+.card.hover .card__title {
+    color: #fff;
+}
+
+/* Translucent floating mobile dock, retaining Lampa's real actions. */
+.navigation-bar {
+    padding: 0 1.15em max(1em, env(safe-area-inset-bottom));
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+
+    &__body {
+        position: relative;
+        padding: 0.55em 0.45em;
+        border-radius: 2.4em;
+        background: rgba(28, 28, 34, 0.86);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 0.65em 2.4em rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        -webkit-backdrop-filter: blur(22px) saturate(140%);
+        backdrop-filter: blur(22px) saturate(140%);
+        gap: 0.2em;
+    }
+
+    &__item {
+        min-width: 0;
+        flex: 1;
+        text-align: center;
+        padding: 0.45em 0.2em;
+        border-radius: 2em;
+        color: #c5c5cd;
+        transition: background-color 180ms ease, color 180ms ease;
+
+        &.focus,
+        &.hover,
+        &.active {
+            background: rgba(244, 189, 54, 0.16);
+            color: var(--luno-accent-strong);
+        }
+    }
+
+    &__icon {
+        width: 1.8em;
+        height: 1.8em;
+    }
+
+    &__label {
+        font-size: 0.76em;
+        margin-top: 0.38em;
+        white-space: nowrap;
+    }
+}
+
+body.platform--apple .navigation-bar__body {
+    border-radius: 2.4em;
+}
+
+body.true--mobile .navigation-bar {
+    padding-bottom: max(1em, env(safe-area-inset-bottom));
+}
+
+body.true--mobile .wrap {
+    padding-bottom: 6em;
+}
+
+@media screen and (max-width: $media_md) {
+    .head__body {
+        min-height: 3.6em;
+    }
+
+    .items-line__head {
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+
+    .items-line__title {
+        font-size: 1.35em;
+    }
+
+    .card.focus .card__view::after {
+        border-color: var(--luno-accent);
+    }
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+    .navigation-bar__item {
+        transition: none;
+    }
+}
