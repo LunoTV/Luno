@@ -1,8 +1,0 @@
-{
-  "name": "LUNO",
-  "version": "0.1.0",
-  "description": "LUNO — лунная оболочка для телевизора",
-  "start": {
-    "menu": "https://lunotv.github.io/Luno/"
-  }
-}
