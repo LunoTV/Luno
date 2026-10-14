@@ -1,7 +1,24 @@
-# LUNO — clean Lampa foundation
+# Lampa
 
-The previous LUNO application files were intentionally removed from `main` to prepare for importing the complete upstream Lampa application.
+Все исходники приложения **lampa**, всем желающим прошу до хаты :)
 
-Backup of the previous project: `backup/pre-lampa-reset-2026-10-14`.
+Приветствуется ваши идеи и правки в коде, сделаем вместе приложение еще лучше!
 
-Do not begin UI modernization until the complete Lampa source has been imported, built, and verified on GitHub Pages.
+MSX версия тут: https://github.com/yumata/lampa
+
+## Как запустить
+
+Открываем CMD и запускаем команду `npm install`
+
+Затем запускаем команду `npm run start`
+
+Открываем браузер и вводим адрес `http://localhost:3000`
+
+## Документация
+
+В приложении появилась документация, которая будет постоянно обновляться и дополняться. Выполните команду `npm run doc` затем перейдите в папку `build/doc` и откройте файл `index.html`
+
+И техническая документация от ИИ с обновлением раз в неделю [![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/yumata/lampa-source)
+
+## Переход на версию 3.0
+В версии 3.0 произошли значительные изменения в структуре проекта и кодовой базе. Пожалуйста, ознакомьтесь с [руководством по миграции](UPGRADE.md), чтобы узнать, как обновить ваше приложение до новой версии.
