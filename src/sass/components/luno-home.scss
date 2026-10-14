@@ -899,3 +899,26 @@ body.true--mobile .wrap {
         padding-bottom: 7.5em;
     }
 }
+
+
+/* LUNO cinematic home: remove the in-app top bar on mobile so artwork begins immediately. */
+@media screen and (max-width: $media_md) {
+    body.true--mobile .head {
+        display: none !important;
+    }
+
+    body.true--mobile .activitys__slides,
+    body.true--mobile .activitys__slide,
+    body.true--mobile .activity--active,
+    body.true--mobile .activity__body,
+    body.true--mobile .activity__body > .main {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    body.true--mobile .luno-hero {
+        margin-top: 0 !important;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+}
