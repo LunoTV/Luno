@@ -55,3 +55,18 @@ body:has(.home-hero){background:#101012}
 .home-hero .hero-progress .current{background:#D6A5FF;box-shadow:0 0 12px #B56BFF88}
 .home-shelf .section-head button{color:var(--muted)}
 .home-posters .poster{border:1px solid #ffffff12;border-radius:17px}
+
+/* Ten-stop cinematic carousel indicators */
+.hero-progress{gap:6px}
+.hero-progress .hero-dot{appearance:none;-webkit-appearance:none;display:block;flex:1;min-width:0;height:5px;padding:0;border:0;border-radius:99px;background:#72538488;cursor:pointer}
+.hero-progress .hero-dot.current{flex:1.8;background:#D6A5FF;box-shadow:0 0 12px #B56BFF88}
+.hero-progress span.current{display:none}
+/* More transparent LUNO glass dock */
+.dock{background:rgba(25,19,34,.48);border-color:rgba(181,107,255,.25);backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);box-shadow:0 12px 42px #0005,inset 0 1px 0 #ffffff12,0 0 25px #a653dc0d}
+.nav-item{gap:5px;font-size:12px}
+.nav-icon{width:27px;height:27px;display:flex;align-items:center;justify-content:center;font-size:0;color:#C7B5D4}
+.nav-icon svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s ease,filter .18s ease}
+.nav-item.active{background:linear-gradient(145deg,rgba(116,62,151,.62),rgba(64,39,82,.55));color:#F0DFFF;box-shadow:inset 0 0 18px #bb73ff12}
+.nav-item.active .nav-icon{color:#D6A5FF}
+.nav-item.active .nav-icon svg{transform:translateY(-1px);filter:drop-shadow(0 0 6px #B56BFF80)}
+@media(max-width:420px){.dock{padding:7px;background:rgba(25,19,34,.42)}.nav-item{font-size:11px}.nav-icon,.nav-icon svg{width:25px;height:25px}}
