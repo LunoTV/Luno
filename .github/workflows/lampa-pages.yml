@@ -1,0 +1,65 @@
+name: Import original Lampa and deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: luno-pages
+  cancel-in-progress: true
+
+jobs:
+  import-build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LUNO repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Import complete upstream Lampa source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 https://github.com/yumata/lampa-source.git /tmp/lampa-source
+          rsync -a --delete --exclude='.git' --exclude='.github/workflows/lampa-pages.yml' /tmp/lampa-source/ ./
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Import complete upstream Lampa source"
+            git push origin HEAD:main
+          fi
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build Lampa web distribution
+        run: npx gulp pack_github
+
+      - name: Verify web build output
+        run: |
+          set -euo pipefail
+          test -s build/github/lampa/index.html
+          test -s build/github/lampa/app.min.js
+          test -s build/github/lampa/assembly.json || true
+          echo "Lampa web build output verified."
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/github/lampa
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
