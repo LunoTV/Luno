@@ -190,3 +190,21 @@ button,input,select,textarea{font:inherit}
 .poster-art .poster-year{right:9px;bottom:9px}
 .poster-row:not(.home-posters) .poster-title{display:block;position:static;margin:8px 2px 0;color:var(--text);font-size:15px;line-height:1.25;font-weight:650;letter-spacing:-.02em;white-space:normal}
 .poster-row:not(.home-posters) .poster:before,.poster-row:not(.home-posters) .poster:after{display:none}
+
+/* Final home layout tuning: slimmer play action and long narrow floating dock */
+.home-hero .actions{justify-content:center;gap:10px}
+.home-hero .primary{flex:0 1 245px;max-width:245px;min-height:48px;padding:9px 15px;border-radius:13px;font-size:16px;font-weight:650}
+.home-hero .hero-add{flex:0 0 48px;width:48px;height:48px;border-radius:13px;font-size:27px}
+.dock{width:calc(100% - 112px);max-width:620px;min-width:0;padding:4px 5px;gap:2px;border-radius:24px;bottom:calc(8px + var(--safe-bottom))}
+.nav-item{min-height:50px;padding:4px 1px;gap:2px;border-radius:17px;font-size:9px;line-height:1.08}
+.nav-icon,.nav-icon svg{width:20px;height:20px}
+.app{padding-bottom:calc(76px + var(--safe-bottom))}
+@media(max-width:420px){
+ .home-hero .actions{gap:9px}
+ .home-hero .primary{flex:0 1 245px;max-width:245px;min-height:48px;padding:8px 13px;font-size:16px;border-radius:13px}
+ .home-hero .hero-add{flex-basis:48px;width:48px;height:48px;font-size:26px}
+ .dock{width:calc(100% - 96px);max-width:none;bottom:calc(7px + var(--safe-bottom));padding:4px;border-radius:23px;gap:1px}
+ .nav-item{min-height:49px;padding:4px 0;font-size:9px;gap:2px;border-radius:16px}
+ .nav-icon,.nav-icon svg{width:20px;height:20px}
+ .app{padding-bottom:calc(74px + var(--safe-bottom))}
+}
