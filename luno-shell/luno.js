@@ -4,7 +4,7 @@
   const TMDB_KEY = '4ef0d7355d9ffb5151e987764708ce96';
   const TMDB_API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
-  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[]};
+  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],featureIndex:0};
   const safe = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const titleOf = x => x.title || x.name || x.original_title || x.original_name || 'Без названия';
   const imageOf = (x,size='w500') => x?.poster_path ? IMG+size+x.poster_path : (x?.poster?.startsWith?.('http') ? x.poster : '');
@@ -49,7 +49,7 @@
   }
   function home(){
     const list=state.items.slice(0,12);
-    const feature=list[0];
+    const feature=list[state.featureIndex % Math.max(1,list.length)] || list[0];
     const bg=feature&&backdropOf(feature);
     const heroStyle=bg?`style="background-image:linear-gradient(180deg,rgba(10,9,12,.04) 0%,rgba(10,9,12,.04) 38%,rgba(10,9,12,.76) 68%,#101012 100%),url('${safe(bg)}')"`:'';
     const genres=(feature?.genre_ids||[]).map(id=>({16:'Анимация',35:'Комедия',28:'Боевик',14:'Фэнтези',18:'Драма',12:'Приключения',878:'Фантастика',53:'Триллер',80:'Криминал',10749:'Мелодрама',9648:'Детектив',27:'Ужасы',10751:'Семейный',99:'Документальный',10759:'Боевик',10765:'Фэнтези'}[id])).filter(Boolean).slice(0,4).join(', ');
@@ -60,7 +60,7 @@
         <div class="feature-meta"><span>✦ ${feature?.vote_average?Number(feature.vote_average).toFixed(1):'—'}</span><span>18+</span><span>${safe(genres||feature?.meta||'ФИЛЬМЫ И СЕРИАЛЫ')}</span><span class="meta-chevron">⌄</span></div>
         <p>${safe(feature?.overview||'Новые истории, премьеры и любимые фильмы — в одной вселенной LUNO.')}</p>
         <div class="actions"><button class="primary" data-action="open-featured">▷ &nbsp; Смотреть</button><button class="hero-add" data-action="watch-featured" aria-label="Добавить в список">＋</button></div>
-        <div class="hero-progress" aria-hidden="true"><span class="current"></span>${Array.from({length:9},()=>'<i></i>').join('')}</div>
+        <div class="hero-progress" aria-hidden="true"><span class="current"></span> ${Array.from({length:Math.min(10,Math.max(1,list.length))},(_,i)=>`<button class="hero-dot ${i===state.featureIndex?'current':''}" data-slide="${i}" aria-label="Слайд ${i+1}"></button>`).join('')}</div>
       </div>
     </section>
     <section class="home-shelf">${head('Новое в Амедиатеке')}<div class="poster-row home-posters">${cards(list)}</div></section>
@@ -92,6 +92,7 @@
   document.addEventListener('click',e=>{
     const t=e.target.closest('button');if(!t)return;
     if(t.dataset.tab){state.tab=t.dataset.tab;render();if(state.tab==='catalog')loadCatalog(state.catalogType);return;}
+    if(t.dataset.slide!==undefined){state.featureIndex=Number(t.dataset.slide);render();return;}
     if(t.dataset.item!==undefined){const item=state.items[Number(t.dataset.item)];if(item)openItem(item);return;}
     if(t.dataset.type){state.catalogType=t.dataset.type;loadCatalog(state.catalogType);return;}
     if(t.dataset.sort){state.sort=t.dataset.sort;loadCatalog(state.catalogType);return;}
@@ -103,4 +104,5 @@
   document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();doSearch(new FormData(e.target).get('q')||'');});
   render();
   loadCatalog('Фильмы');
+  window.setInterval(()=>{if(state.tab==='home'&&state.items.length>1){state.featureIndex=(state.featureIndex+1)%Math.min(10,state.items.length);render();}},10000);
 })();
