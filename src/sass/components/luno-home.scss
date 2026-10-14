@@ -553,3 +553,36 @@ body.true--mobile .wrap {
         transition: none;
     }
 }
+
+
+/* LUNO shell branding: keep the existing back/menu controls, replace the visible Lampa title. */
+.head__title {
+    font-size: 0 !important;
+    font-weight: 750 !important;
+    letter-spacing: 0.09em !important;
+    text-transform: uppercase;
+    color: #f4bd36 !important;
+}
+
+.head__title::after {
+    content: "LUNO";
+    display: inline-block;
+    font-size: 1.15rem;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    color: #f4bd36;
+}
+
+.head__logo-icon {
+    filter: sepia(1) saturate(2.5) hue-rotate(350deg);
+}
+
+.navigation-bar.luno-dock {
+    display: none;
+}
+
+@media screen and (max-width: $media_md) {
+    .navigation-bar.luno-dock {
+        display: block;
+    }
+}
