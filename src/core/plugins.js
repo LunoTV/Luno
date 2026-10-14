@@ -244,7 +244,7 @@ function task(call){
             // LUNO intentionally loads only the three supported external plugins.
             // Keep Lampa's local modification hook, but do not inherit arbitrary account/store plugins.
             let puts = [
-                'https://z01.online/online.js',
+                'http://z01.online/online.js',
                 'https://lampaplugins.github.io/store/logo.js',
                 'http://cub.red/plugin/tmdb-proxy'
             ]
