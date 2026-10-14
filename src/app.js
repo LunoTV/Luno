@@ -190,7 +190,7 @@ Arrays.extend(window.lampa_settings,{
         // Подписка на актеров
         persons: false,
         // Вспомогатиленые сервисы на подписку према
-        ads: true,
+        ads: false,
         // Трейлеры
         trailers: false,
         // Установка прокси для запросов
