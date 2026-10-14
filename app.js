@@ -404,6 +404,73 @@ function posterCandidates(item){
   return [...new Set(values.map(value=>String(value||"").trim()).filter(Boolean))];
 }
 // Shared device capability check used by poster loading and prefetching.
+function detailPosterCandidates(item){
+  const posterPath=String(item?.poster_path||item?.posterPath||"").trim();
+  const backdropPath=String(item?.backdrop_path||item?.backdropPath||"").trim();
+  const rawPoster=String(
+    item?.poster||item?.posterUrl||item?.poster_url||
+    item?.image||item?.imageUrl||item?.image_url||
+    item?.cover||item?.coverUrl||item?.cover_url||""
+  ).trim();
+  const rawBackdrop=String(
+    item?.background||item?.backdrop||item?.backdropUrl||
+    item?.backdrop_url||item?.backdropImage||item?.backdrop_image||""
+  ).trim();
+  // Prefer portrait poster metadata and explicit poster URLs. A backdrop is
+  // only a last resort; never overwrite a real poster path with backdrop_path.
+  const posterItem={
+    ...item,
+    poster_path:posterPath,
+    posterPath,
+    backdrop_path:"",
+    backdropPath:"",
+    backdrop:"",
+    backdropUrl:"",
+    backdrop_url:"",
+    background:""
+  };
+  const posters=posterCandidates(posterItem);
+  const explicitPoster=rawPoster&&(rawPoster.startsWith("http://")||rawPoster.startsWith("https://"))?[rawPoster]:[];
+  const backdrops=backdropPath?posterCandidates({
+    ...item,
+    poster:"",
+    posterUrl:"",
+    poster_url:"",
+    image:"",
+    imageUrl:"",
+    image_url:"",
+    cover:"",
+    coverUrl:"",
+    cover_url:"",
+    poster_path:backdropPath,
+    posterPath:backdropPath,
+    backdrop_path:"",
+    backdropPath:"",
+    backdrop:"",
+    backdropUrl:"",
+    backdrop_url:"",
+    background:""
+  }):[];
+  // Catalog entries do not always carry poster_path: some adapters expose
+  // artwork only as background/backdrop URLs. Keep portrait posters first,
+  // then try every known direct artwork URL and finally TMDB backdrop paths.
+  const explicitBackdrop=rawBackdrop&&/^https?:\/\//i.test(rawBackdrop)?[rawBackdrop]:[];
+  const fallbackArtwork=posterCandidates({
+    ...item,
+    poster_path:"",
+    posterPath:"",
+    poster:"",
+    posterUrl:"",
+    poster_url:"",
+    image:"",
+    imageUrl:"",
+    image_url:"",
+    cover:"",
+    coverUrl:"",
+    cover_url:""
+  });
+  return [...new Set([...posters,...explicitPoster,...backdrops,...explicitBackdrop,...fallbackArtwork].filter(Boolean))];
+}
 function isLowPowerTV(){
   const ua=String(navigator.userAgent||"");
   return /web0s|webos|netcast|tizen|smart-tv|smarttv|hbbtv|aftb|android tv|googletv/i.test(ua)
@@ -898,69 +965,22 @@ function restoreLunoHistoryPosition(state){
 function loadDetailArtwork(item){
   if(!detailBackdrop)return;
   const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
-  detailBackdrop.dataset.requestId=requestId;
-  let imageTimer=0;
-  let lookupStarted=false;
-  const candidates=[...new Set([
-    item?._lunoDisplayedArtwork,
-    homeHeroBackdrop(item),
-    item?.poster,item?.posterUrl,item?.poster_url,
-    item?.image,item?.imageUrl,item?.image_url,
-    item?.background,item?.backdrop,
-    preferredTmdbImage(item?.poster||item?.background||item?.image||item?.cover||""),
-    ...posterCandidates(item)
-  ].filter(value=>typeof value==="string"&&value.trim()).map(value=>value.trim()))];
-  let index=0;
-  const clearImageTimer=()=>{if(imageTimer){window.clearTimeout(imageTimer);imageTimer=0;}};
-  const finishMissing=()=>{
-    if(detailBackdrop.dataset.requestId!==requestId)return;
-    detailBackdrop.classList.remove("is-loaded");
-    detailBackdrop.classList.add("is-missing");
-  };
-  const attempt=()=>{
-    if(detailBackdrop.dataset.requestId!==requestId)return;
-    clearImageTimer();
+  detailBackdrop.dataset.requestId=requestId;detailBackdrop.onload=null;detailBackdrop.onerror=null;
+  detailBackdrop.classList.remove("is-loaded","is-missing");detailBackdrop.removeAttribute("src");
+  const resolved=preferredTmdbImage(item?.poster||item?.background||item?.image||item?.cover||"");
+  const candidates=[...new Set([resolved,...detailPosterCandidates(item)].filter(v=>typeof v==="string"&&v.trim()).map(v=>v.trim()))];
+  let index=0,timer=0,lookup=false;const clear=()=>{if(timer){clearTimeout(timer);timer=0;}};
+  const next=()=>{
+    if(detailBackdrop.dataset.requestId!==requestId)return;clear();
     if(index>=candidates.length){
-      if(!lookupStarted && typeof lookupPosterFromTmdb==="function"){
-        lookupStarted=true;
-        lookupPosterFromTmdb(item).then(poster=>{
-          if(detailBackdrop.dataset.requestId!==requestId)return;
-          if(poster && !candidates.includes(poster)){
-            candidates.push(poster);
-            attempt();
-          }else finishMissing();
-        }).catch(()=>finishMissing());
-        return;
-      }
-      finishMissing();
-      return;
+      if(!lookup&&typeof lookupPosterFromTmdb==="function"){lookup=true;lookupPosterFromTmdb(item).then(url=>{if(detailBackdrop.dataset.requestId!==requestId)return;if(url&&!candidates.includes(url)){candidates.push(url);next();}else detailBackdrop.classList.add("is-missing");}).catch(()=>detailBackdrop.classList.add("is-missing"));return;}
+      detailBackdrop.classList.add("is-missing");return;
     }
-    const candidate=candidates[index++];
-    let settled=false;
-    const settleNext=()=>{
-      if(settled || detailBackdrop.dataset.requestId!==requestId)return;
-      settled=true;
-      clearImageTimer();
-      attempt();
-    };
-    detailBackdrop.onload=()=>{
-      if(settled || detailBackdrop.dataset.requestId!==requestId)return;
-      settled=true;
-      clearImageTimer();
-      detailBackdrop.classList.remove("is-missing");
-      detailBackdrop.classList.add("is-loaded");
-    };
-    detailBackdrop.onerror=settleNext;
-    detailBackdrop.src=candidate;
-    // iOS Safari can leave a blocked image request pending forever without firing
-    // error. Give each candidate a deadline, then try the next mirror or TMDB lookup.
-    imageTimer=window.setTimeout(settleNext,2800);
-  };
-  detailBackdrop.onload=null;
-  detailBackdrop.onerror=null;
-  detailBackdrop.classList.remove("is-loaded","is-missing");
-  detailBackdrop.removeAttribute("src");
-  attempt();
+    const src=candidates[index++];let settled=false;
+    const advance=()=>{if(settled||detailBackdrop.dataset.requestId!==requestId)return;settled=true;clear();next();};
+    detailBackdrop.onerror=advance;detailBackdrop.onload=()=>{if(settled||detailBackdrop.dataset.requestId!==requestId)return;settled=true;clear();detailBackdrop.classList.remove("is-missing");detailBackdrop.classList.add("is-loaded");};
+    detailBackdrop.src=src;timer=setTimeout(advance,2500);
+  };next();
 }
 function openDetail(item){
   if(!item)return;detailReturnLibrary=libraryView&&!libraryView.classList.contains("hidden")?libraryType:"";if(detailReturnLibrary)closeLibrary(true);currentItem=item;
