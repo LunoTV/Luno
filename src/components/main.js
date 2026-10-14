@@ -13,10 +13,11 @@ function component(object){
     let next = null
     let featured = null
 
-    function addFeatured(row, instance){
-        if(!row || !Array.isArray(row.results) || !row.results.length || !instance.html) return
+    function addFeatured(rows, instance){
+        if(!Array.isArray(rows) || !rows.length || !instance.html) return
 
-        let card = row.results.find(item => item && (item.backdrop_path || item.poster_path || item.poster || item.img))
+        let firstRow = rows.find(row => row && Array.isArray(row.results) && row.results.length)
+        let card = firstRow && firstRow.results.find(item => item && (item.backdrop_path || item.poster_path || item.poster || item.img))
         if(!card || instance.html.querySelector('.luno-hero')) return
 
         if(featured && featured.parentNode) featured.parentNode.removeChild(featured)
