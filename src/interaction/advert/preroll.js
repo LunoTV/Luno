@@ -162,6 +162,11 @@ function getAnyPreroll(first_run = false){
  * @return {void}
  */
 function show(data, call){
+    // LUNO disables all ad prerolls, including the standalone two-second splash.
+    if(window.lampa_settings && window.lampa_settings.disable_features && window.lampa_settings.disable_features.ads){
+        return call()
+    }
+
     player_data = data
 
     prerolls_played = []
