@@ -1017,7 +1017,8 @@ function openDetail(item){
   if(detailBackdrop){
     // Reuse the same resolver as the title artwork before trying catalog fallbacks.
     const resolvedArtwork=preferredTmdbImage(item?.poster || item?.background || item?.image || item?.cover || "");
-    const candidates=[...new Set([resolvedArtwork,...detailPosterCandidates(item)].filter(Boolean))];
+    let candidates=[...new Set([resolvedArtwork,...detailPosterCandidates(item)].filter(Boolean))];
+    let tmdbSearchFallbackTried=false;
     const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
     detailBackdrop.dataset.requestId=requestId;
     detailBackdrop.dataset.imageIndex="0";
@@ -1028,6 +1029,39 @@ function openDetail(item){
     const tryPoster=(index)=>{
       if(detailBackdrop.dataset.requestId!==requestId) return;
       if(index>=candidates.length){
+        if(!tmdbSearchFallbackTried){
+          tmdbSearchFallbackTried=true;
+          const title=String(item?.title||item?.name||item?.original_title||item?.original_name||"").trim();
+          if(title){
+            const year=String(item?.release_date||item?.first_air_date||"").slice(0,4);
+            fetchTmdbApi("search/multi",{query:title,year})
+              .then(data=>{
+                if(detailBackdrop.dataset.requestId!==requestId) return;
+                const normalized=title.toLocaleLowerCase();
+                const match=(data.results||[])
+                  .filter(entry=>entry && entry.poster_path && (entry.media_type==="movie"||entry.media_type==="tv"))
+                  .sort((a,b)=>{
+                    const aTitle=String(a.title||a.name||a.original_title||a.original_name||"").toLocaleLowerCase();
+                    const bTitle=String(b.title||b.name||b.original_title||b.original_name||"").toLocaleLowerCase();
+                    const aScore=(aTitle===normalized?4: aTitle.includes(normalized)||normalized.includes(aTitle)?2:0)+(year&&String(a.release_date||a.first_air_date||"").startsWith(year)?1:0);
+                    const bScore=(bTitle===normalized?4: bTitle.includes(normalized)||normalized.includes(bTitle)?2:0)+(year&&String(b.release_date||b.first_air_date||"").startsWith(year)?1:0);
+                    return bScore-aScore;
+                  })[0];
+                if(match){
+                  const found=detailPosterCandidates(match);
+                  candidates=[...new Set([...candidates,...found].filter(Boolean))];
+                  tryPoster(index);
+                  return;
+                }
+                detailBackdrop.classList.add("is-missing");
+              })
+              .catch(error=>{
+                console.warn("[LUNO] TMDB poster fallback failed",error);
+                if(detailBackdrop.dataset.requestId===requestId) detailBackdrop.classList.add("is-missing");
+              });
+            return;
+          }
+        }
         detailBackdrop.classList.remove("is-loaded");
         detailBackdrop.classList.add("is-missing");
         return;
