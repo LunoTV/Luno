@@ -208,3 +208,6 @@ button,input,select,textarea{font:inherit}
  .nav-icon,.nav-icon svg{width:20px;height:20px}
  .app{padding-bottom:calc(74px + var(--safe-bottom))}
 }
+
+/* Hide the decorative metadata chevron; it has no action and looked like a stray control */
+.home-hero .meta-chevron{display:none!important}
