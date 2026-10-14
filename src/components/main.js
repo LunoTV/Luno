@@ -16,6 +16,12 @@ function component(object){
     function addFeatured(rows, instance){
         if(!Array.isArray(rows) || !rows.length || !instance.html) return
 
+        // Remove the Lampa header node in the LUNO home view; CSS alone was not enough on iOS.
+        if(window.matchMedia && window.matchMedia('(max-width: 900px)').matches){
+            let header = document.querySelector('.head')
+            if(header) header.remove()
+        }
+
         let firstRow = rows.find(row => row && Array.isArray(row.results) && row.results.length)
         let card = firstRow && firstRow.results.find(item => item && (item.backdrop_path || item.poster_path || item.poster || item.img))
         if(!card || instance.html.querySelector('.luno-hero')) return
