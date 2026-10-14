@@ -1000,3 +1000,17 @@ body.true--mobile .wrap {
         margin-top: 0 !important;
     }
 }
+
+
+/* Final mobile correction: the activity stage itself keeps an empty header slot above the hero. */
+@media screen and (max-width: 900px) {
+    html body .luno-hero {
+        position: relative !important;
+        top: -4.5em !important;
+        margin-bottom: -3.3em !important;
+    }
+
+    html body .activity--active .luno-hero {
+        display: flex !important;
+    }
+}
