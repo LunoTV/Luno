@@ -242,3 +242,23 @@ button,input,select,textarea{font:inherit}
  .poster-row .poster-title,.home-posters .poster-title,.grid .poster-title{font-size:13px;margin-top:7px}
  .grid{gap:16px 12px}
 }
+
+/* Repair poster card layout after global sizing: stable portrait artwork, normal title below */
+html,body{max-width:100%;overflow-x:hidden}
+.home-shelf,.poster-row{max-width:100%;min-width:0}
+.home-posters{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(118px,25vw,150px);overflow-x:auto;overflow-y:hidden;align-items:start;gap:12px}
+.home-posters .poster{position:relative!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important;overflow:visible!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;text-align:left!important;white-space:normal!important}
+.home-posters .poster-art{position:relative!important;display:block!important;flex:0 0 auto!important;width:100%!important;height:clamp(177px,52vw,225px)!important;aspect-ratio:auto!important;overflow:hidden!important;border:1px solid #292832!important;border-radius:14px!important;background:#17171f!important}
+.home-posters .poster-art .poster-image{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;aspect-ratio:auto!important;object-fit:cover!important;border-radius:0!important}
+.home-posters .poster-title{position:static!important;display:block!important;flex:none!important;width:100%!important;height:auto!important;margin:7px 2px 0!important;padding:0!important;color:var(--text)!important;font-size:13px!important;line-height:1.25!important;font-weight:600!important;letter-spacing:-.015em!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+.home-posters .poster:before,.home-posters .poster:after{display:none!important}
+.home-posters .poster-kind,.home-posters .poster-rating,.home-posters .poster-year{z-index:3!important}
+.home-posters .poster-kind{top:8px!important;left:8px!important}
+.home-posters .poster-rating{bottom:8px!important;left:8px!important}
+.home-posters .poster-year{bottom:8px!important;right:8px!important}
+.dock{position:fixed!important;left:0!important;right:0!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;transform:none!important}
+@media(max-width:420px){
+ .home-posters{grid-auto-columns:clamp(118px,34vw,145px);gap:12px}
+ .home-posters .poster-art{height:clamp(177px,51vw,205px)!important}
+ .home-posters .poster-title{font-size:13px!important}
+}
