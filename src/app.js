@@ -905,8 +905,14 @@ if(!window.fitst_load){
     window.fitst_load = true
 
     initClass()
-    
-    if(navigator.userAgent.toLowerCase().indexOf('lampa_client') > -1){
+
+    // LUNO embeds this bundle as a runtime only. Do not start the stock Lampa
+    // boot sequence (which eventually calls Render.app() and mounts its UI).
+    if(window.LUNO_HEADLESS_RUNTIME === true){
+        window.LUNO_RUNTIME_READY = true
+        Lampa.Listener.send('luno-runtime', {type:'ready', version: Manifest.app_version})
+    }
+    else if(navigator.userAgent.toLowerCase().indexOf('lampa_client') > -1){
         function checkReady(){
             if(window.innerWidth > 0) loadApp()
             else{
