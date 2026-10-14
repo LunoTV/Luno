@@ -1,0 +1,24 @@
+(() => {
+  const screen = document.querySelector('#screen');
+  const navItems = [...document.querySelectorAll('[data-tab]')];
+  const state = {tab:'home', catalogType:'Сериалы', sort:'По новизне', search:''};
+  const safe = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const sample = [
+    {title:'Чёрный клевер',tag:'ПРЕМЬЕРА',meta:'Анимация · Фэнтези'},
+    {title:'Остров сокровищ',tag:'НОВЫЙ СЕЗОН',meta:'Приключения · Драма'},
+    {title:'Школа медсестёр',tag:'СКОРО',meta:'Комедия · Драма'},
+    {title:'Призраки',tag:'НОВЫЙ СЕЗОН',meta:'Комедия'}
+  ];
+  const poster = (item, i) => `<article class="poster" style="background-image:linear-gradient(0deg,#0d0a14e8,transparent 72%),radial-gradient(circle at ${25+i*13}% ${20+i*9}%,${['#7b4b9a','#9a633d','#3d6681','#74436e'][i%4]} 0,transparent 60%),linear-gradient(145deg,#39234a,#15101c)" role="article"><span class="poster-tag">${safe(item.tag)}</span><strong>${safe(item.title)}</strong><span class="quiet">${safe(item.meta)}</span></article>`;
+  const head = title => `<div class="section-head"><h2>${title}</h2><span class="quiet">Показать ещё ↗</span></div>`;
+  const tabs = (items, active, key) => `<div class="tabs">${items.map(v=>`<button class="tab-chip ${v===active?'selected':''}" data-${key}="${safe(v)}">${safe(v)}</button>`).join('')}</div>`;
+  function home(){return `<section class="hero"><span class="eyebrow">ПРЕМЬЕРА</span><h1>Твоя следующая история</h1><div class="meta">LUNO ORIGINAL&nbsp; • &nbsp;4K&nbsp; • &nbsp;КИНО И СЕРИАЛЫ</div><p>Открой новую вселенную фильмов и сериалов. Всё, что хочется посмотреть, — в одном месте.</p><div class="actions"><button class="primary" data-tab="catalog">▷ &nbsp; Смотреть</button><button class="secondary" data-tab="watch" aria-label="Добавить в избранное">＋</button></div></section>${head('Новое в LUNO')}<div class="poster-row">${sample.map(poster).join('')}</div>${head('Популярное')}<div class="poster-row">${[...sample].reverse().map(poster).join('')}</div>`; }
+  function catalog(){const types=['Сериалы','Фильмы','DAZN','Коллекции','ТВ'];return `<h1 class="page-title">Каталог</h1>${tabs(types,state.catalogType,'type')}<div class="controls"><button class="filter" data-filter="genre">Все жанры⌄</button><button class="filter ${state.sort==='По новизне'?'selected':''}" data-sort="По новизне">По новизне</button><button class="filter ${state.sort==='По рейтингу'?'selected':''}" data-sort="По рейтингу">По рейтингу</button></div><div class="grid">${sample.concat(sample).map(poster).join('')}</div>`; }
+  function search(){return `<form id="search-form"><input class="searchbox" name="q" placeholder="Сериал, фильм или жанр" value="${safe(state.search)}" aria-label="Поиск фильмов и сериалов"></form><div class="section-head"><h2>Популярные жанры</h2><span class="quiet">Сериалы&nbsp; Фильмы</span></div><div class="poster-row">${['ДЕТЕКТИВЫ','КОМЕДИИ','ФАНТАЗИЯ','ДРАМА'].map((x,i)=>poster({title:x,tag:'ЖАНР',meta:'Открыть подборку'},i)).join('')}</div>${state.search?`<p class="quiet">Запрос «${safe(state.search)}». Подключение поиска к движку Lampa — следующий этап.</p>`:''}`; }
+  function watch(){return `<h1 class="page-title">Я смотрю</h1>${tabs(['Избранное','Загрузки','История','Покупки'],'Избранное','watchtab')}<div class="empty"><div class="empty-mark">☾</div><h2>Ваш список пока пуст</h2><p>Добавляйте любимые фильмы и сериалы в избранное, чтобы они всегда были под рукой.</p><button class="primary" data-tab="catalog">Открыть каталог</button></div>`; }
+  function login(){return `<h1 class="page-title">Профиль</h1><section class="login-card"><div class="empty-mark">☾</div><h2>Твоя вселенная LUNO</h2><p class="quiet">Вход и синхронизация профиля будут подключены через выбранный механизм авторизации.</p><button class="primary" data-action="login">Войти</button></section>`; }
+  function render(){navItems.forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));screen.innerHTML=({home,catalog,search,watch,login})[state.tab]();}
+  document.addEventListener('click', e=>{const t=e.target.closest('button');if(!t)return;if(t.dataset.tab){state.tab=t.dataset.tab;render();return;}if(t.dataset.type){state.catalogType=t.dataset.type;render();return;}if(t.dataset.sort){state.sort=t.dataset.sort;render();return;}if(t.dataset.watchtab){t.parentElement.querySelectorAll('.tab-chip').forEach(b=>b.classList.toggle('selected',b===t));}});
+  document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();state.search=new FormData(e.target).get('q')||'';render();});
+  render();
+})();
