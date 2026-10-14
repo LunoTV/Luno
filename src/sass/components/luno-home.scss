@@ -1112,3 +1112,78 @@ body.true--mobile .wrap {
         transform: none !important;
     }
 }
+
+
+/* LUNO hero carousel: keep the hero and catalogue rows in one normal vertical flow. */
+.luno-hero {
+    box-sizing: border-box;
+    width: 100%;
+    flex: 0 0 auto;
+    margin: 0 0 2em !important;
+    transform: none !important;
+    top: auto !important;
+    position: relative !important;
+    z-index: 1;
+}
+
+.luno-hero__content {
+    position: relative;
+    z-index: 1;
+}
+
+.luno-hero__pagination {
+    display: flex;
+    gap: .35em;
+    width: 100%;
+    margin-top: 1.35em;
+}
+
+.luno-hero__indicator {
+    display: block;
+    position: relative;
+    height: .28em;
+    flex: 1 1 0;
+    border-radius: 99em;
+    overflow: hidden;
+    background: rgba(255,255,255,.25);
+}
+
+.luno-hero__indicator.active {
+    background: #f4bd36;
+    box-shadow: 0 0 .5em rgba(244,189,54,.35);
+}
+
+@media screen and (max-width: 900px) {
+    html body .scroll__content {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    html body .scroll__body {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+    }
+
+    html body .scroll__body > .luno-hero {
+        order: -1;
+        min-height: 34em;
+        margin: 0 0 2em !important;
+        padding: 1.2em 1em 1.4em;
+        transform: none !important;
+    }
+
+    html body .scroll__body > .items-line {
+        position: relative;
+        flex: 0 0 auto;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    html body .luno-hero__pagination {
+        margin-top: 1.1em;
+    }
+}
