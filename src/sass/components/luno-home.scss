@@ -636,8 +636,13 @@ body.true--mobile .wrap {
         letter-spacing: 0.2em;
     }
 
-    body.true--mobile .wrap__left {
+    body.true--mobile:not(.menu--open) .wrap__left {
         display: none !important;
+    }
+
+    body.true--mobile.menu--open .wrap__left {
+        display: block !important;
+        z-index: 120;
     }
 
     body.true--mobile .navigation-bar.luno-dock {
