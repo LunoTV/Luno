@@ -8,7 +8,7 @@ const read = (path) => readFile(new URL(path, root), "utf8");
 test("LUNO loads one clean UI stylesheet and a cache-versioned controller", async () => {
   const html = await read("index.html");
   assert.ok(html.includes('./ui/luno.css?v=1'), "the unified UI stylesheet is loaded");
-  assert.ok(html.includes('./app.js?v=clean-shell-v1'), "the controller bypasses old browser cache");
+  assert.ok(html.includes('./app.js?v=clean-shell-v2'), "the controller bypasses old browser cache");
   assert.equal((html.match(/rel="stylesheet"/g) || []).length, 1, "there is only one app stylesheet");
   for (const retired of ["styles.css?v=", "ui/design-system.css", "ui/detail-page.css", "ui/settings.css"]) {
     assert.ok(!html.includes(retired), retired + " is no longer loaded");
