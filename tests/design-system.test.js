@@ -104,7 +104,7 @@ test("LUNO detail card renders its title without a remote logo dependency", asyn
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(!app.includes("loadDetailLogo"), "title does not depend on a remote logo request");
   assert.ok(app.includes("if(detailTitle) detailTitle.textContent=title"), "title is rendered directly as text");
-  assert.ok(!css.includes(".luno-card-title-logo"), "legacy title-logo styling is removed");
+  assert.ok(css.includes("#detailTitle"), "restored title remains styled by the card stylesheet");
 });
 
 test("detail card hides the app shell header and mobile tab bar while open", async () => {
