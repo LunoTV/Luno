@@ -922,3 +922,35 @@ body.true--mobile .wrap {
         border-top-right-radius: 0;
     }
 }
+
+
+/* Hard override: the mobile LUNO shell must not render the original Lampa header. */
+@media screen and (max-width: 900px) {
+    html body .head,
+    html body .head__body,
+    html body .head__actions,
+    html body .head__menu-icon {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+
+    html body .activitys,
+    html body .activitys__slides,
+    html body .activitys__slide,
+    html body .activity--active,
+    html body .activity__body,
+    html body .activity__body > .main {
+        top: 0 !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    html body .luno-hero {
+        margin-top: 0 !important;
+    }
+}
