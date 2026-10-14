@@ -1,34 +1,31 @@
 # LUNO runtime integration status
 
-## Implemented in this branch
-- Separate LUNO UI shell with the cosmic-purple design.
-- Runtime adapter boundary in `lampa-adapter.js`; it does not intentionally mount Lampa's stock UI.
-- The agreed plugin inventory in `plugins.json`.
-- Root `src/` matches the upstream `yumata/lampa-source` entrypoint currently pinned below.
+## Implemented
+- Standalone cosmic-purple LUNO shell scaffold.
+- Runtime adapter with service methods for catalog, search, details, and loading the agreed plugin list.
+- Exact plugin inventory stored in config and plugin manifest.
+- Upstream baseline pinned for reproducible work: `yumata/lampa-source@5d715fc76667f988ff3d6a9e1ff5994e7856f234`.
 
-## Upstream baseline
-- Repository: https://github.com/yumata/lampa-source
-- Pinned commit: `5d715fc76667f988ff3d6a9e1ff5994e7856f234`
-- License declared upstream: GPL-2.0; preserve copyright/license notices and meet source-distribution obligations for derivative builds.
+## Important boundary
+The upstream `src/app.js` creates `window.Lampa`, but its normal startup calls `Render.app()` and mounts the Lampa interface. Therefore the stock bundle must not be loaded in the LUNO page. `runtimeEntry` remains unset until a separate LUNO-safe runtime build exists.
 
-## Verified integration blocker
-The upstream `src/app.js` exposes `window.Lampa`, but it also runs `Render.app()` inside `startApp()`, which mounts the stock Lampa interface. Loading the normal `app.js` bundle directly into the LUNO page would therefore violate the requirement that users never see Lampa UI. The adapter remains fail-closed while the runtime entry is unset; do not point it at the normal stock bundle.
+## Not yet working end-to-end
+- Runtime bundle is not yet built or published.
+- Catalog/search UI still displays scaffold content and is not yet connected to the facade.
+- Z01 source discovery and playback have not been smoke-tested.
+- Production Pages still deploys the old upstream Lampa distribution.
 
-## Not yet complete
-- A separate runtime build/entrypoint that initializes the required Lampa services without mounting the stock UI.
-- A tested LUNO service facade for metadata, catalog/search, source discovery, and player launch.
-- Loading and validating the three agreed plugins against the pinned runtime.
-- CI smoke tests for runtime readiness, catalog/search, source selection, and playback.
-- Production deployment of the LUNO shell. The current Pages workflow still builds and deploys the stock Lampa distribution; do not switch it to the incomplete shell or claim the player is ready.
+## Next engineering steps
+1. Build a dedicated entrypoint from the pinned upstream source, retaining required core/service/source APIs while avoiding stock UI startup.
+2. Publish it same-origin and set `runtimeEntry` to that verified bundle.
+3. Wire the LUNO catalogue/search UI to the adapter and add a player bridge.
+4. Validate the three plugins in a browser and test actual playback.
+5. Add CI smoke tests before changing production deployment.
 
-## Required integration sequence
-1. Create a dedicated runtime entrypoint based on the pinned upstream source, preserving the needed core/services/source APIs while replacing the stock UI render path.
-2. Build and publish that runtime as a same-origin asset.
-3. Add a small, tested LUNO service facade for TMDB metadata, catalog/search, source discovery, and player launch. Keep UI rendering in `luno-shell`.
-4. Load exactly the agreed plugins:
-   - `http://z01.online/online.js` — online source
-   - `https://lampaplugins.github.io/store/logo.js` — logos
-   - `http://cub.red/plugin/tmdb-proxy` — TMDB metadata proxy, not a video-stream proxy
-5. Validate browser mixed-content/CORS constraints and actual playback without proxying video streams through a Worker.
-6. Add CI smoke tests before changing the production Pages workflow.
+## Plugin list
+- `http://z01.online/online.js` — online source
+- `https://lampaplugins.github.io/store/logo.js` — logos
+- `http://cub.red/plugin/tmdb-proxy` — TMDB metadata proxy only, not a stream proxy
 
+## License
+The upstream source declares GPL-2.0. Preserve its copyright/license notices and comply with source-distribution obligations for derivative builds.
