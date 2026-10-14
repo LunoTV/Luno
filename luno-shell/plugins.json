@@ -1,0 +1,30 @@
+{
+  "plugins": [
+    {
+      "id": "z01-online",
+      "name": "Z01 Online",
+      "url": "http://z01.online/online.js",
+      "purpose": "Online source adapter",
+      "enabled": true
+    },
+    {
+      "id": "lampa-logo",
+      "name": "Lampa Logo",
+      "url": "https://lampaplugins.github.io/store/logo.js",
+      "purpose": "Logo artwork",
+      "enabled": true
+    },
+    {
+      "id": "tmdb-proxy",
+      "name": "TMDB Proxy",
+      "url": "http://cub.red/plugin/tmdb-proxy",
+      "purpose": "TMDB metadata compatibility only; not a video-stream proxy",
+      "enabled": true
+    }
+  ],
+  "streamProxy": null,
+  "notes": [
+    "HTTP plugin URLs may be blocked as mixed content on HTTPS hosting. Resolve through an explicitly approved HTTPS endpoint or a user-configurable compatible host; do not proxy video streams through Cloudflare.",
+    "Only load third-party plugins after verifying their compatibility with the pinned Lampa runtime and their origin/CORS requirements."
+  ]
+}
