@@ -123,7 +123,9 @@ test("detail artwork uses one shared poster resolver with a clean fallback", asy
   assert.ok(html.includes('class="luno-card-art-fallback"'), "an intentional visual fallback is present");
   assert.ok(app.includes("function posterCandidates(item)"), "detail art uses the shared poster candidate resolver");
   assert.ok(app.includes("function loadDetailArtwork(item)"), "the rebuilt card has one artwork loading path");
-  assert.ok(app.includes("detailBackdrop.onerror=attempt"), "failed image candidates advance to the next URL");
+  assert.ok(app.includes("detailBackdrop.onerror=settleNext"), "failed image candidates advance to the next URL");
+  assert.ok(app.includes("window.setTimeout(settleNext,2800)"), "hung Safari image requests have a deadline");
+  assert.ok(app.includes("lookupPosterFromTmdb(item).then"), "detail card looks up artwork by title if all source URLs fail");
   assert.ok(!app.includes("detailPosterCandidates"), "the legacy detail-only image resolver is removed");
   assert.ok(css.includes("object-fit:cover") && css.includes(".luno-card-art-fallback"), "artwork and fallback use the same stage");
 });
@@ -330,7 +332,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=card-refactor-v4"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=card-refactor-v5"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=225"), "updated tab styling bypasses the browser cache");
 });
 
@@ -364,12 +366,13 @@ test("rebuilt detail card uses a clean artwork-first layout", async () => {
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
   assert.ok(html.includes("detail experience v3") && html.includes('id="detailBackdrop"'), "new card markup and artwork element exist");
   assert.ok(html.includes('class="luno-card-art-fallback"'), "failed artwork has an intentional visual fallback");
-  assert.ok(app.includes("function loadDetailArtwork(item)") && app.includes("detailBackdrop.onerror=attempt"), "artwork loader advances through candidate URLs");
+  assert.ok(app.includes("function loadDetailArtwork(item)") && app.includes("detailBackdrop.onerror=settleNext"), "artwork loader advances through candidate URLs");
+  assert.ok(app.includes("window.setTimeout(settleNext,2800)") && app.includes("lookupPosterFromTmdb(item).then"), "hung requests time out and title lookup is the final fallback");
   assert.ok(app.includes("item?._lunoDisplayedArtwork"), "clicked poster URL is reused first");
   assert.ok(!app.includes("loadDetailLogo") && !app.includes("detailHeroPoster") && !app.includes('const detailPoster=document'), "obsolete card dependencies are removed");
   assert.ok(css.includes("object-fit:cover") && css.includes(".luno-card-art-fallback"), "artwork stage and fallback are styled");
   assert.ok(!css.includes("Mobile Safari safety net") && !css.includes("!important"), "rebuilt card has no CSS patch stack");
-  assert.ok(html.includes("./app.js?v=card-refactor-v4") && html.includes("./ui/detail-page.css?v=23"), "new card assets use fresh cache versions");
+  assert.ok(html.includes("./app.js?v=card-refactor-v5") && html.includes("./ui/detail-page.css?v=23"), "new card assets use fresh cache versions");
 });
 
 test("opening a title isolates the rebuilt full-screen card from Home", async () => {
