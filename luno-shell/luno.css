@@ -133,3 +133,26 @@ button,input,select,textarea{font:inherit}
  .nav-icon,.nav-icon svg{width:25px;height:25px}
  .app{padding-bottom:calc(100px + var(--safe-bottom))}
 }
+
+/* Compact home shelves: smaller landscape cards with in-image category/rating/year and title below */
+.home-posters{grid-auto-columns:minmax(150px,44%);gap:12px;padding-right:30px}
+.home-posters .poster{position:relative;aspect-ratio:1.58/1;padding:0;overflow:hidden;border:1px solid #35333d;border-radius:13px;background:#17171f;text-align:left}
+.home-posters .poster-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
+.home-posters .poster:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(0,0,0,.24),transparent 38%,transparent 56%,rgba(0,0,0,.36));pointer-events:none}
+.home-posters .poster-kind,.home-posters .poster-rating,.home-posters .poster-year{position:absolute;z-index:2;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;font-size:9px;font-weight:800;letter-spacing:.08em;line-height:1;padding:6px 8px;border-radius:9px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.home-posters .poster-kind{top:8px;left:8px;background:rgba(12,13,16,.82);border:1px solid #ffffff3d;color:#F6F5F8}
+.home-posters .poster-rating{left:8px;bottom:8px;background:rgba(13,46,42,.88);border:1px solid #3c9a8d;color:#7ce1cf;font-size:11px;letter-spacing:0}
+.home-posters .poster-year{right:8px;bottom:8px;background:rgba(14,14,19,.88);border:1px solid #ffffff25;color:#F4F2F7;font-size:11px;letter-spacing:0}
+.home-posters .poster-title{display:none}
+.home-posters .poster .poster-tag,.home-posters .poster .quiet{display:none}
+.home-posters .poster:focus-visible{outline-offset:2px}
+.home-posters .poster{margin-bottom:32px}
+.home-posters .poster:after{content:attr(aria-label);position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:3;color:var(--text);font-size:14px;line-height:1.25;font-weight:650;letter-spacing:-.02em;white-space:normal;pointer-events:none}
+.home-posters{padding-bottom:38px}
+@media(max-width:420px){
+ .home-posters{grid-auto-columns:minmax(150px,44%);gap:12px}
+ .home-posters .poster-kind{top:7px;left:7px;padding:5px 7px;font-size:8px}
+ .home-posters .poster-rating{left:7px;bottom:7px;padding:5px 7px;font-size:10px}
+ .home-posters .poster-year{right:7px;bottom:7px;padding:5px 7px;font-size:10px}
+ .home-posters .poster:after{font-size:13px}
+}
