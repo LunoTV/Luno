@@ -19,8 +19,9 @@
   }
   function poster(item,i=0) {
     const img=imageOf(item);
-    const style=img?`background-image:linear-gradient(0deg,#0d0a14ee,transparent 68%),url("${safe(img)}")`:`background-image:linear-gradient(0deg,#0d0a14ee,transparent 68%),radial-gradient(circle at 30% 20%,#7542b8,transparent 60%),linear-gradient(145deg,#39234a,#15101c)`;
-    return `<button class="poster" style="${style}" data-item="${safe(item._lunoId ?? i)}" aria-label="Открыть ${safe(item.title)}"><span class="poster-tag">${safe(item.tag||'LUNO')}</span><strong>${safe(item.title)}</strong><span class="quiet">${safe(item.meta||'')}</span></button>`;
+    const style=img?'':'background-image:radial-gradient(circle at 30% 20%,#7542b8,transparent 60%),linear-gradient(145deg,#39234a,#15101c)';
+    const artwork=img?`<img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">`:'';
+    return `<button class="poster" style="${style}" data-item="${safe(item._lunoId ?? i)}" aria-label="Открыть ${safe(item.title)}">${artwork}<span class="poster-tag">${safe(item.tag||'LUNO')}</span><strong>${safe(item.title)}</strong><span class="quiet">${safe(item.meta||'')}</span></button>`;
   }
   const head=t=>`<div class="section-head"><h2>${t}</h2><button class="quiet" data-tab="catalog">Показать ещё ↗</button></div>`;
   const tabs=(items,active,key)=>`<div class="tabs">${items.map(v=>`<button class="tab-chip ${v===active?'selected':''}" data-${key}="${safe(v)}">${safe(v)}</button>`).join('')}</div>`;
