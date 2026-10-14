@@ -126,3 +126,58 @@
         transition: none;
     }
 }
+
+
+/* LUNO featured shelf: wide cinematic artwork, native focus and enter behavior. */
+.items-line--type-luno-hero {
+    padding-top: 0.5em;
+    padding-bottom: 2.8em;
+
+    .items-line__head {
+        margin-bottom: 0.9em;
+    }
+
+    .items-cards .card {
+        width: min(58vw, 39em);
+        max-width: 39em;
+
+        .card__view {
+            padding-bottom: 48%;
+            margin-bottom: 0.7em;
+        }
+
+        .card__img {
+            border-radius: 1em;
+            box-shadow: 0 1em 2.5em rgba(0, 0, 0, 0.28);
+        }
+
+        .card__title {
+            font-size: 1.35em;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+    }
+
+    .items-cards .card.focus .card__view::after {
+        border-radius: 1.15em;
+    }
+}
+
+@media screen and (max-width: $media_md) {
+    .items-line--type-luno-hero {
+        padding-bottom: 1.9em;
+
+        .items-cards .card {
+            width: 82vw;
+            max-width: 34em;
+
+            .card__view {
+                padding-bottom: 54%;
+            }
+
+            .card__title {
+                font-size: 1.1em;
+            }
+        }
+    }
+}
