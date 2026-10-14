@@ -254,6 +254,23 @@ function main(params = {}, oncomplite, onerror){
             get('movie/now_playing',params,(json)=>{
                 json.title = Lang.translate('title_now_watch')
 
+                // LUNO featured shelf: use real TMDB items and keep native card routing.
+                json.params = {
+                    type: 'luno-hero',
+                    items: {
+                        view: 5
+                    }
+                }
+
+                if(json.results && Arrays.isArray(json.results)){
+                    json.results.forEach(card=>{
+                        card.params = card.params || {}
+                        card.params.style = {
+                            name: 'wide'
+                        }
+                    })
+                }
+
                 call(json)
             },call, {life: day * 2})
         },
