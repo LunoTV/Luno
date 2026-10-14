@@ -8,7 +8,7 @@ const read = (path) => readFile(new URL(path, root), "utf8");
 test("LUNO loads one clean UI stylesheet and a cache-versioned controller", async () => {
   const html = await read("index.html");
   assert.ok(html.includes('./ui/luno.css?v=1'), "the unified UI stylesheet is loaded");
-  assert.ok(html.includes('./app.js?v=clean-shell-v3'), "the controller bypasses old browser cache");
+  assert.ok(html.includes('./app.js?v=clean-shell-v4'), "the controller bypasses old browser cache");
   assert.equal((html.match(/rel="stylesheet"/g) || []).length, 1, "there is only one app stylesheet");
   for (const retired of ["styles.css?v=", "ui/design-system.css", "ui/detail-page.css", "ui/settings.css"]) {
     assert.ok(!html.includes(retired), retired + " is no longer loaded");
@@ -80,6 +80,10 @@ test("TMDB normalization and artwork lookup live in a shared media module", asyn
   const search = await read("ui/search-utils.js");
   for (const name of ["normalizeSearchText","searchYear","dedupeSearchResults","rankSearchResults"]) assert.ok(search.includes("export function " + name), name + " is exported by the search module");
   assert.ok(app.includes('from "./ui/search-utils.js"'), "search ranking helpers have one module owner");
+  const cards = await read("ui/card-renderer.js");
+  assert.ok(cards.includes("export function card(item,eager=false)"), "poster cards are rendered by a dedicated module");
+  assert.ok(app.includes('from "./ui/card-renderer.js"'), "the controller delegates poster markup to the card renderer");
+  assert.ok(!app.includes("function card(item,eager=false)"), "poster markup is not duplicated in the app controller");
   assert.ok(!app.includes("const LUNO_TMDB_API_MIRRORS"), "TMDB gateway configuration has one owner");
 });
 
