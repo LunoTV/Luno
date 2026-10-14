@@ -842,3 +842,60 @@ body.true--mobile .wrap {
         max-width: none;
     }
 }
+
+
+/* Keep LUNO hero in normal document flow so the page scrolls to the top naturally. */
+.luno-hero {
+    position: relative;
+    flex-shrink: 0;
+    transform: none;
+}
+
+.activity__body,
+.activity__body > .main,
+.activity__body .main,
+.activitys,
+.activitys__slides,
+.activitys__slide,
+.activity {
+    min-height: 0;
+}
+
+.activitys__slide,
+.activity--active,
+.activity__body {
+    overflow-x: hidden;
+}
+
+@media screen and (max-width: $media_md) {
+    body.true--mobile .activitys,
+    body.true--mobile .activitys__slides,
+    body.true--mobile .activitys__slide,
+    body.true--mobile .activity--active,
+    body.true--mobile .activity__body,
+    body.true--mobile .activity__body > .main {
+        height: auto;
+        min-height: 0;
+        overflow-y: visible;
+    }
+
+    body.true--mobile .activity__body {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    body.true--mobile .luno-hero {
+        min-height: 34em;
+    }
+
+    body.true--mobile .navigation-bar.luno-dock {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+    }
+
+    body.true--mobile .wrap {
+        padding-bottom: 7.5em;
+    }
+}
