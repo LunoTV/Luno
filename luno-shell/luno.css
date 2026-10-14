@@ -262,3 +262,30 @@ html,body{max-width:100%;overflow-x:hidden}
  .home-posters .poster-art{height:clamp(177px,51vw,205px)!important}
  .home-posters .poster-title{font-size:13px!important}
 }
+
+/* Catalog-specific compact layout and two poster orientations */
+body.catalog-view .topbar{display:none!important}
+body.catalog-view .app{padding-top:calc(env(safe-area-inset-top,12px) + 8px)}
+body.catalog-view .page-title{font-size:25px;font-weight:650;letter-spacing:-.035em;margin:4px 0 18px;text-align:center}
+body.catalog-view .tab-chip{font-size:14px;padding:10px 12px}
+body.catalog-view .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.poster-modes{display:flex;gap:4px;margin-left:auto;padding:3px;border:1px solid var(--line);border-radius:18px;background:#15151d}
+.poster-modes .mode-button{min-width:38px;padding:7px 10px;font-size:20px;line-height:1;border:0}
+.poster-modes .mode-button.selected{background:rgba(119,112,168,.28);color:#d7ceff}
+body.catalog-view .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}
+body.catalog-view .grid .poster{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;overflow:visible!important;min-width:0!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;aspect-ratio:auto!important;box-shadow:none!important}
+body.catalog-view .grid .poster-art{position:relative!important;display:block!important;width:100%!important;height:auto!important;aspect-ratio:2/3!important;overflow:hidden!important;border:1px solid #292832!important;border-radius:13px!important;background:#17171f!important}
+body.catalog-view .grid .poster-art .poster-image{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important}
+body.catalog-view .grid .poster-title{display:block!important;position:static!important;margin:7px 2px 0!important;font-size:13px!important;line-height:1.25!important;font-weight:600!important;color:var(--text)!important;white-space:normal!important}
+body.catalog-view .grid .poster:before,body.catalog-view .grid .poster:after{display:none!important}
+body.catalog-view.poster-landscape .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.catalog-view.poster-landscape .grid .poster-art{aspect-ratio:16/9!important}
+body.catalog-view.poster-landscape .grid .poster-title{font-size:12px!important}
+@media(max-width:420px){
+ body.catalog-view .app{padding-left:18px;padding-right:18px}
+ body.catalog-view .page-title{font-size:24px;margin-bottom:16px}
+ body.catalog-view .tab-chip{font-size:13px;padding:9px 10px}
+ body.catalog-view .grid{gap:14px 12px}
+ body.catalog-view .grid .poster-art{aspect-ratio:2/3!important}
+ body.catalog-view.poster-landscape .grid .poster-art{aspect-ratio:16/9!important}
+}
