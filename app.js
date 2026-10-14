@@ -910,7 +910,7 @@ function openDetail(item){
   const trailerVideo=document.querySelector("#detailTrailerVideo"),trailerSound=document.querySelector("#detailTrailerSound"),trailerUrl=String(item?.trailerUrl||item?.trailer||"").trim();
   if(trailerVideo){trailerVideo.pause();trailerVideo.removeAttribute("src");trailerVideo.load();trailerVideo.classList.remove("is-ready");if(trailerUrl&&/^(https?:)?\/\//i.test(trailerUrl)&&/\.(mp4|webm|m3u8)(\?|$)/i.test(trailerUrl)){trailerVideo.src=trailerUrl;trailerVideo.muted=true;trailerVideo.playsInline=true;trailerVideo.load();const playTrailer=()=>trailerVideo.play().then(()=>trailerVideo.classList.add("is-ready")).catch(()=>{});trailerVideo.oncanplay=playTrailer;}}
   if(trailerSound){trailerSound.classList.remove("is-on");trailerSound.onclick=()=>{if(!trailerVideo||!trailerVideo.src)return;trailerVideo.muted=!trailerVideo.muted;trailerSound.classList.toggle("is-on",!trailerVideo.muted);trailerSound.setAttribute("aria-label",trailerVideo.muted?"Включить звук трейлера":"Выключить звук трейлера");if(!trailerVideo.paused)return;trailerVideo.play().catch(()=>{});};}
-  paintFavoriteButton(item);detail?.classList.remove("hidden");document.body.classList.add("detail-open");const focus=window.matchMedia("(max-width:700px)").matches?document.querySelector("#closeDetail"):detailPlay;focus?.focus();
+  paintFavoriteButton(item);detail?.classList.remove("hidden");document.body.classList.add("detail-open");const detailFocusTarget=window.matchMedia("(max-width:700px)").matches?document.querySelector("#closeDetail"):detailPlay;detailFocusTarget?.focus();
 }
 function closeDetail(fromHistory=false){
   if(!fromHistory && history.state?.luno==="detail"){
