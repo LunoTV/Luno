@@ -68,8 +68,6 @@ const sourceList=document.querySelector("#sourceList");
 const sourceEmpty=document.querySelector("#sourceEmpty");
 const closeSourceSheet=document.querySelector("#closeSourceSheet");
 const detail=document.querySelector("#detail");
-const detailPoster=document.querySelector("#detailPoster");
-const detailHeroPoster=document.querySelector("#detailHeroPoster");
 const detailReleaseInfo=document.querySelector("#detailReleaseInfo");
 const detailTypeInfo=document.querySelector("#detailTypeInfo");
 const detailQualityInfo=document.querySelector("#detailQualityInfo");
@@ -742,46 +740,6 @@ function bindCards(root=document){
   });
 }
 
-let detailLogoRequestId=0;
-async function loadDetailLogo(value,title){
-  const requestId=++detailLogoRequestId;
-  if(!detailTitle)return;
-  detailTitle.textContent=title;
-  detailTitle.classList.remove("has-tmdb-logo");
-  const id=String(value?.id||"").trim();
-  if(!id)return;
-  const type=(value?.type==="series"||value?.type==="tv"||(!value?.title&&Boolean(value?.name)))?"tv":"movie";
-  const language=String(value?.original_language||"").trim();
-  const params=new URLSearchParams({language:"ru",include_image_language:[language,"ru","en","null"].filter(Boolean).join(",")});
-  const attempts=LUNO_TMDB_API_MIRRORS.map(async base=>{
-    const response=await fetch(base+type+"/"+encodeURIComponent(id)+"/images?"+params.toString(),{cache:"no-store",headers:{accept:"application/json"}});
-    if(!response.ok)throw new Error("TMDB logo HTTP "+response.status);
-    const data=await response.json();
-    const logos=Array.isArray(data?.logos)?data.logos:[];
-    if(!logos.length)throw new Error("No title logos");
-    logos.sort((a,b)=>{
-      const rank=x=>x.iso_639_1==="ru"?0:x.iso_639_1==="en"?1:x.iso_639_1===null?2:3;
-      return rank(a)-rank(b);
-    });
-    return String(logos[0]?.file_path||"");
-  });
-  let logoPath="";
-  try{logoPath=await Promise.any(attempts);}catch{return;}
-  if(requestId!==detailLogoRequestId||!logoPath)return;
-  const logoUrl="https://image.tmdb.org/t/p/w500"+logoPath.replace(/\.svg$/i,".png");
-  const image=new Image();
-  image.alt=title;
-  image.className="luno-card-title-logo";
-  image.decoding="async";
-  image.onload=()=>{
-    if(requestId!==detailLogoRequestId||!detailTitle)return;
-    detailTitle.replaceChildren(image);
-    detailTitle.classList.add("has-tmdb-logo");
-  };
-  image.onerror=()=>{if(requestId===detailLogoRequestId&&detailTitle){detailTitle.textContent=title;detailTitle.classList.remove("has-tmdb-logo");}};
-  image.src=logoUrl;
-}
-
 function paintDetail(value){
   const title=value?.name || "Без названия";
   const image=preferredTmdbImage(value?.poster || value?.background || "");
@@ -802,14 +760,11 @@ function paintDetail(value){
   // Never claim 4K/Full HD until the selected stream provides that metadata.
   const quality="По источнику";
 
-  if(detailHeroPoster) detailHeroPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
-  if(detailPoster) detailPoster.style.backgroundImage=image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "";
-  if(detail) detail.style.setProperty("--luno-poster",image ? 'url("'+String(image).replace(/"/g,"&quot;")+'")' : "none");
   if(detailSeasonsSection) detailSeasonsSection.classList.toggle("hidden",value?.type!=="series");
   if(detailSeasonsTitle) detailSeasonsTitle.textContent=title+" — сезоны и серии";
   const detailKicker=document.querySelector(".luno-card-hero-copy .luno-card-eyebrow");
   if(detailKicker) detailKicker.textContent="LUNO  •  "+(value?.type==="series"?"СЕРИАЛ":"ФИЛЬМ");
-  if(detailTitle){detailTitle.textContent=title;loadDetailLogo(value,title);}
+  if(detailTitle) detailTitle.textContent=title;
   if(detailMeta) detailMeta.innerHTML=[
     score>0 ? '<span class="detail-meta-rating">★ '+score.toFixed(1)+' <small>TMDB</small></span>' : "",
     year!=="—" ? escapeHtml(year) : "",
@@ -1008,122 +963,22 @@ function restoreLunoHistoryPosition(state){
     }
   },0);
 }
+function loadDetailArtwork(item){
+  if(!detailBackdrop)return;
+  const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
+  detailBackdrop.dataset.requestId=requestId;detailBackdrop.onload=null;detailBackdrop.onerror=null;
+  detailBackdrop.classList.remove("is-loaded","is-missing");detailBackdrop.removeAttribute("src");
+  const candidates=[...new Set([item?._lunoDisplayedArtwork,homeHeroBackdrop(item),item?.poster,item?.posterUrl,item?.poster_url,item?.image,item?.imageUrl,item?.image_url,item?.background,item?.backdrop,preferredTmdbImage(item?.poster||item?.background||item?.image||item?.cover||""),...posterCandidates(item),...detailPosterCandidates(item)].filter(value=>typeof value==="string"&&value.trim()).map(value=>value.trim()))];
+  let index=0;const attempt=()=>{if(detailBackdrop.dataset.requestId!==requestId)return;if(index>=candidates.length){detailBackdrop.classList.remove("is-loaded");detailBackdrop.classList.add("is-missing");return;}detailBackdrop.onload=()=>{if(detailBackdrop.dataset.requestId!==requestId)return;detailBackdrop.classList.remove("is-missing");detailBackdrop.classList.add("is-loaded");};detailBackdrop.onerror=attempt;detailBackdrop.src=candidates[index++];};attempt();
+}
 function openDetail(item){
-  if(!item) return;
-  detailReturnLibrary=libraryView && !libraryView.classList.contains("hidden") ? libraryType : "";
-  if(detailReturnLibrary) closeLibrary(true);
-  currentItem=item;
-  try{
-    setLunoHistory("detail");
-    paintDetail(item);
-  }catch(error){
-    console.error("[LUNO] paintDetail failed",error);
-  }
-  if(detailBackdrop){
-    // Reuse the same resolver as the title artwork before trying catalog fallbacks.
-    const resolvedArtwork=preferredTmdbImage(item?.poster || item?.background || item?.image || item?.cover || "");
-    let candidates=[...new Set([item?._lunoDisplayedArtwork,resolvedArtwork,...detailPosterCandidates(item)].filter(value=>typeof value==="string"&&value.trim()).map(value=>value.trim()))];
-    let tmdbSearchFallbackTried=false;
-    const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
-    detailBackdrop.dataset.requestId=requestId;
-    detailBackdrop.dataset.imageIndex="0";
-    detailBackdrop.classList.remove("is-loaded","is-missing");
-    detailBackdrop.onload=null;
-    detailBackdrop.onerror=null;
-    detailBackdrop.removeAttribute("src");
-    const tryPoster=(index)=>{
-      if(detailBackdrop.dataset.requestId!==requestId) return;
-      if(index>=candidates.length){
-        if(!tmdbSearchFallbackTried){
-          tmdbSearchFallbackTried=true;
-          const title=String(item?.title||item?.name||item?.original_title||item?.original_name||"").trim();
-          if(title){
-            const year=String(item?.release_date||item?.first_air_date||"").slice(0,4);
-            fetchTmdbApi("search/multi",{query:title,year})
-              .then(data=>{
-                if(detailBackdrop.dataset.requestId!==requestId) return;
-                const normalized=title.toLocaleLowerCase();
-                const match=(data.results||[])
-                  .filter(entry=>entry && entry.poster_path && (entry.media_type==="movie"||entry.media_type==="tv"))
-                  .sort((a,b)=>{
-                    const aTitle=String(a.title||a.name||a.original_title||a.original_name||"").toLocaleLowerCase();
-                    const bTitle=String(b.title||b.name||b.original_title||b.original_name||"").toLocaleLowerCase();
-                    const aScore=(aTitle===normalized?4: aTitle.includes(normalized)||normalized.includes(aTitle)?2:0)+(year&&String(a.release_date||a.first_air_date||"").startsWith(year)?1:0);
-                    const bScore=(bTitle===normalized?4: bTitle.includes(normalized)||normalized.includes(bTitle)?2:0)+(year&&String(b.release_date||b.first_air_date||"").startsWith(year)?1:0);
-                    return bScore-aScore;
-                  })[0];
-                if(match){
-                  const found=detailPosterCandidates(match);
-                  candidates=[...new Set([...candidates,...found].filter(Boolean))];
-                  tryPoster(index);
-                  return;
-                }
-                detailBackdrop.classList.add("is-missing");
-              })
-              .catch(error=>{
-                console.warn("[LUNO] TMDB poster fallback failed",error);
-                if(detailBackdrop.dataset.requestId===requestId) detailBackdrop.classList.add("is-missing");
-              });
-            return;
-          }
-        }
-        detailBackdrop.classList.remove("is-loaded");
-        detailBackdrop.classList.add("is-missing");
-        return;
-      }
-      detailBackdrop.dataset.imageIndex=String(index);
-      detailBackdrop.onerror=()=>tryPoster(index+1);
-      detailBackdrop.onload=()=>{
-        if(detailBackdrop.dataset.requestId===requestId){
-          detailBackdrop.classList.remove("is-missing");
-          detailBackdrop.classList.add("is-loaded");
-        }
-      };
-      detailBackdrop.src=candidates[index];
-    };
-    tryPoster(0);
-  }
-  const trailerVideo=document.querySelector("#detailTrailerVideo");
-  const trailerSound=document.querySelector("#detailTrailerSound");
-  const trailerUrl=String(item?.trailerUrl||item?.trailer||"").trim();
-  if(trailerVideo){
-    trailerVideo.pause();
-    trailerVideo.removeAttribute("src");
-    trailerVideo.load();
-    trailerVideo.classList.remove("is-ready");
-    if(trailerUrl && /^(https?:)?\/\//i.test(trailerUrl) && /\.(mp4|webm|m3u8)(\?|$)/i.test(trailerUrl)){
-      trailerVideo.src=trailerUrl;
-      trailerVideo.muted=true;
-      trailerVideo.playsInline=true;
-      trailerVideo.load();
-      const playTrailer=()=>trailerVideo.play().then(()=>trailerVideo.classList.add("is-ready")).catch(()=>{});
-      trailerVideo.oncanplay=playTrailer;
-      playTrailer();
-    }
-  }
-  if(trailerSound){
-    trailerSound.classList.remove("is-on");
-    trailerSound.onclick=()=>{
-      if(!trailerVideo || !trailerVideo.src) return;
-      trailerVideo.muted=!trailerVideo.muted;
-      trailerSound.classList.toggle("is-on",!trailerVideo.muted);
-      trailerSound.setAttribute("aria-label",trailerVideo.muted?"Включить звук трейлера":"Выключить звук трейлера");
-      if(!trailerVideo.paused) return;
-      trailerVideo.play().catch(()=>{});
-    };
-  }
-  paintFavoriteButton(item);
-  detail?.classList.remove("hidden");
-  document.body.classList.add("detail-open");
-  if(detail){
-    detail.classList.remove("is-entering");
-    requestAnimationFrame(()=>detail.classList.add("is-entering"));
-    const finishEntry=()=>detail?.classList.remove("is-entering");
-    detail.addEventListener("transitionend",finishEntry,{once:true});
-    window.setTimeout(finishEntry,420);
-  }
-  const detailFocusTarget=window.matchMedia("(max-width:700px)").matches?document.querySelector("#closeDetail"):detailPlay;
-  detailFocusTarget?.focus();
+  if(!item)return;detailReturnLibrary=libraryView&&!libraryView.classList.contains("hidden")?libraryType:"";if(detailReturnLibrary)closeLibrary(true);currentItem=item;
+  try{setLunoHistory("detail");paintDetail(item);}catch(error){console.error("[LUNO] paintDetail failed",error);}
+  loadDetailArtwork(item);
+  const trailerVideo=document.querySelector("#detailTrailerVideo"),trailerSound=document.querySelector("#detailTrailerSound"),trailerUrl=String(item?.trailerUrl||item?.trailer||"").trim();
+  if(trailerVideo){trailerVideo.pause();trailerVideo.removeAttribute("src");trailerVideo.load();trailerVideo.classList.remove("is-ready");if(trailerUrl&&/^(https?:)?\/\//i.test(trailerUrl)&&/\.(mp4|webm|m3u8)(\?|$)/i.test(trailerUrl)){trailerVideo.src=trailerUrl;trailerVideo.muted=true;trailerVideo.playsInline=true;trailerVideo.load();const playTrailer=()=>trailerVideo.play().then(()=>trailerVideo.classList.add("is-ready")).catch(()=>{});trailerVideo.oncanplay=playTrailer;}}
+  if(trailerSound){trailerSound.classList.remove("is-on");trailerSound.onclick=()=>{if(!trailerVideo||!trailerVideo.src)return;trailerVideo.muted=!trailerVideo.muted;trailerSound.classList.toggle("is-on",!trailerVideo.muted);trailerSound.setAttribute("aria-label",trailerVideo.muted?"Включить звук трейлера":"Выключить звук трейлера");if(!trailerVideo.paused)return;trailerVideo.play().catch(()=>{});};}
+  paintFavoriteButton(item);detail?.classList.remove("hidden");document.body.classList.add("detail-open");const focus=window.matchMedia("(max-width:700px)").matches?document.querySelector("#closeDetail"):detailPlay;focus?.focus();
 }
 function closeDetail(fromHistory=false){
   if(!fromHistory && history.state?.luno==="detail"){
@@ -1140,13 +995,6 @@ function closeDetail(fromHistory=false){
   }
 }
 
-document.querySelectorAll(".luno-card-links [data-section]").forEach((button)=>{
-  button.addEventListener("click",()=>{
-    const section=button.dataset.section;
-    closeDetail(true);
-    if(section) setTimeout(()=>document.querySelector('[data-section="'+section+'"]')?.click(),0);
-  });
-});
 detailPlay?.addEventListener("click",()=>{
   if(currentItem) openPlayer(currentItem.id,currentItem.type,currentItem.name);
 });
@@ -1172,11 +1020,6 @@ detailEpisodes?.addEventListener("click",()=>{
   window.setTimeout(waitForEpisodes,250);
 });
 document.querySelector("#closeDetail")?.addEventListener("click",closeDetail);
-document.querySelector("#closeDetailSecondary")?.addEventListener("click",closeDetail);
-document.querySelector("#openAddonManagerDetail")?.addEventListener("click",()=>document.querySelector("#openAddonManager")?.click());
-document.querySelector(".luno-card-search")?.addEventListener("click",()=>{ closeDetail(); openSearch(); });
-document.querySelector(".luno-card-brand")?.addEventListener("click",()=>{ closeDetail(); navigate("home"); });
-document.querySelectorAll(".luno-card-links [data-section]").forEach(btn=>btn.addEventListener("click",()=>{ const section=btn.dataset.section; closeDetail(); navigate(section); }));
 
 document.querySelector("#detailTags")?.addEventListener("click",event=>{
   const tag=event.target.closest("[data-detail-genre]");
