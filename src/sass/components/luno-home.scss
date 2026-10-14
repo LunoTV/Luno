@@ -954,3 +954,21 @@ body.true--mobile .wrap {
         margin-top: 0 !important;
     }
 }
+
+
+/* Collapse the reserved header area after the header is removed by the LUNO home component. */
+@media screen and (max-width: 900px) {
+    html body .activity,
+    html body .activity__body,
+    html body .activitys,
+    html body .activitys__slides,
+    html body .activitys__slide,
+    html body .activity--active {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    html body .luno-hero {
+        margin-top: 0 !important;
+    }
+}
