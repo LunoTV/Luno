@@ -1071,3 +1071,44 @@ body.true--mobile .wrap {
         margin-bottom: -4em !important;
     }
 }
+
+
+/* LUNO shell: force the legacy drawer closed and reset the content shift. */
+@media screen and (max-width: 900px) {
+    html body.menu--open .wrap__left,
+    html body.menu--always .wrap__left,
+    html body .wrap__left {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        pointer-events: none !important;
+    }
+
+    html body.menu--open .wrap__content,
+    html body.menu--always .wrap__content,
+    html body .wrap__content {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding-top: 0 !important;
+        transform: none !important;
+        left: 0 !important;
+    }
+
+    html body .wrap {
+        display: block !important;
+        overflow-x: hidden !important;
+    }
+
+    html body .luno-hero {
+        top: 0 !important;
+        margin-top: 0 !important;
+        transform: none !important;
+    }
+}
