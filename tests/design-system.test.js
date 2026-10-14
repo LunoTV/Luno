@@ -70,6 +70,16 @@ test("player and source management remain backed by existing runtime modules", a
   assert.ok(html.includes("./js/luno-lampa-runtime.js") && html.includes("./js/luno-lampa-source-runtime.js"), "built runtimes are still loaded");
 });
 
+test("TMDB normalization and artwork lookup live in a shared media module", async () => {
+  const media = await read("ui/media-utils.js");
+  const app = await read("app.js");
+  for (const name of ["normalizeItem","fetchTmdbApi","posterCandidates","detailPosterCandidates","preferredTmdbImage","mediaCategory"]) {
+    assert.ok(media.includes("export function " + name) || media.includes("export async function " + name), name + " is exported by the media module");
+  }
+  assert.ok(app.includes('from "./ui/media-utils.js"'), "the app imports media helpers instead of duplicating them");
+  assert.ok(!app.includes("const LUNO_TMDB_API_MIRRORS"), "TMDB gateway configuration has one owner");
+});
+
 test("catalog data pipeline and API deployment remain intact", async () => {
   const pkg = JSON.parse(await read("package.json"));
   const html = await read("index.html");
