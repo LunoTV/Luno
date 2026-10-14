@@ -29,8 +29,8 @@
     state.busy=true;state.error='';render();
     try {
       const media=type==='Сериалы'?'tv':'movie';
-      const endpoint=type==='Коллекции'?'collection':(state.sort==='По рейтингу'?'trending/all/week':media+'/popular');
-      const data=await tmdb(endpoint==='collection'?'collection/10':endpoint,{page:1});
+      const endpoint=state.sort==='По рейтингу'?'trending/all/week':(type==='Коллекции'?'movie/top_rated':media+'/popular');
+      const data=await tmdb(endpoint,{page:1});
       state.items=normalize(data).map((x,i)=>({...x,_lunoId:i,source:'tmdb'}));
       if(!state.items.length) state.error='Каталог вернул пустой список.';
     } catch(e){state.error=e.message||'Не удалось загрузить каталог.';}
