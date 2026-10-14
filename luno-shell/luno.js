@@ -69,7 +69,7 @@
         <div class="hero-progress" aria-hidden="true"><span class="current"></span> ${Array.from({length:Math.min(10,Math.max(1,list.length))},(_,i)=>`<button class="hero-dot ${i===state.featureIndex % Math.max(1,list.length)?'current':''}" data-slide="${i}" aria-label="Слайд ${i+1}"></button>`).join('')}</div>
       </div>
     </section>
-    <section class="home-shelf">${head('Новое в Амедиатеке')}<div class="poster-row home-posters">${cards(shelf)}</div></section>
+    <section class="home-shelf"><div class="poster-row home-posters">${cards(shelf)}</div></section>
     <section class="home-shelf secondary-shelf">${head('Популярное сейчас')}<div class="poster-row">${cards(list.slice().reverse())}</div></section>
     ${state.error?`<p class="quiet home-error">${safe(state.error)}</p>`:''}`;
   }
