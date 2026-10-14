@@ -456,7 +456,7 @@ function detailPosterCandidates(item){
   // Catalog entries do not always carry poster_path: some adapters expose
   // artwork only as background/backdrop URLs. Keep portrait posters first,
   // then try every known direct artwork URL and finally TMDB backdrop paths.
-  const explicitBackdrop=rawBackdrop&&/^https?:\\/\\//i.test(rawBackdrop)?[rawBackdrop]:[];
+  const explicitBackdrop=rawBackdrop&&/^https?:\/\//i.test(rawBackdrop)?[rawBackdrop]:[];
   const fallbackArtwork=posterCandidates({
     ...item,
     poster_path:"",
