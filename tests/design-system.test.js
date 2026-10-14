@@ -127,7 +127,7 @@ test("detail screen uses a real image element and prioritizes poster artwork", a
   assert.ok(app.includes("const backdrops=backdropPath?posterCandidates"), "wide backdrop is only a fallback");
   assert.ok(app.includes("detailBackdrop.onerror=()=>tryPoster(index+1)"), "image element retries mirrors directly");
   assert.ok(!app.includes("detailBackdrop.style.backgroundImage"), "image visibility does not depend on applying a CSS background");
-  assert.ok(html.includes("./app.js?v=card-refactor-v2"), "poster loader cache is refreshed");
+  assert.ok(html.includes("./app.js?v=card-refactor-v3"), "poster loader cache is refreshed");
 });
 
 test("phone title view shows the full detail card and back control", async () => {
@@ -333,7 +333,7 @@ test("watch area exposes History first and Favorites second only", async () => {
   assert.ok(app.includes('data-watch-tab="history"') && app.includes('data-watch-tab="favorites"'), "history and favorites tabs are wired");
   assert.ok(app.indexOf('data-watch-tab="history"') < app.indexOf('data-watch-tab="favorites"'), "history precedes favorites");
   assert.ok(app.includes('if(section==="library"){setMobileNavigationActive("library");openLibrary("history");return;}'), "Я смотрю opens history first");
-  assert.ok(html.includes("./app.js?v=card-refactor-v2"), "updated tab behavior bypasses the browser cache");
+  assert.ok(html.includes("./app.js?v=card-refactor-v3"), "updated tab behavior bypasses the browser cache");
   assert.ok(html.includes("./styles.css?v=225"), "updated tab styling bypasses the browser cache");
 });
 
@@ -372,7 +372,7 @@ test("detail card uses an image element with poster-first fallback loading", asy
   assert.ok(app.includes("detailBackdrop.onerror=()=>tryPoster(index+1)"), "image element retries fallback candidates");
   assert.ok(!app.includes("detailBackdrop.style.backgroundImage"), "artwork does not depend on CSS background-image");
   assert.ok(css.includes("object-fit:cover; object-position:center 22%"), "mobile poster fills the viewport behind the card content");
-  assert.ok(html.includes("./app.js?v=card-refactor-v2") && html.includes("./ui/detail-page.css?v=22"), "card assets use fresh cache versions");
+  assert.ok(html.includes("./app.js?v=card-refactor-v3") && html.includes("./ui/detail-page.css?v=22"), "card assets use fresh cache versions");
 });
 
 test("opening a title isolates the full-screen card from Home", async () => {
