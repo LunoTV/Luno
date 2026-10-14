@@ -115,19 +115,18 @@ test("detail card hides the app shell header and mobile tab bar while open", asy
 });
 
 
-test("detail screen uses a real image element and prioritizes poster artwork", async () => {
+test("detail artwork uses one shared poster resolver with a clean fallback", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const app = await readFile(new URL("app.js", root), "utf8");
-  assert.ok(html.includes('<img id="detailBackdrop" class="luno-card-backdrop-image"'), "detail artwork is a real image, not a CSS background");
-  assert.ok(!html.includes('<div <img id="detailBackdrop"'), "detail artwork is not nested inside malformed markup");
-  assert.ok(app.includes("function detailPosterCandidates(item)"), "poster and backdrop candidate resolution is separate");
-  assert.ok(app.includes("const posters=posterCandidates(posterItem)"), "portrait poster candidates are attempted first");
-  assert.ok(app.includes("const backdrops=backdropPath?posterCandidates"), "wide backdrop is only a fallback");
-  assert.ok(app.includes("detailBackdrop.onerror=attempt"), "image element retries the next artwork candidate");
-  assert.ok(!app.includes("detailBackdrop.style.backgroundImage"), "image visibility does not depend on applying a CSS background");
-  assert.ok(html.includes("./app.js?v=card-refactor-v4"), "poster loader cache is refreshed");
+  const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
+  assert.ok(html.includes('<img id="detailBackdrop" class="luno-card-backdrop-image"'), "detail artwork is a real image element");
+  assert.ok(html.includes('class="luno-card-art-fallback"'), "an intentional visual fallback is present");
+  assert.ok(app.includes("function posterCandidates(item)"), "detail art uses the shared poster candidate resolver");
+  assert.ok(app.includes("function loadDetailArtwork(item)"), "the rebuilt card has one artwork loading path");
+  assert.ok(app.includes("detailBackdrop.onerror=attempt"), "failed image candidates advance to the next URL");
+  assert.ok(!app.includes("detailPosterCandidates"), "the legacy detail-only image resolver is removed");
+  assert.ok(css.includes("object-fit:cover") && css.includes(".luno-card-art-fallback"), "artwork and fallback use the same stage");
 });
-
 test("phone title view shows the full detail card and back control", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
