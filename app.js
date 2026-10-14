@@ -531,8 +531,13 @@ function resolveCardItem(card){
 window.__LUNO_OPEN_CARD__=(card)=>{
   const item=resolveCardItem(card);
   if(!item) return false;
+  // Preserve the exact artwork URL already proven to load in the clicked poster.
+  // This avoids re-resolving the same image through a different URL on iOS Safari.
+  const displayedArtwork=card?.querySelector?.(".card-art img");
+  const artworkUrl=String(displayedArtwork?.currentSrc||displayedArtwork?.src||"").trim();
+  const detailItem=artworkUrl?{...item,_lunoDisplayedArtwork:artworkUrl}:item;
   try{
-    openDetail(item);
+    openDetail(detailItem);
     return true;
   }catch(error){
     console.error("[LUNO] card open failed",error);
@@ -1017,7 +1022,7 @@ function openDetail(item){
   if(detailBackdrop){
     // Reuse the same resolver as the title artwork before trying catalog fallbacks.
     const resolvedArtwork=preferredTmdbImage(item?.poster || item?.background || item?.image || item?.cover || "");
-    let candidates=[...new Set([resolvedArtwork,...detailPosterCandidates(item)].filter(Boolean))];
+    let candidates=[...new Set([item?._lunoDisplayedArtwork,resolvedArtwork,...detailPosterCandidates(item)].filter(value=>typeof value==="string"&&value.trim()).map(value=>value.trim()))];
     let tmdbSearchFallbackTried=false;
     const requestId=String(Number(detailBackdrop.dataset.requestId||0)+1);
     detailBackdrop.dataset.requestId=requestId;
