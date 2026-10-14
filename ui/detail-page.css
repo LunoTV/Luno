@@ -160,3 +160,38 @@ body.detail-open #app > #detail.luno-card-page.hidden { display:none!important; 
   .luno-card-hero { min-height:620px; }
 }
 @media(prefers-reduced-motion:reduce) { .luno-card-backdrop-image { transition:none; } }
+
+/* Mobile Safari safety net: keep card copy above artwork and never let the backdrop cover it. */
+@media (max-width:700px) {
+  html body.detail-open #app > #detail.luno-card-page > .luno-card-content {
+    display:block!important; visibility:visible!important; opacity:1!important;
+    position:relative!important; z-index:20!important; min-height:100dvh!important;
+    color:#fff!important; isolation:isolate!important;
+  }
+  html body.detail-open #app > #detail.luno-card-page > .luno-card-content > .luno-card-hero {
+    display:flex!important; position:relative!important; z-index:21!important;
+    visibility:visible!important; opacity:1!important; min-height:100dvh!important;
+    align-items:flex-end!important; padding:0 0 28px!important;
+  }
+  html body.detail-open #app > #detail.luno-card-page .luno-card-hero-copy {
+    display:block!important; visibility:visible!important; opacity:1!important;
+    position:relative!important; z-index:22!important; width:100%!important;
+    max-width:none!important; padding:24px 16px 16px!important; border-radius:18px!important;
+    background:linear-gradient(180deg,rgba(8,9,13,0),rgba(8,9,13,.46) 18%,rgba(8,9,13,.84) 100%)!important;
+  }
+  html body.detail-open #app > #detail.luno-card-page #detailTitle,
+  html body.detail-open #app > #detail.luno-card-page #detailMeta,
+  html body.detail-open #app > #detail.luno-card-page #detailBadges,
+  html body.detail-open #app > #detail.luno-card-page .luno-card-actions,
+  html body.detail-open #app > #detail.luno-card-page #detailDescription {
+    visibility:visible!important; opacity:1!important;
+  }
+  html body.detail-open #app > #detail.luno-card-page #detailTitle {
+    display:block!important; color:#fff!important; font-size:clamp(28px,7.8vw,39px)!important;
+    line-height:1.04!important; text-shadow:0 2px 18px rgba(0,0,0,.9)!important;
+  }
+  html body.detail-open #app > #detail.luno-card-page .luno-card-backdrop {
+    z-index:0!important; pointer-events:none!important;
+  }
+  html body.detail-open #app > #detail.luno-card-page .luno-card-backdrop-shade { z-index:1!important; }
+}
