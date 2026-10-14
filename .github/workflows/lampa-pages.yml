@@ -43,21 +43,22 @@ jobs:
       - name: Build Lampa web distribution
         run: npx gulp pack_github
 
-      - name: Verify web build output
+      - name: Prepare and verify LUNO Pages root
         run: |
           set -euo pipefail
           test -s build/github/lampa/index.html
           test -s build/github/lampa/app.min.js
           test -s build/github/lampa/assembly.json
-          echo "Lampa web build output verified."
-          # Publish the same compiled runtime separately for the LUNO shell.
-          mkdir -p build/github/luno
-          cp dest/app.min.js build/github/luno-runtime.js
-          cp -R luno-shell/. build/github/luno/
-          test -s build/github/luno/index.html
-          test -s build/github/luno/lampa-adapter.js
-          test -s build/github/luno-runtime.js
-          echo "LUNO shell and runtime artifact verified."
+          # Keep the compiled Lampa runtime available to the standalone LUNO shell,
+          # but publish the LUNO interface at the site root (not in a nested folder).
+          cp dest/app.min.js build/github/lampa/luno-runtime.js
+          cp -R luno-shell/. build/github/lampa/
+          test -s build/github/lampa/index.html
+          test -s build/github/lampa/luno.css
+          test -s build/github/lampa/luno.js
+          test -s build/github/lampa/lampa-adapter.js
+          test -s build/github/lampa/luno-runtime.js
+          echo "LUNO shell and runtime verified at the GitHub Pages root."
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
