@@ -38,6 +38,21 @@ jobs:
             git push origin HEAD:main
           fi
 
+      - name: Prepare complete build pipeline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("gulpfile.js")
+          source = path.read_text()
+          old = "exports.pack_github  = series(sync_github, uglify_task, public_github, write_manifest, index_github);"
+          new = "exports.pack_github  = series(merge, plugins, sass_task, lang_task, sync_github, uglify_task, public_github, write_manifest, index_github);"
+          if old not in source:
+              raise SystemExit("Could not find the expected upstream pack_github task definition")
+          path.write_text(source.replace(old, new, 1))
+          PY
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
@@ -49,7 +64,7 @@ jobs:
           set -euo pipefail
           test -s build/github/lampa/index.html
           test -s build/github/lampa/app.min.js
-          test -s build/github/lampa/assembly.json || true
+          test -s build/github/lampa/assembly.json
           echo "Lampa web build output verified."
 
       - name: Configure GitHub Pages
