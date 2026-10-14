@@ -11,10 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest?v=16">
   <title>LUNO</title>
-  <link rel="stylesheet" href="./styles.css?v=225">
-  <link rel="stylesheet" href="./ui/design-system.css?v=7">
-  <link rel="stylesheet" href="./ui/detail-page.css?v=24">
-  <link rel="stylesheet" href="./ui/settings.css?v=1">
+  <link rel="stylesheet" href="./ui/luno.css?v=1">
 </head>
 <body>
   <div id="splash" class="splash-screen">
@@ -30,8 +27,13 @@
 </div>
 
 <script>window.setTimeout(function(){var s=document.getElementById("splash");if(s)s.classList.add("is-hidden");},7000);</script>
-<div id="app">
-    
+<div id="app" class="luno-app">
+    <header class="topbar luno-topbar" aria-label="LUNO">
+      <button id="globalHeaderBack" class="global-header-back" type="button" aria-label="Назад" hidden>‹</button>
+      <a class="brand" href="./" data-section="home" aria-label="LUNO — главная"><span class="brand-orbit" aria-hidden="true"><span class="brand-moon"></span></span><span>LUNO</span></a>
+      <button id="globalHeaderSearch" class="global-header-search" type="button" aria-label="Поиск"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.5 4.5"></path></svg></button>
+      <button id="topHeaderSettings" class="global-header-settings" type="button" aria-label="Настройки">⚙</button>
+    </header>
 
     <nav class="mobile-tabbar luno-reference-tabbar" aria-label="Основная навигация">
       <button class="mobile-tab active" data-section="home" aria-current="page"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="m3.5 10.5 8.5-7 8.5 7v9a1 1 0 0 1-1 1h-5.2v-6.1H9.7v6.1H4.5a1 1 0 0 1-1-1z"/></svg></span><small>Главная</small></button>
@@ -422,6 +424,6 @@
   <footer class="tmdb-attribution">Этот продукт использует TMDB API, но не одобрен и не сертифицирован TMDB.</footer>
   <script src="./js/luno-lampa-runtime.js?v=1"></script>
   <script src="./js/luno-lampa-source-runtime.js?v=1"></script>
-  <script type="module" src="./app.js?v=card-refactor-v6"></script>
+  <script type="module" src="./app.js?v=clean-shell-v1"></script>
 </body>
 </html>
