@@ -133,9 +133,9 @@ test("detail screen uses a real image element and prioritizes poster artwork", a
 test("phone title view shows the full detail card and back control", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("ui/detail-page.css", root), "utf8");
-  assert.ok(css.includes("object-fit:cover; object-position:center 24%"), "poster fills the phone viewport behind the detail content");
+  assert.ok(css.includes("object-fit:cover; object-position:center 22%"), "poster fills the phone viewport behind the detail content");
   assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "the full detail content is visible on phones");
-  assert.ok(css.includes("body.detail-open #detail .luno-card-actions {\n    display:grid!important"), "mobile playback and favorite actions are visible");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions { display:grid!important"), "mobile playback and favorite actions are visible");
   assert.ok(css.includes("body.detail-open #detail #detailHiddenData {\n    display:block!important"), "synopsis, facts and recommendations are visible below the hero");
   assert.ok(!css.includes("body.detail-open #detail #detailHiddenData { display:none!important; }"), "mobile layout does not hide secondary details");
   assert.ok(html.includes("./ui/detail-page.css?v=21"), "isolated detail styles use a fresh cache version");
@@ -371,7 +371,7 @@ test("detail card uses an image element with poster-first fallback loading", asy
   assert.ok(app.includes("const posters=posterCandidates(posterItem)"), "portrait posters are tried before backdrops");
   assert.ok(app.includes("detailBackdrop.onerror=()=>tryPoster(index+1)"), "image element retries fallback candidates");
   assert.ok(!app.includes("detailBackdrop.style.backgroundImage"), "artwork does not depend on CSS background-image");
-  assert.ok(css.includes("object-fit:cover; object-position:center 24%"), "mobile poster fills the viewport behind the card content");
+  assert.ok(css.includes("object-fit:cover; object-position:center 22%"), "mobile poster fills the viewport behind the card content");
   assert.ok(html.includes("./app.js?v=card-refactor-v2") && html.includes("./ui/detail-page.css?v=21"), "card assets use fresh cache versions");
 });
 
@@ -389,10 +389,10 @@ test("mobile title detail shows poster, metadata, play and favorite controls", a
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.ok(css.includes("body.detail-open #detail .luno-card-content"), "detail content has a mobile layout");
   assert.ok(css.includes("body.detail-open #detail .luno-card-backdrop-shade"), "poster has a readable lower gradient");
-  assert.ok(css.includes("body.detail-open #detail .luno-card-actions {\n    display:grid!important"), "action buttons are visible on phones");
+  assert.ok(css.includes("body.detail-open #detail .luno-card-actions { display:grid!important"), "action buttons are visible on phones");
   assert.ok(css.includes("body.detail-open #detail .luno-card-actions #detailPlay"), "primary play button is styled for phones");
   assert.ok(css.includes("body.detail-open #detail .luno-card-actions #detailFavorite"), "favorite button is styled for phones");
-  assert.ok(css.includes("object-fit:cover; object-position:center 24%"), "poster fills the phone screen behind the card content");
+  assert.ok(css.includes("object-fit:cover; object-position:center 22%"), "poster fills the phone screen behind the card content");
   assert.ok(html.includes("./ui/detail-page.css?v=21"), "phone detail styles use a fresh cache version");
 });
 
