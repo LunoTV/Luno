@@ -702,3 +702,143 @@ body.true--mobile .wrap {
         display: none !important;
     }
 }
+
+
+/* LUNO native home hero — populated from the first live catalogue result. */
+.luno-hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: clamp(25em, 68vw, 42em);
+    margin: 0 0 1.8em;
+    padding: 2em clamp(1em, 3vw, 3.5em) 2em;
+    overflow: hidden;
+    background-color: #19191f;
+    background-position: center 28%;
+    background-size: cover;
+    border-radius: 0 0 1.25em 1.25em;
+    isolation: isolate;
+}
+
+.luno-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(12,12,15,.55), transparent 90%);
+}
+
+.luno-hero__content {
+    width: 100%;
+    max-width: 42em;
+}
+
+.luno-hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: .85em;
+    padding: .38em .8em;
+    border-radius: .35em;
+    background: #f4bd36;
+    color: #17130a;
+    font-size: .8em;
+    font-weight: 800;
+    letter-spacing: .1em;
+}
+
+.luno-hero__title {
+    margin: 0 0 .35em;
+    color: #fff;
+    font-size: clamp(2em, 4.4vw, 3.7em);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -.045em;
+    text-shadow: 0 .08em .7em rgba(0,0,0,.45);
+}
+
+.luno-hero__meta {
+    margin-bottom: .7em;
+    color: rgba(255,255,255,.82);
+    font-size: .95em;
+    font-weight: 600;
+}
+
+.luno-hero__description {
+    display: -webkit-box;
+    overflow: hidden;
+    max-width: 36em;
+    margin: 0 0 1.2em;
+    color: rgba(255,255,255,.88);
+    font-size: 1em;
+    line-height: 1.5;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.luno-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: .7em;
+}
+
+.luno-hero__watch,
+.luno-hero__details {
+    min-height: 3.25em;
+    border: 0;
+    border-radius: .85em;
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.luno-hero__watch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .7em;
+    flex: 1;
+    max-width: 25em;
+    padding: .8em 1.25em;
+    background: #f4bd36;
+    color: #17130a;
+}
+
+.luno-hero__details {
+    width: 3.3em;
+    background: rgba(28,28,34,.84);
+    border: 1px solid rgba(255,255,255,.18);
+    color: #fff;
+    font-size: 1.5em;
+}
+
+.luno-hero__watch:active,
+.luno-hero__details:active {
+    transform: scale(.98);
+}
+
+@media screen and (max-width: $media_md) {
+    body.true--mobile .luno-hero {
+        min-height: 34em;
+        margin: 0 0 1.2em;
+        padding: 1.2em 1em 1.5em;
+        background-position: center top;
+        border-radius: 0 0 1em 1em;
+    }
+
+    body.true--mobile .luno-hero__content {
+        max-width: none;
+    }
+
+    body.true--mobile .luno-hero__title {
+        font-size: clamp(2em, 9vw, 3em);
+    }
+
+    body.true--mobile .luno-hero__description {
+        font-size: .96em;
+        -webkit-line-clamp: 3;
+    }
+
+    body.true--mobile .luno-hero__watch {
+        max-width: none;
+    }
+}
