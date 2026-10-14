@@ -381,7 +381,7 @@ test("opening a title isolates the rebuilt full-screen card from Home", async ()
   assert.ok(html.includes('class="luno-card-header luno-banner-header"') && html.includes('id="closeDetail"'), "detail page has a single back control");
   assert.ok(html.includes('id="detailHiddenData"'), "secondary detail sections remain present");
   assert.ok(css.includes("body.detail-open #app > :not(#detail)"), "other screens are hidden while detail is open");
-  assert.ok(css.includes("body.detail-open #app>#detail.hidden"), "hidden detail card stays hidden");
+  assert.ok(css.includes("body.detail-open #app > #detail.luno-card-page.hidden"), "hidden detail card stays hidden");
 });
 
 test("mobile title detail shows artwork, metadata, play and favorite controls", async () => {
