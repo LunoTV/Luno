@@ -1,12 +1,13 @@
-/* LUNO ↔ Lampa boundary.
- * This file intentionally does not load Lampa's stock UI. A built, pinned Lampa
- * runtime must be supplied by the build pipeline before runtime operations work.
+/* LUNO ↔ Lampa service facade.
+ * The upstream stock app.js also mounts Lampa's UI, so runtimeEntry must point
+ * only to a dedicated LUNO-safe build. Never point it at the stock bundle.
  */
 (() => {
   const config = window.LUNO_CONFIG || {};
   const listeners = new Map();
   let runtime = null;
   let runtimePromise = null;
+  const pluginState = new Map();
 
   function emit(name, detail) {
     (listeners.get(name) || []).forEach(fn => { try { fn(detail); } catch (e) { console.error(e); } });
@@ -16,39 +17,86 @@
     listeners.get(name).add(fn);
     return () => listeners.get(name)?.delete(fn);
   }
-  async function loadRuntime() {
-    if (runtime) return runtime;
+  function loadRuntime() {
+    if (runtime) return Promise.resolve(runtime);
     if (runtimePromise) return runtimePromise;
     runtimePromise = (async () => {
       const entry = config.runtimeEntry;
-      if (!entry) throw new Error('LUNO runtime is not built yet. Configure runtimeEntry to a pinned, same-origin Lampa runtime bundle.');
+      if (!entry) throw new Error('LUNO runtime is not built yet; stock Lampa bundle is intentionally not loaded.');
       const script = document.createElement('script');
       script.src = entry;
       script.async = true;
       await new Promise((resolve, reject) => {
         script.onload = resolve;
-        script.onerror = () => reject(new Error('Could not load Lampa runtime bundle'));
+        script.onerror = () => reject(new Error('Could not load LUNO-safe Lampa runtime bundle'));
         document.head.appendChild(script);
       });
       const api = window.Lampa;
-      if (!api) throw new Error('Runtime bundle loaded but window.Lampa API was not exposed');
+      if (!api || !api.Api || !api.Parser || !api.Player) {
+        throw new Error('Runtime bundle did not expose the required Lampa service APIs');
+      }
       runtime = api;
       emit('runtime:ready', {version: config.runtimeVersion || 'unknown'});
       return runtime;
-    })().catch(error => { runtimePromise = null; emit('runtime:error', error); throw error; });
+    })().catch(error => {
+      runtimePromise = null;
+      emit('runtime:error', error);
+      throw error;
+    });
     return runtimePromise;
   }
-  async function call(method, ...args) {
+  function callbackCall(target, method, params = {}) {
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const done = value => { if (!settled) { settled = true; resolve(value); } };
+      const fail = error => { if (!settled) { settled = true; reject(error || new Error(method + ' failed')); } };
+      try {
+        const fn = target && target[method];
+        if (typeof fn !== 'function') return fail(new Error('Unsupported runtime API: ' + method));
+        const returned = fn(params, done, fail);
+        if (returned && typeof returned.then === 'function') returned.then(done, fail);
+      } catch (e) { fail(e); }
+    });
+  }
+  async function catalog(params = {}) {
     const api = await loadRuntime();
-    const parts = String(method).split('.');
-    let target = api;
-    for (const part of parts.slice(0, -1)) target = target?.[part];
-    const fn = target?.[parts[parts.length - 1]];
-    if (typeof fn !== 'function') throw new Error('Unsupported Lampa adapter method: ' + method);
-    return fn.apply(target, args);
+    return callbackCall(api.Api, params.category ? 'category' : 'main', params);
+  }
+  async function search(query) {
+    const api = await loadRuntime();
+    return callbackCall(api.Api, 'search', {query: String(query || '').trim()});
+  }
+  async function details(params = {}) {
+    const api = await loadRuntime();
+    return callbackCall(api.Api, 'full', params);
+  }
+  async function loadPlugins() {
+    const api = await loadRuntime();
+    if (!api.Utils || typeof api.Utils.putScriptAsync !== 'function') {
+      throw new Error('Runtime plugin loader is unavailable');
+    }
+    const urls = Array.isArray(config.plugins) ? config.plugins : [];
+    const results = [];
+    for (const originalUrl of urls) {
+      if (pluginState.get(originalUrl) === 'loaded') {
+        results.push({url: originalUrl, status: 'loaded'});
+        continue;
+      }
+      pluginState.set(originalUrl, 'loading');
+      const url = location.protocol === 'https:' && /^http:\/\//i.test(originalUrl)
+        ? originalUrl.replace(/^http:\/\//i, 'https://') : originalUrl;
+      await new Promise((resolve, reject) => {
+        api.Utils.putScriptAsync([url], false,
+          () => { pluginState.set(originalUrl, 'error'); reject(new Error('Plugin failed to load: ' + originalUrl)); },
+          () => { pluginState.set(originalUrl, 'loaded'); results.push({url: originalUrl, status: 'loaded'}); resolve(); },
+          false);
+      });
+    }
+    emit('plugins:ready', results);
+    return results;
   }
   window.LunoLampa = Object.freeze({
-    on, loadRuntime, call,
+    on, loadRuntime, catalog, search, details, loadPlugins,
     status: () => runtime ? 'ready' : config.runtimeEntry ? 'configured' : 'not-configured',
     config: Object.freeze({plugins: config.plugins || []})
   });
