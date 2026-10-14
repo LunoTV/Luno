@@ -51,8 +51,11 @@
     finally{state.busy=false;render();}
   }
   function home(){
-    const list=state.items.slice(0,12);
+    // Keep the hero and the first poster row in sync: only use titles with real artwork,
+    // and put the currently featured title first in the shelf beneath the banner.
+    const list=state.items.filter(x=>x && (x.backdrop_path || x.poster_path)).slice(0,10);
     const feature=list[state.featureIndex % Math.max(1,list.length)] || list[0];
+    const shelf=feature?[...list.slice(state.featureIndex % Math.max(1,list.length)),...list.slice(0,state.featureIndex % Math.max(1,list.length))]:list;
     const bg=feature&&backdropOf(feature);
     const heroStyle=bg?`style="background-image:linear-gradient(180deg,rgba(10,9,12,.04) 0%,rgba(10,9,12,.04) 38%,rgba(10,9,12,.76) 68%,#101012 100%),url('${safe(bg)}')"`:'';
     const genres=(feature?.genre_ids||[]).map(id=>({16:'Анимация',35:'Комедия',28:'Боевик',14:'Фэнтези',18:'Драма',12:'Приключения',878:'Фантастика',53:'Триллер',80:'Криминал',10749:'Мелодрама',9648:'Детектив',27:'Ужасы',10751:'Семейный',99:'Документальный',10759:'Боевик',10765:'Фэнтези'}[id])).filter(Boolean).slice(0,4).join(', ');
@@ -66,7 +69,7 @@
         <div class="hero-progress" aria-hidden="true"><span class="current"></span> ${Array.from({length:Math.min(10,Math.max(1,list.length))},(_,i)=>`<button class="hero-dot ${i===state.featureIndex?'current':''}" data-slide="${i}" aria-label="Слайд ${i+1}"></button>`).join('')}</div>
       </div>
     </section>
-    <section class="home-shelf">${head('Новое в Амедиатеке')}<div class="poster-row home-posters">${cards(list)}</div></section>
+    <section class="home-shelf">${head('Новое в Амедиатеке')}<div class="poster-row home-posters">${cards(shelf)}</div></section>
     <section class="home-shelf secondary-shelf">${head('Популярное сейчас')}<div class="poster-row">${cards(list.slice().reverse())}</div></section>
     ${state.error?`<p class="quiet home-error">${safe(state.error)}</p>`:''}`;
   }
