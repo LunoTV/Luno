@@ -26,11 +26,10 @@ main{display:block;width:100%;max-width:var(--content);margin:0 auto}
 .brand-orbit{position:relative;display:inline-grid;place-items:center;width:30px;height:30px;border:1px solid rgba(168,201,216,.65);border-radius:50%}
 .brand-moon{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:5px -2px 0 0 var(--bg)}
 .global-header-back,.global-header-search,.global-header-settings,.icon-btn{display:grid;place-items:center;width:42px;height:42px;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--text)}
-.global-header-back[hidden]{display:none!important}
-.luno-nav-shutter .brand{display:none}
-.luno-nav-shutter .global-header-settings{display:none}
-body.show-global-back .luno-nav-shutter .global-header-back{display:grid}
+.topbar .global-header-back{display:none}
+body.show-global-back .topbar .global-header-back{display:grid}
 body.show-global-back .topbar .brand{display:none}
+body.show-global-back .topbar .global-header-settings{display:none}
 body.show-global-back .topbar .global-header-search{margin-left:auto}
 .mobile-tabbar{position:fixed;left:50%;bottom:calc(8px + var(--safe-bottom));transform:translateX(-50%);z-index:80;display:flex;align-items:stretch;justify-content:space-around;gap:4px;width:min(760px,calc(100% - 28px));padding:7px;border:1px solid rgba(225,235,245,.16);border-radius:28px;background:rgba(22,26,32,.82);box-shadow:0 12px 44px rgba(0,0,0,.35);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px)}
 .mobile-tab{display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px 4px;border:0;border-radius:20px;background:transparent;color:var(--muted);font-size:11px}
