@@ -36,7 +36,17 @@
     let root=document.querySelector('#luno-source-picker');
     if(!sourcePicker.open){root?.remove();document.body.classList.remove('source-picker-open');return;}
     if(!root){root=document.createElement('div');root.id='luno-source-picker';document.body.appendChild(root);}
+    // Re-rendering the LUNO panel replaces its inner DOM. Z01's Activity
+    // root is stateful and must be moved into the newly-created target instead
+    // of being left inside a detached node after status/diagnostic updates.
+    const z01Host=document.querySelector('#luno-hidden-lampa-activity-host');
     root.innerHTML=sourcePickerMarkup();
+    const z01Target=root.querySelector('#luno-z01-activity');
+    if(z01Host&&z01Target&&sourcePicker.selectorReady){
+      z01Target.appendChild(z01Host);
+      z01Host.style.display='block';
+      z01Host.setAttribute('aria-hidden','false');
+    }
     document.body.classList.toggle('source-picker-open',sourcePicker.open);
   }
   function closeSourcePicker(){
