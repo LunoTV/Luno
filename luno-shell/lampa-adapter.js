@@ -495,15 +495,17 @@
     const capture = armPlaybackCapture(options.timeoutMs || 90000);
     const streamPromise = capture.wait();
     try {
-      // Keep the Lampa activity UI offscreen. LUNO presents its own source picker;
-      // the hidden Z01 activity is only used to resolve a real playback URL.
+      // Z01's onContextLauch calls Lampa.Activity.push(), which renders the
+      // interactive source/voice selector immediately. Mount its Activity root
+      // in the visible LUNO panel BEFORE invoking that hook; rendering it while
+      // detached/hidden can leave the user stuck on "Ищем, где посмотреть".
       hideOnlineActivityHost();
-      manifest.onContextLauch(card);
       if (typeof options.onSelectorReady === 'function') options.onSelectorReady();
       const selectorTarget = document.querySelector('#luno-z01-activity');
       if (!showOnlineActivityHost(selectorTarget)) {
         throw new Error('LUNO source panel did not mount the Z01 selector.');
       }
+      manifest.onContextLauch(card);
       const stream = await streamPromise;
       return {
         url: stream.url,
