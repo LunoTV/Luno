@@ -842,3 +842,8 @@ body:has(.detail-page) .topbar{display:none}
   .detail-play small{max-width:132px}
   .detail-icon-action{flex-basis:53px!important;width:53px!important;min-width:53px!important}
 }
+
+
+/* Keep poster overlays cinematic and clean: synopsis belongs on the detail page. */
+.poster-overview{display:none!important}
+.poster-overlay{gap:6px!important}
