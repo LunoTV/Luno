@@ -1255,3 +1255,27 @@ body.watch-view .grid .poster-title{display:-webkit-box!important;position:stati
 body.source-picker-open{overflow:hidden}
 @media(min-width:600px){.luno-source-overlay{padding-top:35px}.luno-source-panel{min-height:calc(100vh - 63px)}.luno-source-movie{min-height:190px}.luno-source-primary{max-width:420px;align-self:center}}
 @media(max-width:380px){.luno-source-overlay{padding-left:13px;padding-right:13px}.luno-source-header h2{font-size:21px}.luno-source-movie h3{font-size:20px}}
+
+
+/* CUB device-code account linking inside the native LUNO profile. */
+.cub-login-card{max-width:520px;margin:18px auto 12px;padding:25px 22px}
+.cub-login-card .empty-mark{font-size:46px;line-height:1;margin:4px 0 17px}
+.cub-login-card h2{font-size:25px;line-height:1.15;letter-spacing:-.035em;margin:8px 0 10px}
+.cub-login-card>.quiet{line-height:1.6;margin:0 0 20px}
+.cub-eyebrow{display:block;color:#c4a1ff;font-size:10px;font-weight:800;letter-spacing:.16em;margin-bottom:7px}
+.cub-external-link{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:15px 16px;border:1px solid #79549b;border-radius:15px;background:linear-gradient(120deg,#2b1b3d,#1b1426);color:#eadcff;text-decoration:none;font-size:14px;font-weight:700}
+.cub-external-link span{font-size:18px;color:#d5b5ff}
+.cub-device-form{display:flex;flex-direction:column;gap:9px;margin-top:21px}
+.cub-device-form label{font-size:12px;color:var(--muted);font-weight:650}
+.cub-device-form input{width:100%;min-height:57px;border:1px solid #4a3858;border-radius:15px;background:#100c17;color:#fff;text-align:center;font:700 25px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.42em;padding:12px 15px 12px calc(15px + .42em);outline:none}
+.cub-device-form input:focus{border-color:#b56bff;box-shadow:0 0 0 3px #b56bff1c}
+.cub-wide{width:100%;min-height:49px;margin-top:5px;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center}
+.cub-wide:disabled{opacity:.6}
+.cub-auth-message{margin:14px 0 0;color:#9be7bd;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.cub-auth-message.error{color:#ffaaa9}
+.cub-security-note,.cub-register-note{max-width:520px;margin:12px auto;color:#91879e;font-size:11px;line-height:1.6;text-align:center}
+.cub-register-note{font-size:13px;color:var(--muted);margin-top:18px}
+.cub-register-note a{color:#d4b0ff;text-decoration:none;font-weight:650}
+.cub-status{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #346b53;border-radius:999px;background:#163326;color:#9be7bd;font-size:11px;font-weight:750}
+.cub-status i{width:6px;height:6px;border-radius:50%;background:#80e5ad;box-shadow:0 0 9px #80e5ad80}
+@media(max-width:420px){.cub-login-card{padding:22px 17px}.cub-login-card h2{font-size:23px}.cub-device-form input{min-height:55px}}
