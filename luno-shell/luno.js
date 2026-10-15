@@ -403,9 +403,20 @@
     if(!/^[0-9]{6}$/.test(code)){cubAuthMessage='Введи ровно 6 цифр с сайта CUB.';cubAuthError=true;render();return;}
     cubAuthBusy=true;cubAuthMessage='Проверяем код на CUB…';cubAuthError=false;render();
     try{
-      const response=await fetch('https://cub.rip/api/device/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:Number(code)})});
-      let result;try{result=await response.json();}catch(_){throw new Error('CUB вернул неожиданный ответ. Попробуй ещё раз.');}
-      if(!response.ok||result?.error)throw new Error(result?.text||result?.message||'CUB не принял код. Проверь его и попробуй снова.');
+      let response, networkError;
+      // CUB publishes its API on cub.red and documents cub.rip as an alternate
+      // mirror. Retry the official host if the mirror cannot be reached.
+      for(const endpoint of ['https://cub.rip/api/device/add','https://cub.red/api/device/add']){
+        try{
+          response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:Number(code)})});
+          break;
+        }catch(error){networkError=error;}
+      }
+      if(!response){
+        throw new Error('Не удалось связаться с API CUB (cub.rip и cub.red). Возможно, CUB блокирует запросы с lunotv.github.io или недоступен из этой сети. '+(networkError?.message||''));
+      }
+      let result;try{result=await response.json();}catch(_){throw new Error('API CUB ответил не в формате JSON (HTTP '+response.status+').');}
+      if(!response.ok||result?.error)throw new Error(result?.text||result?.message||'CUB не принял код (HTTP '+response.status+'). Проверь код и попробуй снова.');
       if(!result?.token||!result?.profile)throw new Error('CUB не вернул токен и профиль. Проверь код или повтори попытку.');
       const profile=result.profile;
       const account={token:String(result.token),profile:typeof profile==='object'?String(profile.id??''):String(profile),email:result.email||'',linkedAt:Date.now()};
