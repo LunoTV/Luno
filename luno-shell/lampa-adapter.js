@@ -241,6 +241,9 @@
         quality: metadata.quality_name || metadata.quality_label || base.quality_name || base.quality || '',
         subtitles: metadata.subtitles || base.subtitles || null,
         playlist: metadata.playlist || base.playlist || null,
+        segments: metadata.segments || base.segments || null,
+        hls_manifest_timeout: metadata.hls_manifest_timeout || base.hls_manifest_timeout || null,
+        vast_url: metadata.vast_url || base.vast_url || null,
         headers: metadata.headers || metadata.requestHeaders || base.headers || base.requestHeaders || null,
         raw: metadata
       };
@@ -479,6 +482,10 @@
         title: stream.title || card.title,
         quality: stream.quality,
         subtitles: stream.subtitles,
+        playlist: stream.playlist,
+        segments: stream.segments,
+        hls_manifest_timeout: stream.hls_manifest_timeout,
+        vast_url: stream.vast_url,
         headers: stream.headers,
         raw: stream.raw
       };
