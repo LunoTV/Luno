@@ -318,29 +318,66 @@
     const api = runtime || window.Lampa;
     installPlaybackBridge(api);
     let captureHandler = null;
+    let mediaObserver = null;
+
+    const cleanup = () => {
+      clearTimeout(playbackCaptureTimer);
+      playbackCaptureTimer = null;
+      if (mediaObserver) mediaObserver.disconnect();
+      mediaObserver = null;
+    };
+    const inspectMediaElements = () => {
+      if (!playbackCapture) return;
+      const nodes = document.querySelectorAll('video, audio, video source, audio source');
+      for (const node of nodes) {
+        const url = node.currentSrc || node.src || node.getAttribute('src') || '';
+        if (!/^https?:\/\//i.test(url)) continue;
+        const parent = node.closest('video, audio');
+        const metadata = {
+          url,
+          title: parent && (parent.getAttribute('title') || parent.getAttribute('aria-label')) || '',
+          quality: '',
+          headers: null,
+          raw: {captureMethod: 'media-element-fallback', tagName: node.tagName}
+        };
+        const handler = playbackCapture;
+        playbackCapture = null;
+        cleanup();
+        emit('stream:resolved', {...metadata, fallback: true});
+        handler({...metadata, fallback: true});
+        return;
+      }
+    };
+
     return {
       cancel() {
         if (captureHandler && playbackCapture === captureHandler) playbackCapture = null;
-        clearTimeout(playbackCaptureTimer);
-        playbackCaptureTimer = null;
+        cleanup();
         captureHandler = null;
       },
       wait() {
         return new Promise((resolve, reject) => {
           captureHandler = stream => {
             if (playbackCapture === captureHandler) playbackCapture = null;
-            clearTimeout(playbackCaptureTimer);
-            playbackCaptureTimer = null;
+            cleanup();
             captureHandler = null;
             resolve(stream);
           };
           playbackCapture = captureHandler;
           clearTimeout(playbackCaptureTimer);
+          // Fallback for providers that bypass Lampa.Player.play and assign a
+          // direct URL to a media element in their own playback component.
+          mediaObserver = new MutationObserver(inspectMediaElements);
+          mediaObserver.observe(document.documentElement, {
+            childList: true, subtree: true, attributes: true,
+            attributeFilter: ['src']
+          });
+          inspectMediaElements();
           playbackCaptureTimer = window.setTimeout(() => {
             if (playbackCapture === captureHandler) playbackCapture = null;
-            playbackCaptureTimer = null;
+            cleanup();
             captureHandler = null;
-            reject(new Error('Z01 did not provide a direct video URL to LUNO. Check stream:intercept-miss diagnostics.'));
+            reject(new Error('Z01 did not provide a direct video URL to LUNO. Player route diagnostics are available in LunoLampa events.'));
           }, timeoutMs);
         });
       }
