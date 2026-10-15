@@ -501,3 +501,61 @@ body:has(.watch-page) .watch-tabs .tab-chip.selected{
   background:transparent!important;border:0!important;border-bottom:2px solid #b77bff!important;
   border-radius:0!important;box-shadow:none!important;color:#d8bcff!important;
 }
+
+
+/* LUNO modern color system: ink-black surfaces, cool violet light, restrained glass. */
+:root{
+  --bg:#080910;
+  --panel:rgba(20,21,32,.78);
+  --card:#151522;
+  --purple:#8B7CFF;
+  --glow:#C5B8FF;
+  --text:#F5F4FA;
+  --muted:#A3A1B4;
+  --line:rgba(197,184,255,.15);
+}
+body{
+  background:
+    radial-gradient(ellipse at 50% -18%,rgba(103,82,190,.19),transparent 44%),
+    radial-gradient(ellipse at 100% 55%,rgba(76,64,133,.07),transparent 38%),
+    #080910;
+}
+.dock{
+  background:rgba(22,22,34,.72)!important;
+  border-color:rgba(197,184,255,.17)!important;
+  box-shadow:0 14px 42px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.065)!important;
+}
+.nav-item.active{
+  color:#E5DDFF!important;
+  background:linear-gradient(135deg,rgba(139,124,255,.28),rgba(103,82,190,.13))!important;
+  border-color:rgba(197,184,255,.22)!important;
+}
+.nav-item.active .nav-icon{color:#C5B8FF!important}
+.tab-chip.selected,.watch-tabs .tab-chip.selected{
+  color:#D8CEFF!important;
+  border-bottom-color:#A99AFF!important;
+}
+.filter.selected,.mode-button.selected{
+  background:rgba(139,124,255,.18)!important;
+  border-color:rgba(197,184,255,.28)!important;
+  color:#E1D9FF!important;
+}
+.poster-art{
+  border-color:rgba(197,184,255,.16)!important;
+}
+.poster-rating{
+  border-color:rgba(169,154,255,.35)!important;
+  color:#D8CEFF!important;
+}
+.primary,.home-hero .primary{
+  background:linear-gradient(115deg,#A99AFF 0%,#C5B8FF 100%)!important;
+  color:#171326!important;
+  box-shadow:0 5px 22px rgba(139,124,255,.16)!important;
+}
+.home-hero .premiere{
+  background:linear-gradient(115deg,#A99AFF,#C5B8FF)!important;
+  color:#171326!important;
+}
+@media(prefers-reduced-motion:no-preference){
+  .nav-item.active,.filter.selected,.primary{transition:background .2s ease,border-color .2s ease,box-shadow .2s ease}
+}
