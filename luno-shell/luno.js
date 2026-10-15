@@ -4,7 +4,7 @@
   const TMDB_KEY = '4ef0d7355d9ffb5151e987764708ce96';
   const TMDB_API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
-  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:'Избранное',featureIndex:0,homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
+  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:'Избранное',featureIndex:0,detailExtras:{cast:[],similar:[],collection:null,loading:false,tab:'Обзор'},homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
   const readSaved = key => { try { const value=JSON.parse(localStorage.getItem(key)||'[]'); return Array.isArray(value)?value:[]; } catch(_){ return []; } };
   const saveLibrary = () => { try { localStorage.setItem('luno-watchlist-v1',JSON.stringify(state.watchlist)); localStorage.setItem('luno-history-v1',JSON.stringify(state.history.slice(0,100))); } catch(_){} };
   state.watchlist=readSaved('luno-watchlist-v1');
@@ -159,9 +159,47 @@
     ${list.length?'<div class="grid">'+cards(list)+'</div>':`<div class="empty watch-empty"><div class="empty-illustration" aria-hidden="true"><svg viewBox="0 0 240 180"><path d="M26 145h188M42 145V84h156v61M57 84V57h126v27M75 57V42h90v15M68 145v-42h25v42M146 145v-42h25v42M102 82v-18h36v18" fill="none" stroke="currentColor" stroke-width="2" opacity=".52"/><circle cx="120" cy="29" r="18" fill="currentColor" opacity=".9"/><circle cx="128" cy="23" r="17" fill="#0d0a14"/><path d="M31 155q28-15 56 0t56 0t66 0" fill="none" stroke="currentColor" stroke-width="2" opacity=".65"/><path d="m47 35 3 7 7 3-7 3-3 7-3-7-7-3 7-3zM196 48l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#B56BFF"/></svg></div><h2>${title}</h2><p>${description}</p><button class="primary" data-tab="catalog">Открыть каталог</button></div>`}</section>`;
   }
   function login(){return `<h1 class="page-title">Профиль</h1><section class="login-card"><div class="empty-mark">☾</div><h2>Твоя вселенная LUNO</h2><p class="quiet">Профиль и синхронизация будут подключены отдельно.</p></section>`; }
-  function details(){const x=state.selected;if(!x)return '';const img=backdropOf(x);return `<section class="detail-page">${img?`<div class="detail-art" style="background-image:linear-gradient(0deg,#0d0a14 0%,#0d0a1444 100%),url('${safe(img)}')"></div>`:''}<h1>${safe(x.title)}</h1><p class="quiet">${safe([dateOf(x),x.vote_average?'★ '+Number(x.vote_average).toFixed(1):'',x.meta].filter(Boolean).join(' · '))}</p><p>${safe(x.overview||'Описание не предоставлено.')}</p><div class="actions"><button class="primary" data-action="find-stream">Найти источник</button><button class="secondary" data-action="add-selected">＋ В список</button></div><div id="stream-status" class="quiet">${safe(state.error||'Источник ещё не запрошен.')}</div></section>`; }
+  function details(){
+    const x=state.selected;if(!x)return '';
+    const d=state.detailExtras||{cast:[],similar:[],collection:null,loading:false,tab:'Обзор'};
+    const img=backdropOf(x),kind=x.media_type==='tv'||x.name?'Сериал':'Фильм';
+    const year=dateOf(x)||'—',rating=x.vote_average?Number(x.vote_average).toFixed(1):'—';
+    const genres=(x.genre_ids||[]).map(id=>({16:'Анимация',35:'Комедия',28:'Боевик',14:'Фэнтези',18:'Драма',12:'Приключения',878:'Фантастика',53:'Триллер',80:'Криминал',10749:'Мелодрама',9648:'Детектив',27:'Ужасы',10751:'Семейный',99:'Документальный',10759:'Боевик',10765:'Фэнтези'}[id])).filter(Boolean).slice(0,4);
+    const inList=state.watchlist.some(v=>v.id===x.id&&v.media_type===x.media_type);
+    const cast=d.cast||[];
+    const actors=cast.length?'<section class="detail-section"><div class="detail-section-head"><h2>В главных ролях</h2><span>Весь состав ›</span></div><div class="actor-row">'+cast.slice(0,12).map(a=>`<button class="actor-card" data-person="${a.id}"><span class="actor-photo">${a.profile_path?`<img loading="lazy" src="${safe(IMG+'w185'+a.profile_path)}" alt="">`:'<span class="actor-placeholder">◯</span>'}</span><strong>${safe(a.name)}</strong><small>${safe(a.character||'')}</small></button>`).join('')+'</div></section>':'';
+    const similar=d.similar?.length?'<section class="detail-section"><div class="detail-section-head"><h2>Похожие фильмы и сериалы</h2><button data-action="more-similar">Все ›</button></div><div class="poster-row detail-poster-row">'+cards(d.similar.slice(0,12))+'</div></section>':'';
+    const collection=d.collection?'<section class="detail-section"><div class="detail-section-head"><h2>Франшиза</h2></div><button class="collection-feature" data-action="open-collection" style="background-image:linear-gradient(0deg,rgba(8,8,15,.88),rgba(8,8,15,.02)),url(\''+safe(d.collection.backdrop_path?IMG+'w780'+d.collection.backdrop_path:IMG+'w500'+d.collection.poster_path)+'\')"><strong>'+safe(d.collection.name)+'</strong><span>Смотреть коллекцию ›</span></button></section>':'';
+    const shelves='<section class="detail-section"><div class="detail-section-head"><h2>Подборки</h2></div><div class="collection-row"><button class="collection-tile" data-action="open-genre" data-genre="'+(genres[0]||'Популярное')+'"><span>✦</span><strong>'+safe(genres[0]||'Популярное')+'</strong><small>Подборка по жанру</small></button><button class="collection-tile collection-tile-alt" data-action="open-genre" data-genre="Похожие"><span>◈</span><strong>Похожие истории</strong><small>В духе этого тайтла</small></button><button class="collection-tile collection-tile-space" data-action="open-genre" data-genre="Фантастика"><span>✧</span><strong>Другие миры</strong><small>Фантастика и приключения</small></button></div></section>';
+    return `<section class="detail-page">
+      <div class="detail-topbar"><button class="detail-back" data-action="detail-back" aria-label="Назад">‹</button><span class="detail-brand">LUNO<span>✦</span></span><button class="detail-round" data-action="add-selected" aria-label="Избранное">${inList?'♥':'♡'}</button><button class="detail-round" data-action="detail-more" aria-label="Ещё">•••</button></div>
+      ${img?`<div class="detail-hero-art" style="background-image:linear-gradient(90deg,rgba(8,8,15,.68),rgba(8,8,15,.03)),linear-gradient(0deg,#080910 0%,transparent 75%),url('${safe(img)}')"></div>`:''}
+      <div class="detail-main"><h1>${safe(x.title)}</h1><div class="detail-meta"><span>${safe(year)}</span><span>★ ${rating}</span><span>${kind}</span><span>16+</span></div>
+      <div class="detail-genres">${genres.map(g=>'<span>'+safe(g)+'</span>').join('')}</div>
+      <p class="detail-overview">${safe(x.overview||'Откройте эту историю в мире LUNO.')}</p>
+      <div class="detail-actions"><button class="primary detail-play" data-action="find-stream"><span>▶</span><span><b>Смотреть</b><small>Открыть доступные источники</small></span></button><button class="detail-icon-action" data-action="add-selected"><span>${inList?'♥':'＋'}</span><small>${inList?'В избранном':'Избранное'}</small></button><button class="detail-icon-action" data-action="add-selected"><span>▤</span><small>Мой список</small></button></div>
+      <div id="stream-status" class="detail-stream-status">${safe(state.error||'')}</div></div>
+      <div class="detail-tabs">${['Обзор','Актёры','Похожие'].map(v=>'<button class="'+(d.tab===v?'selected':'')+'" data-detail-tab="'+v+'">'+v+'</button>').join('')}</div>
+      ${d.tab==='Актёры'?actors:d.tab==='Похожие'?similar:'<section class="detail-section detail-about"><h2>О '+(kind==='Сериал'?'сериале':'фильме')+'</h2><p>'+safe(x.overview||'Описание пока отсутствует.')+'</p><div class="detail-facts"><span>Год выпуска</span><b>'+safe(year)+'</b><span>Рейтинг TMDB</span><b>★ '+rating+'</b><span>Тип</span><b>'+kind+'</b></div></section>'+actors+collection+similar+shelves}
+      ${d.loading?'<p class="quiet detail-loading">Загружаем актёров и рекомендации…</p>':''}
+    </section>`;
+  }
+  async function loadDetailExtras(item){
+    const generation=(state.detailGeneration||0)+1;state.detailGeneration=generation;
+    state.detailExtras={cast:[],similar:[],collection:null,loading:true,tab:'Обзор'};render();
+    const media=item.media_type==='tv'||item.name?'tv':'movie';
+    const jobs=[
+      tmdb(media+'/'+item.id+'/credits').catch(()=>({cast:[]})),
+      tmdb(media+'/'+item.id+'/recommendations',{page:1}).catch(()=>({results:[]})),
+      media==='movie'?tmdb('movie/'+item.id).catch(()=>({})):Promise.resolve({})
+    ];
+    const [credits,recs,full]=await Promise.all(jobs);
+    if(generation!==state.detailGeneration||state.selected?.id!==item.id)return;
+    state.detailExtras={cast:(credits.cast||[]).filter(a=>a.profile_path).slice(0,16),similar:normalize(recs).filter(v=>v.id!==item.id&&v.poster_path).slice(0,16).map((v,i)=>({...v,media_type:v.media_type||media,_lunoId:'similar-'+i})),collection:full.belongs_to_collection||null,loading:false,tab:state.detailExtras.tab||'Обзор'};
+    render();
+  }
   function render(){document.body.classList.toggle('catalog-view',state.tab==='catalog');document.body.classList.toggle('poster-landscape',state.tab==='catalog'&&state.posterMode==='landscape');navItems.forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));screen.innerHTML=state.tab==='details'?details():({home,catalog,search,watch,login})[state.tab]();}
-  function openItem(item){state.selected=item;state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();}
+  function openItem(item){state.selected=item;state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();loadDetailExtras(item);}
   async function findStream(){
     const box=document.querySelector('#stream-status');if(box)box.textContent='Подключаем runtime и плагины источников…';
     try{
@@ -191,6 +229,12 @@
     if(t.dataset.action==='open-featured'){if(state.featuredItem)openItem(state.featuredItem);else{state.tab='catalog';render();loadCatalog('Фильмы');}return;}
     if(t.dataset.action==='watch-featured'){const item=state.featuredItem;if(item&&!state.watchlist.some(x=>x.id===item.id&&x.media_type===item.media_type))state.watchlist.unshift(item);saveLibrary();state.tab='watch';render();return;}
     if(t.dataset.action==='add-selected'){if(state.selected&&!state.watchlist.some(x=>x.id===state.selected.id&&x.media_type===state.selected.media_type))state.watchlist.unshift(state.selected);saveLibrary();state.tab='watch';render();return;}
+    if(t.dataset.detailTab){state.detailExtras.tab=t.dataset.detailTab;render();return;}
+    if(t.dataset.action==='detail-back'){state.tab='catalog';render();return;}
+    if(t.dataset.action==='detail-more'){state.detailExtras.tab='Обзор';render();return;}
+    if(t.dataset.action==='open-collection'){state.tab='catalog';state.catalogType='Фильмы';render();loadCatalog('Фильмы');return;}
+    if(t.dataset.action==='more-similar'){state.detailExtras.tab='Похожие';render();return;}
+    if(t.dataset.action==='open-genre'){state.tab='catalog';state.catalogType='Фильмы';state.catalogGenre='';render();loadCatalog('Фильмы');return;}
     if(t.dataset.action==='find-stream')findStream();
   });
   document.addEventListener('change',e=>{if(e.target.id==='catalog-genre'){state.catalogGenre=e.target.value;loadCatalog(state.catalogType);}});
