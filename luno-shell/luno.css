@@ -453,3 +453,24 @@ body.catalog-view:not(.poster-landscape) .grid .poster-title{display:-webkit-box
  body.catalog-view:not(.poster-landscape) .grid .poster-year{right:7px!important;bottom:7px!important;font-size:9px!important;padding:4px 6px!important}
  body.catalog-view:not(.poster-landscape) .grid .poster-title{font-size:12px!important;line-height:1.25!important;margin-top:6px!important}
 }
+
+/* Watch library: compact Apple-TV-inspired LUNO mobile layout */
+body:not(.catalog-view) .watch-page{max-width:760px;margin:0 auto}
+.watch-tabs{display:flex;justify-content:space-around;gap:22px;margin:0 0 24px;padding:0 2px;border-bottom:1px solid rgba(210,194,232,.13)}
+.watch-tabs .tab-chip{flex:0 0 auto;padding:11px 2px 13px;font-size:14px;background:transparent;border:0;border-radius:0;color:#a9a3b5}
+.watch-tabs .tab-chip.selected{color:#d8bcff;border-bottom:2px solid #b77bff}
+.watch-empty{min-height:46vh;padding:20px 12px 30px;gap:4px}
+.watch-empty .empty-illustration{width:min(230px,65vw);height:auto;margin:8px auto 14px;color:#b77bff;filter:drop-shadow(0 0 20px rgba(164,93,231,.12))}
+.watch-empty .empty-illustration svg{display:block;width:100%;height:auto}
+.watch-empty h2{max-width:360px;font-size:clamp(23px,5.5vw,29px);line-height:1.2;font-weight:600;letter-spacing:-.03em;margin:8px 0 10px}
+.watch-empty p{max-width:330px;font-size:14px;line-height:1.55;color:#a9a3b5;margin:0 0 14px}
+.watch-empty .primary{min-height:44px;padding:11px 22px;border-radius:15px;font-size:14px}
+.watch-page .grid{margin-top:8px}
+@media(max-width:420px){
+ .watch-tabs{gap:18px;margin-bottom:20px}
+ .watch-tabs .tab-chip{font-size:13px;padding:10px 1px 12px}
+ .watch-empty{min-height:44vh;padding-top:12px}
+ .watch-empty .empty-illustration{width:min(190px,54vw);margin-bottom:10px}
+ .watch-empty h2{font-size:23px}
+ .watch-empty p{font-size:13px}
+}
