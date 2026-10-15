@@ -53,6 +53,21 @@ jobs:
           # but publish the LUNO interface at the site root (not in a nested folder).
           cp dest/app.min.js build/github/lampa/luno-runtime.js
           cp -R luno-shell/. build/github/lampa/
+          # Cache-bust the shell assets on every commit so mobile Safari does not
+          # keep rendering an older CSS/JS bundle after a successful Pages deploy.
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          root = Path("build/github/lampa")
+          version = os.environ.get("GITHUB_SHA", "latest")[:12]
+          index = root / "index.html"
+          html = index.read_text()
+          html = html.replace('./luno.css', f'./luno.css?v={version}')
+          html = html.replace('./luno.js', f'./luno.js?v={version}')
+          html = html.replace('./lampa-adapter.js', f'./lampa-adapter.js?v={version}')
+          html = html.replace('./config.js', f'./config.js?v={version}')
+          index.write_text(html)
+          PY
           test -s build/github/lampa/index.html
           test -s build/github/lampa/luno.css
           test -s build/github/lampa/luno.js
