@@ -433,3 +433,23 @@ body.catalog-view.poster-landscape .grid .poster-year{right:9px!important;bottom
  body.catalog-view.poster-landscape .grid .poster-overlay-title{font-size:17px!important}
  body.catalog-view.poster-landscape .grid .poster-overview{font-size:10px!important}
 }
+
+/* Portrait-mode refinements for phone catalog */
+body.catalog-view:not(.poster-landscape) .grid{gap:17px 12px!important}
+body.catalog-view:not(.poster-landscape) .grid .poster{min-width:0!important;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;overflow:visible!important}
+body.catalog-view:not(.poster-landscape) .grid .poster-art{position:relative!important;display:block!important;width:100%!important;aspect-ratio:2/3!important;border-radius:13px!important;overflow:hidden!important;background:#17141d!important;border:1px solid rgba(225,210,246,.16)!important;box-shadow:0 5px 18px rgba(0,0,0,.18)!important}
+body.catalog-view:not(.poster-landscape) .grid .poster-art .poster-image{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+body.catalog-view:not(.poster-landscape) .grid .poster-art:after{content:""!important;position:absolute!important;inset:58% 0 0!important;background:linear-gradient(180deg,transparent,rgba(8,7,12,.56))!important;z-index:1!important;pointer-events:none!important}
+body.catalog-view:not(.poster-landscape) .grid .poster-kind{position:absolute!important;z-index:3!important;top:8px!important;left:8px!important;right:auto!important;bottom:auto!important;display:inline-flex!important;align-items:center!important;padding:4px 7px!important;font-size:8px!important;line-height:1.1!important;letter-spacing:.045em!important;font-weight:650!important;border-radius:7px!important;background:rgba(14,12,19,.62)!important;border:1px solid rgba(255,255,255,.18)!important;color:#faf7ff!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important}
+body.catalog-view:not(.poster-landscape) .grid .poster-rating{position:absolute!important;z-index:3!important;left:8px!important;right:auto!important;top:auto!important;bottom:8px!important;display:inline-flex!important;padding:4px 7px!important;font-size:10px!important;line-height:1.1!important;border-radius:7px!important;background:rgba(17,14,25,.7)!important;border:1px solid rgba(190,151,255,.26)!important;color:#e4ccff!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important}
+body.catalog-view:not(.poster-landscape) .grid .poster-year{position:absolute!important;z-index:3!important;right:8px!important;left:auto!important;top:auto!important;bottom:8px!important;display:inline-flex!important;padding:4px 7px!important;font-size:10px!important;line-height:1.1!important;border-radius:7px!important;background:rgba(17,14,25,.7)!important;border:1px solid rgba(255,255,255,.14)!important;color:#faf7ff!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important}
+body.catalog-view:not(.poster-landscape) .grid .poster-overlay{display:none!important}
+body.catalog-view:not(.poster-landscape) .grid .poster-title{display:-webkit-box!important;position:static!important;margin:7px 2px 0!important;font-size:13px!important;line-height:1.28!important;font-weight:600!important;letter-spacing:-.01em!important;color:#f2edf8!important;text-align:left!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+@media(max-width:420px){
+ body.catalog-view:not(.poster-landscape) .grid{gap:15px 10px!important}
+ body.catalog-view:not(.poster-landscape) .grid .poster-art{border-radius:12px!important}
+ body.catalog-view:not(.poster-landscape) .grid .poster-kind{top:7px!important;left:7px!important;font-size:7px!important;padding:4px 6px!important}
+ body.catalog-view:not(.poster-landscape) .grid .poster-rating{left:7px!important;bottom:7px!important;font-size:9px!important;padding:4px 6px!important}
+ body.catalog-view:not(.poster-landscape) .grid .poster-year{right:7px!important;bottom:7px!important;font-size:9px!important;padding:4px 6px!important}
+ body.catalog-view:not(.poster-landscape) .grid .poster-title{font-size:12px!important;line-height:1.25!important;margin-top:6px!important}
+}
