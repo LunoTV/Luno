@@ -35,8 +35,20 @@
         document.head.appendChild(script);
       });
       const api = window.Lampa;
-      if (window.LUNO_RUNTIME_READY !== true || !api || !api.Api || !api.Parser || !api.Player) {
-        throw new Error('Runtime bundle did not expose the required Lampa service APIs');
+      const missing = [];
+      if (window.LUNO_RUNTIME_READY !== true) missing.push('LUNO_RUNTIME_READY');
+      if (!api) missing.push('window.Lampa');
+      if (api && !api.Api) missing.push('Lampa.Api');
+      if (api && !api.Parser) missing.push('Lampa.Parser');
+      if (api && !api.Player) missing.push('Lampa.Player');
+      if (missing.length) {
+        const loadedScript = script.src || entry;
+        throw new Error(
+          'LUNO runtime API check failed: ' + missing.join(', ') +
+          '. Runtime URL: ' + loadedScript +
+          '. Ready marker: ' + String(window.LUNO_RUNTIME_READY) +
+          '. Lampa keys: ' + (api ? Object.keys(api).slice(0, 30).join(', ') : 'none')
+        );
       }
       runtime = api;
       emit('runtime:ready', {version: config.runtimeVersion || 'unknown'});
