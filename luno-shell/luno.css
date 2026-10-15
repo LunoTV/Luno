@@ -474,3 +474,16 @@ body:not(.catalog-view) .watch-page{max-width:760px;margin:0 auto}
  .watch-empty h2{font-size:23px}
  .watch-empty p{font-size:13px}
 }
+
+
+/* Watch page: keep the screen focused on the title and its two sections. */
+body:has(.watch-page) .topbar{display:none!important}
+body:has(.watch-page) .app{padding-top:calc(env(safe-area-inset-top,12px) + 4px)}
+.watch-page .page-title{font-size:27px!important;font-weight:500!important;letter-spacing:-.025em!important;margin:8px 0 24px!important}
+.watch-page .watch-tabs{justify-content:center;gap:clamp(52px,18vw,150px);margin:0 0 18px;padding:0 0 1px}
+.watch-page .watch-tabs .tab-chip{font-size:15px;padding:10px 2px 12px}
+.watch-page .watch-empty{min-height:0;padding:clamp(34px,9vh,76px) 16px 36px}
+.watch-page .watch-empty .empty-illustration{width:min(220px,58vw);margin-bottom:20px;color:#ad73e8}
+.watch-page .watch-empty h2{font-size:clamp(23px,6vw,30px);font-weight:550;line-height:1.25;margin:4px 0 14px}
+.watch-page .watch-empty p{font-size:15px;line-height:1.6;max-width:330px;margin:0 0 20px}
+.watch-page .watch-empty .primary{min-height:46px;padding:12px 24px;font-size:15px;border-radius:16px}
