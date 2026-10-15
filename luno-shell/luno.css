@@ -664,3 +664,67 @@ body{min-height:100svh;overflow-x:hidden}
   html{scroll-behavior:auto}
   .grid .poster-art,.home-posters .poster,.tabs .tab-chip,.watch-tabs .tab-chip{transition:none}
 }
+
+
+/* LUNO home v2: cinematic hierarchy, readable artwork and tighter mobile rhythm */
+.home-hero{
+  min-height:min(850px,91svh)!important;
+  padding:clamp(22px,6vw,54px) clamp(20px,5.5vw,48px) 26px!important;
+  background-position:center 28%!important;
+}
+.home-hero:before{
+  background:
+    linear-gradient(90deg,rgba(8,8,15,.42) 0%,rgba(8,8,15,.12) 55%,rgba(8,8,15,.02) 100%),
+    linear-gradient(180deg,rgba(8,8,15,.02) 0%,rgba(8,8,15,.03) 28%,rgba(8,8,15,.58) 55%,#080910 100%)!important;
+}
+.home-hero-content{align-items:flex-start!important;max-width:760px!important;margin:0 auto!important}
+.home-hero .premiere{
+  align-self:flex-start!important;
+  padding:6px 10px!important;
+  border-radius:7px!important;
+  font-size:10px!important;
+  font-weight:750!important;
+  letter-spacing:.09em!important;
+  box-shadow:0 3px 14px rgba(0,0,0,.16);
+}
+.home-hero h1{
+  max-width:650px!important;
+  text-align:left!important;
+  font-size:clamp(34px,8.2vw,58px)!important;
+  line-height:1.01!important;
+  letter-spacing:-.045em!important;
+  margin:12px 0 14px!important;
+  text-wrap:balance;
+}
+.home-hero .feature-meta{justify-content:flex-start!important;margin-bottom:12px!important;gap:8px!important;font-size:11px!important}
+.home-hero .feature-meta span+span:before{margin-right:8px!important}
+.home-hero p{
+  text-align:left!important;
+  margin:0 0 19px!important;
+  max-width:540px!important;
+  font-size:clamp(14px,3.8vw,17px)!important;
+  line-height:1.5!important;
+  -webkit-line-clamp:3!important;
+}
+.home-hero .actions{justify-content:flex-start!important;width:100%!important}
+.home-hero .primary{min-height:48px!important;max-width:235px!important;border-radius:13px!important;font-size:15px!important}
+.home-hero .hero-add{width:48px!important;height:48px!important;flex-basis:48px!important;border-radius:13px!important;font-size:25px!important}
+.hero-progress{width:min(100%,330px)!important;margin-top:28px!important}
+.home-shelf{padding-top:5px!important}
+.home-shelf .section-head{margin-top:25px!important;margin-bottom:14px!important}
+.home-shelf .section-head h2{font-size:clamp(20px,5.2vw,27px)!important;font-weight:620!important;letter-spacing:-.04em!important}
+.home-shelf .section-head button{font-size:12px!important;color:#BDB5D0!important}
+.home-posters{scroll-padding-left:1px}
+.home-posters .poster-art{border:1px solid rgba(210,200,255,.12)!important;box-shadow:0 6px 22px rgba(0,0,0,.28)!important}
+.home-posters .poster-title{font-size:13px!important;line-height:1.3!important;font-weight:550!important}
+@media(max-width:420px){
+  .home-hero{min-height:min(790px,88svh)!important;padding:20px 19px 23px!important}
+  .home-hero h1{font-size:clamp(32px,8.5vw,39px)!important;max-width:340px!important}
+  .home-hero p{font-size:14px!important;-webkit-line-clamp:3!important}
+  .hero-progress{margin-top:23px!important;width:min(100%,270px)!important}
+  .home-shelf{padding-left:18px!important}
+  .home-shelf .section-head{margin-right:18px!important}
+}
+@media(min-width:700px){
+  .home-hero{min-height:min(860px,90svh)!important}
+}
