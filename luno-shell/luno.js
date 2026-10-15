@@ -4,7 +4,7 @@
   const TMDB_KEY = '4ef0d7355d9ffb5151e987764708ce96';
   const TMDB_API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
-  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:'Избранное',featureIndex:0,homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
+  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:'Избранное',featureIndex:0,homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
   const safe = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const titleOf = x => x.title || x.name || x.original_title || x.original_name || 'Без названия';
   const imageOf = (x,size='w500') => x?.poster_path ? IMG+size+x.poster_path : (x?.poster?.startsWith?.('http') ? x.poster : '');
@@ -37,9 +37,10 @@
   const cards=list=>list.length?list.map((x,i)=>poster(x,i)).join(''):'<p class="quiet">Ничего не найдено.</p>';
   async function loadCatalog(type=state.catalogType,append=false) {
     if(state.busy)return;
-    if(!append){state.catalogPage=1;state.catalogHasMore=true;state.items=[];}
+    if(!append){state.catalogGeneration++;state.catalogPage=1;state.catalogHasMore=true;state.items=[];}
     if(!state.catalogHasMore)return;
-    state.busy=true;state.error='';render();
+    const generation=state.catalogGeneration;
+    state.busy=true;state.catalogLoadingMore=append;state.error='';render();
     try {
       const ranked=state.sort==='По рейтингу'?'vote_average.desc':'popularity.desc';
       const base={sort_by:ranked,'vote_count.gte':type==='Аниме'?5:10};
@@ -69,17 +70,18 @@
       }
       const unique=new Map();
       for(const item of results){const key=(item.media_type||'movie')+':'+item.id;if(item.id&&!unique.has(key))unique.set(key,item);}
+      if(generation!==state.catalogGeneration)return;
       const incoming=[...unique.values()].sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).map(x=>({...x,source:'tmdb'}));
       const seen=new Set(state.items.map(x=>(x.media_type||'movie')+':'+x.id));
       const fresh=incoming.filter(x=>!seen.has((x.media_type||'movie')+':'+x.id));
       const offset=state.items.length;
       state.items=append?[...state.items,...fresh].map((x,i)=>({...x,_lunoId:i})):fresh.map((x,i)=>({...x,_lunoId:i}));
       const rawPages=type==='Мультфильмы'||type==='Аниме'?2:1;
-      state.catalogHasMore=page<5 && incoming.length>=20;
+      state.catalogHasMore=page<500 && incoming.length>0;
       state.catalogPage=page+1;
       if(!state.items.length) state.error='Каталог вернул пустой список.';
-    } catch(e){state.error=e.message||'Не удалось загрузить каталог.';}
-    finally{state.busy=false;render();}
+    } catch(e){if(generation===state.catalogGeneration)state.error=e.message||'Не удалось загрузить каталог.';}
+    finally{if(generation===state.catalogGeneration){state.busy=false;state.catalogLoadingMore=false;render();}}
   }
   async function doSearch(query) {
     state.search=query;state.busy=true;state.error='';render();
@@ -136,7 +138,7 @@
     ${shelfMarkup('Культовое кино',state.homeShelves.cult,'cult')}
     ${state.error?`<p class="quiet home-error">${safe(state.error)}</p>`:''}`;
   }
-  function catalog(){return `<h1 class="page-title">Каталог</h1>${tabs(['Фильмы','Сериалы','Мультфильмы','Аниме'],state.catalogType,'type')}<div class="catalog-genre"><select id="catalog-genre" aria-label="Жанр"><option value="">Все жанры</option><option value="18">Драма</option><option value="35">Комедия</option><option value="28">Боевик</option><option value="27">Ужасы</option><option value="16">Анимация</option><option value="878">Фантастика</option></select></div><div class="controls catalog-controls"><div class="catalog-sort"><button class="filter" data-sort="По новизне">Популярное</button><button class="filter" data-sort="По рейтингу">В тренде</button></div><div class="poster-modes"><button class="filter mode-button ${state.posterMode==='portrait'?'selected':''}" data-poster-mode="portrait" aria-label="Вертикальные постеры">▯</button><button class="filter mode-button ${state.posterMode==='landscape'?'selected':''}" data-poster-mode="landscape" aria-label="Горизонтальные постеры">▭</button></div></div>${state.busy?'<p class="quiet">Загружаем каталог…</p>':''}<div class="grid">${cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}${state.catalogHasMore&&!state.busy?'<button class="primary catalog-load-more" data-action="load-more">Показать ещё</button>':''}${!state.catalogHasMore&&state.items.length?'<p class="quiet catalog-end">Вы посмотрели все доступные результаты этой подборки.</p>':''}`; }
+  function catalog(){return `<h1 class="page-title">Каталог</h1>${tabs(['Фильмы','Сериалы','Мультфильмы','Аниме'],state.catalogType,'type')}<div class="catalog-genre"><select id="catalog-genre" aria-label="Жанр"><option value="">Все жанры</option><option value="18">Драма</option><option value="35">Комедия</option><option value="28">Боевик</option><option value="27">Ужасы</option><option value="16">Анимация</option><option value="878">Фантастика</option></select></div><div class="controls catalog-controls"><div class="catalog-sort"><button class="filter" data-sort="По новизне">Популярное</button><button class="filter" data-sort="По рейтингу">В тренде</button></div><div class="poster-modes"><button class="filter mode-button ${state.posterMode==='portrait'?'selected':''}" data-poster-mode="portrait" aria-label="Вертикальные постеры">▯</button><button class="filter mode-button ${state.posterMode==='landscape'?'selected':''}" data-poster-mode="landscape" aria-label="Горизонтальные постеры">▭</button></div></div>${state.busy&& !state.catalogLoadingMore?'<p class="quiet">Загружаем каталог…</p>':''}<div class="grid">${cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}${state.busy&&state.catalogLoadingMore?'<p class="quiet catalog-loading-more">Загружаем ещё…</p>':''}${!state.catalogHasMore&&state.items.length?'<p class="quiet catalog-end">Больше результатов нет.</p>':''}`; }
   function search(){return `<form id="search-form"><input class="searchbox" name="q" placeholder="Сериал, фильм или жанр" value="${safe(state.search)}" aria-label="Поиск фильмов и сериалов"></form><div class="grid">${state.busy?'<p class="quiet">Ищем…</p>':cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}`; }
   function watch(){
     const active=state.watchSection||'Избранное';
@@ -181,6 +183,8 @@
     if(t.dataset.action==='find-stream')findStream();
   });
   document.addEventListener('change',e=>{if(e.target.id==='catalog-genre'){state.catalogGenre=e.target.value;loadCatalog(state.catalogType);}});
+  let infiniteScrollQueued=false;
+  window.addEventListener('scroll',()=>{if(infiniteScrollQueued||state.tab!=='catalog'||state.busy||!state.catalogHasMore)return;const nearBottom=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-700;if(nearBottom){infiniteScrollQueued=true;loadCatalog(state.catalogType,true).finally(()=>{infiniteScrollQueued=false;});}},{passive:true});
   document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();doSearch(new FormData(e.target).get('q')||'');});
   render();
   loadCatalog('Фильмы');
