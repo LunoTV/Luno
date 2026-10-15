@@ -159,8 +159,32 @@
     const urls = Array.isArray(config.plugins) ? config.plugins : [];
     return urls.map(url => ({url, status: pluginState.get(url) || 'not-loaded', error: pluginErrors.get(url) || null}));
   }
+  // A successful script request does not prove that Z01 registered its online
+  // manifest. Inspect the runtime registry separately before attempting launch.
+  function onlinePluginDiagnostics() {
+    const api = runtime || window.Lampa;
+    const manifests = api && api.Manifest && Array.isArray(api.Manifest.plugins) ? api.Manifest.plugins : [];
+    const matches = manifests.filter(item => {
+      const value = [item && item.name, item && item.description, item && item.component, item && item.url]
+        .filter(Boolean).join(' ');
+      return /z01|lampac|online/i.test(value) && (item.type === 'video' || typeof item.onContextLauch === 'function');
+    });
+    return {
+      scriptLoaded: pluginState.get('http://z01.online/online.js') === 'loaded',
+      runtimeReady: Boolean(api && api.Manifest && api.Activity && api.Component && api.Player),
+      registered: matches.length > 0,
+      manifests: matches.map(item => ({
+        name: item.name || '',
+        description: item.description || '',
+        component: item.component || '',
+        type: item.type || '',
+        hasLaunchHook: typeof item.onContextLauch === 'function',
+        hasContextMenu: typeof item.onContextMenu === 'function'
+      }))
+    };
+  }
   window.LunoLampa = Object.freeze({
-    on, loadRuntime, catalog, search, details, loadPlugins, pluginDiagnostics,
+    on, loadRuntime, catalog, search, details, loadPlugins, pluginDiagnostics, onlinePluginDiagnostics,
     status: () => runtime ? 'ready' : config.runtimeEntry ? 'configured' : 'not-configured',
     config: Object.freeze({plugins: config.plugins || []})
   });
