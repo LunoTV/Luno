@@ -40,7 +40,7 @@
     try {
       const ranked=state.sort==='По рейтингу'?'vote_average.desc':'popularity.desc';
       const base={sort_by:ranked,'vote_count.gte':type==='Аниме'?5:10};
-      const withGenre=(extra={})=>({...base,...extra,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})});
+      const withGenre=(extra={})=>({...base,...extra,...(state.catalogGenre?{with_genres:extra.with_genres?`${extra.with_genres},${state.catalogGenre}`:state.catalogGenre}:{})});
       const pages=async(path,params)=>Promise.all([1,2,3].map(page=>tmdb(path,{...params,page})));
       let results=[];
       if(type==='Фильмы'){
