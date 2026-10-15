@@ -93,8 +93,8 @@
   }
   let searchTimer=0, searchGeneration=0;
   async function doSearch(query) {
-    state.search=query;const q=String(query||'').trim();const generation=++searchGeneration;
-    state.busy=!!q;state.error='';state.searchItems=[];render();
+    const keepFocus=document.activeElement?.id==='search-input';state.search=query;const q=String(query||'').trim();const generation=++searchGeneration;
+    state.busy=!!q;state.error='';state.searchItems=[];render();if(keepFocus){const input=document.querySelector('#search-input');input?.focus({preventScroll:true});if(input&&input.setSelectionRange)input.setSelectionRange(input.value.length,input.value.length);}
     if(!q){state.busy=false;return;}
     try {
       const data=await tmdb('search/multi',{query:q,include_adult:false,page:1});
@@ -102,7 +102,7 @@
       state.searchItems=normalize(data).filter(x=>x.media_type==='movie'||x.media_type==='tv').map((x,i)=>({...x,_lunoId:'search-'+i,source:'tmdb'}));
       if(!state.searchItems.length)state.error='Ничего не найдено. Попробуй другое название.';
     } catch(e){if(generation===searchGeneration)state.error=e.message||'Поиск временно недоступен.';}
-    finally{if(generation===searchGeneration){state.busy=false;render();}}
+    finally{if(generation===searchGeneration){const keepFocus=document.activeElement?.id==='search-input';state.busy=false;render();if(keepFocus){const input=document.querySelector('#search-input');input?.focus({preventScroll:true});if(input&&input.setSelectionRange)input.setSelectionRange(input.value.length,input.value.length);}}}
   }
   async function loadHomeShelves(){
     const shelves=state.homeShelves;
