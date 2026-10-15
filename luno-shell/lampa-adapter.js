@@ -188,6 +188,25 @@
   let playbackCapture = null;
   let playbackCaptureTimer = null;
   let playbackBridge = null;
+  const playbackDiagnostics = [];
+  function recordPlaybackDiagnostic(type, detail = {}) {
+    // Keep diagnostics useful without storing media URLs, tokens, or headers.
+    const entry = {
+      at: Date.now(),
+      type,
+      detail: {
+        payloadType: detail.payloadType || '',
+        urlType: detail.urlType || '',
+        keys: Array.isArray(detail.keys) ? detail.keys.slice(0, 24) : [],
+        action: Boolean(detail.action),
+        captureMethod: detail.captureMethod || '',
+        reason: detail.reason || ''
+      }
+    };
+    playbackDiagnostics.push(entry);
+    if (playbackDiagnostics.length > 40) playbackDiagnostics.shift();
+    emit('playback:diagnostic', entry);
+  }
 
   function extractStreamPayload(params) {
     const visited = new Set();
@@ -247,6 +266,7 @@
         headers: metadata.headers || metadata.requestHeaders || base.headers || base.requestHeaders || null,
         raw: metadata
       };
+      recordPlaybackDiagnostic('direct-stream-captured', {keys: Object.keys(metadata || {}).slice(0, 24), urlType: typeof urlValue});
       const resolveCapture = playbackCapture;
       playbackCapture = null;
       clearTimeout(playbackCaptureTimer);
@@ -308,6 +328,12 @@
         // step. Keep capture armed so a later call with the actual media URL
         // can still be bridged to LUNO.
         const value = params && typeof params === 'object' ? params : {url: params};
+        recordPlaybackDiagnostic('player-call-not-a-direct-url', {
+          payloadType: typeof params,
+          urlType: typeof value.url,
+          keys: Object.keys(value || {}).slice(0, 20),
+          action: true
+        });
         emit('stream:intercept-miss', {
           payloadType: typeof params,
           urlType: typeof value.url,
@@ -349,6 +375,7 @@
           headers: null,
           raw: {captureMethod: 'media-element-fallback', tagName: node.tagName}
         };
+        recordPlaybackDiagnostic('direct-media-element-captured', {captureMethod: 'media-element-fallback'});
         const handler = playbackCapture;
         playbackCapture = null;
         cleanup();
@@ -386,6 +413,7 @@
             if (playbackCapture === captureHandler) playbackCapture = null;
             cleanup();
             captureHandler = null;
+            recordPlaybackDiagnostic('capture-timeout', {reason: 'no-direct-url'});
             reject(new Error('Z01 did not provide a direct video URL to LUNO. Player route diagnostics are available in LunoLampa events.'));
           }, timeoutMs);
         });
@@ -500,6 +528,7 @@
   }
   window.LunoLampa = Object.freeze({
     on, loadRuntime, catalog, search, details, loadPlugins, pluginDiagnostics, onlinePluginDiagnostics, launchOnline, armPlaybackCapture,
+    playbackDiagnostics: () => playbackDiagnostics.map(entry => ({...entry, detail: {...entry.detail}})),
     status: () => runtime ? 'ready' : config.runtimeEntry ? 'configured' : 'not-configured',
     config: Object.freeze({plugins: config.plugins || []})
   });
