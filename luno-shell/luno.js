@@ -29,15 +29,20 @@
     if(!response.ok) throw new Error('Каталог недоступен (TMDB '+response.status+').');
     return response.json();
   }
+  function mediaKind(item){
+    const genres=item.genre_ids||[];
+    if([10764,10767,10763,10766,10762].some(id=>genres.includes(id))||item.media_kind==='show')return 'ШОУ';
+    if(genres.includes(16)&&item.original_language==='ja')return 'АНИМЕ';
+    if(genres.includes(16))return 'МУЛЬТФИЛЬМ';
+    return (item.media_type==='tv'||item.name||item.first_air_date)?'СЕРИАЛ':'ФИЛЬМ';
+  }
   function poster(item,i=0) {
-    const orientation=state.tab==='catalog'&&state.posterMode==='landscape'?'landscape':'portrait';
-    const img=artworkOf(item,orientation);
+    const img=artworkOf(item,'portrait');
     const style=img?'':'background-image:radial-gradient(circle at 30% 20%,#7542b8,transparent 60%),linear-gradient(145deg,#39234a,#15101c)';
-    const artwork=img?`<img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">`:'';
-    const kind=state.tab==='catalog'&&state.catalogType==='Шоу'?'ШОУ':(state.tab==='catalog'&&state.catalogType==='Аниме'?'АНИМЕ':(item.media_type==='tv'||item.name?(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'СЕРИАЛ'):(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'ФИЛЬМ')));
+    const kind=mediaKind(item);
     const year=dateOf(item)||'—';
     const rating=item.vote_average?Number(item.vote_average).toFixed(1):'—';
-    return `<button class="poster" style="${style}" data-item="${safe(itemKey(item,i))}" data-title="${safe(item.title)}" aria-label="Открыть ${safe(item.title)}"><span class="poster-art"><img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true" ${img?'':'hidden'}><span class="poster-kind">${kind}</span><span class="poster-rating">★ ${rating}</span><span class="poster-year">${safe(year)}</span><span class="poster-overlay"><strong class="poster-overlay-title">${safe(item.title)}</strong><span class="poster-overlay-meta">★ ${rating} · ${safe(year)} · ${kind.toLowerCase()}</span><span class="poster-overview">${safe((item.overview||'').slice(0,170))}</span></span></span><strong class="poster-title">${safe(item.title)}</strong></button>`;
+    return `<button class="poster" style="${style}" data-item="${safe(itemKey(item,i))}" data-title="${safe(item.title||titleOf(item))}" aria-label="Открыть ${safe(item.title||titleOf(item))}"><span class="poster-art"><img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true" ${img?'':'hidden'}><span class="poster-kind">${kind}</span><span class="poster-rating">★ ${rating}</span><span class="poster-year">${safe(year)}</span><span class="poster-overlay"><strong class="poster-overlay-title">${safe(item.title||titleOf(item))}</strong><span class="poster-overlay-meta">★ ${rating} · ${safe(year)} · ${kind.toLowerCase()}</span><span class="poster-overview">${safe((item.overview||'').slice(0,170))}</span></span></span><strong class="poster-title">${safe(item.title||titleOf(item))}</strong></button>`;
   }
   const head=t=>`<div class="section-head"><h2>${t}</h2><button class="quiet" data-tab="catalog">Показать ещё ↗</button></div>`;
   const tabs=(items,active,key)=>`<div class="tabs">${items.map(v=>`<button class="tab-chip ${v===active?'selected':''}" data-${key}="${safe(v)}">${safe(v)}</button>`).join('')}</div>`;
@@ -319,6 +324,18 @@
   let infiniteScrollQueued=false;
   window.addEventListener('scroll',()=>{if(infiniteScrollQueued||state.tab!=='catalog'||state.browse.title||state.busy||!state.catalogHasMore)return;const nearBottom=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-700;if(nearBottom){infiniteScrollQueued=true;loadCatalog(state.catalogType,true).finally(()=>{infiniteScrollQueued=false;});}},{passive:true});
   document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();doSearch(new FormData(e.target).get('q')||'');});
+  let swipeStart=null;
+  function swipeBack(){
+    if(state.tab==='details'){
+      if(state.browse.title){state.browse={title:'',items:[],page:1,person:null,collection:null,genre:null};state.tab='details';}
+      else state.tab='catalog';
+      render();return;
+    }
+    if(state.tab!=='home'){state.tab='home';state.browse={title:'',items:[],page:1,person:null,collection:null,genre:null};render();}
+  }
+  document.addEventListener('touchstart',e=>{if(e.touches.length===1)swipeStart={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
+  document.addEventListener('touchend',e=>{if(!swipeStart||e.changedTouches.length!==1)return;const dx=e.changedTouches[0].clientX-swipeStart.x;const dy=e.changedTouches[0].clientY-swipeStart.y;if(swipeStart.x<32&&dx>90&&Math.abs(dy)<70)swipeBack();swipeStart=null;},{passive:true});
+  window.addEventListener('keydown',e=>{if(e.key==='Escape')swipeBack();});
   render();
   state.catalogType='Фильм';
   loadCatalog('Фильм');
