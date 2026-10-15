@@ -181,7 +181,7 @@
     const t=e.target.closest('button');if(!t)return;
     if(t.dataset.tab){state.tab=t.dataset.tab;render();if(state.tab==='catalog')loadCatalog(state.catalogType);return;}
     if(t.dataset.slide!==undefined){state.featureIndex=Number(t.dataset.slide);render();return;}
-    if(t.dataset.homeShelf){state.tab='catalog';state.catalogType='Фильмы';state.sort='По новизне';render();loadCatalog(state.catalogType);return;}
+    if(t.dataset.homeShelf){state.tab='catalog';state.catalogType=t.dataset.homeShelf==='topShows'?'Сериалы':(t.dataset.homeShelf==='history'?'Фильмы':'Фильмы');state.sort='По новизне';state.catalogGenre='';render();loadCatalog(state.catalogType);return;}
     if(t.dataset.item!==undefined){const item=findItem(t.dataset.item);if(item)openItem(item);return;}
     if(t.dataset.watchSection){state.watchSection=t.dataset.watchSection;render();return;}
     if(t.dataset.type){state.catalogType=t.dataset.type;loadCatalog(state.catalogType);return;}
@@ -200,5 +200,5 @@
   render();
   loadCatalog('Фильмы');
   loadHomeShelves();
-  window.setInterval(()=>{if(state.tab==='home'){const count=Math.min(10,state.items.filter(x=>x&&(x.backdrop_path||x.poster_path)).length);if(count>1){state.featureIndex=(state.featureIndex+1)%count;render();}}},10000);
+  window.setInterval(()=>{if(state.tab==='home'){const source=state.homeShelves.popular.length?state.homeShelves.popular:state.items;const count=Math.min(10,source.filter(x=>x&&(x.backdrop_path||x.poster_path)).length);if(count>1){state.featureIndex=(state.featureIndex+1)%count;render();}}},10000);
 })();
