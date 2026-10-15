@@ -39,28 +39,33 @@
     state.busy=true;state.error='';render();
     try {
       const ranked=state.sort==='По рейтингу'?'vote_average.desc':'popularity.desc';
-      const base={page:1,sort_by:ranked,'vote_count.gte':type==='Аниме'?10:50};
+      const base={sort_by:ranked,'vote_count.gte':type==='Аниме'?5:10};
+      const withGenre=(extra={})=>({...base,...extra,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})});
+      const pages=async(path,params)=>Promise.all([1,2,3].map(page=>tmdb(path,{...params,page})));
       let results=[];
       if(type==='Фильмы'){
-        const data=await tmdb('discover/movie',{...base,without_genres:16,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})});
-        results=normalize(data).map(x=>({...x,media_type:'movie'})).filter(x=>!(x.genre_ids||[]).includes(16));
+        const batches=await pages('discover/movie',withGenre({without_genres:16}));
+        results=batches.flatMap(normalize).map(x=>({...x,media_type:'movie'})).filter(x=>!(x.genre_ids||[]).includes(16));
       }else if(type==='Сериалы'){
-        const data=await tmdb('discover/tv',{...base,without_genres:16,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})});
-        results=normalize(data).map(x=>({...x,media_type:'tv'})).filter(x=>!(x.genre_ids||[]).includes(16));
+        const batches=await pages('discover/tv',withGenre({without_genres:16}));
+        results=batches.flatMap(normalize).map(x=>({...x,media_type:'tv'})).filter(x=>!(x.genre_ids||[]).includes(16));
       }else if(type==='Мультфильмы'){
         const [movies,shows]=await Promise.all([
-          tmdb('discover/movie',{...base,with_genres:16,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})}),
-          tmdb('discover/tv',{...base,with_genres:16,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})})
+          pages('discover/movie',withGenre({with_genres:16})),
+          pages('discover/tv',withGenre({with_genres:16}))
         ]);
-        results=[...normalize(movies).map(x=>({...x,media_type:'movie'})),...normalize(shows).map(x=>({...x,media_type:'tv'}))];
+        results=[...movies.flatMap(normalize).map(x=>({...x,media_type:'movie'})),...shows.flatMap(normalize).map(x=>({...x,media_type:'tv'}))];
       }else if(type==='Аниме'){
+        const animeParams={with_genres:16,with_original_language:'ja','vote_count.gte':5,sort_by:ranked};
         const [movies,shows]=await Promise.all([
-          tmdb('discover/movie',{...base,with_genres:16,with_original_language:'ja',...(state.catalogGenre?{with_genres:'16,'+state.catalogGenre}:{})}),
-          tmdb('discover/tv',{...base,with_genres:16,with_original_language:'ja',...(state.catalogGenre?{with_genres:'16,'+state.catalogGenre}:{})})
+          pages('discover/movie',{...animeParams,...(state.catalogGenre?{with_genres:'16,'+state.catalogGenre}:{})}),
+          pages('discover/tv',{...animeParams,...(state.catalogGenre?{with_genres:'16,'+state.catalogGenre}:{})})
         ]);
-        results=[...normalize(movies).map(x=>({...x,media_type:'movie'})),...normalize(shows).map(x=>({...x,media_type:'tv'}))];
+        results=[...movies.flatMap(normalize).map(x=>({...x,media_type:'movie'})),...shows.flatMap(normalize).map(x=>({...x,media_type:'tv'}))];
       }
-      state.items=results.sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).map((x,i)=>({...x,_lunoId:i,source:'tmdb'}));
+      const unique=new Map();
+      for(const item of results){const key=(item.media_type||'movie')+':'+item.id;if(item.id&&!unique.has(key))unique.set(key,item);}
+      state.items=[...unique.values()].sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).map((x,i)=>({...x,_lunoId:i,source:'tmdb'}));
       if(!state.items.length) state.error='Каталог вернул пустой список.';
     } catch(e){state.error=e.message||'Не удалось загрузить каталог.';}
     finally{state.busy=false;render();}
