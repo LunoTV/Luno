@@ -262,7 +262,7 @@
   }
   document.addEventListener('click',e=>{
     const t=e.target.closest('button');if(!t)return;
-    if(t.dataset.tab){state.tab=t.dataset.tab;render();if(state.tab==='catalog'){if(state.catalogType==='Франшизы')loadFranchises();else loadCatalog(state.catalogType);}return;}
+    if(t.dataset.tab){state.tab=t.dataset.tab;render();if(state.tab==='catalog'){state.browse={title:'',items:[],page:1,person:null,collection:null,genre:null};if(state.catalogType==='Франшизы')loadFranchises();else loadCatalog(state.catalogType);}return;}
     if(t.dataset.slide!==undefined){state.featureIndex=Number(t.dataset.slide);render();return;}
     if(t.dataset.homeShelf){state.tab='catalog';state.catalogType=t.dataset.homeShelf==='topShows'?'Сериалы':(t.dataset.homeShelf==='history'?'Фильмы':'Фильмы');state.sort='По новизне';state.catalogGenre='';render();loadCatalog(state.catalogType);return;}
     if(t.dataset.item!==undefined){const item=findItem(t.dataset.item);if(item)openItem(item);return;}
@@ -288,7 +288,7 @@
   });
   document.addEventListener('change',e=>{if(e.target.id==='catalog-genre'){state.catalogGenre=e.target.value;loadCatalog(state.catalogType);}});
   let infiniteScrollQueued=false;
-  window.addEventListener('scroll',()=>{if(infiniteScrollQueued||state.tab!=='catalog'||state.busy||!state.catalogHasMore)return;const nearBottom=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-700;if(nearBottom){infiniteScrollQueued=true;loadCatalog(state.catalogType,true).finally(()=>{infiniteScrollQueued=false;});}},{passive:true});
+  window.addEventListener('scroll',()=>{if(infiniteScrollQueued||state.tab!=='catalog'||state.catalogType==='Франшизы'||state.browse.title||state.busy||!state.catalogHasMore)return;const nearBottom=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-700;if(nearBottom){infiniteScrollQueued=true;loadCatalog(state.catalogType,true).finally(()=>{infiniteScrollQueued=false;});}},{passive:true});
   document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();doSearch(new FormData(e.target).get('q')||'');});
   render();
   state.catalogType='Франшизы';
