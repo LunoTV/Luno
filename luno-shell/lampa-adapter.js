@@ -26,14 +26,31 @@
       if (!entry) throw new Error('LUNO runtime is not built yet; stock Lampa bundle is intentionally not loaded.');
       // Set this before loading the shared bundle so its stock UI boot path is skipped.
       window.LUNO_HEADLESS_RUNTIME = true;
+      let runtimeExecutionError = null;
+      const captureRuntimeError = event => {
+        const target = event && event.filename ? String(event.filename) : '';
+        if (target && target.indexOf('luno-runtime.js') !== -1) {
+          runtimeExecutionError = {
+            message: event.message || 'Unknown runtime execution error',
+            line: event.lineno || 0,
+            column: event.colno || 0,
+            filename: target
+          };
+        }
+      };
+      window.addEventListener('error', captureRuntimeError);
       const script = document.createElement('script');
       script.src = entry;
       script.async = true;
-      await new Promise((resolve, reject) => {
-        script.onload = resolve;
-        script.onerror = () => reject(new Error('Could not load LUNO-safe Lampa runtime bundle'));
-        document.head.appendChild(script);
-      });
+      try {
+        await new Promise((resolve, reject) => {
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Could not load LUNO-safe Lampa runtime bundle'));
+          document.head.appendChild(script);
+        });
+      } finally {
+        window.removeEventListener('error', captureRuntimeError);
+      }
       const api = window.Lampa;
       const missing = [];
       if (window.LUNO_RUNTIME_READY !== true) missing.push('LUNO_RUNTIME_READY');
@@ -47,7 +64,10 @@
           'LUNO runtime API check failed: ' + missing.join(', ') +
           '. Runtime URL: ' + loadedScript +
           '. Ready marker: ' + String(window.LUNO_RUNTIME_READY) +
-          '. Lampa keys: ' + (api ? Object.keys(api).slice(0, 30).join(', ') : 'none')
+          '. Lampa keys: ' + (api ? Object.keys(api).slice(0, 30).join(', ') : 'none') +
+          '. Runtime execution error: ' + (runtimeExecutionError
+            ? runtimeExecutionError.message + ' at ' + runtimeExecutionError.line + ':' + runtimeExecutionError.column
+            : 'not captured')
         );
       }
       runtime = api;
