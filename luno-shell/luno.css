@@ -1185,3 +1185,14 @@ body.watch-view .grid .poster-title{display:-webkit-box!important;position:stati
  .poster .poster-year{right:7px!important;bottom:7px!important;font-size:9px!important;padding:4px 6px!important}
  .poster .poster-title{font-size:12px!important;line-height:1.25!important;margin-top:6px!important}
 }
+
+
+/* Preserve each artwork's native aspect ratio instead of forcing every poster into one crop. */
+.poster .poster-art{aspect-ratio:auto!important;height:auto!important;min-height:0!important}
+.poster .poster-art .poster-image{
+  position:relative!important;inset:auto!important;display:block!important;
+  width:100%!important;height:auto!important;aspect-ratio:auto!important;
+  object-fit:contain!important;object-position:center!important;
+}
+.poster .poster-art .poster-image[hidden]{display:none!important}
+.poster .poster-art:after{pointer-events:none!important}
