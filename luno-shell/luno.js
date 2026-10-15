@@ -4,7 +4,7 @@
   const TMDB_KEY = '4ef0d7355d9ffb5151e987764708ce96';
   const TMDB_API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
-  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',posterMode:'portrait',search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],featureIndex:0,homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
+  const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',posterMode:'landscape',catalogGenre:'',search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],featureIndex:0,homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
   const safe = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const titleOf = x => x.title || x.name || x.original_title || x.original_name || 'Без названия';
   const imageOf = (x,size='w500') => x?.poster_path ? IMG+size+x.poster_path : (x?.poster?.startsWith?.('http') ? x.poster : '');
@@ -34,7 +34,7 @@
     try {
       const media=type==='Сериалы'?'tv':'movie';
       const endpoint=state.sort==='По рейтингу'?'trending/all/week':(type==='Коллекции'?'movie/top_rated':media+'/popular');
-      const data=await tmdb(endpoint,{page:1});
+      const data=await tmdb(state.catalogGenre?'discover/'+media:endpoint,state.catalogGenre?{page:1,with_genres:state.catalogGenre,sort_by:state.sort==='По рейтингу'?'vote_average.desc':'popularity.desc'}:{page:1});
       state.items=normalize(data).map((x,i)=>({...x,_lunoId:i,source:'tmdb'}));
       if(!state.items.length) state.error='Каталог вернул пустой список.';
     } catch(e){state.error=e.message||'Не удалось загрузить каталог.';}
@@ -95,7 +95,7 @@
     ${shelfMarkup('Культовое кино',state.homeShelves.cult,'cult')}
     ${state.error?`<p class="quiet home-error">${safe(state.error)}</p>`:''}`;
   }
-  function catalog(){return `<h1 class="page-title">Каталог</h1>${tabs(['Фильмы','Сериалы','DAZN','Коллекции','ТВ'],state.catalogType,'type')}<div class="controls"><button class="filter" data-sort="По новизне">Популярное</button><button class="filter" data-sort="По рейтингу">В тренде</button><div class="poster-modes"><button class="filter mode-button ${state.posterMode==='portrait'?'selected':''}" data-poster-mode="portrait" aria-label="Вертикальные постеры">▯</button><button class="filter mode-button ${state.posterMode==='landscape'?'selected':''}" data-poster-mode="landscape" aria-label="Горизонтальные постеры">▭</button></div></div>${state.busy?'<p class="quiet">Загружаем каталог…</p>':''}<div class="grid">${cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}`; }
+  function catalog(){return `<h1 class="page-title">Каталог</h1>${tabs(['Сериалы','Фильмы','Коллекции'],state.catalogType,'type')}<div class="catalog-genre"><select id="catalog-genre" aria-label="Жанр"><option value="">Все жанры</option><option value="18">Драма</option><option value="35">Комедия</option><option value="28">Боевик</option><option value="27">Ужасы</option><option value="16">Анимация</option><option value="878">Фантастика</option></select></div><div class="controls catalog-controls"><div class="catalog-sort"><button class="filter" data-sort="По новизне">Популярное</button><button class="filter" data-sort="По рейтингу">В тренде</button></div><div class="poster-modes"><button class="filter mode-button ${state.posterMode==='portrait'?'selected':''}" data-poster-mode="portrait" aria-label="Вертикальные постеры">▯</button><button class="filter mode-button ${state.posterMode==='landscape'?'selected':''}" data-poster-mode="landscape" aria-label="Горизонтальные постеры">▭</button></div></div>${state.busy?'<p class="quiet">Загружаем каталог…</p>':''}<div class="grid">${cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}`; }
   function search(){return `<form id="search-form"><input class="searchbox" name="q" placeholder="Сериал, фильм или жанр" value="${safe(state.search)}" aria-label="Поиск фильмов и сериалов"></form><div class="grid">${state.busy?'<p class="quiet">Ищем…</p>':cards(state.items)}</div>${state.error?`<p class="quiet">${safe(state.error)}</p>`:''}`; }
   function watch(){return `<h1 class="page-title">Я смотрю</h1>${state.watchlist.length?'<div class="grid">'+cards(state.watchlist)+'</div>':'<div class="empty"><div class="empty-mark">☾</div><h2>Ваш список пока пуст</h2><p>Добавляйте любимые фильмы и сериалы в избранное.</p><button class="primary" data-tab="catalog">Открыть каталог</button></div>'}${state.history.length?'<h2>Недавно открытые</h2><div class="grid">'+cards(state.history)+'</div>':''}`; }
   function login(){return `<h1 class="page-title">Профиль</h1><section class="login-card"><div class="empty-mark">☾</div><h2>Твоя вселенная LUNO</h2><p class="quiet">Профиль и синхронизация будут подключены отдельно.</p></section>`; }
@@ -130,6 +130,7 @@
     if(t.dataset.action==='add-selected'){if(state.selected&&!state.watchlist.some(x=>x.id===state.selected.id&&x.media_type===state.selected.media_type))state.watchlist.unshift(state.selected);state.tab='watch';render();return;}
     if(t.dataset.action==='find-stream')findStream();
   });
+  document.addEventListener('change',e=>{if(e.target.id==='catalog-genre'){state.catalogGenre=e.target.value;loadCatalog(state.catalogType);}});
   document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();doSearch(new FormData(e.target).get('q')||'');});
   render();
   loadCatalog('Фильмы');
