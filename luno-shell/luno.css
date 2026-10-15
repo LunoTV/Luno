@@ -1047,3 +1047,10 @@ body.search-view .search-results .poster-overlay{display:none!important}
 .search-empty h2{margin:10px 0 5px;font-size:18px}
 .search-empty p{margin:0;color:#a9a3b7;font-size:13px;line-height:1.5}
 @media(max-width:380px){body.search-view .app{padding-left:14px!important;padding-right:14px!important}.search-submit{padding:10px 11px}.search-heading .page-title{font-size:29px!important}}
+
+
+/* Five media types in the catalog, arranged as clear compact chips on phones. */
+body.catalog-view .tabs{display:flex!important;gap:7px!important;overflow-x:auto!important;overflow-y:hidden!important;padding:3px 1px 9px!important;scrollbar-width:none!important;-webkit-overflow-scrolling:touch}
+body.catalog-view .tabs::-webkit-scrollbar{display:none!important}
+body.catalog-view .tabs .tab-chip{flex:0 0 auto!important;white-space:nowrap!important;padding:10px 13px!important;border-radius:999px!important;font-size:12px!important}
+body.catalog-view .tabs .tab-chip.selected{background:rgba(158,125,245,.2)!important;border-color:rgba(188,158,255,.45)!important;color:#e2d4ff!important}
