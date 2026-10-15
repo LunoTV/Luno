@@ -140,7 +140,7 @@
       if(shelves[key].length)return;
       try{
         const data=await tmdb(path,params);
-        shelves[key]=normalize(data).filter(x=>x.backdrop_path||x.poster_path).slice(0,10).map((x,i)=>({...x,_lunoId:key+'-'+i,source:'tmdb'}));
+        shelves[key]=normalize(data).filter(x=>(x.backdrop_path||x.poster_path)&&(key!=='topMovies'||!(x.genre_ids||[]).includes(16))&&(key!=='topShows'||!!(x.name||x.first_air_date))).slice(0,10).map((x,i)=>({...x,_lunoId:key+'-'+i,source:'tmdb'}));
       }catch(_){}
     }));
     if(state.tab==='home')render();
