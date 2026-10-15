@@ -815,3 +815,30 @@ body:has(.detail-page) .topbar{display:none}
   color:#fff!important;font-size:42px!important;font-weight:300!important;
   line-height:1!important;text-shadow:0 1px 12px rgba(0,0,0,.24);
 }
+
+
+/* Compact title actions: reduce oversized controls on narrow phones. */
+.detail-actions{gap:8px!important}
+.detail-play{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  padding:12px 14px!important;
+  gap:9px!important;
+  min-height:58px!important;
+}
+.detail-play>span:first-child{font-size:20px!important}
+.detail-play b{font-size:15px!important}
+.detail-play small{font-size:10px!important;line-height:1.25!important}
+.detail-icon-action{
+  flex:0 0 58px!important;
+  width:58px!important;
+  min-width:58px!important;
+  padding:8px 3px!important;
+}
+.detail-icon-action small{font-size:9px!important;letter-spacing:-.02em}
+@media(max-width:390px){
+  .detail-actions{gap:7px!important}
+  .detail-play{padding:10px 11px!important;gap:7px!important}
+  .detail-play small{max-width:132px}
+  .detail-icon-action{flex-basis:53px!important;width:53px!important;min-width:53px!important}
+}
