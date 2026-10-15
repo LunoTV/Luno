@@ -265,13 +265,26 @@
     if (!hiddenActivityHost) {
       hiddenActivityHost = document.createElement('div');
       hiddenActivityHost.id = 'luno-hidden-lampa-activity-host';
-      hiddenActivityHost.setAttribute('aria-hidden', 'true');
-      hiddenActivityHost.style.cssText = 'position:fixed;left:-100000px;top:0;width:1280px;height:720px;overflow:hidden;visibility:hidden;pointer-events:none;z-index:-1;';
+      hiddenActivityHost.setAttribute('aria-label', 'Выбор источника видео');
+      // The Z01 source/balancer flow is interactive. An offscreen activity
+      // prevents users from selecting a source, so show it only during launch.
+      hiddenActivityHost.style.cssText = 'display:none;position:fixed;inset:0;width:100%;height:100%;overflow:auto;visibility:visible;pointer-events:auto;z-index:2147483000;background:#080910;';
       const activityRoot = api.Activity.render();
-      if (!activityRoot) throw new Error('Lampa Activity did not create its hidden root.');
+      if (!activityRoot) throw new Error('Lampa Activity did not create its activity root.');
       hiddenActivityHost.appendChild(activityRoot);
       document.body.appendChild(hiddenActivityHost);
     }
+    return hiddenActivityHost;
+  }
+  function showOnlineActivityHost() {
+    if (!hiddenActivityHost) return;
+    hiddenActivityHost.style.display = 'block';
+    hiddenActivityHost.setAttribute('aria-hidden', 'false');
+  }
+  function hideOnlineActivityHost() {
+    if (!hiddenActivityHost) return;
+    hiddenActivityHost.style.display = 'none';
+    hiddenActivityHost.setAttribute('aria-hidden', 'true');
   }
   async function launchOnline(item, options = {}) {
     const api = await loadRuntime();
@@ -302,22 +315,25 @@
     const capture = armPlaybackCapture(options.timeoutMs || 90000);
     const streamPromise = capture.wait();
     try {
+      showOnlineActivityHost();
       manifest.onContextLauch(card);
+      const stream = await streamPromise;
+      return {
+        url: stream.url,
+        title: stream.title || card.title,
+        quality: stream.quality,
+        subtitles: stream.subtitles,
+        headers: stream.headers,
+        raw: stream.raw
+      };
     } catch (error) {
       capture.cancel();
       const message = error && error.message || String(error);
-      const trace = error && error.stack ? String(error.stack).split('\n').slice(0, 5).join(' | ') : '';
-      throw new Error('Z01 launch hook failed: ' + message + (trace ? ' [' + trace + ']' : ''));
+      const trace = error && error.stack ? String(error.stack).split('\\n').slice(0, 5).join(' | ') : '';
+      throw new Error('Z01 launch failed: ' + message + (trace ? ' [' + trace + ']' : ''));
+    } finally {
+      hideOnlineActivityHost();
     }
-    const stream = await streamPromise;
-    return {
-      url: stream.url,
-      title: stream.title || card.title,
-      quality: stream.quality,
-      subtitles: stream.subtitles,
-      headers: stream.headers,
-      raw: stream.raw
-    };
   }
   window.LunoLampa = Object.freeze({
     on, loadRuntime, catalog, search, details, loadPlugins, pluginDiagnostics, onlinePluginDiagnostics, launchOnline, armPlaybackCapture,
