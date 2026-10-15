@@ -251,9 +251,15 @@
       throw new Error('Lampa Activity lifecycle API is unavailable.');
     }
     if (!activityInitialized) {
-      // Activity.init creates the internal slides container used by Activity.push.
-      // Mount only that container off-screen: no stock Lampa UI is displayed.
-      api.Activity.init();
+      // Initialize only the services needed by plugin activities. Do not call
+      // loadApp()/Render.app(), and skip Activity's default home-screen launch.
+      api.Platform?.init?.();
+      api.Params?.init?.();
+      api.Controller?.observe?.();
+      api.Keypad?.init?.();
+      api.Layer?.init?.();
+      api.Head?.init?.();
+      api.Activity.init(true);
       activityInitialized = true;
     }
     if (!hiddenActivityHost) {
