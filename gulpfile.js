@@ -49,13 +49,13 @@ var docFolder = './build/doc/';
 
 var isDebugEnabled = false;
 
-function merge(done) {
+function merge() {
     let plugins = [babel({
         babelHelpers: 'bundled',
         presets: ['@babel/preset-env']
     }), commonjs, nodeResolve, worker()]
 
-    rollup({
+    return rollup({
         // Point to the entry file
         input: srcFolder+"app.js",
 
@@ -65,10 +65,10 @@ function merge(done) {
         // Use cache for better performance
         //cache: cache,
 
-        // Note: these options are placed at the root level in older versions of Rollup
+        // Output options
         output: {
           // Output bundle is intended for use in browsers
-          // (iife = "Immediately Invoked Function Expression")
+          // (iife = Immediately Invoked Function Expression)
           format: 'iife',
           sourcemap: isDebugEnabled ? 'inline' : false
         },
@@ -82,7 +82,7 @@ function merge(done) {
         //cache = bundle;
       })
 
-      // Name of the output file.
+      // Name of the output file
       .pipe(source('app.js'))
       .pipe(buffer())
       //.pipe(uglify())
@@ -90,10 +90,7 @@ function merge(done) {
       .pipe(replace(/return kIsNodeJS/g, "return false"))
       // Where to send the output file
       .pipe(dest(dstFolder));
-      
-    done();
 }
-
 function bubbleFile(name){
     let plug = [babel({
         babelHelpers: 'bundled',
