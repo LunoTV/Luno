@@ -1196,3 +1196,12 @@ body.watch-view .grid .poster-title{display:-webkit-box!important;position:stati
 }
 .poster .poster-art .poster-image[hidden]{display:none!important}
 .poster .poster-art:after{pointer-events:none!important}
+
+
+/* Keep every poster title on one line so shelves stay perfectly aligned. */
+.poster .poster-title{
+  display:block!important;width:100%!important;min-width:0!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  -webkit-line-clamp:unset!important;-webkit-box-orient:initial!important;
+  line-height:1.3!important;height:auto!important;max-height:none!important;
+}
