@@ -268,7 +268,7 @@
       hiddenActivityHost.setAttribute('aria-label', 'Выбор источника видео');
       // The Z01 source/balancer flow is interactive. An offscreen activity
       // prevents users from selecting a source, so show it only during launch.
-      hiddenActivityHost.style.cssText = 'display:none;position:fixed;inset:0;width:100%;height:100%;overflow:auto;visibility:visible;pointer-events:auto;z-index:2147483000;background:#080910;';
+      hiddenActivityHost.style.cssText = 'display:none;position:fixed;left:-100000px;top:0;width:100%;height:100%;overflow:hidden;visibility:hidden;pointer-events:none;z-index:-1;';
       const activityRoot = api.Activity.render();
       if (!activityRoot) throw new Error('Lampa Activity did not create its activity root.');
       hiddenActivityHost.appendChild(activityRoot);
@@ -315,7 +315,9 @@
     const capture = armPlaybackCapture(options.timeoutMs || 90000);
     const streamPromise = capture.wait();
     try {
-      showOnlineActivityHost();
+      // Keep the Lampa activity UI offscreen. LUNO presents its own source picker;
+      // the hidden Z01 activity is only used to resolve a real playback URL.
+      hideOnlineActivityHost();
       manifest.onContextLauch(card);
       const stream = await streamPromise;
       return {
