@@ -521,7 +521,13 @@
       capture.cancel();
       const message = error && error.message || String(error);
       const trace = error && error.stack ? String(error.stack).split('\\n').slice(0, 5).join(' | ') : '';
-      throw new Error('Z01 launch failed: ' + message + (trace ? ' [' + trace + ']' : ''));
+      const recent = playbackDiagnostics.slice(-8).map(entry => {
+        const keys = entry.detail && entry.detail.keys ? entry.detail.keys.join(',') : '';
+        return entry.type + (keys ? '(' + keys + ')' : '');
+      }).join(' -> ');
+      throw new Error('Z01 launch failed: ' + message +
+        (recent ? ' | Диагностика передачи: ' + recent : ' | Диагностика: нет событий перехвата') +
+        (trace ? ' [' + trace + ']' : ''));
     } finally {
       hideOnlineActivityHost();
     }
