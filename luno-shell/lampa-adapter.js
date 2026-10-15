@@ -8,6 +8,7 @@
   let runtime = null;
   let runtimePromise = null;
   const pluginState = new Map();
+  const pluginErrors = new Map();
 
   function emit(name, detail) {
     (listeners.get(name) || []).forEach(fn => { try { fn(detail); } catch (e) { console.error(e); } });
@@ -85,20 +86,49 @@
         continue;
       }
       pluginState.set(originalUrl, 'loading');
+      pluginErrors.delete(originalUrl);
       const url = location.protocol === 'https:' && /^http:\/\//i.test(originalUrl)
         ? originalUrl.replace(/^http:\/\//i, 'https://') : originalUrl;
-      await new Promise((resolve, reject) => {
-        api.Utils.putScriptAsync([url], false,
-          () => { pluginState.set(originalUrl, 'error'); reject(new Error('Plugin failed to load: ' + originalUrl)); },
-          () => { pluginState.set(originalUrl, 'loaded'); results.push({url: originalUrl, status: 'loaded'}); resolve(); },
-          false);
-      });
+      try {
+        await new Promise((resolve, reject) => {
+          let settled = false;
+          const timer = window.setTimeout(() => finish(new Error('Plugin load timed out')), 12000);
+          const finish = (error) => {
+            if (settled) return;
+            settled = true;
+            window.clearTimeout(timer);
+            error ? reject(error) : resolve();
+          };
+          try {
+            api.Utils.putScriptAsync([url], false,
+              () => finish(new Error('Plugin failed to load: ' + originalUrl)),
+              () => finish(),
+              false);
+          } catch (error) { finish(error); }
+        });
+        pluginState.set(originalUrl, 'loaded');
+        results.push({url: originalUrl, status: 'loaded'});
+      } catch (error) {
+        pluginState.set(originalUrl, 'error');
+        pluginErrors.set(originalUrl, error.message || String(error));
+        results.push({url: originalUrl, status: 'error', error: pluginErrors.get(originalUrl)});
+        emit('plugin:error', {url: originalUrl, error: pluginErrors.get(originalUrl)});
+      }
     }
     emit('plugins:ready', results);
+    const cub = urls.find(url => /cub\.red\/plugin\/tmdb-proxy/i.test(url));
+    const z01 = urls.find(url => /z01\.online\/online\.js/i.test(url));
+    if (cub && z01 && pluginState.get(cub) === 'loaded' && pluginState.get(z01) === 'loaded') {
+      emit('plugins:dependencies-ready', {cub, z01});
+    }
     return results;
   }
+  function pluginDiagnostics() {
+    const urls = Array.isArray(config.plugins) ? config.plugins : [];
+    return urls.map(url => ({url, status: pluginState.get(url) || 'not-loaded', error: pluginErrors.get(url) || null}));
+  }
   window.LunoLampa = Object.freeze({
-    on, loadRuntime, catalog, search, details, loadPlugins,
+    on, loadRuntime, catalog, search, details, loadPlugins, pluginDiagnostics,
     status: () => runtime ? 'ready' : config.runtimeEntry ? 'configured' : 'not-configured',
     config: Object.freeze({plugins: config.plugins || []})
   });
