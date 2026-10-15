@@ -51,7 +51,7 @@ jobs:
           test -s build/github/lampa/assembly.json
           # Keep the compiled Lampa runtime available to the standalone LUNO shell,
           # but publish the LUNO interface at the site root (not in a nested folder).
-          cp dest/app.min.js build/github/lampa/luno-runtime.js
+          cp build/github/lampa/app.min.js build/github/lampa/luno-runtime.js
           cp -R luno-shell/. build/github/lampa/
           # Cache-bust the shell assets on every commit so mobile Safari does not
           # keep rendering an older CSS/JS bundle after a successful Pages deploy.
