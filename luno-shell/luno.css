@@ -1279,3 +1279,12 @@ body.source-picker-open{overflow:hidden}
 .cub-status{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #346b53;border-radius:999px;background:#163326;color:#9be7bd;font-size:11px;font-weight:750}
 .cub-status i{width:6px;height:6px;border-radius:50%;background:#80e5ad;box-shadow:0 0 9px #80e5ad80}
 @media(max-width:420px){.cub-login-card{padding:22px 17px}.cub-login-card h2{font-size:23px}.cub-device-form input{min-height:55px}}
+
+
+/* Z01's source-selection activity is mounted inside the native LUNO picker. */
+.luno-z01-activity{display:block;position:relative;width:100%;min-height:180px;margin-top:18px;overflow:visible;border:1px solid rgba(220,205,248,.13);border-radius:16px;background:rgba(8,9,16,.72);color:#f7f4fc}
+.luno-z01-activity #luno-hidden-lampa-activity-host{display:block!important;position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;min-height:180px!important;overflow:visible!important;visibility:visible!important;pointer-events:auto!important;z-index:auto!important}
+.luno-z01-activity .activity,.luno-z01-activity .activity__body,.luno-z01-activity .activity__content{position:relative!important;width:100%!important;height:auto!important;min-height:180px!important;overflow:visible!important}
+.luno-z01-activity .head,.luno-z01-activity .head__actions,.luno-z01-activity .activity__head{display:none!important}
+.luno-z01-activity .items-list,.luno-z01-activity .items-grid,.luno-z01-activity .selector{max-width:100%!important}
+.luno-z01-activity button,.luno-z01-activity .selector__item,.luno-z01-activity .items-list__item{cursor:pointer}
