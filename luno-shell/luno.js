@@ -399,8 +399,8 @@
     if(e.target.id==='search-form'){e.preventDefault();doSearch(new FormData(e.target).get('q')||'');return;}
     if(e.target.id!=='cub-device-form')return;
     e.preventDefault();if(cubAuthBusy)return;
-    const code=String(new FormData(e.target).get('code')||'').trim();
-    if(!/^\\d{6}$/.test(code)){cubAuthMessage='Введи ровно 6 цифр с сайта CUB.';cubAuthError=true;render();return;}
+    const code=String(document.querySelector('#cub-device-code')?.value||'').trim();
+    if(!/^[0-9]{6}$/.test(code)){cubAuthMessage='Введи ровно 6 цифр с сайта CUB.';cubAuthError=true;render();return;}
     cubAuthBusy=true;cubAuthMessage='Проверяем код на CUB…';cubAuthError=false;render();
     try{
       const response=await fetch('https://cub.rip/api/device/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:Number(code)})});
