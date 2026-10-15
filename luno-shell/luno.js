@@ -20,7 +20,7 @@
       : '';
     let body='';
     if(sourcePicker.loading){
-      body='<div class="luno-source-searching"><span class="luno-source-spinner"></span><strong>'+(sourcePicker.selectorReady?'Выберите источник':'Ищем доступные источники')+'</strong><p>'+safe(sourcePicker.status||'Подключаем CUB и Z01…')+'</p><div class="luno-source-steps"><span class="done">LUNO</span><i></i><span class="done">CUB</span><i></i><span class="active">Z01</span></div>'+(sourcePicker.selectorReady?'<div id="luno-z01-activity" class="luno-z01-activity" aria-label="Доступные источники Z01"></div>':'')+'</div>';
+      body='<div class="luno-source-searching"><span class="luno-source-spinner"></span><strong>'+(sourcePicker.selectorReady?'Выберите источник':'Ищем доступные источники')+'</strong><p>'+safe(sourcePicker.status||'Подключаем CUB и Z01…')+'</p><div class="luno-source-steps"><span class="done">LUNO</span><i></i><span class="done">CUB</span><i></i><span class="active">Z01</span></div>'+(sourcePicker.selectorReady?'<div id="luno-z01-activity" class="luno-z01-activity" aria-label="Доступные источники Z01"></div>':'')+((sourcePicker.diagnostics||[]).length?'<div class="luno-source-diagnostics"><strong>События передачи</strong><ul>'+sourcePicker.diagnostics.map(item=>'<li>'+safe(item)+'</li>').join('')+'</ul></div>':'')+'</div>';
     }else if(sourcePicker.error&&stream){
       body='<div class="luno-source-ready"><div class="luno-source-ready-icon">▶</div><div class="luno-source-ready-copy"><strong>'+safe(stream.title||title)+'</strong><span>'+safe(stream.quality||'Качество определяет источник')+'</span><small>Ссылка получена через Z01</small></div></div>'+media+'<div class="luno-source-empty luno-source-playback-error"><h3>Не удалось запустить видео</h3><p>'+safe(sourcePicker.error)+'</p><button class="luno-source-primary" data-action="retry-playback">Попробовать снова</button><button class="luno-source-secondary" data-action="retry-stream">Найти другой источник</button></div>';
     }else if(sourcePicker.error){
@@ -318,24 +318,44 @@
   function openItem(item){state.selected=item;try{localStorage.setItem('luno-active-tab-v1','details');}catch(_){}state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();loadDetailExtras(item);}
   async function findStream(){
     const run=++sourceSearchRun;
-    sourcePicker={open:true,loading:true,status:'Подключаем runtime и плагины…',stream:null,error:'',playing:false,selectorReady:false};
+    sourcePicker={open:true,loading:true,status:'Подключаем runtime и плагины…',stream:null,error:'',playing:false,selectorReady:false,diagnostics:[]};
     renderSourcePicker();
+    let offDiagnostics=[];
     try{
       if(!window.LunoLampa)throw new Error('Адаптер онлайн-источников не найден.');
-      const api=await window.LunoLampa.loadRuntime();
+      if(typeof window.LunoLampa.on==='function'){
+        ['stream:resolved','stream:intercept-miss','play-payload-unrecognized','direct-media-element-captured','direct-stream-captured','capture-timeout','launch:error'].forEach(name=>{
+          offDiagnostics.push(window.LunoLampa.on(name,detail=>{
+            if(run!==sourceSearchRun||!sourcePicker.open)return;
+            const safeDetail=detail&&typeof detail==='object'?detail:{};
+            const keys=Array.isArray(safeDetail.keys)?safeDetail.keys.join(', '):'';
+            sourcePicker.diagnostics=[...(sourcePicker.diagnostics||[]),(name+(keys?' · поля: '+keys:''))].slice(-8);
+            if(name==='stream:resolved')sourcePicker.status='Поток обнаружен; передаём его плееру LUNO…';
+            else if(name==='capture-timeout')sourcePicker.status='Z01 не передал прямой поток за отведённое время.';
+            else if(name==='launch:error')sourcePicker.status='Ошибка запуска Z01: '+String(safeDetail.message||'без описания');
+            renderSourcePicker();
+          }));
+        });
+      }
+      await window.LunoLampa.loadRuntime();
       if(run!==sourceSearchRun)return;
       sourcePicker.status='Проверяем CUB и Z01…';renderSourcePicker();
       const plugins=await window.LunoLampa.loadPlugins();
       if(run!==sourceSearchRun)return;
-      const cub=plugins.find(p=>/cub\.red\/plugin\/tmdb-proxy/i.test(p.url));
-      const z01=plugins.find(p=>/z01\.online\/online\.js/i.test(p.url));
+      const cub=plugins.find(p=>String(p.url||'').includes('cub.red/plugin/tmdb-proxy'));
+      const z01=plugins.find(p=>String(p.url||'').includes('z01.online/online.js'));
       const failed=[cub,z01].filter(p=>p&&p.status!=='loaded');
-      if(failed.length)throw new Error(failed.map(p=>(/cub\.red/i.test(p.url)?'CUB':'Z01')+': '+(p.error||'не загрузился')).join('; '));
+      if(failed.length)throw new Error(failed.map(p=>(String(p.url).includes('cub.red')?'CUB':'Z01')+': '+(p.error||'не загрузился')).join('; '));
       const online=typeof window.LunoLampa.onlinePluginDiagnostics==='function'?window.LunoLampa.onlinePluginDiagnostics():{registered:false};
       if(!online.registered)throw new Error('Z01 загружен, но не зарегистрировал онлайн-источник.');
       if(!state.selected)throw new Error('Сначала выбери фильм или сериал.');
-      sourcePicker.status='Z01 последовательно проверяет доступные источники. Оставь поиск открытым до 4 минут — некоторые источники отвечают с задержкой.';renderSourcePicker();
-      const stream=await window.LunoLampa.launchOnline(state.selected,{timeoutMs:240000,onSelectorReady:()=>{if(run!==sourceSearchRun)return;sourcePicker.selectorReady=true;sourcePicker.status='Z01 перебирает источники. Если текущий не нашёл видео, дождись автоматического перехода к следующему.';renderSourcePicker();}});
+      sourcePicker.status='Z01 проверяет доступные источники. Выбор и результат запуска появятся здесь.';renderSourcePicker();
+      const stream=await window.LunoLampa.launchOnline(state.selected,{timeoutMs:240000,onSelectorReady:()=>{
+        if(run!==sourceSearchRun)return;
+        sourcePicker.selectorReady=true;
+        sourcePicker.status='Z01 перебирает источники. Если доступен выбор озвучки, выбери её в этом окне.';
+        renderSourcePicker();
+      }});
       if(run!==sourceSearchRun)return;
       if(!stream||!stream.url)throw new Error('Источник не вернул прямую ссылку на видео.');
       sourcePicker.loading=false;sourcePicker.status='Источник найден';sourcePicker.stream=stream;sourcePicker.error='';sourcePicker.playing=false;
@@ -344,7 +364,7 @@
       if(run!==sourceSearchRun)return;
       sourcePicker.loading=false;sourcePicker.stream=null;sourcePicker.error=e?.message||'Не удалось найти источник.';
       renderSourcePicker();
-    }
+    }finally{offDiagnostics.forEach(off=>{try{off();}catch(_){}});}
   }
   document.addEventListener('click',e=>{
     const t=e.target.closest('button');if(!t)return;
