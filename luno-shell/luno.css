@@ -939,3 +939,14 @@ body:has(.detail-page) .topbar{display:none}
 @media(min-width:700px){
  .dock{width:100%!important;max-width:none!important;bottom:0!important}
 }
+
+
+/* True floating capsule shape; preserve navigation's existing footprint and item sizing. */
+.dock{
+  bottom:calc(7px + var(--safe-bottom))!important;
+  border-radius:30px!important;
+  border:1px solid rgba(201,185,255,.2)!important;
+  padding:3px 8px!important;
+  background:rgba(18,17,29,.82)!important;
+}
+@media(min-width:700px){.dock{bottom:18px!important}}
