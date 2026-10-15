@@ -559,3 +559,108 @@ body{
 @media(prefers-reduced-motion:no-preference){
   .nav-item.active,.filter.selected,.primary{transition:background .2s ease,border-color .2s ease,box-shadow .2s ease}
 }
+
+
+/* LUNO streaming platform polish — cohesive mobile-first premium interface */
+:root{
+  --luno-accent:#9B8AFF;
+  --luno-accent-soft:#D2C8FF;
+  --luno-glass:rgba(23,22,36,.68);
+  --luno-stroke:rgba(211,200,255,.14);
+}
+::selection{background:rgba(155,138,255,.32);color:#fff}
+html{background:#080910;scroll-behavior:smooth;scroll-padding-top:18px}
+body{min-height:100svh;overflow-x:hidden}
+.app{width:100%;max-width:980px}
+.page-title{color:#F7F5FC;text-wrap:balance}
+.section-head{gap:12px}
+.section-head h2{letter-spacing:-.035em}
+.quiet{color:#A7A3B7}
+.tabs,.watch-tabs{border-bottom-color:rgba(211,200,255,.12)}
+.tabs .tab-chip,.watch-tabs .tab-chip{transition:color .2s ease,border-color .2s ease}
+.tabs .tab-chip.selected,.watch-tabs .tab-chip.selected{color:var(--luno-accent-soft)!important;border-bottom-color:var(--luno-accent)!important}
+.catalog-controls{gap:8px}
+.catalog-sort,.poster-modes,.catalog-genre select{
+  background:rgba(25,24,38,.66)!important;
+  border-color:var(--luno-stroke)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.025);
+}
+.filter,.mode-button,.tab-chip{
+  -webkit-tap-highlight-color:transparent;
+}
+.filter{transition:background .18s ease,border-color .18s ease,color .18s ease}
+.filter.selected,.mode-button.selected{
+  background:rgba(155,138,255,.2)!important;
+  border-color:rgba(210,200,255,.3)!important;
+  color:#E9E2FF!important;
+}
+.grid .poster-art,.home-posters .poster{
+  box-shadow:0 5px 20px rgba(0,0,0,.22);
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+.grid .poster:active .poster-art,.home-posters .poster:active{
+  transform:scale(.985);
+}
+.poster-title{letter-spacing:-.018em}
+.poster-kind,.poster-year,.poster-rating{
+  box-shadow:0 2px 10px rgba(0,0,0,.14);
+}
+.primary{
+  border:1px solid rgba(255,255,255,.14);
+  font-weight:650;
+  letter-spacing:-.015em;
+}
+.secondary{
+  background:rgba(31,29,44,.66);
+  border-color:rgba(211,200,255,.16);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.searchbox{
+  background:rgba(22,21,34,.72)!important;
+  border-color:rgba(211,200,255,.16)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.025);
+}
+.searchbox:focus{
+  border-color:rgba(178,160,255,.62)!important;
+  box-shadow:0 0 0 3px rgba(155,138,255,.12)!important;
+}
+.empty h2{letter-spacing:-.035em;text-wrap:balance}
+.empty p{color:#AAA6BA}
+.watch-empty .primary{box-shadow:0 6px 22px rgba(155,138,255,.16)!important}
+.dock{
+  background:rgba(19,19,31,.76)!important;
+  border-color:rgba(211,200,255,.16)!important;
+  box-shadow:0 14px 44px rgba(0,0,0,.4),inset 0 1px rgba(255,255,255,.07)!important;
+}
+.nav-item{letter-spacing:-.01em}
+.nav-item.active{
+  background:linear-gradient(145deg,rgba(155,138,255,.25),rgba(111,92,185,.11))!important;
+  border-color:rgba(210,200,255,.18)!important;
+}
+.nav-item.active .nav-icon{color:#D2C8FF!important}
+.login-card{
+  background:rgba(23,22,36,.72)!important;
+  border-color:rgba(211,200,255,.16)!important;
+  box-shadow:0 18px 54px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.035);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+}
+@media(hover:hover) and (pointer:fine){
+  .grid .poster:hover .poster-art,.home-posters .poster:hover{
+    transform:translateY(-3px);
+    border-color:rgba(210,200,255,.34)!important;
+    box-shadow:0 12px 28px rgba(0,0,0,.3),0 0 18px rgba(155,138,255,.07);
+  }
+  .filter:hover,.secondary:hover{border-color:rgba(210,200,255,.3)}
+}
+@media(max-width:420px){
+  .app{padding-left:15px;padding-right:15px}
+  .page-title{font-size:26px}
+  .section-head h2{font-size:22px}
+  .dock{background:rgba(19,19,31,.82)!important}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .grid .poster-art,.home-posters .poster,.tabs .tab-chip,.watch-tabs .tab-chip{transition:none}
+}
