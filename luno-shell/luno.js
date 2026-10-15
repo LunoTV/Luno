@@ -6,7 +6,7 @@
   const IMG = 'https://image.tmdb.org/t/p/';
   const readPreference = (key,fallback,allowed=[]) => { try { const value=localStorage.getItem(key); return value && (!allowed.length||allowed.includes(value)) ? value : fallback; } catch(_) { return fallback; } };
   const state = {tab:readPreference('luno-active-tab-v1','home',['home','catalog','search','watch','login']),catalogType:'Фильм',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',searchItems:[],items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:readPreference('luno-watch-section-v1','История',['История','Избранное']),featureIndex:0,detailExtras:{cast:[],similar:[],collection:null,loading:false,tab:'Обзор'},browse:{title:'',items:[],page:1,person:null,collection:null,genre:null},franchises:[],franchisesLoading:false,franchisesError:'',homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
-  let sourcePicker = {open:false,loading:false,status:'',stream:null,error:'',playing:false};
+  let sourcePicker = {open:false,loading:false,status:'',stream:null,error:'',playing:false,selectorReady:false};
   let sourceSearchRun = 0;
   let cubAuthBusy = false;
   let cubAuthMessage = '';
@@ -20,7 +20,7 @@
       : '';
     let body='';
     if(sourcePicker.loading){
-      body='<div class="luno-source-searching"><span class="luno-source-spinner"></span><strong>Ищем доступные источники</strong><p>'+safe(sourcePicker.status||'Подключаем CUB и Z01…')+'</p><div class="luno-source-steps"><span class="done">LUNO</span><i></i><span class="done">CUB</span><i></i><span class="active">Z01</span></div></div>';
+      body='<div class="luno-source-searching"><span class="luno-source-spinner"></span><strong>'+(sourcePicker.selectorReady?'Выберите источник':'Ищем доступные источники')+'</strong><p>'+safe(sourcePicker.status||'Подключаем CUB и Z01…')+'</p><div class="luno-source-steps"><span class="done">LUNO</span><i></i><span class="done">CUB</span><i></i><span class="active">Z01</span></div>'+(sourcePicker.selectorReady?'<div id="luno-z01-activity" class="luno-z01-activity" aria-label="Доступные источники Z01"></div>':'')+'</div>';
     }else if(sourcePicker.error){
       body='<div class="luno-source-empty"><span class="luno-source-empty-icon">⌕</span><h3>Источник не найден</h3><p>'+safe(sourcePicker.error)+'</p><button class="luno-source-primary" data-action="retry-stream">Повторить поиск</button></div>';
     }else if(stream){
@@ -316,7 +316,7 @@
   function openItem(item){state.selected=item;try{localStorage.setItem('luno-active-tab-v1','details');}catch(_){}state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();loadDetailExtras(item);}
   async function findStream(){
     const run=++sourceSearchRun;
-    sourcePicker={open:true,loading:true,status:'Подключаем runtime и плагины…',stream:null,error:'',playing:false};
+    sourcePicker={open:true,loading:true,status:'Подключаем runtime и плагины…',stream:null,error:'',playing:false,selectorReady:false};
     renderSourcePicker();
     try{
       if(!window.LunoLampa)throw new Error('Адаптер онлайн-источников не найден.');
@@ -333,7 +333,7 @@
       if(!online.registered)throw new Error('Z01 загружен, но не зарегистрировал онлайн-источник.');
       if(!state.selected)throw new Error('Сначала выбери фильм или сериал.');
       sourcePicker.status='Z01 ищет доступный источник. Это может занять до 90 секунд…';renderSourcePicker();
-      const stream=await window.LunoLampa.launchOnline(state.selected,{timeoutMs:90000});
+      const stream=await window.LunoLampa.launchOnline(state.selected,{timeoutMs:90000,onSelectorReady:()=>{if(run!==sourceSearchRun)return;sourcePicker.selectorReady=true;sourcePicker.status='Выбери доступный вариант в списке ниже.';renderSourcePicker();}});
       if(run!==sourceSearchRun)return;
       if(!stream||!stream.url)throw new Error('Источник не вернул прямую ссылку на видео.');
       sourcePicker.loading=false;sourcePicker.status='Источник найден';sourcePicker.stream=stream;sourcePicker.error='';sourcePicker.playing=false;
