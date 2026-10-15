@@ -21,6 +21,8 @@
     let body='';
     if(sourcePicker.loading){
       body='<div class="luno-source-searching"><span class="luno-source-spinner"></span><strong>'+(sourcePicker.selectorReady?'Выберите источник':'Ищем доступные источники')+'</strong><p>'+safe(sourcePicker.status||'Подключаем CUB и Z01…')+'</p><div class="luno-source-steps"><span class="done">LUNO</span><i></i><span class="done">CUB</span><i></i><span class="active">Z01</span></div>'+(sourcePicker.selectorReady?'<div id="luno-z01-activity" class="luno-z01-activity" aria-label="Доступные источники Z01"></div>':'')+'</div>';
+    }else if(sourcePicker.error&&stream){
+      body='<div class="luno-source-ready"><div class="luno-source-ready-icon">▶</div><div class="luno-source-ready-copy"><strong>'+safe(stream.title||title)+'</strong><span>'+safe(stream.quality||'Качество определяет источник')+'</span><small>Ссылка получена через Z01</small></div></div>'+media+'<div class="luno-source-empty luno-source-playback-error"><h3>Не удалось запустить видео</h3><p>'+safe(sourcePicker.error)+'</p><button class="luno-source-primary" data-action="retry-playback">Попробовать снова</button><button class="luno-source-secondary" data-action="retry-stream">Найти другой источник</button></div>';
     }else if(sourcePicker.error){
       body='<div class="luno-source-empty"><span class="luno-source-empty-icon">⌕</span><h3>Источник не найден</h3><p>'+safe(sourcePicker.error)+'</p><button class="luno-source-primary" data-action="retry-stream">Повторить поиск</button></div>';
     }else if(stream){
@@ -377,6 +379,7 @@
     if(t.dataset.action==='find-stream'){findStream();return;}
     if(t.dataset.action==='close-source-picker'){closeSourcePicker();return;}
     if(t.dataset.action==='retry-stream'){findStream();return;}
+    if(t.dataset.action==='retry-playback'){sourcePicker.error='';sourcePicker.playing=false;renderSourcePicker();return;}
     if(t.dataset.action==='play-stream'){
       if(!sourcePicker.stream?.url)return;
       const stream=sourcePicker.stream;
