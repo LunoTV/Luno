@@ -7,6 +7,7 @@
   const readPreference = (key,fallback,allowed=[]) => { try { const value=localStorage.getItem(key); return value && (!allowed.length||allowed.includes(value)) ? value : fallback; } catch(_) { return fallback; } };
   const state = {tab:readPreference('luno-active-tab-v1','home',['home','catalog','search','watch','login']),catalogType:'Фильм',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',searchItems:[],items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:readPreference('luno-watch-section-v1','История',['История','Избранное']),featureIndex:0,detailExtras:{cast:[],similar:[],collection:null,loading:false,tab:'Обзор'},browse:{title:'',items:[],page:1,person:null,collection:null,genre:null},franchises:[],franchisesLoading:false,franchisesError:'',homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
   let sourcePicker = {open:false,loading:false,status:'',stream:null,error:'',playing:false};
+  let sourceSearchRun = 0;
   function sourcePickerMarkup(){
     const item=state.selected||{};
     const title=titleOf(item);
@@ -28,12 +29,13 @@
   }
   function renderSourcePicker(){
     let root=document.querySelector('#luno-source-picker');
-    if(!sourcePicker.open){root?.remove();return;}
+    if(!sourcePicker.open){root?.remove();document.body.classList.remove('source-picker-open');return;}
     if(!root){root=document.createElement('div');root.id='luno-source-picker';document.body.appendChild(root);}
     root.innerHTML=sourcePickerMarkup();
     document.body.classList.toggle('source-picker-open',sourcePicker.open);
   }
   function closeSourcePicker(){
+    sourceSearchRun++;
     const video=document.querySelector('#luno-source-video');
     if(video){try{video.pause();}catch(_){}}
     sourcePicker.open=false;sourcePicker.playing=false;renderSourcePicker();
@@ -305,13 +307,16 @@
   function render(){try{if(state.tab!=='details')localStorage.setItem('luno-active-tab-v1',state.tab);}catch(_){}document.body.classList.toggle('search-view',state.tab==='search');document.body.classList.toggle('catalog-view',state.tab==='catalog');document.body.classList.toggle('watch-view',state.tab==='watch');document.body.classList.toggle('poster-landscape',state.tab==='catalog'&&state.posterMode==='landscape');navItems.forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));screen.innerHTML=state.tab==='details'?details():({home,catalog,search,watch,login})[state.tab]();}
   function openItem(item){state.selected=item;try{localStorage.setItem('luno-active-tab-v1','details');}catch(_){}state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();loadDetailExtras(item);}
   async function findStream(){
+    const run=++sourceSearchRun;
     sourcePicker={open:true,loading:true,status:'Подключаем runtime и плагины…',stream:null,error:'',playing:false};
     renderSourcePicker();
     try{
       if(!window.LunoLampa)throw new Error('Адаптер онлайн-источников не найден.');
       const api=await window.LunoLampa.loadRuntime();
+      if(run!==sourceSearchRun)return;
       sourcePicker.status='Проверяем CUB и Z01…';renderSourcePicker();
       const plugins=await window.LunoLampa.loadPlugins();
+      if(run!==sourceSearchRun)return;
       const cub=plugins.find(p=>/cub\\.red\\/plugin\\/tmdb-proxy/i.test(p.url));
       const z01=plugins.find(p=>/z01\\.online\\/online\\.js/i.test(p.url));
       const failed=[cub,z01].filter(p=>p&&p.status!=='loaded');
@@ -321,10 +326,12 @@
       if(!state.selected)throw new Error('Сначала выбери фильм или сериал.');
       sourcePicker.status='Z01 ищет доступный источник. Это может занять до 90 секунд…';renderSourcePicker();
       const stream=await window.LunoLampa.launchOnline(state.selected,{timeoutMs:90000});
+      if(run!==sourceSearchRun)return;
       if(!stream||!stream.url)throw new Error('Источник не вернул прямую ссылку на видео.');
       sourcePicker.loading=false;sourcePicker.status='Источник найден';sourcePicker.stream=stream;sourcePicker.error='';sourcePicker.playing=false;
       renderSourcePicker();
     }catch(e){
+      if(run!==sourceSearchRun)return;
       sourcePicker.loading=false;sourcePicker.stream=null;sourcePicker.error=e?.message||'Не удалось найти источник.';
       renderSourcePicker();
     }
