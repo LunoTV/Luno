@@ -379,14 +379,53 @@
     if(t.dataset.action==='retry-stream'){findStream();return;}
     if(t.dataset.action==='play-stream'){
       if(!sourcePicker.stream?.url)return;
-      sourcePicker.playing=true;renderSourcePicker();
+      const stream=sourcePicker.stream;
+      sourcePicker.playing=true;sourcePicker.error='';renderSourcePicker();
       const video=document.querySelector('#luno-source-video');
       if(video){
-        const result=video.play();
-        if(result&&typeof result.catch==='function')result.catch(err=>{
-          sourcePicker.error='Браузер не смог запустить этот поток: '+(err?.message||'неподдерживаемый формат');
-          sourcePicker.playing=false;renderSourcePicker();
-        });
+        const url=String(stream.url||'');
+        const isHls=/\\.m3u8(?:$|[?#])/i.test(url);
+        const hasHeaders=stream.headers&&typeof stream.headers==='object'&&Object.keys(stream.headers).length>0;
+        const describeFailure=err=>{
+          const mediaError=video.error;
+          const detail=mediaError?({1:'загрузка отменена',2:'ошибка сети или доступ к потоку запрещён',3:'кодек или формат видео не поддерживается',4:'браузер не распознал формат или адрес потока'}[mediaError.code]||'ошибка медиапотока'):'';
+          let message='Не удалось воспроизвести поток';
+          if(err&&err.name==='NotSupportedError'||mediaError&&mediaError.code===4) message='iPhone/Safari не поддерживает формат, который вернул источник.';
+          else if(err&&err.name==='NotAllowedError') message='Safari заблокировал автозапуск. Нажми ▶ на самом видео.';
+          else if(detail) message+=': '+detail+'.';
+          if(hasHeaders) message+=' Источник также передал специальные HTTP-заголовки, которые HTML5-видео не может добавить к запросу.';
+          if(isHls) message+=' Формат потока: HLS (.m3u8).';
+          sourcePicker.error=message;
+          sourcePicker.playing=true;
+          renderSourcePicker();
+        };
+        video.addEventListener('error',()=>describeFailure(null),{once:true});
+        const attemptPlay=()=>{
+          const result=video.play();
+          if(result&&typeof result.catch==='function')result.catch(describeFailure);
+        };
+        // Safari on iPhone supports HLS natively. Other browsers may need hls.js.
+        if(isHls&&video.canPlayType('application/vnd.apple.mpegurl')===''){
+          const attachHls=()=>{
+            if(!window.Hls||!window.Hls.isSupported()){describeFailure(new DOMException('HLS is not supported','NotSupportedError'));return;}
+            const hls=new window.Hls();
+            hls.loadSource(url);hls.attachMedia(video);
+            hls.on(window.Hls.Events.MANIFEST_PARSED,attemptPlay);
+            hls.on(window.Hls.Events.ERROR,(_,data)=>{if(data&&data.fatal)describeFailure(new Error(data.details||'HLS playback error'));});
+            sourcePicker.hlsInstance=hls;
+          };
+          if(window.Hls)attachHls();
+          else{
+            const script=document.createElement('script');
+            script.src='https://cdn.jsdelivr.net/npm/hls.js@1.6.13/dist/hls.min.js';
+            script.onload=attachHls;
+            script.onerror=()=>describeFailure(new Error('Не удалось загрузить HLS-плеер'));
+            document.head.appendChild(script);
+          }
+        }else{
+          if(isHls)video.setAttribute('type','application/vnd.apple.mpegurl');
+          attemptPlay();
+        }
       }
       return;
     }
