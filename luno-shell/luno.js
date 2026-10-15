@@ -277,13 +277,25 @@
     try{
       if(!window.LunoLampa)throw new Error('Адаптер источников не найден.');
       const api=await window.LunoLampa.loadRuntime();
-      await window.LunoLampa.loadPlugins();
+      const plugins=await window.LunoLampa.loadPlugins();
+      const cub=plugins.find(p=>/cub\.red\/plugin\/tmdb-proxy/i.test(p.url));
+      const z01=plugins.find(p=>/z01\.online\/online\.js/i.test(p.url));
+      const failed=[cub,z01].filter(p=>p&&p.status!=='loaded');
+      if(failed.length){
+        const labels=failed.map(p=>(/cub\.red/i.test(p.url)?'CUB':'Z01')+': '+(p.error||'не загрузился'));
+        throw new Error('Не удалось подготовить источники. '+labels.join('; '));
+      }
+      if(box)box.textContent='CUB и Z01 загружены. Проверяем ответ источника…';
       if(!api.Parser||typeof api.Parser.get!=='function')throw new Error('Runtime загружен, но API источника недоступен.');
       const item={...(state.selected||{}),id:state.selected?.id,source:'tmdb',method:state.selected?.media_type==='tv'?'tv':'movie'};
+      let settled=false;
+      const timer=window.setTimeout(()=>{if(!settled){settled=true;const target=document.querySelector('#stream-status');if(target)target.textContent='Z01 и CUB загрузились, но источник не ответил за 20 секунд.';}},20000);
       api.Parser.get(item,data=>{
+        if(settled)return;settled=true;window.clearTimeout(timer);
         const target=document.querySelector('#stream-status');
-        if(target)target.textContent=data?'Источник ответил, но формат запуска плеера ещё не подтверждён.':'Источники не вернули ссылок. Проверь доступность плагина и настройки источника.';
-      },err=>{const target=document.querySelector('#stream-status');if(target)target.textContent=String(err||'Источники не ответили.');});
+        if(target)target.textContent=data?'Источник ответил. Формат ответа получен; следующий шаг — подключить его к плееру.':'CUB и Z01 загружены, но ссылок для этого фильма не найдено.';
+        console.info('[LUNO source response]',data);
+      },err=>{if(settled)return;settled=true;window.clearTimeout(timer);const target=document.querySelector('#stream-status');if(target)target.textContent='Ошибка источника: '+String(err||'без подробностей');});
       if(box)box.textContent='Запрос источников отправлен…';
     }catch(e){if(box)box.textContent=e?.message||'Не удалось загрузить источники.';}
   }
