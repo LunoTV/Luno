@@ -243,6 +243,30 @@
       }
     };
   }
+  let hiddenActivityHost = null;
+  let activityInitialized = false;
+  function prepareHiddenActivityHost(api) {
+    if (!api.Activity || typeof api.Activity.init !== 'function' ||
+        !api.Activity.render || typeof api.Activity.render !== 'function') {
+      throw new Error('Lampa Activity lifecycle API is unavailable.');
+    }
+    if (!activityInitialized) {
+      // Activity.init creates the internal slides container used by Activity.push.
+      // Mount only that container off-screen: no stock Lampa UI is displayed.
+      api.Activity.init();
+      activityInitialized = true;
+    }
+    if (!hiddenActivityHost) {
+      hiddenActivityHost = document.createElement('div');
+      hiddenActivityHost.id = 'luno-hidden-lampa-activity-host';
+      hiddenActivityHost.setAttribute('aria-hidden', 'true');
+      hiddenActivityHost.style.cssText = 'position:fixed;left:-100000px;top:0;width:1280px;height:720px;overflow:hidden;visibility:hidden;pointer-events:none;z-index:-1;';
+      const activityRoot = api.Activity.render();
+      if (!activityRoot) throw new Error('Lampa Activity did not create its hidden root.');
+      hiddenActivityHost.appendChild(activityRoot);
+      document.body.appendChild(hiddenActivityHost);
+    }
+  }
   async function launchOnline(item, options = {}) {
     const api = await loadRuntime();
     await loadPlugins();
@@ -259,6 +283,7 @@
         !api.Component || typeof api.Component.add !== 'function') {
       throw new Error('Lampa Activity/Component APIs are unavailable.');
     }
+    prepareHiddenActivityHost(api);
     const card = {
       ...item,
       title: item.title || item.name || item.original_title || item.original_name || '',
