@@ -5,6 +5,12 @@
   const TMDB_API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
   const state = {tab:'home',catalogType:'Фильмы',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:'Избранное',featureIndex:0,homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
+  const readSaved = key => { try { const value=JSON.parse(localStorage.getItem(key)||'[]'); return Array.isArray(value)?value:[]; } catch(_){ return []; } };
+  const saveLibrary = () => { try { localStorage.setItem('luno-watchlist-v1',JSON.stringify(state.watchlist)); localStorage.setItem('luno-history-v1',JSON.stringify(state.history.slice(0,100))); } catch(_){} };
+  state.watchlist=readSaved('luno-watchlist-v1');
+  state.history=readSaved('luno-history-v1');
+  const allItems = () => [...state.items,...state.homeShelves.popular,...state.homeShelves.topMovies,...state.homeShelves.topShows,...state.homeShelves.forYou,...state.homeShelves.cult,...state.watchlist,...state.history];
+  const findItem = key => allItems().find(x=>String(x._lunoId ?? '')===String(key)) || state.items[Number(key)];
   const safe = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const titleOf = x => x.title || x.name || x.original_title || x.original_name || 'Без названия';
   const imageOf = (x,size='w500') => x?.poster_path ? IMG+size+x.poster_path : (x?.poster?.startsWith?.('http') ? x.poster : '');
@@ -121,6 +127,7 @@
     const bg=feature&&backdropOf(feature);
     const heroStyle=bg?`style="background-image:linear-gradient(180deg,rgba(10,9,12,.04) 0%,rgba(10,9,12,.04) 38%,rgba(10,9,12,.76) 68%,#101012 100%),url('${safe(bg)}')"`:'';
     const genres=(feature?.genre_ids||[]).map(id=>({16:'Анимация',35:'Комедия',28:'Боевик',14:'Фэнтези',18:'Драма',12:'Приключения',878:'Фантастика',53:'Триллер',80:'Криминал',10749:'Мелодрама',9648:'Детектив',27:'Ужасы',10751:'Семейный',99:'Документальный',10759:'Боевик',10765:'Фэнтези'}[id])).filter(Boolean).slice(0,4).join(', ');
+    state.featuredItem=feature||null;
     return `<section class="home-hero" ${heroStyle}>
       <div class="home-hero-content">
         <span class="premiere">ПРЕМЬЕРА</span>
@@ -131,6 +138,7 @@
         <div class="hero-progress" aria-hidden="true"><span class="current"></span> ${Array.from({length:Math.min(10,Math.max(1,list.length))},(_,i)=>`<button class="hero-dot ${i===state.featureIndex % Math.max(1,list.length)?'current':''}" data-slide="${i}" aria-label="Слайд ${i+1}"></button>`).join('')}</div>
       </div>
     </section>
+    ${state.history.length?shelfMarkup('Продолжить просмотр',state.history.slice(0,10),'history'):''}
     ${shelfMarkup('Популярное сейчас',state.homeShelves.popular,'popular')}
     ${shelfMarkup('Топ 10 фильмов',state.homeShelves.topMovies,'topMovies')}
     ${shelfMarkup('Топ 10 сериалов',state.homeShelves.topShows,'topShows')}
@@ -151,7 +159,7 @@
   function login(){return `<h1 class="page-title">Профиль</h1><section class="login-card"><div class="empty-mark">☾</div><h2>Твоя вселенная LUNO</h2><p class="quiet">Профиль и синхронизация будут подключены отдельно.</p></section>`; }
   function details(){const x=state.selected;if(!x)return '';const img=backdropOf(x);return `<section class="detail-page">${img?`<div class="detail-art" style="background-image:linear-gradient(0deg,#0d0a14 0%,#0d0a1444 100%),url('${safe(img)}')"></div>`:''}<h1>${safe(x.title)}</h1><p class="quiet">${safe([dateOf(x),x.vote_average?'★ '+Number(x.vote_average).toFixed(1):'',x.meta].filter(Boolean).join(' · '))}</p><p>${safe(x.overview||'Описание не предоставлено.')}</p><div class="actions"><button class="primary" data-action="find-stream">Найти источник</button><button class="secondary" data-action="add-selected">＋ В список</button></div><div id="stream-status" class="quiet">${safe(state.error||'Источник ещё не запрошен.')}</div></section>`; }
   function render(){document.body.classList.toggle('catalog-view',state.tab==='catalog');document.body.classList.toggle('poster-landscape',state.tab==='catalog'&&state.posterMode==='landscape');navItems.forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));screen.innerHTML=state.tab==='details'?details():({home,catalog,search,watch,login})[state.tab]();}
-  function openItem(item){state.selected=item;state.history.unshift(item);state.tab='details';state.error='';render();}
+  function openItem(item){state.selected=item;state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();}
   async function findStream(){
     const box=document.querySelector('#stream-status');if(box)box.textContent='Подключаем runtime и плагины источников…';
     try{
@@ -171,15 +179,15 @@
     const t=e.target.closest('button');if(!t)return;
     if(t.dataset.tab){state.tab=t.dataset.tab;render();if(state.tab==='catalog')loadCatalog(state.catalogType);return;}
     if(t.dataset.slide!==undefined){state.featureIndex=Number(t.dataset.slide);render();return;}
-    if(t.dataset.item!==undefined){const item=state.items[Number(t.dataset.item)];if(item)openItem(item);return;}
+    if(t.dataset.item!==undefined){const item=findItem(t.dataset.item);if(item)openItem(item);return;}
     if(t.dataset.watchSection){state.watchSection=t.dataset.watchSection;render();return;}
     if(t.dataset.type){state.catalogType=t.dataset.type;loadCatalog(state.catalogType);return;}
     if(t.dataset.posterMode){state.posterMode=t.dataset.posterMode;render();return;}
     if(t.dataset.sort){state.sort=t.dataset.sort;loadCatalog(state.catalogType);return;}
     if(t.dataset.action==='load-more'){loadCatalog(state.catalogType,true);return;}
-    if(t.dataset.action==='open-featured'){if(state.items[0])openItem(state.items[0]);else{state.tab='catalog';render();loadCatalog('Фильмы');}return;}
-    if(t.dataset.action==='watch-featured'){if(state.items[0])state.watchlist.unshift(state.items[0]);state.tab='watch';render();return;}
-    if(t.dataset.action==='add-selected'){if(state.selected&&!state.watchlist.some(x=>x.id===state.selected.id&&x.media_type===state.selected.media_type))state.watchlist.unshift(state.selected);state.tab='watch';render();return;}
+    if(t.dataset.action==='open-featured'){if(state.featuredItem)openItem(state.featuredItem);else{state.tab='catalog';render();loadCatalog('Фильмы');}return;}
+    if(t.dataset.action==='watch-featured'){const item=state.featuredItem;if(item&&!state.watchlist.some(x=>x.id===item.id&&x.media_type===item.media_type))state.watchlist.unshift(item);saveLibrary();state.tab='watch';render();return;}
+    if(t.dataset.action==='add-selected'){if(state.selected&&!state.watchlist.some(x=>x.id===state.selected.id&&x.media_type===state.selected.media_type))state.watchlist.unshift(state.selected);saveLibrary();state.tab='watch';render();return;}
     if(t.dataset.action==='find-stream')findStream();
   });
   document.addEventListener('change',e=>{if(e.target.id==='catalog-genre'){state.catalogGenre=e.target.value;loadCatalog(state.catalogType);}});
