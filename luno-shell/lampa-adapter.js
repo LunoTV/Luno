@@ -268,7 +268,7 @@
       hiddenActivityHost.setAttribute('aria-label', 'Выбор источника видео');
       // The Z01 source/balancer flow is interactive. An offscreen activity
       // prevents users from selecting a source, so show it only during launch.
-      hiddenActivityHost.style.cssText = 'display:none;position:fixed;left:-100000px;top:0;width:100%;height:100%;overflow:hidden;visibility:hidden;pointer-events:none;z-index:-1;';
+      hiddenActivityHost.style.cssText = 'display:none;position:relative;left:auto;top:auto;width:100%;height:auto;min-height:240px;overflow:visible;visibility:visible;pointer-events:auto;z-index:auto;';
       const activityRoot = api.Activity.render();
       if (!activityRoot) throw new Error('Lampa Activity did not create its activity root.');
       hiddenActivityHost.appendChild(activityRoot);
@@ -276,10 +276,13 @@
     }
     return hiddenActivityHost;
   }
-  function showOnlineActivityHost() {
-    if (!hiddenActivityHost) return;
+  function showOnlineActivityHost(target) {
+    if (!hiddenActivityHost || !target) return false;
+    // Mount only the Z01 activity inside LUNO's source panel; never expose Lampa's home UI.
+    target.appendChild(hiddenActivityHost);
     hiddenActivityHost.style.display = 'block';
     hiddenActivityHost.setAttribute('aria-hidden', 'false');
+    return true;
   }
   function hideOnlineActivityHost() {
     if (!hiddenActivityHost) return;
@@ -319,6 +322,11 @@
       // the hidden Z01 activity is only used to resolve a real playback URL.
       hideOnlineActivityHost();
       manifest.onContextLauch(card);
+      if (typeof options.onSelectorReady === 'function') options.onSelectorReady();
+      const selectorTarget = document.querySelector('#luno-z01-activity');
+      if (!showOnlineActivityHost(selectorTarget)) {
+        throw new Error('LUNO source panel did not mount the Z01 selector.');
+      }
       const stream = await streamPromise;
       return {
         url: stream.url,
