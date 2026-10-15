@@ -334,8 +334,8 @@
       const online=typeof window.LunoLampa.onlinePluginDiagnostics==='function'?window.LunoLampa.onlinePluginDiagnostics():{registered:false};
       if(!online.registered)throw new Error('Z01 загружен, но не зарегистрировал онлайн-источник.');
       if(!state.selected)throw new Error('Сначала выбери фильм или сериал.');
-      sourcePicker.status='Z01 ищет доступный источник. Это может занять до 90 секунд…';renderSourcePicker();
-      const stream=await window.LunoLampa.launchOnline(state.selected,{timeoutMs:90000,onSelectorReady:()=>{if(run!==sourceSearchRun)return;sourcePicker.selectorReady=true;sourcePicker.status='Выбери доступный вариант в списке ниже.';renderSourcePicker();}});
+      sourcePicker.status='Z01 последовательно проверяет доступные источники. Оставь поиск открытым до 4 минут — некоторые источники отвечают с задержкой.';renderSourcePicker();
+      const stream=await window.LunoLampa.launchOnline(state.selected,{timeoutMs:240000,onSelectorReady:()=>{if(run!==sourceSearchRun)return;sourcePicker.selectorReady=true;sourcePicker.status='Z01 перебирает источники. Если текущий не нашёл видео, дождись автоматического перехода к следующему.';renderSourcePicker();}});
       if(run!==sourceSearchRun)return;
       if(!stream||!stream.url)throw new Error('Источник не вернул прямую ссылку на видео.');
       sourcePicker.loading=false;sourcePicker.status='Источник найден';sourcePicker.stream=stream;sourcePicker.error='';sourcePicker.playing=false;
