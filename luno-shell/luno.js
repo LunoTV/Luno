@@ -317,10 +317,10 @@
       sourcePicker.status='Проверяем CUB и Z01…';renderSourcePicker();
       const plugins=await window.LunoLampa.loadPlugins();
       if(run!==sourceSearchRun)return;
-      const cub=plugins.find(p=>/cub\\.red\\/plugin\\/tmdb-proxy/i.test(p.url));
-      const z01=plugins.find(p=>/z01\\.online\\/online\\.js/i.test(p.url));
+      const cub=plugins.find(p=>/cub\.red\/plugin\/tmdb-proxy/i.test(p.url));
+      const z01=plugins.find(p=>/z01\.online\/online\.js/i.test(p.url));
       const failed=[cub,z01].filter(p=>p&&p.status!=='loaded');
-      if(failed.length)throw new Error(failed.map(p=>(/cub\\.red/i.test(p.url)?'CUB':'Z01')+': '+(p.error||'не загрузился')).join('; '));
+      if(failed.length)throw new Error(failed.map(p=>(/cub\.red/i.test(p.url)?'CUB':'Z01')+': '+(p.error||'не загрузился')).join('; '));
       const online=typeof window.LunoLampa.onlinePluginDiagnostics==='function'?window.LunoLampa.onlinePluginDiagnostics():{registered:false};
       if(!online.registered)throw new Error('Z01 загружен, но не зарегистрировал онлайн-источник.');
       if(!state.selected)throw new Error('Сначала выбери фильм или сериал.');
