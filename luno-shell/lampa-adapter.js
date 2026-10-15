@@ -189,19 +189,58 @@
   let playbackCaptureTimer = null;
   let playbackBridge = null;
 
+  function extractStreamPayload(params) {
+    const visited = new Set();
+    const urlKeys = ['url', 'file', 'src', 'stream', 'link', 'video_url', 'play_url'];
+    const visit = (value, depth) => {
+      if (typeof value === 'string') {
+        const url = value.trim();
+        return /^https?:\/\//i.test(url) ? {url} : null;
+      }
+      if (!value || typeof value !== 'object' || depth > 4 || visited.has(value)) return null;
+      visited.add(value);
+
+      // Prefer explicit playback URL fields over arbitrary nested strings.
+      for (const key of urlKeys) {
+        const candidate = value[key];
+        if (typeof candidate === 'string' && /^https?:\/\//i.test(candidate.trim())) {
+          return {url: candidate.trim(), payload: value};
+        }
+        if (candidate && typeof candidate === 'object') {
+          const nested = visit(candidate, depth + 1);
+          if (nested) return {...nested, payload: nested.payload || value};
+        }
+      }
+      for (const key of ['playlist', 'quality', 'qualities', 'videos', 'sources', 'data', 'stream_data']) {
+        const nested = visit(value[key], depth + 1);
+        if (nested) return {...nested, payload: nested.payload || value};
+      }
+      if (Array.isArray(value)) {
+        for (const entry of value) {
+          const nested = visit(entry, depth + 1);
+          if (nested) return nested;
+        }
+      }
+      return null;
+    };
+    return visit(params, 0);
+  }
+
   function resolveCapturedPlayValue(api, params, args) {
-    const value = params && typeof params === 'object' ? params : {url: params};
-    const deliver = urlValue => {
+    if (!playbackCapture) return false;
+    const base = params && typeof params === 'object' ? params : {url: params};
+    const extracted = extractStreamPayload(base);
+    const deliver = (urlValue, metadata = base) => {
       const url = typeof urlValue === 'string' ? urlValue.trim() : '';
-      if (!url || !playbackCapture) return false;
+      if (!url || !/^https?:\/\//i.test(url) || !playbackCapture) return false;
       const stream = {
         url,
-        title: value.title || value.name || '',
-        quality: value.quality || value.quality_name || '',
-        subtitles: value.subtitles || null,
-        playlist: value.playlist || null,
-        headers: value.headers || null,
-        raw: value
+        title: metadata.title || metadata.name || base.title || base.name || '',
+        quality: metadata.quality_name || metadata.quality_label || base.quality_name || base.quality || '',
+        subtitles: metadata.subtitles || base.subtitles || null,
+        playlist: metadata.playlist || base.playlist || null,
+        headers: metadata.headers || metadata.requestHeaders || base.headers || base.requestHeaders || null,
+        raw: metadata
       };
       const resolveCapture = playbackCapture;
       playbackCapture = null;
@@ -212,28 +251,36 @@
       return true;
     };
 
-    if (deliver(value.url)) return true;
+    if (extracted && deliver(extracted.url, extracted.payload || base)) return true;
 
-    // Some providers resolve a URL lazily with a callback. Resolve that
-    // form here instead of letting it fall through to the Lampa player.
-    if (playbackCapture && typeof value.url === 'function') {
+    // Some providers resolve a URL lazily with a callback rather than passing
+    // a URL string. Capture the result object too, so headers and quality are kept.
+    const lazyUrl = base.url;
+    if (typeof lazyUrl === 'function') {
       let settled = false;
       const done = result => {
-        if (settled) return;
+        if (settled || !playbackCapture) return;
         settled = true;
-        if (typeof result === 'string') deliver(result);
-        else if (result && typeof result.url === 'string') deliver(result.url);
+        const resolved = extractStreamPayload(result);
+        if (resolved) deliver(resolved.url, resolved.payload || result);
       };
       try {
-        const result = value.url(done);
+        const result = lazyUrl(done);
         if (typeof result === 'string') done(result);
-        else if (result && typeof result.then === 'function') result.then(done, () => {});
+        else if (result && typeof result.then === 'function') result.then(done, error => {
+          emit('stream:resolve-error', {message: error && error.message || String(error)});
+        });
       } catch (error) {
         emit('stream:resolve-error', {message: error && error.message || String(error)});
       }
       return true;
     }
 
+    emit('stream:intercept-miss', {
+      payloadType: typeof params,
+      keys: Object.keys(base || {}).slice(0, 30),
+      urlType: typeof base.url
+    });
     return false;
   }
 
