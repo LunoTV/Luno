@@ -8,6 +8,9 @@
   const state = {tab:readPreference('luno-active-tab-v1','home',['home','catalog','search','watch','login']),catalogType:'Фильм',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',searchItems:[],items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:readPreference('luno-watch-section-v1','История',['История','Избранное']),featureIndex:0,detailExtras:{cast:[],similar:[],collection:null,loading:false,tab:'Обзор'},browse:{title:'',items:[],page:1,person:null,collection:null,genre:null},franchises:[],franchisesLoading:false,franchisesError:'',homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
   let sourcePicker = {open:false,loading:false,status:'',stream:null,error:'',playing:false};
   let sourceSearchRun = 0;
+  let cubAuthBusy = false;
+  let cubAuthMessage = '';
+  let cubAuthError = false;
   function sourcePickerMarkup(){
     const item=state.selected||{};
     const title=titleOf(item);
@@ -220,7 +223,12 @@
     return `<section class="watch-page"><h1 class="page-title">Медиатека</h1><div class="tabs watch-tabs">${['История','Избранное'].map(v=>`<button class="tab-chip ${v===active?'selected':''}" data-watch-section="${v}">${v}</button>`).join('')}</div>
     ${list.length?'<div class="grid">'+cards(list)+'</div>':`<div class="empty watch-empty"><div class="empty-illustration" aria-hidden="true"><svg viewBox="0 0 240 180"><path d="M26 145h188M42 145V84h156v61M57 84V57h126v27M75 57V42h90v15M68 145v-42h25v42M146 145v-42h25v42M102 82v-18h36v18" fill="none" stroke="currentColor" stroke-width="2" opacity=".52"/><circle cx="120" cy="29" r="18" fill="currentColor" opacity=".9"/><circle cx="128" cy="23" r="17" fill="#0d0a14"/><path d="M31 155q28-15 56 0t56 0t66 0" fill="none" stroke="currentColor" stroke-width="2" opacity=".65"/><path d="m47 35 3 7 7 3-7 3-3 7-3-7-7-3 7-3zM196 48l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#B56BFF"/></svg></div><h2>${title}</h2><p>${description}</p><button class="primary" data-tab="catalog">Открыть каталог</button></div>`}</section>`;
   }
-  function login(){return `<h1 class="page-title">Профиль</h1><section class="login-card"><div class="empty-mark">☾</div><h2>Твоя вселенная LUNO</h2><p class="quiet">Профиль и синхронизация будут подключены отдельно.</p></section>`; }
+  function readCubAccount(){try{const value=JSON.parse(localStorage.getItem('luno-cub-account-v1')||'null');return value&&value.token?value:null;}catch(_){return null;}}
+  function login(){
+    const account=readCubAccount();
+    if(account)return `<h1 class="page-title">Профиль</h1><section class="login-card cub-login-card"><div class="empty-mark">☾</div><span class="cub-status"><i></i> CUB подключён</span><h2>${safe(account.email||'Аккаунт CUB')}</h2><p class="quiet">Аккаунт CUB сохранён на этом устройстве. LUNO передаст его скрытому runtime, чтобы онлайн-источники могли использовать доступ.</p><button class="secondary cub-wide" data-action="cub-disconnect">Отключить CUB</button></section><p class="cub-security-note">Токен хранится только в локальном хранилище этого браузера. Пароль CUB LUNO не запрашивает.</p>`;
+    return `<h1 class="page-title">Профиль</h1><section class="login-card cub-login-card"><div class="empty-mark">☾</div><span class="cub-eyebrow">LUNO ACCOUNT LINK</span><h2>Подключи CUB</h2><p class="quiet">Сначала войди или зарегистрируйся на CUB, затем подтверди подключение шестизначным кодом. Пароль вводить в LUNO не нужно.</p><a class="cub-external-link" href="https://cub.rip/add" target="_blank" rel="noopener noreferrer">Открыть CUB и получить код <span>↗</span></a><form id="cub-device-form" class="cub-device-form"><label for="cub-device-code">Код устройства</label><input id="cub-device-code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" aria-label="Шестизначный код CUB" required><button class="primary cub-wide" type="submit" ${cubAuthBusy?'disabled':''}>${cubAuthBusy?'Подключаем…':'Подключить аккаунт CUB'}</button></form>${cubAuthMessage?'<p class="cub-auth-message '+(cubAuthError?'error':'')+'">'+safe(cubAuthMessage)+'</p>':''}<p class="cub-security-note">Код действует для подтверждения устройства. Не отправляй его другим людям.</p></section><p class="cub-register-note">Ещё нет аккаунта? <a href="https://cub.red/" target="_blank" rel="noopener noreferrer">Зарегистрируйся на CUB ↗</a></p>`;
+  }
   function details(){
     const x=state.selected;if(!x)return '';
     const d=state.detailExtras||{cast:[],similar:[],collection:null,loading:false,tab:'Обзор'};
@@ -362,6 +370,10 @@
     if(t.dataset.action==='open-genre'){openGenre(t.dataset.genre||'Популярное');return;}
     if(t.dataset.action==='clear-search'){state.search='';state.searchItems=[];state.error='';render();document.querySelector('#search-input')?.focus();return;}
     if(t.dataset.searchQuery){state.tab='search';doSearch(t.dataset.searchQuery);return;}
+    if(t.dataset.action==='cub-disconnect'){
+      ['luno-cub-account-v1','account','account_email','account_use','account_user','account_notice','account_bookmarks'].forEach(key=>{try{localStorage.removeItem(key);}catch(_){}});
+      cubAuthMessage='';cubAuthError=false;render();return;
+    }
     if(t.dataset.action==='find-stream'){findStream();return;}
     if(t.dataset.action==='close-source-picker'){closeSourcePicker();return;}
     if(t.dataset.action==='retry-stream'){findStream();return;}
@@ -383,7 +395,33 @@
   document.addEventListener('change',e=>{if(e.target.id==='catalog-genre'){state.catalogGenre=e.target.value;loadCatalog(state.catalogType);}});
   let infiniteScrollQueued=false;
   window.addEventListener('scroll',()=>{if(infiniteScrollQueued||state.tab!=='catalog'||state.browse.title||state.busy||!state.catalogHasMore)return;const nearBottom=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-700;if(nearBottom){infiniteScrollQueued=true;loadCatalog(state.catalogType,true).finally(()=>{infiniteScrollQueued=false;});}},{passive:true});
-  document.addEventListener('submit',e=>{if(e.target.id!=='search-form')return;e.preventDefault();doSearch(new FormData(e.target).get('q')||'');});
+  document.addEventListener('submit',async e=>{
+    if(e.target.id==='search-form'){e.preventDefault();doSearch(new FormData(e.target).get('q')||'');return;}
+    if(e.target.id!=='cub-device-form')return;
+    e.preventDefault();if(cubAuthBusy)return;
+    const code=String(new FormData(e.target).get('code')||'').trim();
+    if(!/^\\d{6}$/.test(code)){cubAuthMessage='Введи ровно 6 цифр с сайта CUB.';cubAuthError=true;render();return;}
+    cubAuthBusy=true;cubAuthMessage='Проверяем код на CUB…';cubAuthError=false;render();
+    try{
+      const response=await fetch('https://cub.rip/api/device/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:Number(code)})});
+      let result;try{result=await response.json();}catch(_){throw new Error('CUB вернул неожиданный ответ. Попробуй ещё раз.');}
+      if(!response.ok||result?.error)throw new Error(result?.text||result?.message||'CUB не принял код. Проверь его и попробуй снова.');
+      if(!result?.token||!result?.profile)throw new Error('CUB не вернул токен и профиль. Проверь код или повтори попытку.');
+      const profile=result.profile;
+      const account={token:String(result.token),profile:typeof profile==='object'?String(profile.id??''):String(profile),email:result.email||'',linkedAt:Date.now()};
+      if(!account.profile)throw new Error('CUB не вернул идентификатор профиля.');
+      localStorage.setItem('luno-cub-account-v1',JSON.stringify(account));
+      // Lampa's own Device.add stores the full response in these same keys.
+      localStorage.setItem('account',JSON.stringify(result));
+      if(result.email)localStorage.setItem('account_email',JSON.stringify(result.email));
+      cubAuthMessage='CUB подключён. Перезапускаем LUNO…';cubAuthError=false;cubAuthBusy=false;render();
+      window.setTimeout(()=>window.location.reload(),700);
+      return;
+    }catch(error){
+      cubAuthMessage=(error?.message||'Не удалось подключиться к CUB.')+(error instanceof TypeError?' Возможно, браузер блокирует запрос CUB. Открой CUB в новой вкладке и попробуй снова.':'');
+      cubAuthError=true;
+    }finally{cubAuthBusy=false;render();}
+  });
   let swipeStart=null;
   function swipeBack(){
     if(state.tab==='details'){
