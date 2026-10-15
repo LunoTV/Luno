@@ -547,7 +547,9 @@ function startApp(){
     Menu.init()
     LoadingProgress.status('Menu init')
 
-    Activity.init()
+    // Headless LUNO needs the activity lifecycle for online plugins, but must not
+    // auto-open Lampa's own home activity.
+    Activity.init(window.LUNO_HEADLESS_RUNTIME === true)
     LoadingProgress.status('Activity init')
 
     Screensaver.init()
@@ -665,9 +667,10 @@ function startApp(){
 
     // Ренедрим лампу
 
-    Render.app()
+    // Keep Lampa's runtime services alive for plugins without mounting its stock UI.
+    if(window.LUNO_HEADLESS_RUNTIME !== true) Render.app()
 
-    LoadingProgress.status('Render app')
+    LoadingProgress.status(window.LUNO_HEADLESS_RUNTIME === true ? 'Headless runtime ready' : 'Render app')
 
     // Инициализируем остальные сервисы
 
@@ -913,6 +916,14 @@ if(window.LUNO_HEADLESS_RUNTIME === true){
 
     if(!api || !api.Api || !api.Parser || !api.Player){
         throw new Error('LUNO headless runtime failed to expose Lampa.Api, Lampa.Parser and Lampa.Player')
+    }
+
+    // Plugin activities expect the same initialized services as a normal Lampa
+    // session. Run its service lifecycle, but skip Render.app() and the home activity
+    // in headless mode so LUNO remains the only visible interface.
+    if(!window.appready){
+        prepareApp()
+        startApp()
     }
 
     window.LUNO_RUNTIME_READY = true
