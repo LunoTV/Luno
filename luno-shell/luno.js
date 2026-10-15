@@ -300,7 +300,18 @@
         if(!online.registered){
           setStatus('Скрипт Z01 загружен, но его онлайн-источник не зарегистрировался в runtime. Проверь консоль: LUNO Z01 manifest diagnostics.');
         }else{
-          setStatus('Z01 зарегистрировал онлайн-источник. Следующий шаг — связать его выбор баланcера с собственным плеером LUNO; запуск интерфейса Lampa отключён.');
+          const item=state.selected;
+          if(!item) throw new Error('Не выбран фильм или сериал.');
+          setStatus('Открываем источники Z01 и ждём ссылку на видео…');
+          const stream=await window.LunoLampa.launchOnline(item,{timeoutMs:90000});
+          if(!stream||!stream.url) throw new Error('Z01 не вернул ссылку на видео.');
+          if(typeof window.LunoPlayer?.play!=='function'){
+            window.LUNO_PENDING_STREAM=stream;
+            setStatus('Источник найден ('+(stream.quality||'качество не указано')+'), но собственный плеер LUNO пока не подключён. Ссылка сохранена для интеграции.');
+          }else{
+            await window.LunoPlayer.play(stream);
+            setStatus('Источник передан плееру LUNO.');
+          }
         }
       }else{
         setStatus('Плагины загружены, но API runtime для интеграции источников недоступен.');
