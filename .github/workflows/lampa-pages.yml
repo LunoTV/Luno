@@ -73,6 +73,26 @@ jobs:
           test -s build/github/lampa/luno.js
           test -s build/github/lampa/lampa-adapter.js
           test -s build/github/lampa/luno-runtime.js
+          # Fail the deployment if the published runtime loses its headless contract.
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          runtime = Path("build/github/lampa/luno-runtime.js").read_text(errors="replace")
+          required = {
+              "headless boot flag": "LUNO_HEADLESS_RUNTIME",
+              "runtime readiness marker": "LUNO_RUNTIME_READY",
+              "source parser API": "Parser",
+              "player API": "Player",
+          }
+          missing = [label for label, token in required.items() if token not in runtime]
+          if missing:
+              raise SystemExit("LUNO runtime contract missing: " + ", ".join(missing))
+          # Ensure the runtime build actually contains the guarded boot branch,
+          # rather than merely a marker somewhere in a comment.
+          if not re.search(r"if\\s*\\(window\\.LUNO_HEADLESS_RUNTIME\\s*===\\s*true\\)", runtime):
+              raise SystemExit("LUNO headless startup guard not found in built runtime")
+          print("LUNO runtime contract verified: " + ", ".join(required))
+          PY
           echo "LUNO shell and runtime verified at the GitHub Pages root."
 
       - name: Configure GitHub Pages
