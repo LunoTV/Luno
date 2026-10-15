@@ -1144,3 +1144,44 @@ body.watch-view .grid .poster-title{display:-webkit-box!important;position:stati
  body.watch-view .grid .poster-year{right:7px!important;bottom:7px!important;font-size:9px!important;padding:4px 6px!important}
  body.watch-view .grid .poster-title{font-size:12px!important;line-height:1.25!important;margin-top:6px!important}
 }
+
+
+/* One shared poster system across home, catalog, search, watchlist, history and detail shelves. */
+.poster{min-width:0!important;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;overflow:visible!important;text-align:left!important}
+.poster:before,.poster:after{display:none!important;content:none!important}
+.poster .poster-art{
+  position:relative!important;display:block!important;width:100%!important;height:auto!important;
+  aspect-ratio:2/3!important;overflow:hidden!important;border:1px solid rgba(225,210,246,.12)!important;
+  border-radius:13px!important;background:#17141d!important;box-shadow:none!important;
+}
+.poster .poster-art .poster-image{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+.poster .poster-art:after{content:""!important;position:absolute!important;inset:58% 0 0!important;background:linear-gradient(180deg,transparent,rgba(8,7,12,.48))!important;z-index:1!important;pointer-events:none!important}
+.poster .poster-kind{
+ position:absolute!important;z-index:3!important;top:8px!important;left:8px!important;right:auto!important;bottom:auto!important;
+ display:inline-flex!important;align-items:center!important;max-width:calc(100% - 16px)!important;
+ padding:4px 7px!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:7px!important;
+ background:rgba(14,12,19,.72)!important;color:#faf7ff!important;font-size:8px!important;line-height:1.1!important;
+ letter-spacing:.035em!important;font-weight:650!important;white-space:nowrap!important;
+ backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;
+}
+.poster .poster-rating,.poster .poster-year{
+ position:absolute!important;z-index:3!important;top:auto!important;bottom:8px!important;
+ display:inline-flex!important;align-items:center!important;min-height:23px!important;
+ padding:4px 7px!important;border-radius:7px!important;background:rgba(17,14,25,.82)!important;
+ font-size:10px!important;line-height:1.1!important;font-weight:550!important;white-space:nowrap!important;
+ backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;
+}
+.poster .poster-rating{left:8px!important;right:auto!important;border:1px solid rgba(190,151,255,.24)!important;color:#e4ccff!important}
+.poster .poster-year{right:8px!important;left:auto!important;border:1px solid rgba(255,255,255,.12)!important;color:#faf7ff!important}
+.poster .poster-overlay{display:none!important}
+.poster .poster-title{display:-webkit-box!important;position:static!important;margin:7px 2px 0!important;font-size:13px!important;line-height:1.28!important;font-weight:600!important;letter-spacing:-.01em!important;color:#f2edf8!important;text-align:left!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+.grid .poster{width:100%!important}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.poster-landscape .grid .poster-art{aspect-ratio:2/3!important}
+@media(max-width:420px){
+ .poster .poster-art{border-radius:12px!important}
+ .poster .poster-kind{top:7px!important;left:7px!important;font-size:7px!important;padding:4px 6px!important}
+ .poster .poster-rating{left:7px!important;bottom:7px!important;font-size:9px!important;padding:4px 6px!important}
+ .poster .poster-year{right:7px!important;bottom:7px!important;font-size:9px!important;padding:4px 6px!important}
+ .poster .poster-title{font-size:12px!important;line-height:1.25!important;margin-top:6px!important}
+}
