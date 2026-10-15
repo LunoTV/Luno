@@ -299,15 +299,19 @@
         const captured = resolveCapturedPlayValue(api, params, arguments);
         if (captured) return undefined;
 
-        // Never let a non-standard play payload steal the screen while the
-        // LUNO bridge is waiting for a stream. Surface a diagnostic instead.
+        // Multi-step providers may call Player.play with a selector/action
+        // payload before the user chooses a voice/quality. Do not swallow that
+        // call: it can be the transition needed to render the provider's next
+        // step. Keep capture armed so a later call with the actual media URL
+        // can still be bridged to LUNO.
         const value = params && typeof params === 'object' ? params : {url: params};
         emit('stream:intercept-miss', {
           payloadType: typeof params,
           urlType: typeof value.url,
-          keys: Object.keys(value || {}).slice(0, 20)
+          keys: Object.keys(value || {}).slice(0, 20),
+          action: true
         });
-        return undefined;
+        return original.apply(this, arguments);
       }
       return original.apply(this, arguments);
     };
