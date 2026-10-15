@@ -191,7 +191,7 @@
 
   function extractStreamPayload(params) {
     const visited = new Set();
-    const urlKeys = ['url', 'file', 'src', 'stream', 'link', 'video_url', 'play_url'];
+    const urlKeys = ['url', 'file', 'src', 'stream', 'link', 'video_url', 'play_url', 'file_url', 'stream_url', 'link_url', 'url_video', 'playlist_url', 'manifest_url', 'hls', 'hls_url', 'dash', 'dash_url', 'video', 'movie', 'iframe_url'];
     const visit = (value, depth) => {
       if (typeof value === 'string') {
         const url = value.trim();
@@ -211,7 +211,9 @@
           if (nested) return {...nested, payload: nested.payload || value};
         }
       }
-      for (const key of ['playlist', 'quality', 'qualities', 'videos', 'sources', 'data', 'stream_data']) {
+      // Voiceover/balancer providers often wrap the final URL one level deeper
+      // than simple providers (for example response.data.movie or translation.video).
+      for (const key of ['playlist', 'quality', 'qualities', 'qualitys', 'videos', 'sources', 'data', 'stream_data', 'response', 'result', 'results', 'items', 'list', 'params', 'payload', 'translation', 'voice', 'balancer', 'movie_data', 'video_data']) {
         const nested = visit(value[key], depth + 1);
         if (nested) return {...nested, payload: nested.payload || value};
       }
