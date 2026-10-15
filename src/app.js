@@ -410,9 +410,13 @@ function prepareApp(){
 
     // Передаем фокус в контроллер
 
-    Navigator.follow('focus', (event)=>{
-        Controller.focus(event.elem)
-    })
+    // Some headless/runtime builds do not expose Navigator.follow.
+    // Focus forwarding is only an optional UI enhancement, not a boot requirement.
+    if(typeof Navigator !== 'undefined' && Navigator && typeof Navigator.follow === 'function'){
+        Navigator.follow('focus', (event)=>{
+            Controller.focus(event.elem)
+        })
+    }
 
     // Выход в начальном скрине
 
