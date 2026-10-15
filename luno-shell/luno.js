@@ -387,8 +387,9 @@
       const video=document.querySelector('#luno-source-video');
       if(video){
         const url=String(stream.url||'');
-        const isHls=/\\.m3u8(?:$|[?#])/i.test(url);
-        const hasHeaders=stream.headers&&typeof stream.headers==='object'&&Object.keys(stream.headers).length>0;
+        const isHls=/\.m3u8(?:$|[?#])/i.test(url);
+        const requestHeaders=stream.headers&&typeof stream.headers==='object'?stream.headers:{};
+        const hasHeaders=Object.keys(requestHeaders).length>0;
         const describeFailure=err=>{
           if(sourcePicker.playbackErrorShown)return;
           sourcePicker.playbackErrorShown=true;
@@ -409,17 +410,21 @@
           const result=video.play();
           if(result&&typeof result.catch==='function')result.catch(describeFailure);
         };
-        // Safari on iPhone supports HLS natively. Other browsers may need hls.js.
-        if(isHls&&video.canPlayType('application/vnd.apple.mpegurl')===''){
+        // If the source requires headers, prefer hls.js for HLS so its playlist/segment
+        // requests can carry them. Native Safari HLS cannot set custom request headers.
+        const useHlsJs=isHls&&(hasHeaders||video.canPlayType('application/vnd.apple.mpegurl')==='');
+        if(useHlsJs){
           const attachHls=()=>{
             if(!window.Hls||!window.Hls.isSupported()){describeFailure(new DOMException('HLS is not supported','NotSupportedError'));return;}
-            const hls=new window.Hls();
+            const hls=new window.Hls({
+              xhrSetup:(xhr)=>{Object.entries(requestHeaders).forEach(([name,value])=>{try{xhr.setRequestHeader(name,String(value));}catch(_){}});}
+            });
             hls.loadSource(url);hls.attachMedia(video);
             hls.on(window.Hls.Events.MANIFEST_PARSED,attemptPlay);
             hls.on(window.Hls.Events.ERROR,(_,data)=>{if(data&&data.fatal)describeFailure(new Error(data.details||'HLS playback error'));});
             sourcePicker.hlsInstance=hls;
           };
-          if(window.Hls)attachHls();
+          if(window.Hls&&window.Hls.isSupported())attachHls();
           else{
             const script=document.createElement('script');
             script.src='https://cdn.jsdelivr.net/npm/hls.js@1.6.13/dist/hls.min.js';
