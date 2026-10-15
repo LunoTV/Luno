@@ -525,8 +525,9 @@
         const keys = entry.detail && entry.detail.keys ? entry.detail.keys.join(',') : '';
         return entry.type + (keys ? '(' + keys + ')' : '');
       }).join(' -> ');
-      throw new Error('Z01 launch failed: ' + message +
-        (recent ? ' | Диагностика передачи: ' + recent : ' | Диагностика: нет событий перехвата') +
+      const diagnosticSuffix = recent ? ' | Диагностика передачи: ' + recent : ' | Диагностика: нет событий перехвата';
+      emit('launch:error', {message, diagnostics: recent || 'no-events'});
+      throw new Error('Z01 launch failed: ' + message + diagnosticSuffix +
         (trace ? ' [' + trace + ']' : ''));
     } finally {
       hideOnlineActivityHost();
