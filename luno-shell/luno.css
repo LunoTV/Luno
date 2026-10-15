@@ -348,3 +348,30 @@ body.catalog-view.poster-landscape .catalog-grid .poster-overview{display:-webki
  body.catalog-view.poster-landscape .catalog-grid .poster-overlay-title{font-size:17px!important}
  body.catalog-view.poster-landscape .catalog-grid .poster-overview{font-size:11px!important}
 }
+
+/* LUNO glass design refresh: Apple TV-inspired depth, with LUNO purple identity */
+:root{
+ --bg:#09090D;--panel:rgba(29,27,38,.76);--card:#17151F;
+ --purple:#8B5CF6;--glow:#C4A1FF;--text:#F7F5FC;--muted:#AAA5B8;
+ --line:rgba(205,190,235,.16);
+}
+body{background:radial-gradient(ellipse at 50% -15%,rgba(100,57,147,.20),transparent 42%),#09090D;color:var(--text)}
+button,select,input{font-family:inherit}
+button{transition:background-color .2s,border-color .2s,box-shadow .2s,transform .2s}
+.topbar{background:transparent}
+.brand{letter-spacing:.18em;text-shadow:0 0 24px rgba(173,126,255,.14)}
+.avatar{background:rgba(37,30,52,.58);border:1px solid rgba(199,162,255,.25);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.dock{background:rgba(26,24,35,.72)!important;border:1px solid rgba(224,211,255,.17)!important;box-shadow:0 12px 44px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.06)!important;backdrop-filter:blur(32px) saturate(155%)!important;-webkit-backdrop-filter:blur(32px) saturate(155%)!important}
+.nav-item{color:#B7B0C5!important;background:transparent!important;border:1px solid transparent!important}
+.nav-item.active{color:#E2CCFF!important;background:linear-gradient(145deg,rgba(139,92,246,.30),rgba(139,92,246,.12))!important;border-color:rgba(190,151,255,.18)!important;box-shadow:inset 0 1px rgba(255,255,255,.07)!important}
+.nav-icon svg{stroke:currentColor}
+.filter,.tab-chip,.poster-modes,.catalog-genre select{background:rgba(34,32,43,.72)!important;border:1px solid rgba(213,200,237,.13)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.tab-chip.selected,.filter.selected,.mode-button.selected{background:rgba(139,92,246,.22)!important;border-color:rgba(190,151,255,.26)!important;color:#DCC5FF!important}
+.poster-art{border-color:rgba(222,207,246,.15)!important;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.poster-kind,.poster-rating,.poster-year{backdrop-filter:blur(16px)!important;-webkit-backdrop-filter:blur(16px)!important}
+.poster-kind{background:rgba(12,11,17,.72)!important;border-color:rgba(255,255,255,.17)!important}
+.poster-rating{background:rgba(19,17,26,.78)!important;border-color:rgba(169,125,231,.4)!important;color:#D9BEFF!important}
+.poster-year{background:rgba(19,17,26,.78)!important;border-color:rgba(255,255,255,.13)!important}
+.hero{border-color:rgba(192,148,255,.25)!important;box-shadow:0 18px 60px rgba(0,0,0,.26)}
+button:focus-visible{outline:2px solid #C4A1FF;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){button{transition:none!important}}
