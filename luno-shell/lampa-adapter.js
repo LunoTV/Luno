@@ -71,6 +71,8 @@
         );
       }
       runtime = api;
+      // Bridge player calls before any external plugin (especially Z01) loads.
+      installPlaybackBridge(api);
       emit('runtime:ready', {version: config.runtimeVersion || 'unknown'});
       return runtime;
     })().catch(error => {
@@ -185,58 +187,73 @@
   }
   let playbackCapture = null;
   let playbackCaptureTimer = null;
-  function armPlaybackCapture(timeoutMs = 90000) {
-    const api = runtime || window.Lampa;
+  let playbackBridge = null;
+
+  // Install before loading Z01 so the plugin cannot retain an unwrapped
+  // Lampa.Player.play reference and accidentally open the Lampa player UI.
+  function installPlaybackBridge(api) {
     if (!api || !api.Player || typeof api.Player.play !== 'function') {
       throw new Error('Lampa.Player.play is unavailable; cannot bridge a resolved stream to LUNO.');
     }
-    if (playbackCapture) clearTimeout(playbackCaptureTimer);
+    if (playbackBridge && playbackBridge.api === api &&
+        api.Player.play === playbackBridge.wrapper) return playbackBridge;
+
     const original = api.Player.play;
-    const capture = params => {
+    const wrapper = function(params) {
       const value = params && typeof params === 'object' ? params : {url: params};
       const url = typeof value.url === 'string' ? value.url.trim() : '';
-      if (!url) return original.apply(api.Player, arguments);
-      const stream = {
-        url,
-        title: value.title || value.name || '',
-        quality: value.quality || value.quality_name || '',
-        subtitles: value.subtitles || null,
-        playlist: value.playlist || null,
-        headers: value.headers || null,
-        raw: value
-      };
-      emit('stream:resolved', stream);
-      if (playbackCapture) playbackCapture(stream);
-      // Prevent the Lampa player from taking over; LUNO owns playback.
-      return undefined;
+      if (playbackCapture && url) {
+        const stream = {
+          url,
+          title: value.title || value.name || '',
+          quality: value.quality || value.quality_name || '',
+          subtitles: value.subtitles || null,
+          playlist: value.playlist || null,
+          headers: value.headers || null,
+          raw: value
+        };
+        const resolveCapture = playbackCapture;
+        playbackCapture = null;
+        clearTimeout(playbackCaptureTimer);
+        playbackCaptureTimer = null;
+        emit('stream:resolved', stream);
+        resolveCapture(stream);
+        // A captured URL belongs to LUNO; do not open Lampa's player.
+        return undefined;
+      }
+      return original.apply(this, arguments);
     };
-    api.Player.play = capture;
-    playbackCapture = null;
-    playbackCaptureTimer = window.setTimeout(() => {
-      if (api.Player.play === capture) api.Player.play = original;
-      playbackCapture = null;
-      playbackCaptureTimer = null;
-    }, timeoutMs);
+    api.Player.play = wrapper;
+    playbackBridge = {api, original, wrapper};
+    return playbackBridge;
+  }
+
+  function armPlaybackCapture(timeoutMs = 90000) {
+    const api = runtime || window.Lampa;
+    installPlaybackBridge(api);
+    let captureHandler = null;
     return {
       cancel() {
-        if (api.Player.play === capture) api.Player.play = original;
+        if (captureHandler && playbackCapture === captureHandler) playbackCapture = null;
         clearTimeout(playbackCaptureTimer);
-        playbackCapture = null;
         playbackCaptureTimer = null;
+        captureHandler = null;
       },
       wait() {
         return new Promise((resolve, reject) => {
-          playbackCapture = stream => {
-            if (api.Player.play === capture) api.Player.play = original;
+          captureHandler = stream => {
+            if (playbackCapture === captureHandler) playbackCapture = null;
             clearTimeout(playbackCaptureTimer);
-            playbackCapture = null;
             playbackCaptureTimer = null;
+            captureHandler = null;
             resolve(stream);
           };
+          playbackCapture = captureHandler;
+          clearTimeout(playbackCaptureTimer);
           playbackCaptureTimer = window.setTimeout(() => {
-            if (api.Player.play === capture) api.Player.play = original;
-            playbackCapture = null;
+            if (playbackCapture === captureHandler) playbackCapture = null;
             playbackCaptureTimer = null;
+            captureHandler = null;
             reject(new Error('Z01 did not pass a video URL to Lampa.Player.play within the timeout.'));
           }, timeoutMs);
         });
