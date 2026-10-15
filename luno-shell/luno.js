@@ -273,31 +273,33 @@
   function render(){try{if(state.tab!=='details')localStorage.setItem('luno-active-tab-v1',state.tab);}catch(_){}document.body.classList.toggle('search-view',state.tab==='search');document.body.classList.toggle('catalog-view',state.tab==='catalog');document.body.classList.toggle('watch-view',state.tab==='watch');document.body.classList.toggle('poster-landscape',state.tab==='catalog'&&state.posterMode==='landscape');navItems.forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));screen.innerHTML=state.tab==='details'?details():({home,catalog,search,watch,login})[state.tab]();}
   function openItem(item){state.selected=item;try{localStorage.setItem('luno-active-tab-v1','details');}catch(_){}state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();loadDetailExtras(item);}
   async function findStream(){
-    const box=document.querySelector('#stream-status');if(box)box.textContent='Подключаем runtime и плагины источников…';
+    const box=document.querySelector('#stream-status');
+    const setStatus=message=>{const target=document.querySelector('#stream-status');if(target)target.textContent=message;};
+    if(box)box.textContent='Подключаем runtime и плагины источников…';
     try{
       if(!window.LunoLampa)throw new Error('Адаптер источников не найден.');
       const api=await window.LunoLampa.loadRuntime();
       const plugins=await window.LunoLampa.loadPlugins();
-      const cub=plugins.find(p=>/cub\.red\/plugin\/tmdb-proxy/i.test(p.url));
-      const z01=plugins.find(p=>/z01\.online\/online\.js/i.test(p.url));
+      const cub=plugins.find(p=>/cub\\.red\\/plugin\\/tmdb-proxy/i.test(p.url));
+      const z01=plugins.find(p=>/z01\\.online\\/online\\.js/i.test(p.url));
       const failed=[cub,z01].filter(p=>p&&p.status!=='loaded');
       if(failed.length){
-        const labels=failed.map(p=>(/cub\.red/i.test(p.url)?'CUB':'Z01')+': '+(p.error||'не загрузился'));
+        const labels=failed.map(p=>(/cub\\.red/i.test(p.url)?'CUB':'Z01')+': '+(p.error||'не загрузился'));
         throw new Error('Не удалось подготовить источники. '+labels.join('; '));
       }
-      if(box)box.textContent='CUB и Z01 загружены. Проверяем ответ источника…';
-      if(!api.Parser||typeof api.Parser.get!=='function')throw new Error('Runtime загружен, но API источника недоступен.');
-      const item={...(state.selected||{}),id:state.selected?.id,source:'tmdb',method:state.selected?.media_type==='tv'?'tv':'movie'};
-      let settled=false;
-      const timer=window.setTimeout(()=>{if(!settled){settled=true;const target=document.querySelector('#stream-status');if(target)target.textContent='Z01 и CUB загрузились, но источник не ответил за 20 секунд.';}},20000);
-      api.Parser.get(item,data=>{
-        if(settled)return;settled=true;window.clearTimeout(timer);
-        const target=document.querySelector('#stream-status');
-        if(target)target.textContent=data?'Источник ответил. Формат ответа получен; следующий шаг — подключить его к плееру.':'CUB и Z01 загружены, но ссылок для этого фильма не найдено.';
-        console.info('[LUNO source response]',data);
-      },err=>{if(settled)return;settled=true;window.clearTimeout(timer);const target=document.querySelector('#stream-status');if(target)target.textContent='Ошибка источника: '+String(err||'без подробностей');});
-      if(box)box.textContent='Запрос источников отправлен…';
-    }catch(e){if(box)box.textContent=e?.message||'Не удалось загрузить источники.';}
+      // Lampa.Parser.get is the built-in torrent/Jacket/Prowlarr parser,
+      // not the online resolver exposed by Z01. Calling it here with a TMDB
+      // card silently invokes the wrong API and can overwrite callback status.
+      if(typeof api.Parser?.get==='function'){
+        setStatus('CUB и Z01 загружены. Онлайн-плагин подключён; прямой мост от его источников к плееру LUNO ещё не реализован.');
+        console.info('[LUNO plugin diagnostics]',window.LunoLampa.pluginDiagnostics());
+        console.info('[LUNO runtime APIs]',Object.keys(api).filter(key=>/player|parser|activity|component|listener|api/i.test(key)));
+      }else{
+        setStatus('Плагины загружены, но API runtime для интеграции источников недоступен.');
+      }
+    }catch(e){
+      setStatus(e?.message||'Не удалось загрузить источники.');
+    }
   }
   document.addEventListener('click',e=>{
     const t=e.target.closest('button');if(!t)return;
