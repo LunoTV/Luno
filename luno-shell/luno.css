@@ -1288,3 +1288,6 @@ body.source-picker-open{overflow:hidden}
 .luno-z01-activity .head,.luno-z01-activity .head__actions,.luno-z01-activity .activity__head{display:none!important}
 .luno-z01-activity .items-list,.luno-z01-activity .items-grid,.luno-z01-activity .selector{max-width:100%!important}
 .luno-z01-activity button,.luno-z01-activity .selector__item,.luno-z01-activity .items-list__item{cursor:pointer}
+
+.luno-source-secondary{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;margin-top:10px;padding:12px 16px;border:1px solid rgba(220,205,248,.18);border-radius:14px;background:rgba(255,255,255,.035);color:#d8cde9;font:inherit;font-size:13px;font-weight:700}
+.luno-source-playback-error{margin-top:14px;padding:20px 16px}
