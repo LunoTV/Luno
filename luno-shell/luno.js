@@ -291,9 +291,17 @@
       // not the online resolver exposed by Z01. Calling it here with a TMDB
       // card silently invokes the wrong API and can overwrite callback status.
       if(typeof api.Parser?.get==='function'){
-        setStatus('CUB и Z01 загружены. Онлайн-плагин подключён; прямой мост от его источников к плееру LUNO ещё не реализован.');
+        const online = typeof window.LunoLampa.onlinePluginDiagnostics==='function'
+          ? window.LunoLampa.onlinePluginDiagnostics()
+          : {scriptLoaded:true,registered:false,manifests:[]};
         console.info('[LUNO plugin diagnostics]',window.LunoLampa.pluginDiagnostics());
+        console.info('[LUNO Z01 manifest diagnostics]',online);
         console.info('[LUNO runtime APIs]',Object.keys(api).filter(key=>/player|parser|activity|component|listener|api/i.test(key)));
+        if(!online.registered){
+          setStatus('Скрипт Z01 загружен, но его онлайн-источник не зарегистрировался в runtime. Проверь консоль: LUNO Z01 manifest diagnostics.');
+        }else{
+          setStatus('Z01 зарегистрировал онлайн-источник. Следующий шаг — связать его выбор баланcера с собственным плеером LUNO; запуск интерфейса Lampa отключён.');
+        }
       }else{
         setStatus('Плагины загружены, но API runtime для интеграции источников недоступен.');
       }
