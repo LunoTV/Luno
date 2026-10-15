@@ -9,6 +9,11 @@
   const titleOf = x => x.title || x.name || x.original_title || x.original_name || 'Без названия';
   const imageOf = (x,size='w500') => x?.poster_path ? IMG+size+x.poster_path : (x?.poster?.startsWith?.('http') ? x.poster : '');
   const backdropOf = x => x?.backdrop_path ? IMG+'w1280'+x.backdrop_path : imageOf(x,'w780');
+  // Choose TMDB artwork by the actual card shape: poster_path for portrait,
+  // backdrop_path for landscape. Fall back gracefully when one variant is absent.
+  const artworkOf = (x,orientation='portrait') => orientation==='landscape'
+    ? (x?.backdrop_path ? IMG+'w1280'+x.backdrop_path : imageOf(x,'w500'))
+    : (x?.poster_path ? IMG+'w500'+x.poster_path : (x?.backdrop_path ? IMG+'w780'+x.backdrop_path : imageOf(x,'w500')));
   const dateOf = x => (x.release_date || x.first_air_date || '').slice(0,4);
   const normalize = data => (Array.isArray(data)?data:(data?.results||[])).map(x=>({...x,title:titleOf(x),tag:x.vote_average?'★ '+Number(x.vote_average).toFixed(1):'LUNO',meta:[dateOf(x),x.media_type==='tv'||x.name?'Сериал':'Фильм'].filter(Boolean).join(' · ')}));
   async function tmdb(path,params={}) {
@@ -18,7 +23,8 @@
     return response.json();
   }
   function poster(item,i=0) {
-    const img=imageOf(item);
+    const orientation=state.tab==='catalog'&&state.posterMode==='landscape'?'landscape':'portrait';
+    const img=artworkOf(item,orientation);
     const style=img?'':'background-image:radial-gradient(circle at 30% 20%,#7542b8,transparent 60%),linear-gradient(145deg,#39234a,#15101c)';
     const artwork=img?`<img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">`:'';
     const kind=item.media_type==='tv'||item.name?'СЕРИАЛ':(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'ФИЛЬМ');
