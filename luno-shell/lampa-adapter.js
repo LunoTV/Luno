@@ -189,8 +189,54 @@
   let playbackCaptureTimer = null;
   let playbackBridge = null;
 
-  // Install before loading Z01 so the plugin cannot retain an unwrapped
-  // Lampa.Player.play reference and accidentally open the Lampa player UI.
+  function resolveCapturedPlayValue(api, params, args) {
+    const value = params && typeof params === 'object' ? params : {url: params};
+    const deliver = urlValue => {
+      const url = typeof urlValue === 'string' ? urlValue.trim() : '';
+      if (!url || !playbackCapture) return false;
+      const stream = {
+        url,
+        title: value.title || value.name || '',
+        quality: value.quality || value.quality_name || '',
+        subtitles: value.subtitles || null,
+        playlist: value.playlist || null,
+        headers: value.headers || null,
+        raw: value
+      };
+      const resolveCapture = playbackCapture;
+      playbackCapture = null;
+      clearTimeout(playbackCaptureTimer);
+      playbackCaptureTimer = null;
+      emit('stream:resolved', stream);
+      resolveCapture(stream);
+      return true;
+    };
+
+    if (deliver(value.url)) return true;
+
+    // Some providers resolve a URL lazily with a callback. Resolve that
+    // form here instead of letting it fall through to the Lampa player.
+    if (playbackCapture && typeof value.url === 'function') {
+      let settled = false;
+      const done = result => {
+        if (settled) return;
+        settled = true;
+        if (typeof result === 'string') deliver(result);
+        else if (result && typeof result.url === 'string') deliver(result.url);
+      };
+      try {
+        const result = value.url(done);
+        if (typeof result === 'string') done(result);
+        else if (result && typeof result.then === 'function') result.then(done, () => {});
+      } catch (error) {
+        emit('stream:resolve-error', {message: error && error.message || String(error)});
+      }
+      return true;
+    }
+
+    return false;
+  }
+
   function installPlaybackBridge(api) {
     if (!api || !api.Player || typeof api.Player.play !== 'function') {
       throw new Error('Lampa.Player.play is unavailable; cannot bridge a resolved stream to LUNO.');
@@ -200,25 +246,18 @@
 
     const original = api.Player.play;
     const wrapper = function(params) {
-      const value = params && typeof params === 'object' ? params : {url: params};
-      const url = typeof value.url === 'string' ? value.url.trim() : '';
-      if (playbackCapture && url) {
-        const stream = {
-          url,
-          title: value.title || value.name || '',
-          quality: value.quality || value.quality_name || '',
-          subtitles: value.subtitles || null,
-          playlist: value.playlist || null,
-          headers: value.headers || null,
-          raw: value
-        };
-        const resolveCapture = playbackCapture;
-        playbackCapture = null;
-        clearTimeout(playbackCaptureTimer);
-        playbackCaptureTimer = null;
-        emit('stream:resolved', stream);
-        resolveCapture(stream);
-        // A captured URL belongs to LUNO; do not open Lampa's player.
+      if (playbackCapture) {
+        const captured = resolveCapturedPlayValue(api, params, arguments);
+        if (captured) return undefined;
+
+        // Never let a non-standard play payload steal the screen while the
+        // LUNO bridge is waiting for a stream. Surface a diagnostic instead.
+        const value = params && typeof params === 'object' ? params : {url: params};
+        emit('stream:intercept-miss', {
+          payloadType: typeof params,
+          urlType: typeof value.url,
+          keys: Object.keys(value || {}).slice(0, 20)
+        });
         return undefined;
       }
       return original.apply(this, arguments);
@@ -254,7 +293,7 @@
             if (playbackCapture === captureHandler) playbackCapture = null;
             playbackCaptureTimer = null;
             captureHandler = null;
-            reject(new Error('Z01 did not pass a video URL to Lampa.Player.play within the timeout.'));
+            reject(new Error('Z01 did not provide a direct video URL to LUNO. Check stream:intercept-miss diagnostics.'));
           }, timeoutMs);
         });
       }
