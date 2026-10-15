@@ -280,11 +280,11 @@
       if(!window.LunoLampa)throw new Error('Адаптер источников не найден.');
       const api=await window.LunoLampa.loadRuntime();
       const plugins=await window.LunoLampa.loadPlugins();
-      const cub=plugins.find(p=>/cub\\.red\\/plugin\\/tmdb-proxy/i.test(p.url));
-      const z01=plugins.find(p=>/z01\\.online\\/online\\.js/i.test(p.url));
+      const cub=plugins.find(p=>/cub\.red\/plugin\/tmdb-proxy/i.test(p.url));
+      const z01=plugins.find(p=>/z01\.online\/online\.js/i.test(p.url));
       const failed=[cub,z01].filter(p=>p&&p.status!=='loaded');
       if(failed.length){
-        const labels=failed.map(p=>(/cub\\.red/i.test(p.url)?'CUB':'Z01')+': '+(p.error||'не загрузился'));
+        const labels=failed.map(p=>(/cub\.red/i.test(p.url)?'CUB':'Z01')+': '+(p.error||'не загрузился'));
         throw new Error('Не удалось подготовить источники. '+labels.join('; '));
       }
       // Lampa.Parser.get is the built-in torrent/Jacket/Prowlarr parser,
