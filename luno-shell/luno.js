@@ -379,17 +379,19 @@
     if(t.dataset.action==='find-stream'){findStream();return;}
     if(t.dataset.action==='close-source-picker'){closeSourcePicker();return;}
     if(t.dataset.action==='retry-stream'){findStream();return;}
-    if(t.dataset.action==='retry-playback'){sourcePicker.error='';sourcePicker.playing=false;renderSourcePicker();return;}
+    if(t.dataset.action==='retry-playback'){sourcePicker.error='';sourcePicker.playing=false;sourcePicker.playbackErrorShown=false;renderSourcePicker();return;}
     if(t.dataset.action==='play-stream'){
       if(!sourcePicker.stream?.url)return;
       const stream=sourcePicker.stream;
-      sourcePicker.playing=true;sourcePicker.error='';renderSourcePicker();
+      sourcePicker.playing=true;sourcePicker.error='';sourcePicker.playbackErrorShown=false;renderSourcePicker();
       const video=document.querySelector('#luno-source-video');
       if(video){
         const url=String(stream.url||'');
         const isHls=/\\.m3u8(?:$|[?#])/i.test(url);
         const hasHeaders=stream.headers&&typeof stream.headers==='object'&&Object.keys(stream.headers).length>0;
         const describeFailure=err=>{
+          if(sourcePicker.playbackErrorShown)return;
+          sourcePicker.playbackErrorShown=true;
           const mediaError=video.error;
           const detail=mediaError?({1:'загрузка отменена',2:'ошибка сети или доступ к потоку запрещён',3:'кодек или формат видео не поддерживается',4:'браузер не распознал формат или адрес потока'}[mediaError.code]||'ошибка медиапотока'):'';
           let message='Не удалось воспроизвести поток';
