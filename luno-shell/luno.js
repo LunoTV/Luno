@@ -176,7 +176,7 @@
       ${img?`<div class="detail-hero-art" style="background-image:linear-gradient(90deg,rgba(8,8,15,.68),rgba(8,8,15,.03)),linear-gradient(0deg,#080910 0%,transparent 75%),url('${safe(img)}')"></div>`:''}
       <div class="detail-main"><h1>${safe(x.title)}</h1><div class="detail-meta"><span>${safe(year)}</span><span>★ ${rating}</span><span>${kind}</span><span>16+</span></div>
       <div class="detail-genres">${genres.map(g=>'<span>'+safe(g)+'</span>').join('')}</div>
-      <p class="detail-overview">${safe(x.overview||'Откройте эту историю в мире LUNO.')}</p>
+
       <div class="detail-actions"><button class="primary detail-play" data-action="find-stream" aria-label="Смотреть"><span>▶</span><b>Смотреть</b></button><button class="detail-icon-action" data-action="add-selected" aria-label="Добавить в избранное"><span>${inList?'♥':'＋'}</span></button></div>
       <div id="stream-status" class="detail-stream-status">${safe(state.error||'')}</div></div>
       <div class="detail-tabs">${['Обзор','Актёры','Похожие'].map(v=>'<button class="'+(d.tab===v?'selected':'')+'" data-detail-tab="'+v+'">'+v+'</button>').join('')}</div>
