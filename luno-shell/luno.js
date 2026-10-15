@@ -27,7 +27,7 @@
     const img=artworkOf(item,orientation);
     const style=img?'':'background-image:radial-gradient(circle at 30% 20%,#7542b8,transparent 60%),linear-gradient(145deg,#39234a,#15101c)';
     const artwork=img?`<img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">`:'';
-    const kind=item.media_type==='tv'||item.name?'СЕРИАЛ':(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'ФИЛЬМ');
+    const kind=state.tab==='catalog'&&state.catalogType==='Аниме'?'АНИМЕ':(item.media_type==='tv'||item.name?(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'СЕРИАЛ'):(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'ФИЛЬМ'));
     const year=dateOf(item)||'—';
     const rating=item.vote_average?Number(item.vote_average).toFixed(1):'—';
     return `<button class="poster" style="${style}" data-item="${safe(item._lunoId ?? i)}" data-title="${safe(item.title)}" aria-label="Открыть ${safe(item.title)}"><span class="poster-art"><img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true" ${img?'':'hidden'}><span class="poster-kind">${kind}</span><span class="poster-rating">★ ${rating}</span><span class="poster-year">${safe(year)}</span><span class="poster-overlay"><strong class="poster-overlay-title">${safe(item.title)}</strong><span class="poster-overlay-meta">★ ${rating} · ${safe(year)} · ${kind.toLowerCase()}</span><span class="poster-overview">${safe((item.overview||'').slice(0,170))}</span></span></span><strong class="poster-title">${safe(item.title)}</strong></button>`;
@@ -38,10 +38,29 @@
   async function loadCatalog(type=state.catalogType) {
     state.busy=true;state.error='';render();
     try {
-      const media=type==='Сериалы'?'tv':'movie';
-      const endpoint=state.sort==='По рейтингу'?'trending/all/week':(type==='Коллекции'?'movie/top_rated':media+'/popular');
-      const data=await tmdb(state.catalogGenre?'discover/'+media:endpoint,state.catalogGenre?{page:1,with_genres:state.catalogGenre,sort_by:state.sort==='По рейтингу'?'vote_average.desc':'popularity.desc'}:{page:1});
-      state.items=normalize(data).map((x,i)=>({...x,_lunoId:i,source:'tmdb'}));
+      const ranked=state.sort==='По рейтингу'?'vote_average.desc':'popularity.desc';
+      const base={page:1,sort_by:ranked,'vote_count.gte':type==='Аниме'?10:50};
+      let results=[];
+      if(type==='Фильмы'){
+        const data=await tmdb('discover/movie',{...base,without_genres:16,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})});
+        results=normalize(data).map(x=>({...x,media_type:'movie'})).filter(x=>!(x.genre_ids||[]).includes(16));
+      }else if(type==='Сериалы'){
+        const data=await tmdb('discover/tv',{...base,without_genres:16,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})});
+        results=normalize(data).map(x=>({...x,media_type:'tv'})).filter(x=>!(x.genre_ids||[]).includes(16));
+      }else if(type==='Мультфильмы'){
+        const [movies,shows]=await Promise.all([
+          tmdb('discover/movie',{...base,with_genres:16,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})}),
+          tmdb('discover/tv',{...base,with_genres:16,...(state.catalogGenre?{with_genres:state.catalogGenre}:{})})
+        ]);
+        results=[...normalize(movies).map(x=>({...x,media_type:'movie'})),...normalize(shows).map(x=>({...x,media_type:'tv'}))];
+      }else if(type==='Аниме'){
+        const [movies,shows]=await Promise.all([
+          tmdb('discover/movie',{...base,with_genres:16,with_original_language:'ja',...(state.catalogGenre?{with_genres:'16,'+state.catalogGenre}:{})}),
+          tmdb('discover/tv',{...base,with_genres:16,with_original_language:'ja',...(state.catalogGenre?{with_genres:'16,'+state.catalogGenre}:{})})
+        ]);
+        results=[...normalize(movies).map(x=>({...x,media_type:'movie'})),...normalize(shows).map(x=>({...x,media_type:'tv'}))];
+      }
+      state.items=results.sort((a,b)=>(Number(b.popularity)||0)-(Number(a.popularity)||0)).map((x,i)=>({...x,_lunoId:i,source:'tmdb'}));
       if(!state.items.length) state.error='Каталог вернул пустой список.';
     } catch(e){state.error=e.message||'Не удалось загрузить каталог.';}
     finally{state.busy=false;render();}
