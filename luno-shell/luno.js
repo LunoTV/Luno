@@ -47,7 +47,7 @@
     if(!append){state.catalogGeneration++;state.catalogPage=1;state.catalogHasMore=true;state.items=[];}
     if(!state.catalogHasMore)return;
     const generation=state.catalogGeneration;
-    state.busy=true;state.catalogLoadingMore=append;state.error='';render();
+    state.busy=true;state.catalogLoadingMore=append;state.error='';if(!append)render();
     try {
       const ranked=state.sort==='По рейтингу'?'vote_average.desc':'popularity.desc';
       const base={sort_by:ranked,'vote_count.gte':type==='Аниме'?5:10};
@@ -83,12 +83,13 @@
       const fresh=incoming.filter(x=>!seen.has((x.media_type||'movie')+':'+x.id));
       const offset=state.items.length;
       state.items=append?[...state.items,...fresh].map((x,i)=>({...x,_lunoId:i})):fresh.map((x,i)=>({...x,_lunoId:i}));
+      if(append&&fresh.length){const grid=document.querySelector('.grid');if(grid){const holder=document.createElement('div');holder.innerHTML=cards(fresh.map((x,i)=>({...x,_lunoId:offset+i})));while(holder.firstElementChild)grid.appendChild(holder.firstElementChild);}}
       const rawPages=type==='Мультфильмы'||type==='Аниме'?2:1;
       state.catalogHasMore=page<500 && incoming.length>0;
       state.catalogPage=page+1;
       if(!state.items.length) state.error='Каталог вернул пустой список.';
     } catch(e){if(generation===state.catalogGeneration)state.error=e.message||'Не удалось загрузить каталог.';}
-    finally{if(generation===state.catalogGeneration){state.busy=false;state.catalogLoadingMore=false;render();}}
+    finally{if(generation===state.catalogGeneration){state.busy=false;state.catalogLoadingMore=false;if(!append)render();else if(state.error){const grid=document.querySelector('.grid');if(grid){const note=document.createElement('p');note.className='quiet';note.textContent=state.error;grid.appendChild(note);}}}}
   }
   async function doSearch(query) {
     state.search=query;state.busy=true;state.error='';render();
