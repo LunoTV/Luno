@@ -10,7 +10,8 @@
   state.watchlist=readSaved('luno-watchlist-v1');
   state.history=readSaved('luno-history-v1');
   const allItems = () => [...state.items,...state.homeShelves.popular,...state.homeShelves.topMovies,...state.homeShelves.topShows,...state.homeShelves.forYou,...state.homeShelves.cult,...state.watchlist,...state.history];
-  const findItem = key => allItems().find(x=>String(x._lunoId ?? '')===String(key)) || state.items[Number(key)];
+  const itemKey = (x,i=0) => x?.id!=null ? String(x.media_type||((x.name||x.first_air_date)?'tv':'movie'))+':'+String(x.id) : String(x?._lunoId ?? i);
+  const findItem = key => allItems().find((x,i)=>itemKey(x,i)===String(key)) || state.items[Number(key)];
   const safe = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const titleOf = x => x.title || x.name || x.original_title || x.original_name || 'Без названия';
   const imageOf = (x,size='w500') => x?.poster_path ? IMG+size+x.poster_path : (x?.poster?.startsWith?.('http') ? x.poster : '');
@@ -36,7 +37,7 @@
     const kind=state.tab==='catalog'&&state.catalogType==='Аниме'?'АНИМЕ':(item.media_type==='tv'||item.name?(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'СЕРИАЛ'):(item.genre_ids?.includes(16)?'МУЛЬТФИЛЬМ':'ФИЛЬМ'));
     const year=dateOf(item)||'—';
     const rating=item.vote_average?Number(item.vote_average).toFixed(1):'—';
-    return `<button class="poster" style="${style}" data-item="${safe(item._lunoId ?? i)}" data-title="${safe(item.title)}" aria-label="Открыть ${safe(item.title)}"><span class="poster-art"><img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true" ${img?'':'hidden'}><span class="poster-kind">${kind}</span><span class="poster-rating">★ ${rating}</span><span class="poster-year">${safe(year)}</span><span class="poster-overlay"><strong class="poster-overlay-title">${safe(item.title)}</strong><span class="poster-overlay-meta">★ ${rating} · ${safe(year)} · ${kind.toLowerCase()}</span><span class="poster-overview">${safe((item.overview||'').slice(0,170))}</span></span></span><strong class="poster-title">${safe(item.title)}</strong></button>`;
+    return `<button class="poster" style="${style}" data-item="${safe(itemKey(item,i))}" data-title="${safe(item.title)}" aria-label="Открыть ${safe(item.title)}"><span class="poster-art"><img class="poster-image" src="${safe(img)}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true" ${img?'':'hidden'}><span class="poster-kind">${kind}</span><span class="poster-rating">★ ${rating}</span><span class="poster-year">${safe(year)}</span><span class="poster-overlay"><strong class="poster-overlay-title">${safe(item.title)}</strong><span class="poster-overlay-meta">★ ${rating} · ${safe(year)} · ${kind.toLowerCase()}</span><span class="poster-overview">${safe((item.overview||'').slice(0,170))}</span></span></span><strong class="poster-title">${safe(item.title)}</strong></button>`;
   }
   const head=t=>`<div class="section-head"><h2>${t}</h2><button class="quiet" data-tab="catalog">Показать ещё ↗</button></div>`;
   const tabs=(items,active,key)=>`<div class="tabs">${items.map(v=>`<button class="tab-chip ${v===active?'selected':''}" data-${key}="${safe(v)}">${safe(v)}</button>`).join('')}</div>`;
@@ -121,7 +122,8 @@
   function home(){
     // Keep the hero and the first poster row in sync: only use titles with real artwork,
     // and put the currently featured title first in the shelf beneath the banner.
-    const list=state.items.filter(x=>x && (x.backdrop_path || x.poster_path)).slice(0,10);
+    const heroSource=state.homeShelves.popular.length?state.homeShelves.popular:state.items;
+    const list=heroSource.filter(x=>x && (x.backdrop_path || x.poster_path)).slice(0,10);
     const feature=list[state.featureIndex % Math.max(1,list.length)] || list[0];
     const shelf=feature?[...list.slice(state.featureIndex % Math.max(1,list.length)),...list.slice(0,state.featureIndex % Math.max(1,list.length))]:list;
     const bg=feature&&backdropOf(feature);
@@ -179,6 +181,7 @@
     const t=e.target.closest('button');if(!t)return;
     if(t.dataset.tab){state.tab=t.dataset.tab;render();if(state.tab==='catalog')loadCatalog(state.catalogType);return;}
     if(t.dataset.slide!==undefined){state.featureIndex=Number(t.dataset.slide);render();return;}
+    if(t.dataset.homeShelf){state.tab='catalog';state.catalogType='Фильмы';state.sort='По новизне';render();loadCatalog(state.catalogType);return;}
     if(t.dataset.item!==undefined){const item=findItem(t.dataset.item);if(item)openItem(item);return;}
     if(t.dataset.watchSection){state.watchSection=t.dataset.watchSection;render();return;}
     if(t.dataset.type){state.catalogType=t.dataset.type;loadCatalog(state.catalogType);return;}
