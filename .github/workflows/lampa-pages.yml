@@ -89,7 +89,7 @@ jobs:
               raise SystemExit("LUNO runtime contract missing: " + ", ".join(missing))
           # Ensure the runtime build actually contains the guarded boot branch,
           # rather than merely a marker somewhere in a comment.
-          if not re.search(r"if\\s*\\(window\\.LUNO_HEADLESS_RUNTIME\\s*===\\s*true\\)", runtime):
+          if not re.search(r"if\s*\(window\.LUNO_HEADLESS_RUNTIME\s*===\s*true\)", runtime):
               raise SystemExit("LUNO headless startup guard not found in built runtime")
           print("LUNO runtime contract verified: " + ", ".join(required))
           PY
