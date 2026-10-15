@@ -374,6 +374,20 @@ function initClass(){
 function prepareApp(){
     if(window.prepared_app) return
 
+    // Z01/Lampa UI helpers expect a custom Navigator.setCollection API. In a
+    // headless browser build the global Navigator is the native browser object,
+    // so provide a harmless collection holder when that extension is absent.
+    try{
+        if(typeof Navigator !== 'undefined' && Navigator && typeof Navigator.setCollection !== 'function'){
+            Navigator.setCollection = function(collection){
+                this.__lunoCollection = collection || []
+            }
+        }
+    }
+    catch(e){
+        console.warn('LUNO headless Navigator compatibility unavailable', e)
+    }
+
     LoadingProgress.init()
 
     document.body.append(Noty.render())
