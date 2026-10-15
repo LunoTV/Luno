@@ -950,3 +950,25 @@ body:has(.detail-page) .topbar{display:none}
   background:rgba(18,17,29,.82)!important;
 }
 @media(min-width:700px){.dock{bottom:18px!important}}
+
+
+/* Franchise-only catalog directory */
+.franchise-heading{padding:10px 2px 18px}
+.franchise-heading .eyebrow{display:block;color:#bca7ff;font-size:10px;letter-spacing:.18em;font-weight:750;margin-bottom:8px}
+.franchise-heading .page-title{margin-bottom:8px}
+.franchise-heading .quiet{max-width:32rem;line-height:1.5;margin:0}
+.franchise-grid{display:grid;grid-template-columns:1fr;gap:15px;padding-bottom:24px}
+.franchise-card{
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;
+  width:100%;min-height:205px;overflow:hidden;padding:18px;
+  border:1px solid rgba(208,193,255,.2);border-radius:21px;
+  background-color:#191525;background-size:cover;background-position:center 35%;
+  color:#fff;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.16);
+  transition:transform .18s ease,border-color .18s ease;
+}
+.franchise-card:active{transform:scale(.985);border-color:rgba(190,160,255,.55)}
+.franchise-card strong{font-size:23px;line-height:1.1;letter-spacing:-.035em;max-width:90%;text-shadow:0 2px 16px rgba(0,0,0,.55)}
+.franchise-card small{margin-top:9px;color:#d6c8ff;font-size:12px;font-weight:600}
+.franchise-card small span{padding-left:4px}
+.franchise-count{position:absolute;right:12px;top:12px;padding:6px 9px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(12,10,20,.58);backdrop-filter:blur(14px);font-size:11px;color:#f1eaff}
+@media(min-width:600px){.franchise-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.franchise-card{min-height:240px}}
