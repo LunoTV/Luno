@@ -97,10 +97,24 @@
     state.busy=!!q;state.error='';state.searchItems=[];render();if(keepFocus){const input=document.querySelector('#search-input');input?.focus({preventScroll:true});if(input&&input.setSelectionRange)input.setSelectionRange(input.value.length,input.value.length);}
     if(!q){state.busy=false;return;}
     try {
-      const data=await tmdb('search/multi',{query:q,include_adult:false,page:1});
+      let data=await tmdb('search/multi',{query:q,include_adult:false,page:1});
       if(generation!==searchGeneration)return;
-      state.searchItems=normalize(data).filter(x=>x.media_type==='movie'||x.media_type==='tv').map((x,i)=>({...x,_lunoId:'search-'+i,source:'tmdb'}));
-      if(!state.searchItems.length)state.error='Ничего не найдено. Попробуй другое название.';
+      let results=normalize(data).filter(x=>x.media_type==='movie'||x.media_type==='tv');
+      // Some TMDB responses or older cached runtimes omit media_type; retry the
+      // dedicated endpoints so a valid movie/series query never disappears.
+      if(!results.length){
+        const [movies,shows]=await Promise.all([
+          tmdb('search/movie',{query:q,include_adult:false,page:1}),
+          tmdb('search/tv',{query:q,page:1})
+        ]);
+        if(generation!==searchGeneration)return;
+        results=[
+          ...normalize(movies).map(x=>({...x,media_type:'movie'})),
+          ...normalize(shows).map(x=>({...x,media_type:'tv'}))
+        ].sort((a,b)=>(b.popularity||0)-(a.popularity||0));
+      }
+      state.searchItems=results.map((x,i)=>({...x,_lunoId:'search-'+i,source:'tmdb'}));
+      if(!state.searchItems.length)state.error='Ничего не найдено. Попробуй другое название или проверь написание.';
     } catch(e){if(generation===searchGeneration)state.error=e.message||'Поиск временно недоступен.';}
     finally{if(generation===searchGeneration){const keepFocus=document.activeElement?.id==='search-input';state.busy=false;render();if(keepFocus){const input=document.querySelector('#search-input');input?.focus({preventScroll:true});if(input&&input.setSelectionRange)input.setSelectionRange(input.value.length,input.value.length);}}}
   }
