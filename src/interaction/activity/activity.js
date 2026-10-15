@@ -66,7 +66,7 @@ function parseStart(){
 /**
  * Запуск
  */
-function init(){
+function init(skipInitialActivity = false){
     content   = Template.js('activitys')
     slides    = content.querySelector('.activitys__slides')
     maxsave   = Storage.get('pages_save_total',5)
@@ -86,7 +86,7 @@ function init(){
         wait = false
     },1500)
 
-    setTimeout(last,500)
+    if(!skipInitialActivity) setTimeout(last,500)
 
     window.addEventListener('popstate', () => {
         if(fullout || wait) return
