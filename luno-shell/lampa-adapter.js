@@ -183,8 +183,111 @@
       }))
     };
   }
+  let playbackCapture = null;
+  let playbackCaptureTimer = null;
+  function armPlaybackCapture(timeoutMs = 90000) {
+    const api = runtime || window.Lampa;
+    if (!api || !api.Player || typeof api.Player.play !== 'function') {
+      throw new Error('Lampa.Player.play is unavailable; cannot bridge a resolved stream to LUNO.');
+    }
+    if (playbackCapture) clearTimeout(playbackCaptureTimer);
+    const original = api.Player.play;
+    const capture = params => {
+      const value = params && typeof params === 'object' ? params : {url: params};
+      const url = typeof value.url === 'string' ? value.url.trim() : '';
+      if (!url) return original.apply(api.Player, arguments);
+      const stream = {
+        url,
+        title: value.title || value.name || '',
+        quality: value.quality || value.quality_name || '',
+        subtitles: value.subtitles || null,
+        playlist: value.playlist || null,
+        headers: value.headers || null,
+        raw: value
+      };
+      emit('stream:resolved', stream);
+      if (playbackCapture) playbackCapture(stream);
+      // Prevent the Lampa player from taking over; LUNO owns playback.
+      return undefined;
+    };
+    api.Player.play = capture;
+    playbackCapture = null;
+    playbackCaptureTimer = window.setTimeout(() => {
+      if (api.Player.play === capture) api.Player.play = original;
+      playbackCapture = null;
+      playbackCaptureTimer = null;
+    }, timeoutMs);
+    return {
+      cancel() {
+        if (api.Player.play === capture) api.Player.play = original;
+        clearTimeout(playbackCaptureTimer);
+        playbackCapture = null;
+        playbackCaptureTimer = null;
+      },
+      wait() {
+        return new Promise((resolve, reject) => {
+          playbackCapture = stream => {
+            if (api.Player.play === capture) api.Player.play = original;
+            clearTimeout(playbackCaptureTimer);
+            playbackCapture = null;
+            playbackCaptureTimer = null;
+            resolve(stream);
+          };
+          playbackCaptureTimer = window.setTimeout(() => {
+            if (api.Player.play === capture) api.Player.play = original;
+            playbackCapture = null;
+            playbackCaptureTimer = null;
+            reject(new Error('Z01 did not pass a video URL to Lampa.Player.play within the timeout.'));
+          }, timeoutMs);
+        });
+      }
+    };
+  }
+  async function launchOnline(item, options = {}) {
+    const api = await loadRuntime();
+    await loadPlugins();
+    const diagnostics = onlinePluginDiagnostics();
+    const manifest = diagnostics.manifests.length
+      ? (api.Manifest.plugins || []).find(entry => diagnostics.manifests.some(m =>
+          m.component === (entry.component || '') && m.name === (entry.name || '') &&
+          typeof entry.onContextLauch === 'function'))
+      : null;
+    if (!manifest || typeof manifest.onContextLauch !== 'function') {
+      throw new Error('Z01 online manifest has no launch hook.');
+    }
+    if (!api.Activity || typeof api.Activity.push !== 'function' ||
+        !api.Component || typeof api.Component.add !== 'function') {
+      throw new Error('Lampa Activity/Component APIs are unavailable.');
+    }
+    const card = {
+      ...item,
+      title: item.title || item.name || item.original_title || item.original_name || '',
+      name: item.name || item.title || '',
+      original_title: item.original_title || item.title || item.name || '',
+      original_name: item.original_name || item.name || item.title || '',
+      media_type: item.media_type || (item.first_air_date || item.name ? 'tv' : 'movie'),
+      source: item.source || 'tmdb'
+    };
+    const capture = armPlaybackCapture(options.timeoutMs || 90000);
+    const streamPromise = capture.wait();
+    try {
+      manifest.onContextLauch(card);
+    } catch (error) {
+      capture.cancel();
+      throw new Error('Z01 launch hook failed: ' + (error && error.message || String(error)));
+    }
+    const stream = await streamPromise;
+    return {
+      url: stream.url,
+      title: stream.title || card.title,
+      quality: stream.quality,
+      subtitles: stream.subtitles,
+      headers: stream.headers,
+      raw: stream.raw
+    };
+  }
   window.LunoLampa = Object.freeze({
-    on, loadRuntime, catalog, search, details, loadPlugins, pluginDiagnostics, onlinePluginDiagnostics,
+    on, loadRuntime, catalog, search, details, loadPlugins, pluginDiagnostics, onlinePluginDiagnostics, launchOnline, armPlaybackCapture,
     status: () => runtime ? 'ready' : config.runtimeEntry ? 'configured' : 'not-configured',
     config: Object.freeze({plugins: config.plugins || []})
   });
