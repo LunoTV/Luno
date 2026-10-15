@@ -316,3 +316,35 @@ body.catalog-view.poster-landscape .catalog-grid .poster-title{display:none!impo
 body.catalog-view.poster-landscape .catalog-grid .poster{position:relative!important}
 body.catalog-view.poster-landscape .catalog-grid .poster:after{display:block!important;content:attr(data-title);position:absolute;bottom:15px;left:15px;right:15px;font-size:19px;font-weight:700;color:white;text-align:left;text-shadow:0 2px 10px #000}
 @media(max-width:420px){body.catalog-view .catalog-grid .poster-art{aspect-ratio:1.35!important}body.catalog-view.poster-landscape .catalog-grid .poster-art{aspect-ratio:1.55!important}}
+
+/* Catalog layouts matched to the supplied reference, retaining LUNO purple accents */
+body.catalog-view .catalog-grid .poster{position:relative!important;display:flex!important;flex-direction:column!important;min-width:0!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+body.catalog-view .catalog-grid .poster-art{position:relative!important;display:block!important;width:100%!important;aspect-ratio:2/3!important;overflow:hidden!important;border:1px solid #302b3a!important;border-radius:12px!important;background:#17151d!important}
+body.catalog-view .catalog-grid .poster-art .poster-image{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+body.catalog-view .catalog-grid .poster-kind{display:block!important;top:8px!important;left:8px!important;padding:4px 7px!important;border:1px solid #ffffff28!important;border-radius:7px!important;background:rgba(16,15,21,.82)!important;color:#f7f4fb!important;font-size:9px!important;font-weight:700!important;letter-spacing:.06em!important}
+body.catalog-view .catalog-grid .poster-rating{display:block!important;left:8px!important;bottom:8px!important;padding:4px 7px!important;border:1px solid #8b68ad!important;border-radius:8px!important;background:rgba(20,17,27,.9)!important;color:#e0c4ff!important;font-size:11px!important;font-weight:650!important}
+body.catalog-view .catalog-grid .poster-year{display:block!important;right:8px!important;bottom:8px!important;padding:4px 7px!important;border:1px solid #ffffff22!important;border-radius:8px!important;background:rgba(20,17,27,.9)!important;color:#f7f4fb!important;font-size:11px!important;font-weight:650!important}
+body.catalog-view .catalog-grid .poster-title{display:block!important;position:static!important;margin:6px 2px 0!important;font-size:12px!important;line-height:1.25!important;color:#f5f1fa!important;white-space:normal!important}
+.poster-overlay{display:none}
+body.catalog-view.poster-landscape .catalog-grid{grid-template-columns:minmax(0,1fr)!important;gap:14px!important}
+body.catalog-view.poster-landscape .catalog-grid .poster{display:block!important;position:relative!important;width:100%!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-art{aspect-ratio:1.55!important;border-radius:14px!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-art:after{content:"";position:absolute;inset:30% 0 0;background:linear-gradient(180deg,transparent,rgba(12,10,16,.78) 45%,rgba(12,10,16,.96));z-index:1;pointer-events:none}
+body.catalog-view.poster-landscape .catalog-grid .poster-kind{top:12px!important;left:auto!important;right:12px!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-rating{left:12px!important;bottom:12px!important;z-index:3!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-year{left:65px!important;right:auto!important;bottom:12px!important;z-index:3!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-title{display:none!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-overlay{position:absolute!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:6px!important;left:14px!important;right:14px!important;bottom:46px!important;z-index:3!important;text-align:left!important;color:#fff!important;pointer-events:none!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-overlay-title{font-size:19px!important;line-height:1.15!important;font-weight:750!important;text-shadow:0 2px 8px #000!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-overlay-meta{font-size:11px!important;letter-spacing:.04em!important;color:#e1d8ed!important;text-shadow:0 1px 5px #000!important}
+body.catalog-view.poster-landscape .catalog-grid .poster-overview{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;font-size:12px!important;line-height:1.35!important;color:#f2edf7!important;text-shadow:0 1px 5px #000!important}
+@media(max-width:420px){
+ body.catalog-view .catalog-grid{gap:10px!important}
+ body.catalog-view .catalog-grid .poster-kind{font-size:8px!important;padding:4px 6px!important}
+ body.catalog-view .catalog-grid .poster-rating,body.catalog-view .catalog-grid .poster-year{font-size:10px!important;padding:4px 6px!important}
+ body.catalog-view.poster-landscape .catalog-grid{gap:12px!important}
+ body.catalog-view.poster-landscape .catalog-grid .poster-art{aspect-ratio:1.38!important}
+ body.catalog-view.poster-landscape .catalog-grid .poster-overlay{left:12px!important;right:12px!important;bottom:42px!important;gap:4px!important}
+ body.catalog-view.poster-landscape .catalog-grid .poster-overlay-title{font-size:17px!important}
+ body.catalog-view.poster-landscape .catalog-grid .poster-overview{font-size:11px!important}
+}
