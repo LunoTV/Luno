@@ -4,7 +4,8 @@
   const TMDB_KEY = '4ef0d7355d9ffb5151e987764708ce96';
   const TMDB_API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
-  const state = {tab:'home',catalogType:'Фильм',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',searchItems:[],items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:'Избранное',featureIndex:0,detailExtras:{cast:[],similar:[],collection:null,loading:false,tab:'Обзор'},browse:{title:'',items:[],page:1,person:null,collection:null,genre:null},franchises:[],franchisesLoading:false,franchisesError:'',homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
+  const readPreference = (key,fallback,allowed=[]) => { try { const value=localStorage.getItem(key); return value && (!allowed.length||allowed.includes(value)) ? value : fallback; } catch(_) { return fallback; } };
+  const state = {tab:readPreference('luno-active-tab-v1','home',['home','catalog','search','watch','login']),catalogType:'Фильм',sort:'По новизне',posterMode:'landscape',catalogGenre:'',catalogPage:1,catalogHasMore:true,catalogLoadingMore:false,catalogGeneration:0,search:'',searchItems:[],items:[],selected:null,busy:false,error:'',watchlist:[],history:[],watchSection:readPreference('luno-watch-section-v1','История',['История','Избранное']),featureIndex:0,detailExtras:{cast:[],similar:[],collection:null,loading:false,tab:'Обзор'},browse:{title:'',items:[],page:1,person:null,collection:null,genre:null},franchises:[],franchisesLoading:false,franchisesError:'',homeShelves:{popular:[],topMovies:[],topShows:[],forYou:[],cult:[]}};
   const readSaved = key => { try { const value=JSON.parse(localStorage.getItem(key)||'[]'); return Array.isArray(value)?value:[]; } catch(_){ return []; } };
   const saveLibrary = () => { try { localStorage.setItem('luno-watchlist-v1',JSON.stringify(state.watchlist)); localStorage.setItem('luno-history-v1',JSON.stringify(state.history.slice(0,100))); } catch(_){} };
   state.watchlist=readSaved('luno-watchlist-v1');
@@ -269,8 +270,8 @@
   const franchiseIds=[10,86311,1241,119,9485,328,556,8650,131292,2150,10194,87359,263,645,135416,173710,748,84,122917];
   async function loadFranchises(){if(state.franchisesLoading||state.franchises.length)return;state.franchisesLoading=true;state.franchisesError='';render();try{const results=await Promise.all([...new Set(franchiseIds)].map(async id=>{try{const d=await tmdb('collection/'+id);return d&&d.id&&d.parts&&d.parts.length?{...d,partsCount:d.parts.length}:null;}catch(_){return null;}}));state.franchises=results.filter(Boolean).sort((a,b)=>b.partsCount-a.partsCount);if(!state.franchises.length)state.franchisesError='Не удалось загрузить франшизы. Попробуй обновить страницу.';}catch(e){state.franchisesError=e.message||'Не удалось загрузить франшизы.';}finally{state.franchisesLoading=false;render();}}
   async function openFranchise(id){const franchise=state.franchises.find(x=>String(x.id)===String(id));if(!franchise)return;await showBrowse(franchise.name,async()=>{const d=await tmdb('collection/'+id);return(d.parts||[]).sort((a,b)=>(a.release_date||'').localeCompare(b.release_date||'')).map(x=>({...x,media_type:'movie'}));},{collection:Number(id)});}
-  function render(){document.body.classList.toggle('search-view',state.tab==='search');document.body.classList.toggle('catalog-view',state.tab==='catalog');document.body.classList.toggle('watch-view',state.tab==='watch');document.body.classList.toggle('poster-landscape',state.tab==='catalog'&&state.posterMode==='landscape');navItems.forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));screen.innerHTML=state.tab==='details'?details():({home,catalog,search,watch,login})[state.tab]();}
-  function openItem(item){state.selected=item;state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();loadDetailExtras(item);}
+  function render(){try{if(state.tab!=='details')localStorage.setItem('luno-active-tab-v1',state.tab);}catch(_){}document.body.classList.toggle('search-view',state.tab==='search');document.body.classList.toggle('catalog-view',state.tab==='catalog');document.body.classList.toggle('watch-view',state.tab==='watch');document.body.classList.toggle('poster-landscape',state.tab==='catalog'&&state.posterMode==='landscape');navItems.forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));screen.innerHTML=state.tab==='details'?details():({home,catalog,search,watch,login})[state.tab]();}
+  function openItem(item){state.selected=item;try{localStorage.setItem('luno-active-tab-v1','details');}catch(_){}state.history=[item,...state.history.filter(x=>!(x.id===item.id&&x.media_type===item.media_type))].slice(0,100);saveLibrary();state.tab='details';state.error='';render();loadDetailExtras(item);}
   async function findStream(){
     const box=document.querySelector('#stream-status');if(box)box.textContent='Подключаем runtime и плагины источников…';
     try{
@@ -288,12 +289,12 @@
   }
   document.addEventListener('click',e=>{
     const t=e.target.closest('button');if(!t)return;
-    if(t.dataset.tab){state.tab=t.dataset.tab;render();if(state.tab==='catalog'){state.browse={title:'',items:[],page:1,person:null,collection:null,genre:null};loadCatalog(state.catalogType);}return;}
+    if(t.dataset.tab){state.tab=t.dataset.tab;try{localStorage.setItem('luno-active-tab-v1',state.tab);}catch(_){}render();if(state.tab==='catalog'){state.browse={title:'',items:[],page:1,person:null,collection:null,genre:null};loadCatalog(state.catalogType);}return;}
     if(t.dataset.slide!==undefined){state.featureIndex=Number(t.dataset.slide);render();return;}
     if(t.dataset.homeShelf){state.tab='catalog';state.catalogType=t.dataset.homeShelf==='topShows'?'Сериалы':(t.dataset.homeShelf==='history'?'Фильмы':'Фильмы');state.sort='По новизне';state.catalogGenre='';render();loadCatalog(state.catalogType);return;}
     if(t.dataset.item!==undefined){const item=findItem(t.dataset.item);if(item)openItem(item);return;}
     if(t.dataset.franchise){openFranchise(t.dataset.franchise);return;}
-    if(t.dataset.watchSection){state.watchSection=t.dataset.watchSection;render();return;}
+    if(t.dataset.watchSection){state.watchSection=t.dataset.watchSection;try{localStorage.setItem('luno-watch-section-v1',state.watchSection);localStorage.setItem('luno-active-tab-v1','watch');}catch(_){}state.tab='watch';render();return;}
     if(t.dataset.type){state.catalogType=t.dataset.type;loadCatalog(state.catalogType);return;}
     if(t.dataset.posterMode){state.posterMode=t.dataset.posterMode;render();return;}
     if(t.dataset.sort){state.sort=t.dataset.sort;loadCatalog(state.catalogType);return;}
