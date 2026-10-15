@@ -67,6 +67,14 @@ jobs:
           html = html.replace('./lampa-adapter.js', f'./lampa-adapter.js?v={version}')
           html = html.replace('./config.js', f'./config.js?v={version}')
           index.write_text(html)
+          # The runtime is a separate bundle and must be cache-busted too.
+          # Otherwise Safari can keep an older app.min.js copy while the shell is new.
+          config = root / "config.js"
+          config_text = config.read_text()
+          config_text = config_text.replace("'./luno-runtime.js'", f"'./luno-runtime.js?v={version}'")
+          if "'./luno-runtime.js?v=" not in config_text:
+              raise SystemExit("Could not cache-bust the LUNO runtime entry")
+          config.write_text(config_text)
           PY
           test -s build/github/lampa/index.html
           test -s build/github/lampa/luno.css
@@ -81,6 +89,7 @@ jobs:
           required = {
               "headless boot flag": "LUNO_HEADLESS_RUNTIME",
               "runtime readiness marker": "LUNO_RUNTIME_READY",
+              "catalog API": "Api",
               "source parser API": "Parser",
               "player API": "Player",
           }
