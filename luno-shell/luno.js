@@ -9,7 +9,7 @@
   const saveLibrary = () => { try { localStorage.setItem('luno-watchlist-v1',JSON.stringify(state.watchlist)); localStorage.setItem('luno-history-v1',JSON.stringify(state.history.slice(0,100))); } catch(_){} };
   state.watchlist=readSaved('luno-watchlist-v1');
   state.history=readSaved('luno-history-v1');
-  const allItems = () => [...state.items,...state.homeShelves.popular,...state.homeShelves.topMovies,...state.homeShelves.topShows,...state.homeShelves.forYou,...state.homeShelves.cult,...state.watchlist,...state.history];
+  const allItems = () => [...state.items,...state.homeShelves.popular,...state.homeShelves.topMovies,...state.homeShelves.topShows,...state.homeShelves.forYou,...state.homeShelves.cult,...state.watchlist,...state.history,...(state.browse?.items||[])];
   const itemKey = (x,i=0) => x?.id!=null ? String(x.media_type||((x.name||x.first_air_date)?'tv':'movie'))+':'+String(x.id) : String(x?._lunoId ?? i);
   const findItem = key => allItems().find((x,i)=>itemKey(x,i)===String(key)) || state.items[Number(key)];
   const safe = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
