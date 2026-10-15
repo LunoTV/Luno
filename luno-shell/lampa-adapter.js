@@ -305,7 +305,9 @@
       manifest.onContextLauch(card);
     } catch (error) {
       capture.cancel();
-      throw new Error('Z01 launch hook failed: ' + (error && error.message || String(error)));
+      const message = error && error.message || String(error);
+      const trace = error && error.stack ? String(error.stack).split('\n').slice(0, 5).join(' | ') : '';
+      throw new Error('Z01 launch hook failed: ' + message + (trace ? ' [' + trace + ']' : ''));
     }
     const stream = await streamPromise;
     return {
