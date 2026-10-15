@@ -901,18 +901,29 @@ function loadApp(){
     }
 }
 
-if(!window.fitst_load){
+// LUNO headless mode must initialize independently of the stock app's
+// one-time boot flag. This makes the runtime safe to retry after a partial load
+// and guarantees that readiness is announced only after the service APIs exist.
+if(window.LUNO_HEADLESS_RUNTIME === true){
+    if(!window.Lampa || !window.Lampa.Api || !window.Lampa.Parser || !window.Lampa.Player){
+        initClass()
+    }
+
+    const api = window.Lampa
+
+    if(!api || !api.Api || !api.Parser || !api.Player){
+        throw new Error('LUNO headless runtime failed to expose Lampa.Api, Lampa.Parser and Lampa.Player')
+    }
+
+    window.LUNO_RUNTIME_READY = true
+    api.Listener.send('luno-runtime', {type:'ready', version: Manifest.app_version})
+}
+else if(!window.fitst_load){
     window.fitst_load = true
 
     initClass()
 
-    // LUNO embeds this bundle as a runtime only. Do not start the stock Lampa
-    // boot sequence (which eventually calls Render.app() and mounts its UI).
-    if(window.LUNO_HEADLESS_RUNTIME === true){
-        window.LUNO_RUNTIME_READY = true
-        Lampa.Listener.send('luno-runtime', {type:'ready', version: Manifest.app_version})
-    }
-    else if(navigator.userAgent.toLowerCase().indexOf('lampa_client') > -1){
+    if(navigator.userAgent.toLowerCase().indexOf('lampa_client') > -1){
         function checkReady(){
             if(window.innerWidth > 0) loadApp()
             else{
