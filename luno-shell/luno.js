@@ -379,7 +379,15 @@
     if(t.dataset.action==='find-stream'){findStream();return;}
     if(t.dataset.action==='close-source-picker'){closeSourcePicker();return;}
     if(t.dataset.action==='retry-stream'){findStream();return;}
-    if(t.dataset.action==='retry-playback'){sourcePicker.error='';sourcePicker.playing=false;sourcePicker.playbackErrorShown=false;renderSourcePicker();return;}
+    if(t.dataset.action==='retry-playback'){
+      sourcePicker.error='';sourcePicker.playbackErrorShown=false;sourcePicker.playing=true;renderSourcePicker();
+      const video=document.querySelector('#luno-source-video');
+      if(video){
+        try{video.load();const attempt=video.play();if(attempt&&typeof attempt.catch==='function')attempt.catch(err=>{if(sourcePicker.playbackErrorShown)return;sourcePicker.playbackErrorShown=true;sourcePicker.error=err?.name==='NotSupportedError'?'Этот источник возвращает формат, который Safari не может воспроизвести напрямую.':('Не удалось повторно запустить поток: '+(err?.message||'ошибка воспроизведения'));sourcePicker.playing=true;renderSourcePicker();});}
+        catch(err){sourcePicker.error='Не удалось повторно запустить поток: '+(err?.message||'ошибка воспроизведения');sourcePicker.playing=true;renderSourcePicker();}
+      }
+      return;
+    }
     if(t.dataset.action==='play-stream'){
       if(!sourcePicker.stream?.url)return;
       const stream=sourcePicker.stream;
