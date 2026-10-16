@@ -43,19 +43,16 @@ jobs:
       - name: Build Lampa web distribution
         run: npx gulp pack_github
 
-      - name: Prepare and verify LUNO Pages root
+      - name: Prepare and verify Prisma-style Lampa distribution
         run: |
           set -euo pipefail
           test -s build/github/lampa/index.html
           test -s build/github/lampa/app.min.js
           test -s build/github/lampa/css/app.css
           test -s build/github/lampa/assembly.json
-          # Keep the compiled Lampa runtime available to the standalone LUNO shell,
-          # but publish the LUNO interface at the site root (not in a nested folder).
-          cp build/github/lampa/app.min.js build/github/lampa/luno-runtime.js
-          cp -R luno-shell/. build/github/lampa/
-          # Cache-bust the shell assets on every commit so mobile Safari does not
-          # keep rendering an older CSS/JS bundle after a successful Pages deploy.
+          # Publish the complete, original Lampa UI/runtime. Keep the former
+          # LUNO shell only in its backup branch; do not overwrite Lampa's index.
+          cp prisma-theme.css build/github/lampa/prisma-theme.css
           python3 - <<'PY'
           from pathlib import Path
           import os
@@ -63,48 +60,18 @@ jobs:
           version = os.environ.get("GITHUB_SHA", "latest")[:12]
           index = root / "index.html"
           html = index.read_text()
-          html = html.replace('./luno.css', f'./luno.css?v={version}')
-          html = html.replace('./css/app.css', f'./css/app.css?v={version}')
-          html = html.replace('./luno.js', f'./luno.js?v={version}')
-          html = html.replace('./lampa-adapter.js', f'./lampa-adapter.js?v={version}')
-          html = html.replace('./config.js', f'./config.js?v={version}')
+          marker = '</head>'
+          link = f'    <link rel="stylesheet" href="./prisma-theme.css?v={version}">\\n'
+          if 'prisma-theme.css' not in html:
+              if marker not in html:
+                  raise SystemExit("Could not locate </head> in original Lampa index")
+              html = html.replace(marker, link + marker, 1)
+          html = html.replace('<title>Lampa</title>', '<title>LUNO</title>')
           index.write_text(html)
-          # The runtime is a separate bundle and must be cache-busted too.
-          # Otherwise Safari can keep an older app.min.js copy while the shell is new.
-          config = root / "config.js"
-          config_text = config.read_text()
-          config_text = config_text.replace("'./luno-runtime.js'", f"'./luno-runtime.js?v={version}'")
-          if "'./luno-runtime.js?v=" not in config_text:
-              raise SystemExit("Could not cache-bust the LUNO runtime entry")
-          config.write_text(config_text)
           PY
-          test -s build/github/lampa/index.html
-          test -s build/github/lampa/luno.css
-          test -s build/github/lampa/luno.js
-          test -s build/github/lampa/lampa-adapter.js
-          test -s build/github/lampa/luno-runtime.js
-          # Fail the deployment if the published runtime loses its headless contract.
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-          runtime = Path("build/github/lampa/luno-runtime.js").read_text(errors="replace")
-          required = {
-              "headless boot flag": "LUNO_HEADLESS_RUNTIME",
-              "runtime readiness marker": "LUNO_RUNTIME_READY",
-              "catalog API": "Api",
-              "source parser API": "Parser",
-              "player API": "Player",
-          }
-          missing = [label for label, token in required.items() if token not in runtime]
-          if missing:
-              raise SystemExit("LUNO runtime contract missing: " + ", ".join(missing))
-          # Ensure the runtime build actually contains the guarded boot branch,
-          # rather than merely a marker somewhere in a comment.
-          if not re.search(r"if\s*\(window\.LUNO_HEADLESS_RUNTIME\s*===\s*true\)", runtime):
-              raise SystemExit("LUNO headless startup guard not found in built runtime")
-          print("LUNO runtime contract verified: " + ", ".join(required))
-          PY
-          echo "LUNO shell and runtime verified at the GitHub Pages root."
+          test -s build/github/lampa/prisma-theme.css
+          grep -q 'prisma-theme.css' build/github/lampa/index.html
+          echo "Original Lampa UI preserved with LUNO Prisma-style theme."
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
