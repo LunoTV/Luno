@@ -107,8 +107,55 @@
     const api = await loadRuntime();
     return callbackCall(api.Api, 'full', params);
   }
+  let runtimeBootstrapPromise = null;
+  async function bootstrapLampaState(api) {
+    if (runtimeBootstrapPromise) return runtimeBootstrapPromise;
+    runtimeBootstrapPromise = (async () => {
+      const runTask = (label, task, timeoutMs = 8000) => new Promise(resolve => {
+        let finished = false;
+        const finish = error => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          if (error) {
+            console.warn('LUNO Lampa bootstrap:', label, error.message || error);
+            emit('runtime:bootstrap-warning', {task: label, message: error.message || String(error)});
+          }
+          resolve();
+        };
+        const timer = window.setTimeout(() => finish(new Error('timed out')), timeoutMs);
+        try { task(finish); } catch (error) { finish(error); }
+      });
+      // The regular Lampa boot restores IndexedDB-backed Storage and account
+      // bookmarks before opening online sources. Headless mode intentionally
+      // skips the visual boot, so restore that non-visual state explicitly.
+      try {
+        if (api.Cache && typeof api.Cache.openDatabase === 'function') {
+          await Promise.race([
+            api.Cache.openDatabase(),
+            new Promise(resolve => window.setTimeout(resolve, 4000))
+          ]);
+        }
+        if (api.Storage && typeof api.Storage.task === 'function') {
+          await runTask('storage-cache', next => api.Storage.task(next), 6000);
+        }
+        if (api.VPN && typeof api.VPN.task === 'function') {
+          await runTask('network-proxy', next => api.VPN.task(next), 6000);
+        }
+        if (api.Account && typeof api.Account.task === 'function') {
+          await runTask('account-bookmarks', next => api.Account.task(next), 10000);
+        }
+      } catch (error) {
+        console.warn('LUNO Lampa bootstrap continued:', error.message || error);
+      }
+      emit('runtime:bootstrap-ready', {ready: true});
+    })();
+    return runtimeBootstrapPromise;
+  }
+
   async function loadPlugins() {
     const api = await loadRuntime();
+    await bootstrapLampaState(api);
     if (!api.Utils || typeof api.Utils.putScriptAsync !== 'function') {
       throw new Error('Runtime plugin loader is unavailable');
     }
