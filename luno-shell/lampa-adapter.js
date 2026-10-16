@@ -506,6 +506,32 @@
         throw new Error('LUNO source panel did not mount the Z01 selector.');
       }
       manifest.onContextLauch(card);
+      // Activity.push() may replace the Activity root while switching from the
+      // initial Activity view to Z01's newly-created component. Re-attach the
+      // same live root after the plugin has pushed its activity, then once more
+      // on the next paint so LUNO does not retain an empty/stale container.
+      const remountSelector = () => {
+        const target = document.querySelector('#luno-z01-activity');
+        if (!target || !hiddenActivityHost) return false;
+        if (hiddenActivityHost.parentNode !== target) target.appendChild(hiddenActivityHost);
+        hiddenActivityHost.style.display = 'block';
+        hiddenActivityHost.style.visibility = 'visible';
+        hiddenActivityHost.style.pointerEvents = 'auto';
+        hiddenActivityHost.setAttribute('aria-hidden', 'false');
+        recordPlaybackDiagnostic('z01-activity-mounted', {
+          action: true,
+          reason: hiddenActivityHost.querySelectorAll('.activity, .activity__body, .online-empty, .online-prestige').length
+            ? 'activity-content-present' : 'activity-root-present'
+        });
+        return true;
+      };
+      remountSelector();
+      if (typeof window.requestAnimationFrame === 'function') {
+        await new Promise(resolve => window.requestAnimationFrame(() => {
+          remountSelector();
+          resolve();
+        }));
+      }
       const stream = await streamPromise;
       return {
         url: stream.url,
