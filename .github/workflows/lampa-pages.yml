@@ -61,7 +61,7 @@ jobs:
           index = root / "index.html"
           html = index.read_text()
           marker = '</head>'
-          link = f'    <link rel="stylesheet" href="./prisma-theme.css?v={version}">\\n'
+          link = f'    <link rel="stylesheet" href="./prisma-theme.css?v={version}">\n'
           if 'prisma-theme.css' not in html:
               if marker not in html:
                   raise SystemExit("Could not locate </head> in original Lampa index")
