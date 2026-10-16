@@ -48,7 +48,7 @@ jobs:
           set -euo pipefail
           test -s build/github/lampa/index.html
           test -s build/github/lampa/app.min.js
-          test -s build/github/lampa/app.min.css
+          test -s build/github/lampa/css/app.css
           test -s build/github/lampa/assembly.json
           # Keep the compiled Lampa runtime available to the standalone LUNO shell,
           # but publish the LUNO interface at the site root (not in a nested folder).
@@ -64,7 +64,7 @@ jobs:
           index = root / "index.html"
           html = index.read_text()
           html = html.replace('./luno.css', f'./luno.css?v={version}')
-          html = html.replace('./app.min.css', f'./app.min.css?v={version}')
+          html = html.replace('./css/app.css', f'./css/app.css?v={version}')
           html = html.replace('./luno.js', f'./luno.js?v={version}')
           html = html.replace('./lampa-adapter.js', f'./lampa-adapter.js?v={version}')
           html = html.replace('./config.js', f'./config.js?v={version}')
