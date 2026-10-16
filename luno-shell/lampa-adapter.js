@@ -51,6 +51,11 @@
       } finally {
         window.removeEventListener('error', captureRuntimeError);
       }
+      // Do not load Z01 against a half-initialized headless runtime. Stock
+      // Lampa restores its cache/account state before loading online providers.
+      if (window.LUNO_HEADLESS_BOOTSTRAP && typeof window.LUNO_HEADLESS_BOOTSTRAP.then === 'function') {
+        await window.LUNO_HEADLESS_BOOTSTRAP;
+      }
       const api = window.Lampa;
       const missing = [];
       if (window.LUNO_RUNTIME_READY !== true) missing.push('LUNO_RUNTIME_READY');
