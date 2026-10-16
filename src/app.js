@@ -944,44 +944,6 @@ if(window.LUNO_HEADLESS_RUNTIME === true){
         startApp()
     }
 
-    // The stock Lampa boot runs these data/bootstrap tasks before it loads
-    // plugins. Headless LUNO previously skipped loadTask() entirely, so Z01
-    // could render voice choices but did not necessarily have the same restored
-    // storage cache, plugin configuration and account/bookmark state as Lampa.
-    // Reproduce the non-visual part of that startup without rendering Lampa UI
-    // or running mirror redirects on the GitHub Pages host.
-    const runHeadlessTask = (label, task, timeout = 10000) => new Promise(resolve => {
-        let settled = false
-        const finish = (error) => {
-            if(settled) return
-            settled = true
-            clearTimeout(timer)
-            if(error) console.warn('LUNO headless bootstrap:', label, error.message || error)
-            resolve()
-        }
-        const timer = setTimeout(() => finish(new Error('startup task timed out')), timeout)
-        try{
-            task(finish)
-        }
-        catch(error){
-            finish(error)
-        }
-    })
-
-    const headlessBootstrap = (async()=>{
-        try{
-            await Promise.race([Cache.openDatabase(), new Promise(resolve => setTimeout(resolve, 5000))]).catch(error => console.warn('LUNO cache open:', error.message || error))
-            await runHeadlessTask('storage cache', next => Storage.task(next), 8000)
-            await runHeadlessTask('account/bookmarks', next => Account.task(next), 12000)
-        }
-        catch(error){
-            console.warn('LUNO headless bootstrap continued with fallback:', error.message || error)
-        }
-        window.LUNO_HEADLESS_BOOTSTRAP_READY = true
-        api.Listener.send('luno-runtime', {type:'bootstrap-ready', version: Manifest.app_version})
-    })()
-
-    window.LUNO_HEADLESS_BOOTSTRAP = headlessBootstrap
     window.LUNO_RUNTIME_READY = true
     api.Listener.send('luno-runtime', {type:'ready', version: Manifest.app_version})
 }
