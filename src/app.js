@@ -950,7 +950,7 @@ if(window.LUNO_HEADLESS_RUNTIME === true){
     // storage cache, plugin configuration and account/bookmark state as Lampa.
     // Reproduce the non-visual part of that startup without rendering Lampa UI
     // or running mirror redirects on the GitHub Pages host.
-    const runHeadlessTask = (label, task, timeout = 15000) => new Promise(resolve => {
+    const runHeadlessTask = (label, task, timeout = 10000) => new Promise(resolve => {
         let settled = false
         const finish = (error) => {
             if(settled) return
@@ -970,11 +970,9 @@ if(window.LUNO_HEADLESS_RUNTIME === true){
 
     const headlessBootstrap = (async()=>{
         try{
-            await Cache.openDatabase().catch(error => console.warn('LUNO cache open:', error.message || error))
-            await runHeadlessTask('storage cache', next => Storage.task(next))
-            await runHeadlessTask('plugin configuration', next => Plugins.task(next))
-            await runHeadlessTask('network proxy', next => VPN.task(next))
-            await runHeadlessTask('account/bookmarks', next => Account.task(next))
+            await Promise.race([Cache.openDatabase(), new Promise(resolve => setTimeout(resolve, 5000))]).catch(error => console.warn('LUNO cache open:', error.message || error))
+            await runHeadlessTask('storage cache', next => Storage.task(next), 8000)
+            await runHeadlessTask('account/bookmarks', next => Account.task(next), 12000)
         }
         catch(error){
             console.warn('LUNO headless bootstrap continued with fallback:', error.message || error)
