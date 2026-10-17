@@ -19,8 +19,6 @@
         var img = card.querySelector('.card__img');
         var data = card.card_data;
         var backdrop = data && imageUrl(data.backdrop_path);
-
-        // Do not force a portrait poster into a landscape frame when no backdrop exists.
         if (!img || !data || !backdrop) return;
 
         card.setAttribute('data-luno-landscape-ready', '1');
@@ -41,12 +39,7 @@
             synopsis.textContent = overview;
             view.appendChild(synopsis);
         }
-        if (view && rating && !card.querySelector('.luno-card__rating')) {
-            var score = document.createElement('div');
-            score.className = 'luno-card__rating';
-            score.textContent = Number(rating).toFixed(1);
-            view.appendChild(score);
-        }
+
         if (view && (year || quality || rating) && !card.querySelector('.luno-card__meta')) {
             var meta = document.createElement('div');
             meta.className = 'luno-card__meta';
@@ -66,8 +59,10 @@
                 y.textContent = year;
                 meta.appendChild(y);
             }
-            view.appendChild(meta);
+            // Keep the metadata outside the image, matching the first screen in the recording.
+            card.appendChild(meta);
         }
+
         if (!label && title && view) {
             label = document.createElement('div');
             label.className = 'luno-card__title';
@@ -75,7 +70,6 @@
             view.appendChild(label);
         }
 
-        // Prefer TMDB's transparent title logo when available; keep the text fallback.
         function setLogo(path) {
             if (!path || !view) return;
             var logo = card.querySelector('.luno-card__logo');
@@ -91,49 +85,47 @@
             if (label) label.style.display = 'none';
         }
 
-        if (data.logo_path) {
-            setLogo(data.logo_path);
-        } else {
-            var mediaType = data.media_type || (data.name || data.original_name ? 'tv' : 'movie');
-            var mediaId = data.id;
-            if (mediaId && window.fetch && !card.getAttribute('data-luno-logo-requested')) {
-                card.setAttribute('data-luno-logo-requested', '1');
-                var apiKey = '4ef0d7355d9ffb5151e987764708ce96';
-                var endpoint = 'https://api.themoviedb.org/3/' + mediaType + '/' + encodeURIComponent(mediaId) + '/images?api_key=' + apiKey + '&include_image_language=ru,en,null';
-                fetch(endpoint).then(function (response) {
-                    if (!response.ok) throw new Error('TMDB logo request failed');
-                    return response.json();
-                }).then(function (result) {
-                    if (!card.isConnected) return;
+        if (data.logo_path) setLogo(data.logo_path);
+
+        // Query TMDB for Russian wide artwork and localized transparent logos.
+        // This runs even when the card already supplies a logo, so backdrop selection is not skipped.
+        var mediaType = data.media_type || (data.name || data.original_name ? 'tv' : 'movie');
+        var mediaId = data.id;
+        if (mediaId && window.fetch && !card.getAttribute('data-luno-images-requested')) {
+            card.setAttribute('data-luno-images-requested', '1');
+            var apiKey = '4ef0d7355d9ffb5151e987764708ce96';
+            var endpoint = 'https://api.themoviedb.org/3/' + mediaType + '/' + encodeURIComponent(mediaId) + '/images?api_key=' + apiKey + '&include_image_language=ru,en,null';
+            fetch(endpoint).then(function (response) {
+                if (!response.ok) throw new Error('TMDB images request failed');
+                return response.json();
+            }).then(function (result) {
+                if (!card.isConnected) return;
+                if (!data.logo_path) {
                     var logos = result && result.logos || [];
                     var preferred = logos.find(function (item) { return item.iso_639_1 === 'ru'; }) ||
                         logos.find(function (item) { return item.iso_639_1 === 'en'; }) ||
                         logos.find(function (item) { return !item.iso_639_1; }) || logos[0];
                     if (preferred && preferred.file_path) setLogo(preferred.file_path);
+                }
 
-                    // TMDB sometimes has localized wide artwork with the title already embedded.
-                    var backdrops = result && result.backdrops || [];
-                    var russianBackdrop = backdrops.filter(function (item) {
-                        return item.iso_639_1 === 'ru' && item.file_path && item.width >= item.height * 1.6;
-                    }).sort(function (a, b) {
-                        return (b.vote_average || 0) - (a.vote_average || 0);
-                    })[0];
-                    if (russianBackdrop && img) {
-                        img.src = 'https://image.tmdb.org/t/p/w780' + russianBackdrop.file_path;
-                    }
-                }).catch(function () { /* Text title remains as a safe fallback. */ });
-            }
+                // Some TMDB backdrops already contain localized title artwork.
+                var backdrops = result && result.backdrops || [];
+                var russianBackdrop = backdrops.filter(function (item) {
+                    return item.iso_639_1 === 'ru' && item.file_path && item.width >= item.height * 1.6;
+                }).sort(function (a, b) {
+                    return (b.vote_average || 0) - (a.vote_average || 0);
+                })[0];
+                if (russianBackdrop && img) {
+                    img.src = 'https://image.tmdb.org/t/p/w780' + russianBackdrop.file_path;
+                }
+            }).catch(function () { /* The backdrop and localized title fallback remain available. */ });
         }
 
         function useBackdrop() {
             var currentBackdrop = imageUrl(data.backdrop_path);
-            if (currentBackdrop && img.src !== currentBackdrop) {
-                img.src = currentBackdrop;
-            }
+            if (currentBackdrop && img.src !== currentBackdrop) img.src = currentBackdrop;
         }
 
-        // The native "visible" handler may assign the poster after this listener;
-        // run after it to restore the matching landscape backdrop.
         card.addEventListener('visible', useBackdrop);
         useBackdrop();
     }
@@ -154,9 +146,7 @@
         if (!window.MutationObserver) return;
         var observer = new MutationObserver(function (changes) {
             changes.forEach(function (change) {
-                for (var i = 0; i < change.addedNodes.length; i++) {
-                    scan(change.addedNodes[i]);
-                }
+                for (var i = 0; i < change.addedNodes.length; i++) scan(change.addedNodes[i]);
             });
         });
         observer.observe(document.body, { childList: true, subtree: true });
@@ -169,8 +159,6 @@
                 if (event.type === 'ready') start();
             });
         }
-
-        // Also cover builds where the ready event fired before this file loaded.
         var attempts = 0;
         var wait = function () {
             if (window.appready) start();
