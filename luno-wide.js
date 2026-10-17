@@ -42,6 +42,30 @@
         }, { life: 60 * 24 * 7 });
     }
 
+    function addMeta(container, value) {
+        var item = document.createElement('span');
+        item.className = 'luno-wide-meta__item';
+        item.textContent = value;
+        container.appendChild(item);
+    }
+
+    function mediaKindLabel(data) {
+        var type = String(data.media_type || data.type || '').toLowerCase();
+        var genres = Array.isArray(data.genres) ? data.genres : [];
+        var labels = genres.map(function (genre) {
+            return String(typeof genre === 'string' ? genre : (genre && genre.name) || '').toLowerCase();
+        }).join(' ');
+        var title = String(data.title || data.name || '').toLowerCase();
+
+        if (/anime/.test(type) || /anime/.test(labels)) return 'АНИМЕ';
+        if (/animation|мульт|cartoon/.test(labels) || data.animation === true) return 'МУЛЬТФИЛЬМ';
+        if (/show|reality|talk|variety|tv_show/.test(type)) return 'ШОУ';
+        if (type === 'tv' || type === 'series' || type === 'tv_series') return 'СЕРИАЛ';
+        if (type === 'movie' || type === 'film') return 'ФИЛЬМ';
+        if (/anime/.test(title)) return 'АНИМЕ';
+        return '';
+    }
+
     function enhance(card) {
         if (!card || !card.classList || !card.classList.contains('card')) return;
         var data = card.card_data;
@@ -93,6 +117,25 @@
             description.setAttribute('aria-hidden', 'true');
             view.appendChild(description);
         }
+
+        var meta = document.createElement('div');
+        meta.className = 'luno-wide-meta';
+        meta.setAttribute('aria-hidden', 'true');
+
+        var quality = data.quality || data.video_quality || data.resolution || '';
+        if (quality) addMeta(meta, String(quality).toUpperCase());
+
+        var rating = Number(data.vote_average || data.rating || 0);
+        if (rating > 0) addMeta(meta, '★ ' + rating.toFixed(1));
+
+        var date = data.release_date || data.first_air_date || data.last_air_date || '';
+        var year = date ? String(date).slice(0, 4) : (data.year ? String(data.year) : '');
+        if (year) addMeta(meta, year);
+
+        var kindLabel = mediaKindLabel(data);
+        if (kindLabel) addMeta(meta, kindLabel);
+
+        if (meta.children.length) view.appendChild(meta);
     }
 
     function scan(node) {
