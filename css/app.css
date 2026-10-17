@@ -16699,3 +16699,22 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
 .items-line .card__view {
   position: relative;
 }
+
+
+/* Luno sizing correction: target 3.5 landscape cards on a 1920px TV */
+.items-line .items-cards .card,
+.items-line .card {
+  width: 28vw !important;
+  flex: 0 0 28vw !important;
+  max-width: none !important;
+}
+.items-line .card__view {
+  padding-bottom: 48% !important;
+}
+@media screen and (max-width: 767px) {
+  .items-line .items-cards .card,
+  .items-line .card {
+    width: 88vw !important;
+    flex-basis: 88vw !important;
+  }
+}
