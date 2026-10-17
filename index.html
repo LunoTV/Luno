@@ -149,8 +149,29 @@
             }
         }
 
+        // Load the official CUB TMDB proxy after Lampa starts. Use HTTPS to avoid mixed-content blocking.
+        function loadLunoTmdbProxy() {
+            if (window.__lunoTmdbProxyLoading || window.__lunoTmdbProxyLoaded) return;
+            if (!window.Lampa || !Lampa.TMDB) return;
+            window.__lunoTmdbProxyLoading = true;
+            var script = document.createElement('script');
+            script.src = 'https://cub.red/plugin/tmdb-proxy';
+            script.async = true;
+            script.onload = function () {
+                window.__lunoTmdbProxyLoaded = true;
+                window.__lunoTmdbProxyLoading = false;
+                console.log('Luno: TMDB proxy loaded');
+            };
+            script.onerror = function () {
+                window.__lunoTmdbProxyLoading = false;
+                console.warn('Luno: TMDB proxy could not be loaded');
+            };
+            document.head.appendChild(script);
+        }
+
         // Use TMDB landscape backdrops when a card has them; keep Lampa's own card data and navigation.
         function installLunoBackdrops() {
+            loadLunoTmdbProxy();
             var root = document.getElementById('app');
             if (!root || root.__lunoBackdropObserver) return;
 
