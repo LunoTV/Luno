@@ -18,25 +18,14 @@
         if (kind !== 'movie' && kind !== 'tv') kind = 'movie';
 
         window.Lampa.Api.sources.tmdb.get(kind + '/' + data.id + '/images', {
-            include_image_language: 'ru,en,null'
+            include_image_language: 'ru'
         }, function (result) {
             var logos = result && result.logos ? result.logos : [];
-            if (!logos.length) {
-                callback('');
-                return;
-            }
+            var russianLogo = logos.filter(function (item) {
+                return item && item.iso_639_1 === 'ru' && item.file_path;
+            })[0];
 
-            logos.sort(function (a, b) {
-                function rank(item) {
-                    if (item.iso_639_1 === 'ru') return 0;
-                    if (item.iso_639_1 === 'en') return 1;
-                    if (item.iso_639_1 === null) return 2;
-                    return 3;
-                }
-                return rank(a) - rank(b);
-            });
-
-            callback(logos[0] && logos[0].file_path ? 'https://image.tmdb.org/t/p/original' + logos[0].file_path : '');
+            callback(russianLogo ? 'https://image.tmdb.org/t/p/original' + russianLogo.file_path : '');
         }, function () {
             callback('');
         }, { life: 60 * 24 * 7 });
@@ -70,17 +59,9 @@
         if (!card || !card.classList || !card.classList.contains('card')) return;
         var data = card.card_data;
         var img = card.querySelector('.card__img');
-        if (!data || !img || !data.backdrop_path) return;
-
-        card.classList.add('luno-wide-card');
+        if (!data || !img) return;
         if (card.getAttribute('data-luno-wide-ready') === '1') return;
         card.setAttribute('data-luno-wide-ready', '1');
-
-        var url = imageUrl(data.backdrop_path);
-        img.src = url;
-        card.addEventListener('visible', function () {
-            if (img.src !== url) img.src = url;
-        });
 
         var view = card.querySelector('.card__view') || card;
         var overlay = document.createElement('div');
@@ -89,6 +70,29 @@
 
         requestLogo(data, function (logoUrl) {
             if (!card.isConnected) return;
+
+            if (!logoUrl) {
+                card.classList.remove('luno-wide-card');
+                card.classList.add('luno-portrait-card');
+                var portrait = data.poster_path;
+                if (portrait) img.src = imageUrl(portrait);
+                var oldDescription = view.querySelector('.luno-wide-description');
+                if (oldDescription) oldDescription.remove();
+                var oldMeta = view.querySelector('.luno-wide-meta');
+                if (oldMeta) oldMeta.remove();
+                return;
+            }
+
+            card.classList.add('luno-wide-card');
+            card.classList.remove('luno-portrait-card');
+            if (data.backdrop_path) {
+                var backdropUrl = imageUrl(data.backdrop_path);
+                img.src = backdropUrl;
+                card.addEventListener('visible', function () {
+                    if (img.src !== backdropUrl) img.src = backdropUrl;
+                });
+            }
+
             if (logoUrl) {
                 var logo = document.createElement('img');
                 logo.className = 'luno-wide-logo__image';
