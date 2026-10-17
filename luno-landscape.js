@@ -27,12 +27,52 @@
         card.classList.add('luno-landscape-card');
 
         var title = data.title || data.name || data.original_title || data.original_name || '';
-        if (title && !card.querySelector('.luno-card__title')) {
-            var label = document.createElement('div');
+        var view = card.querySelector('.card__view');
+        var label = card.querySelector('.luno-card__title');
+        if (!label && title && view) {
+            label = document.createElement('div');
             label.className = 'luno-card__title';
             label.textContent = title;
-            var view = card.querySelector('.card__view');
-            if (view) view.appendChild(label);
+            view.appendChild(label);
+        }
+
+        // Prefer TMDB's transparent title logo when available; keep the text fallback.
+        function setLogo(path) {
+            if (!path || !view) return;
+            var logo = card.querySelector('.luno-card__logo');
+            if (!logo) {
+                logo = document.createElement('img');
+                logo.className = 'luno-card__logo';
+                logo.alt = title;
+                logo.loading = 'lazy';
+                logo.onerror = function () { logo.remove(); };
+                view.appendChild(logo);
+            }
+            logo.src = 'https://image.tmdb.org/t/p/w500' + path;
+            if (label) label.style.display = 'none';
+        }
+
+        if (data.logo_path) {
+            setLogo(data.logo_path);
+        } else {
+            var mediaType = data.media_type || (data.name || data.original_name ? 'tv' : 'movie');
+            var mediaId = data.id;
+            if (mediaId && window.fetch && !card.getAttribute('data-luno-logo-requested')) {
+                card.setAttribute('data-luno-logo-requested', '1');
+                var apiKey = '4ef0d7355d9ffb5151e987764708ce96';
+                var endpoint = 'https://api.themoviedb.org/3/' + mediaType + '/' + encodeURIComponent(mediaId) + '/images?api_key=' + apiKey + '&include_image_language=ru,en,null';
+                fetch(endpoint).then(function (response) {
+                    if (!response.ok) throw new Error('TMDB logo request failed');
+                    return response.json();
+                }).then(function (result) {
+                    if (!card.isConnected) return;
+                    var logos = result && result.logos || [];
+                    var preferred = logos.find(function (item) { return item.iso_639_1 === 'ru'; }) ||
+                        logos.find(function (item) { return item.iso_639_1 === 'en'; }) ||
+                        logos.find(function (item) { return !item.iso_639_1; }) || logos[0];
+                    if (preferred && preferred.file_path) setLogo(preferred.file_path);
+                }).catch(function () { /* Text title remains as a safe fallback. */ });
+            }
         }
 
         function useBackdrop() {
