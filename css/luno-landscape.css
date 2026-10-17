@@ -20,7 +20,8 @@
 }
 
 /* Keep the rating only in the metadata row below the image. */
-.card.luno-landscape-card .card__vote {
+.card.luno-landscape-card .card__vote,
+.card.luno-landscape-card .card__age {
     display: none !important;
 }
 
@@ -64,8 +65,8 @@
     z-index: 2;
     left: 0;
     right: 0;
-    bottom: 0;
-    padding: 3.2em 1em .7em;
+    bottom: 2.3em;
+    padding: 2.8em 1em .45em;
     color: rgba(255,255,255,.92);
     font-size: .82em;
     line-height: 1.25;
@@ -94,20 +95,26 @@
 }
 
 .card.luno-landscape-card .luno-card__meta {
+    position: absolute;
+    z-index: 5;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: .45em;
-    min-height: 1.8em;
-    margin-top: .18em;
-    padding: .15em .25em;
-    border-top: 1px solid rgba(255,255,255,.12);
-    color: rgba(255,255,255,.72);
+    min-height: 2.1em;
+    padding: .25em .35em;
+    border-top: 1px solid rgba(255,255,255,.28);
+    color: rgba(255,255,255,.94);
+    background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.88));
     font-size: .72em;
-    font-weight: 600;
+    font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    pointer-events: none;
 }
 
 .card.luno-landscape-card .luno-card__quality {
