@@ -171,7 +171,7 @@
                             }
 
                             var yearSource = data.release_date || data.first_air_date || data.year || '';
-                            var year = String(yearSource).match(/(19|20)\\d{2}/);
+                            var year = String(yearSource).match(/(19|20)\d{2}/);
                             if (year) {
                                 if (meta.childNodes.length) meta.appendChild(document.createTextNode(' • '));
                                 var yearEl = document.createElement('span');
