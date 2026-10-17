@@ -26,13 +26,16 @@
     position: absolute;
     z-index: 3;
     left: 50%;
+    right: auto;
     transform: translateX(-50%);
     bottom: 42%;
     width: 55%;
     max-width: 55%;
+    margin: 0;
+    display: block;
     max-height: 36%;
     object-fit: contain;
-    object-position: center bottom;
+    object-position: center center;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .8));
     pointer-events: none;
 }
