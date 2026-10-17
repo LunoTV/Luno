@@ -16610,61 +16610,61 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
 .head__title { font-weight: 400; }
 
 /* Target the actual row elements regardless of their nested wrapper */
-.items-line:nth-of-type(-n+2) { padding-bottom: 3.1em; }
-.items-line:nth-of-type(-n+2) .items-line__head {
+.items-line { padding-bottom: 3.1em; }
+.items-line .items-line__head {
   padding: 0 1.4em;
   margin-bottom: 1.1em;
 }
-.items-line:nth-of-type(-n+2) .items-line__title {
+.items-line .items-line__title {
   font-size: 1.65em;
   letter-spacing: -.025em;
 }
-.items-line:nth-of-type(-n+2) .items-line__body .scroll__content {
+.items-line .items-line__body .scroll__content {
   padding: 0 1.4em;
 }
-.items-line:nth-of-type(-n+2) .items-cards { gap: .85em; }
-.items-line:nth-of-type(-n+2) .items-cards .card {
+.items-line .items-cards { gap: .85em; }
+.items-line .items-cards .card {
   width: 27.2em !important;
   flex: 0 0 27.2em;
 }
-.items-line:nth-of-type(-n+2) .card__view {
+.items-line .card__view {
   padding-bottom: 48% !important;
   margin-bottom: 0 !important;
   overflow: hidden;
   border-radius: .7em;
   background: #141414;
 }
-.items-line:nth-of-type(-n+2) .card__img,
-.items-line:nth-of-type(-n+2) .card__filter { border-radius: .7em !important; }
-.items-line:nth-of-type(-n+2) .card__img {
+.items-line .card__img,
+.items-line .card__filter { border-radius: .7em !important; }
+.items-line .card__img {
   background-size: cover !important;
   background-position: center 35% !important;
 }
-.items-line:nth-of-type(-n+2) .card__textbox {
+.items-line .card__textbox {
   padding: .8em 1em;
   border-radius: .7em !important;
   background: linear-gradient(180deg, transparent 18%, rgba(0,0,0,.18) 42%, rgba(0,0,0,.88) 100%);
 }
-.items-line:nth-of-type(-n+2) .card__title {
+.items-line .card__title {
   font-size: 1.28em;
   line-height: 1.15;
   max-height: 2.3em;
   -webkit-line-clamp: 2;
   line-clamp: 2;
 }
-.items-line:nth-of-type(-n+2) .card__age { margin-top: .35em; }
-.items-line:nth-of-type(-n+2) .card__vote { border-radius: .3em; }
-.items-line:nth-of-type(-n+2) .card.focus .card__view {
+.items-line .card__age { margin-top: .35em; }
+.items-line .card__vote { border-radius: .3em; }
+.items-line .card.focus .card__view {
   box-shadow: 0 0 0 .16em rgba(255,255,255,.9);
 }
 @media screen and (max-width: 767px) {
   .head__body { padding: .35em .7em; }
-  .items-line:nth-of-type(-n+2) .items-line__head,
-  .items-line:nth-of-type(-n+2) .items-line__body .scroll__content {
+  .items-line .items-line__head,
+  .items-line .items-line__body .scroll__content {
     padding-left: .8em;
     padding-right: .8em;
   }
-  .items-line:nth-of-type(-n+2) .items-cards .card {
+  .items-line .items-cards .card {
     width: min(78vw, 27.2em) !important;
     flex-basis: min(78vw, 27.2em);
   }
