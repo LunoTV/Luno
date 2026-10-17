@@ -6,20 +6,17 @@
 
 .card.luno-landscape-card .card__view {
     padding-bottom: 56.25%;
-    border-radius: 1em;
+    border-radius: .65em;
     overflow: hidden;
 }
 
 .card.luno-landscape-card .card__img {
     object-fit: cover;
-    border-radius: 1em;
+    border-radius: .65em;
 }
 
-.card.luno-landscape-card .card__title {
-    display: none;
-}
-
-/* Keep the rating only in the metadata row below the image. */
+/* Hide the native title and duplicate native badges; metadata is rendered once. */
+.card.luno-landscape-card .card__title,
 .card.luno-landscape-card .card__vote,
 .card.luno-landscape-card .card__age {
     display: none !important;
@@ -28,51 +25,48 @@
 .card.luno-landscape-card .luno-card__logo {
     position: absolute;
     z-index: 3;
-    left: 7%;
-    bottom: 14%;
-    width: 62%;
-    max-width: 62%;
-    max-height: 40%;
+    left: 6%;
+    bottom: 30%;
+    width: 58%;
+    max-width: 58%;
+    max-height: 36%;
     object-fit: contain;
     object-position: left bottom;
-    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .7));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .8));
     pointer-events: none;
 }
 
 .card.luno-landscape-card .luno-card__title {
     position: absolute;
-    z-index: 2;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 2.8em 0.8em 0.7em;
+    z-index: 3;
+    left: 5%;
+    right: 5%;
+    bottom: 31%;
     color: #fff;
-    font-size: 1.15em;
-    font-weight: 700;
-    line-height: 1.15;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, .9);
-    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, .88));
+    font-size: 1.05em;
+    font-weight: 800;
+    line-height: 1.1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, .95);
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     pointer-events: none;
 }
-
 
 .card.luno-landscape-card .luno-card__overview {
     position: absolute;
     z-index: 2;
     left: 0;
     right: 0;
-    bottom: 2.3em;
-    padding: 2.8em 1em .45em;
-    color: rgba(255,255,255,.92);
-    font-size: .82em;
-    line-height: 1.25;
+    bottom: 0;
+    padding: 2.1em .55em .45em;
+    color: rgba(255,255,255,.96);
+    font-size: .7em;
+    line-height: 1.2;
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,.95);
-    background: linear-gradient(to bottom, transparent, rgba(0,0,0,.9));
+    text-shadow: 0 1px 3px rgba(0,0,0,.98);
+    background: linear-gradient(to bottom, transparent, rgba(0,0,0,.92));
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -80,37 +74,25 @@
     pointer-events: none;
 }
 
+/* No separate score badge in the lower-right corner. */
 .card.luno-landscape-card .luno-card__rating {
-    position: absolute;
-    z-index: 4;
-    right: .55em;
-    bottom: .5em;
-    padding: .22em .45em;
-    border-radius: .5em;
-    background: rgba(0,0,0,.72);
-    color: #fff;
-    font-size: 1.05em;
-    font-weight: 700;
-    pointer-events: none;
+    display: none !important;
 }
 
+/* The single quality/rating/year row sits just below the artwork, like the reference. */
 .card.luno-landscape-card .luno-card__meta {
-    position: absolute;
-    z-index: 5;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: .45em;
-    min-height: 2.1em;
-    padding: .25em .35em;
-    border-top: 1px solid rgba(255,255,255,.28);
-    color: rgba(255,255,255,.94);
-    background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.88));
-    font-size: .72em;
+    gap: .42em;
+    min-height: 1.55em;
+    padding: .15em .25em .25em;
+    color: rgba(255,255,255,.9);
+    background: transparent;
+    font-size: .68em;
     font-weight: 700;
+    line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -123,7 +105,7 @@
 }
 
 .card.luno-landscape-card .card__view::after {
-    border-radius: 1em;
+    border-radius: .65em;
 }
 
 @media screen and (max-width: 700px) {
