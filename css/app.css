@@ -16672,10 +16672,10 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
 
 
 
-/* Final TV sizing pass: match the wide cards from the reference video */
+/* TV sizing: show about three and a half landscape cards per row */
 .items-line .items-cards .card {
-  width: clamp(25rem, 25vw, 46rem) !important;
-  flex: 0 0 clamp(25rem, 25vw, 46rem) !important;
+  width: clamp(25rem, 48vw, 85rem) !important;
+  flex: 0 0 clamp(25rem, 48vw, 85rem) !important;
 }
 .items-line .card__view {
   padding-bottom: 48% !important;
