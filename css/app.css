@@ -16701,11 +16701,11 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
 }
 
 
-/* Luno sizing correction: target 3.5 landscape cards on a 1920px TV */
+/* Fine-tune TV sizing: slightly smaller landscape cards */
 .items-line .items-cards .card,
 .items-line .card {
-  width: 28vw !important;
-  flex: 0 0 28vw !important;
+  width: 25vw !important;
+  flex: 0 0 25vw !important;
   max-width: none !important;
 }
 .items-line .card__view {
