@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="./vender/scrollbar/jquery.scrollbar.css">
     <link rel="stylesheet" href="./vender/keypad/style.css">
 
-    <link rel="stylesheet" href="css/app.css?v=4.82">
+    <link rel="stylesheet" href="css/app.css?v=4.83">
 </head>
 <body style="background: #1d1f20;">
     <script>
@@ -187,29 +187,8 @@
             }
         }
 
-        // Load the official CUB TMDB proxy after Lampa starts. Use HTTPS to avoid mixed-content blocking.
-        function loadLunoTmdbProxy() {
-            if (window.__lunoTmdbProxyLoading || window.__lunoTmdbProxyLoaded) return;
-            if (!window.Lampa || !Lampa.TMDB) return;
-            window.__lunoTmdbProxyLoading = true;
-            var script = document.createElement('script');
-            script.src = 'https://cub.red/plugin/tmdb-proxy';
-            script.async = true;
-            script.onload = function () {
-                window.__lunoTmdbProxyLoaded = true;
-                window.__lunoTmdbProxyLoading = false;
-                console.log('Luno: TMDB proxy loaded');
-            };
-            script.onerror = function () {
-                window.__lunoTmdbProxyLoading = false;
-                console.warn('Luno: TMDB proxy could not be loaded');
-            };
-            document.head.appendChild(script);
-        }
-
         // Use TMDB landscape backdrops when a card has them; keep Lampa's own card data and navigation.
         function installLunoBackdrops() {
-            loadLunoTmdbProxy();
             var root = document.getElementById('app');
             if (!root || root.__lunoBackdropObserver) return;
 
@@ -233,7 +212,7 @@
                         ? lunoTmdbImage(backdropPath, 'w780')
                         : (posterPath ? lunoTmdbImage(posterPath, 'w500') : '');
                     var posterSrc = posterPath ? lunoTmdbImage(posterPath, 'w500') : '';
-                    var imageKey = itemKey + '|' + backdropPath + '|' + posterPath + '|' + (window.__lunoTmdbProxyLoaded ? 'proxy' : 'direct');
+                    var imageKey = itemKey + '|' + backdropPath + '|' + posterPath;
 
                     if (img.getAttribute('data-luno-image-key') !== imageKey) {
                         img.setAttribute('data-luno-image-key', imageKey);
@@ -297,10 +276,12 @@
                                         logo.remove();
                                         title.classList.remove('luno-card-promo__title--fallback');
                                     };
+                                    logo.onload = function() {
+                                        if (logo.naturalWidth > 0) title.classList.add('luno-card-promo__title--fallback');
+                                    };
                                     promo.insertBefore(logo, title);
                                 }
                                 logo.src = logoUrl;
-                                title.classList.add('luno-card-promo__title--fallback');
                             }
                             var suppliedLogo = data.logo || data.logo_path || data.images && data.images.logo;
                             if (typeof suppliedLogo === 'string' && suppliedLogo) {
