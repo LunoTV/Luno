@@ -25,13 +25,14 @@
 .card.luno-landscape-card .luno-card__logo {
     position: absolute;
     z-index: 3;
-    left: 6%;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: 42%;
     width: 55%;
     max-width: 55%;
     max-height: 36%;
     object-fit: contain;
-    object-position: left bottom;
+    object-position: center bottom;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .8));
     pointer-events: none;
 }
@@ -42,6 +43,7 @@
     left: 5%;
     right: 5%;
     bottom: 42%;
+    text-align: center;
     color: #fff;
     font-size: 1.05em;
     font-weight: 800;
