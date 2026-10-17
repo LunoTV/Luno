@@ -16767,3 +16767,83 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
     padding: .45em .8em !important;
   }
 }
+
+
+/* Prisma-inspired native Luno cards: artwork, title/overview overlay, metadata footer */
+.items-line .card.luno-card-enhanced .card__title,
+.items-line .card.luno-card-enhanced .card__age {
+  display: none !important;
+}
+.items-line .card.luno-card-enhanced .card__view {
+  position: relative !important;
+  overflow: hidden !important;
+  padding-bottom: 48% !important;
+  border-radius: .7em .7em 0 0 !important;
+}
+.items-line .card.luno-card-enhanced .card__img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+.items-line .luno-card-promo {
+  position: absolute !important;
+  inset: auto 0 0 0 !important;
+  z-index: 3 !important;
+  padding: 2.8em .9em .8em !important;
+  color: #fff !important;
+  text-align: center !important;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.76) 54%, rgba(0,0,0,.97) 100%) !important;
+  pointer-events: none !important;
+}
+.items-line .luno-card-promo__title {
+  font-size: 1.2em !important;
+  line-height: 1.12 !important;
+  font-weight: 700 !important;
+  margin-bottom: .3em !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,.8) !important;
+}
+.items-line .luno-card-promo__overview {
+  font-size: .83em !important;
+  line-height: 1.25 !important;
+  color: rgba(255,255,255,.88) !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  max-height: 2.5em !important;
+}
+.items-line .luno-card-meta {
+  min-height: 2.25em !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: .35em !important;
+  padding: .25em .5em !important;
+  margin: 0 !important;
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 0 0 .7em .7em !important;
+  background: #050505 !important;
+  color: rgba(255,255,255,.78) !important;
+  font-size: .82em !important;
+  font-weight: 600 !important;
+  line-height: 1.15 !important;
+}
+.items-line .luno-card-meta__quality {
+  color: #38c981 !important;
+  font-weight: 800 !important;
+}
+.items-line .luno-card-meta__rating {
+  color: #a4d7bc !important;
+}
+.items-line .luno-card-meta__year {
+  color: rgba(255,255,255,.76) !important;
+}
+.items-line .card.luno-card-enhanced.focus .card__view {
+  box-shadow: 0 0 0 .16em rgba(255,255,255,.9) !important;
+}
+@media screen and (max-width: 767px) {
+  .items-line .luno-card-promo__title { font-size: 1em !important; }
+  .items-line .luno-card-promo__overview { font-size: .75em !important; }
+  .items-line .luno-card-meta { font-size: .75em !important; }
+}
