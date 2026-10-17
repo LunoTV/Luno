@@ -242,7 +242,7 @@
                         // Lampa can rewrite card image URLs after first render. Restore the selected artwork.
                         var activeImage = img.getAttribute('data-luno-active-image-path') || src || posterSrc;
                         var actualImage = img.currentSrc || img.src || '';
-                        if (activeImage && actualImage !== activeImage && img.getAttribute('data-luno-fallback-tried') !== '1') {
+                        if (activeImage && actualImage !== activeImage) {
                             img.src = activeImage;
                         }
                     }
