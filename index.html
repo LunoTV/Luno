@@ -259,7 +259,19 @@
 
         function loadCurrentLampa() {
             putScript('app.min.js?v=' + cache_version, function () {
+                try {
+                    if (typeof Lampa !== 'undefined' && Lampa.Listener && !window.__lunoUiErrorWatch) {
+                        window.__lunoUiErrorWatch = true;
+                        Lampa.Listener.follow('full', function (event) {
+                            if (event && event.type === 'complite') {
+                                setTimeout(installLunoBackdrops, 250);
+                            }
+                        });
+                    }
+                } catch (e) {}
                 installLunoBackdrops();
+                setTimeout(installLunoBackdrops, 700);
+                setTimeout(installLunoBackdrops, 1800);
             })
         }
 
