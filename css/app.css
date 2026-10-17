@@ -16718,3 +16718,52 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
     flex-basis: 88vw !important;
   }
 }
+
+
+/* Luno header refinement: compact, centered title capsule, original controls retained */
+.head {
+  background: linear-gradient(180deg, rgba(0,0,0,.98), rgba(0,0,0,.84) 72%, transparent) !important;
+}
+.head__body {
+  position: relative !important;
+  min-height: 3.5em !important;
+  padding: .25em 1.25em !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.head__title {
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  max-width: min(38vw, 36rem) !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  font-size: 1em !important;
+  line-height: 1.1 !important;
+  padding: .55em 1.35em !important;
+  border: 1px solid rgba(255,255,255,.13) !important;
+  border-radius: 2em !important;
+  background: rgba(255,255,255,.055) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+.head__actions {
+  margin-left: auto !important;
+  gap: .5em !important;
+}
+.head__action {
+  opacity: .94;
+}
+@media screen and (max-width: 767px) {
+  .head__body {
+    min-height: 3.1em !important;
+    padding: .2em .6em !important;
+  }
+  .head__title {
+    max-width: 42vw !important;
+    font-size: .9em !important;
+    padding: .45em .8em !important;
+  }
+}
