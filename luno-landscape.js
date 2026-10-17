@@ -66,7 +66,7 @@
                 y.textContent = year;
                 meta.appendChild(y);
             }
-            card.appendChild(meta);
+            view.appendChild(meta);
         }
         if (!label && title && view) {
             label = document.createElement('div');
