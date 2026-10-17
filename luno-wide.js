@@ -64,15 +64,26 @@
         overlay.setAttribute('aria-hidden', 'true');
 
         requestLogo(data, function (logoUrl) {
-            if (!logoUrl || !card.isConnected) return;
-            var logo = document.createElement('img');
-            logo.className = 'luno-wide-logo__image';
-            logo.alt = '';
-            logo.src = logoUrl;
-            logo.onerror = function () { overlay.remove(); };
-            overlay.appendChild(logo);
-            view.appendChild(overlay);
+            if (!card.isConnected) return;
+            if (logoUrl) {
+                var logo = document.createElement('img');
+                logo.className = 'luno-wide-logo__image';
+                logo.alt = '';
+                logo.src = logoUrl;
+                logo.onerror = function () { logo.remove(); };
+                overlay.appendChild(logo);
+                view.appendChild(overlay);
+            }
         });
+
+        var descriptionText = data.overview || data.description || data.plot || '';
+        if (descriptionText && typeof descriptionText === 'string') {
+            var description = document.createElement('div');
+            description.className = 'luno-wide-description';
+            description.textContent = descriptionText;
+            description.setAttribute('aria-hidden', 'true');
+            view.appendChild(description);
+        }
     }
 
     function scan(node) {
