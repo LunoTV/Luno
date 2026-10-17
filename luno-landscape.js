@@ -3,6 +3,7 @@
 
     if (window.luno_landscape_cards_loaded) return;
     window.luno_landscape_cards_loaded = true;
+    var started = false;
 
     function imageUrl(path) {
         if (!path || typeof path !== 'string') return '';
@@ -17,7 +18,10 @@
 
         var img = card.querySelector('.card__img');
         var data = card.card_data;
-        if (!img || !data) return;
+        var backdrop = data && imageUrl(data.backdrop_path);
+
+        // Do not force a portrait poster into a landscape frame when no backdrop exists.
+        if (!img || !data || !backdrop) return;
 
         card.setAttribute('data-luno-landscape-ready', '1');
         card.classList.add('luno-landscape-card');
@@ -32,14 +36,14 @@
         }
 
         function useBackdrop() {
-            var backdrop = imageUrl(data.backdrop_path);
-            if (backdrop && img.src !== backdrop) {
-                img.src = backdrop;
+            var currentBackdrop = imageUrl(data.backdrop_path);
+            if (currentBackdrop && img.src !== currentBackdrop) {
+                img.src = currentBackdrop;
             }
         }
 
-        // The native card's "visible" handler may assign the poster after this
-        // listener is registered; run after it to restore the landscape backdrop.
+        // The native "visible" handler may assign the poster after this listener;
+        // run after it to restore the matching landscape backdrop.
         card.addEventListener('visible', useBackdrop);
         useBackdrop();
     }
@@ -54,8 +58,10 @@
     }
 
     function start() {
+        if (started || !document.body) return;
+        started = true;
         scan(document.body);
-        if (!window.MutationObserver || !document.body) return;
+        if (!window.MutationObserver) return;
         var observer = new MutationObserver(function (changes) {
             changes.forEach(function (change) {
                 for (var i = 0; i < change.addedNodes.length; i++) {
@@ -67,15 +73,18 @@
     }
 
     if (window.appready) start();
-    else if (window.Lampa && Lampa.Listener && Lampa.Listener.follow) {
-        Lampa.Listener.follow('app', function (event) {
-            if (event.type === 'ready') start();
-        });
-    } else {
+    else {
+        if (window.Lampa && window.Lampa.Listener && window.Lampa.Listener.follow) {
+            window.Lampa.Listener.follow('app', function (event) {
+                if (event.type === 'ready') start();
+            });
+        }
+
+        // Also cover builds where the ready event fired before this file loaded.
         var attempts = 0;
         var wait = function () {
-            if (window.appready || (window.Lampa && Lampa.Listener)) start();
-            else if (++attempts < 30) window.setTimeout(wait, 500);
+            if (window.appready) start();
+            else if (++attempts < 60) window.setTimeout(wait, 500);
         };
         wait();
     }
