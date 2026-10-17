@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="./vender/scrollbar/jquery.scrollbar.css">
     <link rel="stylesheet" href="./vender/keypad/style.css">
 
-    <link rel="stylesheet" href="css/app.css?v=4.62">
+    <link rel="stylesheet" href="css/app.css?v=4.63">
 </head>
 <body style="background: #1d1f20;">
     <script>
@@ -130,10 +130,6 @@
                     if (img.getAttribute('data-luno-backdrop') === src) return;
 
                     img.setAttribute('data-luno-backdrop', src);
-                    img.onerror = function() {
-                        img.onerror = null;
-                        img.removeAttribute('data-luno-backdrop');
-                    };
                     img.src = src;
                 });
             }
