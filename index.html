@@ -110,7 +110,8 @@
 
         // Fetch official title logos through Lampa's existing TMDB API source (no extra API key).
         var lunoLogoCache = Object.create(null);
-        function loadLunoLogo(data, callback) {
+        function loadLunoLogo(data, callback, attempt) {
+            attempt = attempt || 0;
             var id = data && data.id;
             var type = data && (data.media_type || data.mediaType);
             if (!type) type = data && data.first_air_date ? 'tv' : 'movie';
@@ -118,10 +119,17 @@
             var key = type + ':' + id;
             if (Object.prototype.hasOwnProperty.call(lunoLogoCache, key)) {
                 if (lunoLogoCache[key]) setTimeout(function () { callback(lunoLogoCache[key]); }, 0);
+                else if (attempt === 0) {
+                    // A first request can race Lampa's proxy/plugin initialization. Retry once.
+                    setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
+                }
                 return;
             }
             var api = window.Lampa && Lampa.Api && Lampa.Api.sources && Lampa.Api.sources.tmdb;
-            if (!api || typeof api.get !== 'function') return;
+            if (!api || typeof api.get !== 'function') {
+                if (attempt === 0) setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
+                return;
+            }
             lunoLogoCache[key] = '';
             try {
                 api.get(type + '/' + encodeURIComponent(id) + '/images', {
@@ -141,11 +149,17 @@
                     var url = path ? 'https://image.tmdb.org/t/p/original' + path : '';
                     lunoLogoCache[key] = url;
                     if (url) callback(url);
+                    else if (attempt === 0) {
+                        delete lunoLogoCache[key];
+                        setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
+                    }
                 }, function () {
-                    lunoLogoCache[key] = '';
+                    delete lunoLogoCache[key];
+                    if (attempt === 0) setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
                 });
             } catch (e) {
-                lunoLogoCache[key] = '';
+                delete lunoLogoCache[key];
+                if (attempt === 0) setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
             }
         }
 
