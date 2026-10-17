@@ -73,9 +73,10 @@
 
 /* No generated text title: show only actual logo artwork when available. */
 
-/* Clean artwork only: remove every text/logo overlay from the poster card. */
-.card.luno-wide-card .luno-wide-logo,
+
+/* Hide text and metadata, but keep the real TMDB logo centered over the backdrop. */
 .card.luno-wide-card .card__title,
+.card.luno-wide-card .card__name,
 .card.luno-wide-card .card__vote,
 .card.luno-wide-card .card__year,
 .card.luno-wide-card .card__age,
@@ -93,19 +94,26 @@
     display: none !important;
 }
 
-/* Force clean artwork: hide all text and badges inside wide-card artwork. */
-.card.luno-wide-card .card__view > :not(.card__img),
-.card.luno-wide-card .card__view .card__title,
-.card.luno-wide-card .card__view .card__name,
-.card.luno-wide-card .card__view .card__vote,
-.card.luno-wide-card .card__view .card__details,
-.card.luno-wide-card .card__view .card__quality,
-.card.luno-wide-card .card__view .card__age,
-.card.luno-wide-card .card__view .card__year,
-.card.luno-wide-card .card__view .card__icons,
-.card.luno-wide-card .card__view .card__descr,
-.card.luno-wide-card .card__view .card__info,
-.card.luno-wide-card .card__view .card__meta,
-.card.luno-wide-card .card__view .luno-wide-logo {
-    display: none !important;
+/* The TMDB graphic logo is the only overlay and is centered on the artwork. */
+.card.luno-wide-card .card__view { position: relative; }
+.card.luno-wide-card .luno-wide-logo {
+    display: flex !important;
+    position: absolute;
+    z-index: 10;
+    left: 8%;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.card.luno-wide-card .luno-wide-logo__image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 84%;
+    max-height: 4.5em;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 7px rgba(0, 0, 0, .9));
 }
