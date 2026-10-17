@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="./vender/scrollbar/jquery.scrollbar.css">
     <link rel="stylesheet" href="./vender/keypad/style.css">
 
-    <link rel="stylesheet" href="css/app.css?v=4.80">
+    <link rel="stylesheet" href="css/app.css?v=4.81">
 </head>
 <body style="background: #1d1f20;">
     <script>
@@ -213,27 +213,38 @@
                     var backdropPath = typeof data.backdrop_path === 'string' && data.backdrop_path.charAt(0) === '/' ? data.backdrop_path : '';
                     var posterPath = typeof data.poster_path === 'string' && data.poster_path.charAt(0) === '/' ? data.poster_path : '';
                     var src = backdropPath
-                        ? 'https://image.tmdb.org/t/p/w780' + backdropPath
+                        ? 'https://image.tmdb.org/t/p/w1280' + backdropPath
                         : (posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '');
+                    var posterSrc = posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '';
                     var imageKey = itemKey + '|' + backdropPath + '|' + posterPath;
 
                     if (img.getAttribute('data-luno-image-key') !== imageKey) {
                         img.setAttribute('data-luno-image-key', imageKey);
                         img.setAttribute('data-luno-image-path', src);
-                        img.setAttribute('data-luno-image-fallback', posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '');
+                        img.setAttribute('data-luno-image-fallback', posterSrc);
+                        img.setAttribute('data-luno-active-image-path', src || posterSrc);
+                        img.removeAttribute('data-luno-fallback-tried');
                         img.onerror = function () {
                             var fallback = img.getAttribute('data-luno-image-fallback') || '';
-                            if (fallback && img.src !== fallback && img.getAttribute('data-luno-fallback-tried') !== '1') {
+                            if (fallback && img.getAttribute('data-luno-fallback-tried') !== '1') {
                                 img.setAttribute('data-luno-fallback-tried', '1');
+                                img.setAttribute('data-luno-active-image-path', fallback);
                                 img.src = fallback;
                             }
                         };
                         img.onload = function () {
-                            img.removeAttribute('data-luno-fallback-tried');
+                            // Remember the successful URL so Lampa's later refresh cannot replace it silently.
+                            img.setAttribute('data-luno-active-image-path', img.currentSrc || img.src);
                         };
-                        img.removeAttribute('data-luno-fallback-tried');
                         if (src) img.src = src;
-                        else if (posterPath) img.src = 'https://image.tmdb.org/t/p/w500' + posterPath;
+                        else if (posterSrc) img.src = posterSrc;
+                    } else {
+                        // Lampa can rewrite card image URLs after first render. Restore the selected artwork.
+                        var activeImage = img.getAttribute('data-luno-active-image-path') || src || posterSrc;
+                        var actualImage = img.currentSrc || img.src || '';
+                        if (activeImage && actualImage !== activeImage && img.getAttribute('data-luno-fallback-tried') !== '1') {
+                            img.src = activeImage;
+                        }
                     }
 
                     // Keep the text overlay in sync if Lampa recycles a card for another item.
