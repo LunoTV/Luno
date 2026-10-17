@@ -16601,125 +16601,6 @@ body.glass--style.platform--android .player-chat__body {
 
 
 
-/* Luno: wide landscape cards for the first two home rows */
-html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
-.head {
-  background: linear-gradient(180deg, rgba(0,0,0,.96), rgba(0,0,0,.72) 72%, transparent);
-}
-.head__body { min-height: 4.2em; padding: .45em 1.4em; }
-.head__title { font-weight: 400; }
-
-/* Target the actual row elements regardless of their nested wrapper */
-.items-line { padding-bottom: 3.1em; }
-.items-line .items-line__head {
-  padding: 0 1.4em;
-  margin-bottom: 1.1em;
-}
-.items-line .items-line__title {
-  font-size: 1.65em;
-  letter-spacing: -.025em;
-}
-.items-line .items-line__body .scroll__content {
-  padding: 0 1.4em;
-}
-.items-line .items-cards { gap: .85em; }
-.items-line .items-cards .card {
-  width: 46em !important;
-  flex: 0 0 46em;
-}
-.items-line .card__view {
-  padding-bottom: 48% !important;
-  margin-bottom: 0 !important;
-  overflow: hidden;
-  border-radius: .7em;
-  background: #141414;
-}
-.items-line .card__img,
-.items-line .card__filter { border-radius: .7em !important; }
-.items-line .card__img {
-  background-size: cover !important;
-  background-position: center 35% !important;
-}
-.items-line .card__textbox {
-  padding: .8em 1em;
-  border-radius: .7em !important;
-  background: linear-gradient(180deg, transparent 18%, rgba(0,0,0,.18) 42%, rgba(0,0,0,.88) 100%);
-}
-.items-line .card__title {
-  font-size: 1.28em;
-  line-height: 1.15;
-  max-height: 2.3em;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-}
-.items-line .card__age { margin-top: .35em; }
-.items-line .card__vote { border-radius: .3em; }
-.items-line .card.focus .card__view {
-  box-shadow: 0 0 0 .16em rgba(255,255,255,.9);
-}
-@media screen and (max-width: 767px) {
-  .head__body { padding: .35em .7em; }
-  .items-line .items-line__head,
-  .items-line .items-line__body .scroll__content {
-    padding-left: .8em;
-    padding-right: .8em;
-  }
-  .items-line .items-cards .card {
-    width: min(90vw, 46em) !important;
-    flex-basis: min(90vw, 46em);
-  }
-}
-
-
-
-/* TV sizing: show about three and a half landscape cards per row */
-.items-line .items-cards .card {
-  width: clamp(25rem, 48vw, 85rem) !important;
-  flex: 0 0 clamp(25rem, 48vw, 85rem) !important;
-}
-.items-line .card__view {
-  padding-bottom: 48% !important;
-}
-@media screen and (max-width: 767px) {
-  .items-line .items-cards .card {
-    width: 88vw !important;
-    flex-basis: 88vw !important;
-  }
-}
-
-
-/* Luno: render real TMDB backdrops as full-bleed landscape artwork */
-.items-line .card__view .card__img {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-}
-.items-line .card__view {
-  position: relative;
-}
-
-
-/* Fine-tune TV sizing: slightly smaller landscape cards */
-.items-line .items-cards .card,
-.items-line .card {
-  width: 25vw !important;
-  flex: 0 0 25vw !important;
-  max-width: none !important;
-}
-.items-line .card__view {
-  padding-bottom: 48% !important;
-}
-@media screen and (max-width: 767px) {
-  .items-line .items-cards .card,
-  .items-line .card {
-    width: 88vw !important;
-    flex-basis: 88vw !important;
-  }
-}
-
-
 /* Luno header: keep the original title in its left-side slot to avoid overlapping controls */
 .head {
   background: linear-gradient(180deg, rgba(0,0,0,.98), rgba(0,0,0,.84) 72%, transparent) !important;
@@ -17370,38 +17251,36 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
 }
 
 
-/* Luno artwork lock v4.84: use a fixed landscape frame and resist Lampa's poster-image CSS resets on every device. */
-.items-line .card.luno-card-enhanced .card__view,
-.items-line .card.luno-card-enhanced .card__view > .card__img,
-.items-line .card.luno-card-enhanced .card__view > img.card__img {
-  box-sizing: border-box !important;
-}
+
+/* Luno consolidated artwork/card system v4.85.
+   Single source of truth for artwork geometry; only card widths and text scale vary by device. */
+.items-line .items-cards .card,
+.items-line .card { min-width: 0 !important; }
+.items-line .card.luno-card-enhanced .card__title,
+.items-line .card.luno-card-enhanced .card__age { display: none !important; }
 .items-line .card.luno-card-enhanced .card__view {
   position: relative !important;
   display: block !important;
+  box-sizing: border-box !important;
   width: 100% !important;
   height: auto !important;
   aspect-ratio: 16 / 9 !important;
   padding: 0 !important;
+  margin: 0 !important;
   overflow: hidden !important;
   isolation: isolate !important;
+  border-radius: .7em !important;
+  background: #050505 !important;
 }
 .items-line .card.luno-card-enhanced .card__view .card__img {
   position: absolute !important;
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  left: 0 !important;
+  top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important;
   display: block !important;
   box-sizing: border-box !important;
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 100% !important;
-  min-height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  width: 100% !important; height: 100% !important;
+  min-width: 100% !important; min-height: 100% !important;
+  max-width: none !important; max-height: none !important;
+  margin: 0 !important; padding: 0 !important;
   object-fit: cover !important;
   object-position: center center !important;
   transform: none !important;
@@ -17410,14 +17289,93 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
   position: absolute !important;
   inset: 0 !important;
   z-index: 5 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  min-width: 0 !important;
   overflow: hidden !important;
+  padding: 3.4em 0 .25em !important;
+  color: #fff !important;
+  text-align: center !important;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,.12) 42%, rgba(0,0,0,.82) 76%, rgba(0,0,0,.98) 100%) !important;
+  pointer-events: none !important;
 }
-@media screen and (max-width: 767px) {
-  .items-line .card.luno-card-enhanced .card__view { aspect-ratio: 16 / 9 !important; }
+.items-line .card.luno-card-enhanced .luno-card-promo__logo {
+  display: block !important; flex: 0 1 auto !important;
+  width: auto !important; max-width: 88% !important; max-height: 30% !important;
+  object-fit: contain !important; margin: 0 auto .35em !important;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,.9)) !important;
 }
+.items-line .card.luno-card-enhanced .luno-card-promo__title {
+  max-width: 96% !important; margin: 0 auto .25em !important;
+  color: #fff !important; font-family: Arial, "Helvetica Neue", sans-serif !important;
+  font-size: clamp(1em, 2.2vw, 1.65em) !important;
+  font-weight: 800 !important; letter-spacing: -.03em !important; line-height: 1.08 !important;
+  text-align: center !important; overflow-wrap: anywhere !important;
+  text-shadow: 0 2px 10px rgba(0,0,0,1), 0 0 3px rgba(0,0,0,.95) !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo__title--fallback { display: none !important; }
+.items-line .card.luno-card-enhanced .luno-card-promo__overview {
+  display: -webkit-box !important; width: 100% !important; max-width: 100% !important;
+  max-height: 2.46em !important; margin: 0 auto .35em !important; padding: 0 .65em !important;
+  box-sizing: border-box !important; color: rgba(255,255,255,.95) !important;
+  font-size: .82em !important; font-weight: 500 !important; line-height: 1.23 !important;
+  text-align: center !important; text-shadow: 0 1px 5px rgba(0,0,0,.95) !important;
+  -webkit-line-clamp: 2 !important; line-clamp: 2 !important; -webkit-box-orient: vertical !important;
+  overflow: hidden !important; overflow-wrap: anywhere !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-meta {
+  position: relative !important; inset: auto !important; z-index: 6 !important;
+  flex: 0 0 auto !important; width: 100% !important; min-width: 0 !important;
+  min-height: 2.35em !important; box-sizing: border-box !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  gap: .3em !important; margin: 0 !important; padding: .25em .4em !important;
+  border-top: 1px solid rgba(255,255,255,.18) !important; border-radius: 0 0 .7em .7em !important;
+  background: rgba(0,0,0,.88) !important; color: rgba(255,255,255,.82) !important;
+  font-size: .82em !important; font-weight: 700 !important; line-height: 1.15 !important;
+  white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+  backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-meta > span { flex: 0 0 auto !important; }
+.items-line .card.luno-card-enhanced .luno-card-meta__quality { color: #38c981 !important; }
+.items-line .card.luno-card-enhanced .luno-card-meta__rating { color: #a4d7bc !important; }
+.items-line .card.luno-card-enhanced .luno-card-meta__year { color: rgba(255,255,255,.85) !important; }
+.items-line .card.luno-card-enhanced .luno-card-meta__type { color: rgba(255,255,255,.66) !important; }
+
+/* Large TV and desktop */
+@media screen and (min-width: 1600px) {
+  .items-line .items-cards .card, .items-line .card { width: 24vw !important; flex-basis: 24vw !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title { font-size: 1.3em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview { font-size: .88em !important; }
+}
+/* Standard laptops and desktops */
+@media screen and (min-width: 1101px) and (max-width: 1599px) {
+  .items-line .items-cards .card, .items-line .card { width: 27vw !important; flex-basis: 27vw !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title { font-size: 1.12em !important; }
+}
+/* Tablets and compact windows */
 @media screen and (min-width: 768px) and (max-width: 1100px) {
-  .items-line .card.luno-card-enhanced .card__view { aspect-ratio: 16 / 9 !important; }
+  .items-line .items-cards .card, .items-line .card { width: 38vw !important; flex-basis: 38vw !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo { padding: .5em .2em .1em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title { font-size: .95em !important; margin-bottom: .18em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview { font-size: .72em !important; line-height: 1.18 !important; max-height: 2.36em !important; margin-bottom: .25em !important; padding: 0 .4em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-meta { min-height: 2.1em !important; font-size: .72em !important; }
 }
-@media screen and (min-width: 1101px) {
+/* Phones */
+@media screen and (max-width: 767px) {
+  .items-line .items-cards .card, .items-line .card { width: 84vw !important; flex-basis: 84vw !important; }
   .items-line .card.luno-card-enhanced .card__view { aspect-ratio: 16 / 9 !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo { padding: 2.8em .15em 0 !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__logo { max-width: 80% !important; max-height: 25% !important; margin-bottom: .18em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title { max-width: 94% !important; font-size: .9em !important; line-height: 1.05 !important; margin-bottom: .16em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview { max-height: 2.25em !important; font-size: .68em !important; line-height: 1.12 !important; margin-bottom: .2em !important; padding: 0 .35em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-meta { min-height: 2em !important; gap: .22em !important; padding: .2em .25em !important; font-size: .67em !important; }
+}
+/* Very narrow phones */
+@media screen and (max-width: 380px) {
+  .items-line .items-cards .card, .items-line .card { width: 88vw !important; flex-basis: 88vw !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview { font-size: .63em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-meta { font-size: .61em !important; }
 }
