@@ -25,3 +25,13 @@
 .card.luno-wide-card .card__vote {
     display: none !important;
 }
+
+/* Hide release year and other card metadata on wide posters. */
+.card.luno-wide-card .card__year,
+.card.luno-wide-card .card__age,
+.card.luno-wide-card .card__quality,
+.card.luno-wide-card .card__category,
+.card.luno-wide-card .card__details,
+.card.luno-wide-card .card__meta {
+    display: none !important;
+}
