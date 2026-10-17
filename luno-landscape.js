@@ -70,25 +70,9 @@
             view.appendChild(label);
         }
 
-        function setLogo(path) {
-            if (!path || !view) return;
-            var logo = card.querySelector('.luno-card__logo');
-            if (!logo) {
-                logo = document.createElement('img');
-                logo.className = 'luno-card__logo';
-                logo.alt = title;
-                logo.loading = 'lazy';
-                logo.onerror = function () { logo.remove(); };
-                view.appendChild(logo);
-            }
-            logo.src = 'https://image.tmdb.org/t/p/w500' + path;
-            if (label) label.style.display = 'none';
-        }
-
-        if (data.logo_path) setLogo(data.logo_path);
-
-        // Query TMDB for Russian wide artwork and localized transparent logos.
-        // This runs even when the card already supplies a logo, so backdrop selection is not skipped.
+        // Prefer TMDB's actual Russian wide artwork (often with the title/logo already printed on it).
+        // Only use a plain Russian text title if TMDB has no suitable localized backdrop.
+        var activeBackdrop = backdrop;
         var mediaType = data.media_type || (data.name || data.original_name ? 'tv' : 'movie');
         var mediaId = data.id;
         if (mediaId && window.fetch && !card.getAttribute('data-luno-images-requested')) {
@@ -100,20 +84,28 @@
                 return response.json();
             }).then(function (result) {
                 if (!card.isConnected) return;
-                if (!data.logo_path) {
-                    var logos = result && result.logos || [];
-                    var preferred = logos.find(function (item) { return item.iso_639_1 === 'ru'; }) ||
-                        logos.find(function (item) { return item.iso_639_1 === 'en'; }) ||
-                        logos.find(function (item) { return !item.iso_639_1; }) || logos[0];
-                    if (preferred && preferred.file_path) setLogo(preferred.file_path);
-                }
+                var backdrops = result && result.backdrops || [];
+                var russianBackdrop = backdrops.filter(function (item) {
+                    return item.iso_639_1 === 'ru' && item.file_path &&
+                        item.width >= item.height * 1.6;
+                }).sort(function (a, b) {
+                    return (b.vote_average || 0) - (a.vote_average || 0);
+                })[0];
 
-            }).catch(function () { /* The backdrop and localized title fallback remain available. */ });
+                if (russianBackdrop) {
+                    activeBackdrop = 'https://image.tmdb.org/t/p/w780' + russianBackdrop.file_path;
+                    img.src = activeBackdrop;
+                    if (label) label.style.display = 'none';
+                } else if (label) {
+                    label.style.display = '';
+                }
+            }).catch(function () {
+                if (label) label.style.display = '';
+            });
         }
 
         function useBackdrop() {
-            var currentBackdrop = imageUrl(data.backdrop_path);
-            if (currentBackdrop && img.src !== currentBackdrop) img.src = currentBackdrop;
+            if (activeBackdrop && img.src !== activeBackdrop) img.src = activeBackdrop;
         }
 
         card.addEventListener('visible', useBackdrop);
