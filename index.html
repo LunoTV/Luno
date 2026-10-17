@@ -159,6 +159,22 @@
                             title.textContent = data.title || data.name || '';
                             promo.appendChild(title);
 
+                            // If the TMDB record already carries a real logo URL, use it rather than recreating the logo with text.
+                            var logoUrl = data.logo || data.logo_path || data.images && data.images.logo;
+                            if (typeof logoUrl === 'string' && logoUrl) {
+                                if (logoUrl.charAt(0) === '/') logoUrl = 'https://image.tmdb.org/t/p/w500' + logoUrl;
+                                if (/^https?:\\/\\//i.test(logoUrl)) {
+                                    var logo = document.createElement('img');
+                                    logo.className = 'luno-card-promo__logo';
+                                    logo.alt = data.title || data.name || '';
+                                    logo.loading = 'lazy';
+                                    logo.src = logoUrl;
+                                    logo.onerror = function() { logo.remove(); };
+                                    promo.insertBefore(logo, title);
+                                    title.classList.add('luno-card-promo__title--fallback');
+                                }
+                            }
+
                             if (data.overview && typeof data.overview === 'string') {
                                 var overview = document.createElement('div');
                                 overview.className = 'luno-card-promo__overview';
