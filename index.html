@@ -123,14 +123,30 @@
                 cards.forEach(function(card) {
                     var data = card.card_data;
                     var img = card.querySelector('.card__img');
-                    if (!data || !img || !data.backdrop_path || typeof data.backdrop_path !== 'string') return;
-                    if (data.backdrop_path.charAt(0) !== '/') return;
+                    if (!data || !img) return;
 
-                    var src = 'https://image.tmdb.org/t/p/w780' + data.backdrop_path;
-                    if (img.getAttribute('data-luno-backdrop') === src) return;
+                    // Tie the artwork to the current item's own TMDB paths, including reused cards.
+                    var itemKey = String(data.id || data.title || data.name || '') + '|' + String(data.media_type || data.mediaType || '');
+                    var backdropPath = typeof data.backdrop_path === 'string' && data.backdrop_path.charAt(0) === '/' ? data.backdrop_path : '';
+                    var posterPath = typeof data.poster_path === 'string' && data.poster_path.charAt(0) === '/' ? data.poster_path : '';
+                    var src = backdropPath
+                        ? 'https://image.tmdb.org/t/p/w780' + backdropPath
+                        : (posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '');
 
-                    img.setAttribute('data-luno-backdrop', src);
-                    img.src = src;
+                    if (src && (img.getAttribute('data-luno-item-key') !== itemKey || img.getAttribute('data-luno-image-path') !== src)) {
+                        img.setAttribute('data-luno-item-key', itemKey);
+                        img.setAttribute('data-luno-image-path', src);
+                        img.src = src;
+                    }
+
+                    // Keep the text overlay in sync if Lampa recycles a card for another item.
+                    var existingPromo = card.querySelector('.luno-card-promo');
+                    if (existingPromo && card.getAttribute('data-luno-promo-key') !== itemKey) {
+                        existingPromo.remove();
+                        var existingMeta = card.querySelector('.luno-card-meta');
+                        if (existingMeta) existingMeta.remove();
+                        card.classList.remove('luno-card-enhanced');
+                    }
 
                     // Add native-data promo overlay and metadata strip to every landscape card.
                     if (!card.classList.contains('luno-card-enhanced')) {
@@ -150,6 +166,7 @@
                                 promo.appendChild(overview);
                             }
                             view.appendChild(promo);
+                            card.setAttribute('data-luno-promo-key', itemKey);
 
                             var meta = document.createElement('div');
                             meta.className = 'luno-card-meta';
@@ -217,6 +234,11 @@
                 });
             });
             root.__lunoBackdropObserver.observe(root, { childList: true, subtree: true });
+
+            // Lampa may recycle card nodes without inserting new DOM nodes; reconcile item IDs and image paths.
+            root.__lunoBackdropTimer = setInterval(function() {
+                updateBackdrops(root);
+            }, 1500);
         }
 
         function loadCurrentLampa() {
