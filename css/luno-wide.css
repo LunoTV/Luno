@@ -1,0 +1,21 @@
+/* Minimal 16:9 card artwork. No logo/title overlays or metadata changes. */
+.card.luno-wide-card {
+    width: 18em;
+    flex-shrink: 0;
+}
+.card.luno-wide-card .card__view {
+    padding-bottom: 56.25% !important;
+    height: 0 !important;
+    overflow: hidden;
+    border-radius: .55em;
+}
+.card.luno-wide-card .card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    border-radius: .55em;
+}
+@media screen and (max-width: 700px) {
+    .card.luno-wide-card { width: 14em; }
+}
