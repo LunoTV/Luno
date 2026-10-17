@@ -73,6 +73,15 @@
                 logo.onerror = function () { logo.remove(); };
                 overlay.appendChild(logo);
                 view.appendChild(overlay);
+            } else {
+                var titleText = data.title || data.name || '';
+                if (titleText) {
+                    var title = document.createElement('div');
+                    title.className = 'luno-wide-title-fallback';
+                    title.textContent = titleText;
+                    title.setAttribute('aria-hidden', 'true');
+                    view.appendChild(title);
+                }
             }
         });
 
