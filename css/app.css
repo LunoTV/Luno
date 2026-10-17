@@ -17091,3 +17091,57 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
     padding-right: .3em !important;
   }
 }
+
+
+/* Luno compact Prisma-inspired header: remove clock/status and secondary actions */
+.head {
+  background: rgba(0,0,0,.94) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+.head__body {
+  min-height: 3.2em !important;
+  padding: .25em 1.1em !important;
+  gap: 1em !important;
+}
+.head__time,
+.head__markers,
+.head__split {
+  display: none !important;
+}
+.head__actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: .65em !important;
+  margin-left: auto !important;
+}
+/* Keep search and fullscreen; hide bell, settings and profile to reduce clutter. */
+.head__actions .head__action:not(:first-child):not(:nth-child(5)) {
+  display: none !important;
+}
+.head__action {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.head__action svg {
+  width: 1.35em !important;
+  height: 1.35em !important;
+}
+.head__title {
+  max-width: 28vw !important;
+  font-size: .95em !important;
+  font-weight: 500 !important;
+}
+@media screen and (max-width: 767px) {
+  .head__body {
+    min-height: 2.8em !important;
+    padding: .2em .65em !important;
+    gap: .55em !important;
+  }
+  .head__title {
+    max-width: 45vw !important;
+  }
+  .head__actions {
+    gap: .3em !important;
+  }
+}
