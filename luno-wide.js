@@ -40,22 +40,17 @@
         overlay.className = 'luno-wide-logo';
         overlay.setAttribute('aria-hidden', 'true');
 
-        function showText() {
-            overlay.classList.add('luno-wide-logo--text');
-            overlay.textContent = data.title || data.name || '';
-        }
-
         var logoUrl = findLogo(data);
-        if (logoUrl) {
-            var logo = document.createElement('img');
-            logo.className = 'luno-wide-logo__image';
-            logo.alt = '';
-            logo.src = logoUrl;
-            logo.onerror = showText;
-            overlay.appendChild(logo);
-        } else {
-            showText();
-        }
+        if (!logoUrl) return;
+
+        var logo = document.createElement('img');
+        logo.className = 'luno-wide-logo__image';
+        logo.alt = '';
+        logo.src = logoUrl;
+        logo.onerror = function () {
+            overlay.remove();
+        };
+        overlay.appendChild(logo);
         view.appendChild(overlay);
     }
 
