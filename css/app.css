@@ -16686,3 +16686,16 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
     flex-basis: 88vw !important;
   }
 }
+
+
+/* Luno: render real TMDB backdrops as full-bleed landscape artwork */
+.items-line .card__view .card__img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+.items-line .card__view {
+  position: relative;
+}
