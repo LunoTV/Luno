@@ -153,11 +153,20 @@
 
                             var meta = document.createElement('div');
                             meta.className = 'luno-card-meta';
-                            var quality = data.quality || data.video_quality || data.resolution || '';
+                            // Show quality only when the item explicitly supplies a recognized quality value.
+                            var rawQuality = data.quality || data.video_quality || data.resolution || '';
+                            var qualityText = String(rawQuality).trim().toUpperCase().replace(/\\s+/g, '');
+                            var qualityAliases = {
+                                '4K': '4K', 'UHD': '4K', '2160P': '4K',
+                                '1080P': 'FULL HD', 'FHD': 'FULL HD', 'FULLHD': 'FULL HD', 'FULL-HD': 'FULL HD',
+                                '720P': 'HD', 'HD': 'HD',
+                                '480P': 'SD', 'SD': 'SD'
+                            };
+                            var quality = qualityAliases[qualityText] || '';
                             if (quality) {
                                 var q = document.createElement('span');
                                 q.className = 'luno-card-meta__quality';
-                                q.textContent = String(quality).toUpperCase();
+                                q.textContent = quality;
                                 meta.appendChild(q);
                                 meta.appendChild(document.createTextNode(' • '));
                             }
@@ -178,6 +187,18 @@
                                 yearEl.className = 'luno-card-meta__year';
                                 yearEl.textContent = year[0];
                                 meta.appendChild(yearEl);
+                            }
+
+                            // Use TMDB's media type/date fields to label the content accurately.
+                            var mediaType = data.media_type || data.mediaType || '';
+                            var isSeries = mediaType === 'tv' || !!data.first_air_date || !!data.origin_country && !!data.name && !data.release_date;
+                            var typeLabel = isSeries ? 'СЕРИАЛ' : (mediaType === 'movie' || !!data.release_date || !!data.title ? 'ФИЛЬМ' : '');
+                            if (typeLabel) {
+                                if (meta.childNodes.length) meta.appendChild(document.createTextNode(' • '));
+                                var typeEl = document.createElement('span');
+                                typeEl.className = 'luno-card-meta__type';
+                                typeEl.textContent = typeLabel;
+                                meta.appendChild(typeEl);
                             }
 
                             if (meta.childNodes.length) card.appendChild(meta);
