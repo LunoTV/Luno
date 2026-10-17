@@ -16641,677 +16641,40 @@ body.glass--style.platform--android .player-chat__body {
 }
 
 
-/* Prisma-inspired native Luno cards: artwork, title/overview overlay, metadata footer */
-.items-line .card.luno-card-enhanced .card__title,
-.items-line .card.luno-card-enhanced .card__age {
-  display: none !important;
-}
-.items-line .card.luno-card-enhanced .card__view {
-  position: relative !important;
-  overflow: hidden !important;
-  padding-bottom: 48% !important;
-  border-radius: .7em .7em 0 0 !important;
-}
-.items-line .card.luno-card-enhanced .card__img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
-.items-line .luno-card-promo {
-  position: absolute !important;
-  inset: auto 0 0 0 !important;
-  z-index: 3 !important;
-  padding: 2.8em .9em .8em !important;
-  color: #fff !important;
-  text-align: center !important;
-  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.76) 54%, rgba(0,0,0,.97) 100%) !important;
-  pointer-events: none !important;
-}
-.items-line .luno-card-promo__title {
-  font-size: 1.2em !important;
-  line-height: 1.12 !important;
-  font-weight: 700 !important;
-  margin-bottom: .3em !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,.8) !important;
-}
-.items-line .luno-card-promo__overview {
-  font-size: .83em !important;
-  line-height: 1.25 !important;
-  color: rgba(255,255,255,.88) !important;
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  max-height: 2.5em !important;
-}
-.items-line .luno-card-meta {
-  min-height: 2.25em !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: .35em !important;
-  padding: .25em .5em !important;
-  margin: 0 !important;
-  border-top: 1px solid rgba(255,255,255,.08) !important;
-  border-radius: 0 0 .7em .7em !important;
-  background: #050505 !important;
-  color: rgba(255,255,255,.78) !important;
-  font-size: .82em !important;
-  font-weight: 600 !important;
-  line-height: 1.15 !important;
-}
-.items-line .luno-card-meta__quality {
-  color: #38c981 !important;
-  font-weight: 800 !important;
-}
-.items-line .luno-card-meta__rating {
-  color: #a4d7bc !important;
-}
-.items-line .luno-card-meta__year {
-  color: rgba(255,255,255,.76) !important;
-}
-.items-line .card.luno-card-enhanced.focus .card__view {
-  box-shadow: 0 0 0 .16em rgba(255,255,255,.9) !important;
-}
-@media screen and (max-width: 767px) {
-  .items-line .luno-card-promo__title { font-size: 1em !important; }
-  .items-line .luno-card-promo__overview { font-size: .75em !important; }
-  .items-line .luno-card-meta { font-size: .75em !important; }
-}
 
-
-/* Prisma-like finish: elegant title typography and metadata inside the artwork */
-.items-line .card.luno-card-enhanced .card__view {
-  position: relative !important;
-  overflow: hidden !important;
-  padding-bottom: 56% !important;
-  border-radius: .7em !important;
-  background: #050505 !important;
-}
-.items-line .card.luno-card-enhanced .card__img {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo {
-  inset: auto 0 2.35em 0 !important;
-  padding: 3.2em .9em .7em !important;
-  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.18) 20%, rgba(0,0,0,.84) 100%) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__title {
-  font-family: "Arial", "Helvetica Neue", sans-serif !important;
-  font-size: 1.28em !important;
-  font-weight: 800 !important;
-  letter-spacing: -.025em !important;
-  line-height: 1.08 !important;
-  margin-bottom: .35em !important;
-  color: #fff !important;
-  text-shadow: 0 2px 8px rgba(0,0,0,.9) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__overview {
-  font-size: .84em !important;
-  line-height: 1.23 !important;
-  -webkit-line-clamp: 2 !important;
-  line-clamp: 2 !important;
-  max-height: 2.46em !important;
-  text-shadow: 0 1px 4px rgba(0,0,0,.9) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-meta {
-  position: absolute !important;
-  z-index: 4 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  min-height: 2.35em !important;
-  box-sizing: border-box !important;
-  border-top: 1px solid rgba(255,255,255,.16) !important;
-  border-radius: 0 0 .7em .7em !important;
-  background: rgba(0,0,0,.91) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  font-size: .82em !important;
-}
-
-
-/* Premium poster typography: let supplied artwork logos lead, keep plain titles cinematic */
-.items-line .card.luno-card-enhanced .luno-card-promo {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-end !important;
-  inset: 0 0 2.35em 0 !important;
-  padding: 1.2em .9em .65em !important;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 18%, rgba(0,0,0,.08) 42%, rgba(0,0,0,.84) 100%) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__logo {
-  display: block !important;
-  width: auto !important;
-  max-width: 86% !important;
-  max-height: 34% !important;
-  object-fit: contain !important;
-  margin: 0 auto .45em !important;
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,.85)) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__title {
-  font-family: "Arial", "Helvetica Neue", sans-serif !important;
-  font-size: 1.22em !important;
-  font-weight: 800 !important;
-  letter-spacing: -.035em !important;
-  line-height: 1.08 !important;
-  text-transform: none !important;
-  text-align: center !important;
-  max-width: 96% !important;
-  margin: 0 auto .32em !important;
-  text-shadow: 0 2px 8px rgba(0,0,0,.95), 0 0 2px rgba(0,0,0,.8) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__title--fallback {
-  display: none !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__overview {
-  width: 100% !important;
-  text-align: center !important;
-  font-size: .82em !important;
-  font-weight: 500 !important;
-  color: rgba(255,255,255,.94) !important;
-  text-shadow: 0 1px 5px rgba(0,0,0,.95) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-meta {
-  font-size: .82em !important;
-  font-weight: 700 !important;
-  letter-spacing: .01em !important;
-}
-
-
-/* Corrected unified overlay: artwork, title, synopsis and metadata share one card surface */
-.items-line .card.luno-card-enhanced .card__view {
-  position: relative !important;
-  overflow: hidden !important;
-  padding-bottom: 56% !important;
-  border-radius: .7em !important;
-  background: #050505 !important;
-}
-.items-line .card.luno-card-enhanced .card__img {
-  position: absolute !important;
-  inset: 0 !important;
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 5 !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-end !important;
-  padding: 1em 0 0 !important;
-  color: #fff !important;
-  text-align: center !important;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,.12) 42%, rgba(0,0,0,.82) 76%, rgba(0,0,0,.98) 100%) !important;
-  pointer-events: none !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__logo {
-  display: block !important;
-  width: auto !important;
-  max-width: 84% !important;
-  max-height: 30% !important;
-  object-fit: contain !important;
-  margin: 0 auto .35em !important;
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,.9)) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__title {
-  max-width: 96% !important;
-  margin: 0 auto .25em !important;
-  color: #fff !important;
-  font-family: "Arial", "Helvetica Neue", sans-serif !important;
-  font-size: 1.22em !important;
-  font-weight: 800 !important;
-  letter-spacing: -.03em !important;
-  line-height: 1.08 !important;
-  text-align: center !important;
-  text-shadow: 0 2px 8px rgba(0,0,0,.95) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__title--fallback { display: none !important; }
-.items-line .card.luno-card-enhanced .luno-card-promo__overview {
-  width: 100% !important;
-  max-height: 2.46em !important;
-  margin: 0 auto .5em !important;
-  padding: 0 .75em !important;
-  box-sizing: border-box !important;
-  color: rgba(255,255,255,.95) !important;
-  font-size: .82em !important;
-  font-weight: 500 !important;
-  line-height: 1.23 !important;
-  text-align: center !important;
-  text-shadow: 0 1px 5px rgba(0,0,0,.95) !important;
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-meta {
-  position: relative !important;
-  inset: auto !important;
-  z-index: 6 !important;
-  flex: 0 0 auto !important;
-  width: 100% !important;
-  min-height: 2.35em !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: .35em !important;
-  margin: 0 !important;
-  padding: .25em .5em !important;
-  border-top: 1px solid rgba(255,255,255,.18) !important;
-  border-radius: 0 !important;
-  background: rgba(0,0,0,.78) !important;
-  color: rgba(255,255,255,.82) !important;
-  font-size: .82em !important;
-  font-weight: 700 !important;
-  line-height: 1.15 !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-meta__quality { color: #38c981 !important; }
-.items-line .card.luno-card-enhanced .luno-card-meta__rating { color: #a4d7bc !important; }
-.items-line .card.luno-card-enhanced .luno-card-meta__year { color: rgba(255,255,255,.85) !important; }
-.items-line .card.luno-card-enhanced .luno-card-meta__type { color: rgba(255,255,255,.66) !important; }
-@media screen and (max-width: 767px) {
-  .items-line .card.luno-card-enhanced .luno-card-promo__title { font-size: 1em !important; }
-  .items-line .card.luno-card-enhanced .luno-card-promo__overview { font-size: .75em !important; }
-  .items-line .card.luno-card-enhanced .luno-card-meta { font-size: .75em !important; }
-}
-
-
-/* Responsive polish for the Luno cinematic cards */
-.items-line .card.luno-card-enhanced .luno-card-promo__logo {
-  max-width: min(88%, 24em) !important;
-  max-height: 32% !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__overview {
-  max-width: 100% !important;
-  overflow-wrap: anywhere !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-meta {
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  gap: .3em !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-meta > span {
-  flex: 0 0 auto !important;
-}
-@media screen and (max-width: 1100px) {
-  .items-line .card.luno-card-enhanced .luno-card-promo {
-    padding-top: .6em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__logo {
-    max-width: 82% !important;
-    max-height: 28% !important;
-    margin-bottom: .25em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
-    -webkit-line-clamp: 2 !important;
-    line-clamp: 2 !important;
-    font-size: .76em !important;
-    margin-bottom: .35em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-meta {
-    font-size: .76em !important;
-    padding-left: .3em !important;
-    padding-right: .3em !important;
-  }
-}
-
-
-/* Luno compact Prisma-inspired header: remove clock/status and secondary actions */
-.head {
-  background: rgba(0,0,0,.94) !important;
-  border-bottom: 1px solid rgba(255,255,255,.08) !important;
-}
-.head__body {
-  min-height: 3.2em !important;
-  padding: .25em 1.1em !important;
-  gap: 1em !important;
-}
-.head__time,
-.head__markers,
-.head__split {
-  display: none !important;
-}
-.head__actions {
-  display: flex !important;
-  align-items: center !important;
-  gap: .65em !important;
-  margin-left: auto !important;
-}
-/* Keep search and fullscreen; hide bell, settings and profile to reduce clutter. */
-.head__actions .head__action:not(:first-child):not(:nth-child(5)) {
-  display: none !important;
-}
-.head__action {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-.head__action svg {
-  width: 1.35em !important;
-  height: 1.35em !important;
-}
-.head__title {
-  max-width: 28vw !important;
-  font-size: .95em !important;
-  font-weight: 500 !important;
-}
-@media screen and (max-width: 767px) {
-  .head__body {
-    min-height: 2.8em !important;
-    padding: .2em .65em !important;
-    gap: .55em !important;
-  }
-  .head__title {
-    max-width: 45vw !important;
-  }
-  .head__actions {
-    gap: .3em !important;
-  }
-}
-
-
-/* Cross-device layout pass: TV, desktop, tablet and phone */
-.items-line .items-cards .card,
-.items-line .card {
-  min-width: 0 !important;
-}
-.items-line .card.luno-card-enhanced .card__view {
-  aspect-ratio: 16 / 9 !important;
-  padding-bottom: 0 !important;
-}
-.items-line .card.luno-card-enhanced .card__img {
-  position: absolute !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo {
-  min-width: 0 !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__logo {
-  flex: 0 1 auto !important;
-  max-width: 88% !important;
-  max-height: 30% !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__title {
-  overflow-wrap: anywhere !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-meta {
-  min-width: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Large TV and desktop */
-@media screen and (min-width: 1600px) {
-  .items-line .items-cards .card,
-  .items-line .card {
-    width: 24vw !important;
-    flex: 0 0 24vw !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__title {
-    font-size: 1.3em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
-    font-size: .88em !important;
-  }
-}
-
-/* Standard laptops and desktops */
-@media screen and (min-width: 1101px) and (max-width: 1599px) {
-  .items-line .items-cards .card,
-  .items-line .card {
-    width: 27vw !important;
-    flex: 0 0 27vw !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__title {
-    font-size: 1.12em !important;
-  }
-}
-
-/* Tablets and compact windows */
-@media screen and (min-width: 768px) and (max-width: 1100px) {
-  .items-line .items-cards .card,
-  .items-line .card {
-    width: 38vw !important;
-    flex: 0 0 38vw !important;
-  }
-  .head__body {
-    min-height: 3em !important;
-    padding: .25em .8em !important;
-  }
-  .head__title {
-    max-width: 38vw !important;
-    font-size: .9em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo {
-    padding: .5em .2em 0 !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__title {
-    font-size: .95em !important;
-    margin-bottom: .18em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
-    font-size: .72em !important;
-    line-height: 1.18 !important;
-    max-height: 2.36em !important;
-    margin-bottom: .25em !important;
-    padding: 0 .4em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-meta {
-    min-height: 2.1em !important;
-    font-size: .72em !important;
-  }
-}
-
-/* Phones */
-@media screen and (max-width: 767px) {
-  .items-line .items-cards .card,
-  .items-line .card {
-    width: 84vw !important;
-    flex: 0 0 84vw !important;
-  }
-  .head__body {
-    min-height: 2.8em !important;
-    padding: .2em .55em !important;
-    gap: .4em !important;
-  }
-  .head__title {
-    max-width: 42vw !important;
-    font-size: .82em !important;
-  }
-  .head__actions {
-    gap: .2em !important;
-  }
-  .head__action svg {
-    width: 1.2em !important;
-    height: 1.2em !important;
-  }
-  .items-line .card.luno-card-enhanced .card__view {
-    border-radius: .55em .55em 0 0 !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo {
-    padding: .45em .15em 0 !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__logo {
-    max-width: 80% !important;
-    max-height: 25% !important;
-    margin-bottom: .18em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__title {
-    max-width: 94% !important;
-    font-size: .9em !important;
-    line-height: 1.05 !important;
-    margin-bottom: .16em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
-    max-height: 2.25em !important;
-    font-size: .68em !important;
-    line-height: 1.12 !important;
-    margin-bottom: .2em !important;
-    padding: 0 .35em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-meta {
-    min-height: 2em !important;
-    gap: .22em !important;
-    padding: .2em .25em !important;
-    font-size: .67em !important;
-  }
-}
-
-/* Very narrow phones */
-@media screen and (max-width: 380px) {
-  .items-line .items-cards .card,
-  .items-line .card {
-    width: 88vw !important;
-    flex-basis: 88vw !important;
-  }
-  .head__title {
-    max-width: 38vw !important;
-    font-size: .76em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
-    font-size: .63em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-meta {
-    font-size: .61em !important;
-  }
-}
-
-/* Respect reduced-motion accessibility settings */
-@media (prefers-reduced-motion: reduce) {
-  .items-line .card,
-  .head__action,
-  .menu__item {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
-  }
-}
-
-
-/* Luno logo/title visibility fix: make the title read like key art even when TMDB has no logo. */
-.items-line .card.luno-card-enhanced .luno-card-promo {
-  padding-top: 3.4em !important;
-  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.16) 28%, rgba(0,0,0,.78) 66%, rgba(0,0,0,.98) 100%) !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__logo {
-  display: block !important;
-  width: auto !important;
-  max-width: 88% !important;
-  max-height: 34% !important;
-  object-fit: contain !important;
-  margin: 0 auto .45em !important;
-}
-.items-line .card.luno-card-enhanced .luno-card-promo__title:not(.luno-card-promo__title--fallback) {
-  font-size: clamp(1em, 2.2vw, 1.65em) !important;
-  line-height: 1.08 !important;
-  font-weight: 800 !important;
-  letter-spacing: -.025em !important;
-  text-shadow: 0 2px 10px rgba(0,0,0,1), 0 0 3px rgba(0,0,0,.95) !important;
-}
-@media screen and (max-width: 767px) {
-  .items-line .card.luno-card-enhanced .luno-card-promo {
-    padding-top: 2.8em !important;
-  }
-  .items-line .card.luno-card-enhanced .luno-card-promo__title:not(.luno-card-promo__title--fallback) {
-    font-size: 1.05em !important;
-    line-height: 1.08 !important;
-  }
-}
-
-
-/* Keep Luno's selected TMDB artwork stable when Lampa re-renders card images. */
-.items-line .card.luno-card-enhanced .card__view {
-  position: relative !important;
-  overflow: hidden !important;
-}
-.items-line .card.luno-card-enhanced .card__img {
-  position: absolute !important;
-  inset: 0 !important;
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-}
-
-
-
-/* Luno consolidated artwork/card system v4.85.
-   Single source of truth for artwork geometry; only card widths and text scale vary by device. */
-.items-line .items-cards .card,
-.items-line .card { min-width: 0 !important; }
+/* Luno consolidated card system v4.86 — one canonical rule set, shared across platforms. */
+.items-line .items-cards .card, .items-line .card { min-width: 0 !important; }
 .items-line .card.luno-card-enhanced .card__title,
 .items-line .card.luno-card-enhanced .card__age { display: none !important; }
 .items-line .card.luno-card-enhanced .card__view {
-  position: relative !important;
-  display: block !important;
-  box-sizing: border-box !important;
-  width: 100% !important;
-  height: auto !important;
-  aspect-ratio: 16 / 9 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-  isolation: isolate !important;
-  border-radius: .7em !important;
-  background: #050505 !important;
+  position: relative !important; display: block !important; box-sizing: border-box !important;
+  width: 100% !important; height: auto !important; aspect-ratio: 16 / 9 !important;
+  padding: 0 !important; margin: 0 !important; overflow: hidden !important; isolation: isolate !important;
+  border-radius: .7em !important; background: #050505 !important;
 }
 .items-line .card.luno-card-enhanced .card__view .card__img {
-  position: absolute !important;
-  top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important;
-  display: block !important;
-  box-sizing: border-box !important;
-  width: 100% !important; height: 100% !important;
-  min-width: 100% !important; min-height: 100% !important;
-  max-width: none !important; max-height: none !important;
-  margin: 0 !important; padding: 0 !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-  transform: none !important;
+  position: absolute !important; inset: 0 !important; display: block !important;
+  box-sizing: border-box !important; width: 100% !important; height: 100% !important;
+  min-width: 100% !important; min-height: 100% !important; max-width: none !important; max-height: none !important;
+  margin: 0 !important; padding: 0 !important; object-fit: cover !important;
+  object-position: center center !important; transform: none !important;
 }
 .items-line .card.luno-card-enhanced .luno-card-promo {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 5 !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-end !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-  padding: 3.4em 0 .25em !important;
-  color: #fff !important;
-  text-align: center !important;
+  position: absolute !important; inset: 0 !important; z-index: 5 !important; box-sizing: border-box !important;
+  display: flex !important; flex-direction: column !important; align-items: center !important;
+  justify-content: flex-end !important; min-width: 0 !important; overflow: hidden !important;
+  padding: 3.4em 0 .25em !important; color: #fff !important; text-align: center !important;
   background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,.12) 42%, rgba(0,0,0,.82) 76%, rgba(0,0,0,.98) 100%) !important;
   pointer-events: none !important;
 }
 .items-line .card.luno-card-enhanced .luno-card-promo__logo {
-  display: block !important; flex: 0 1 auto !important;
-  width: auto !important; max-width: 88% !important; max-height: 30% !important;
-  object-fit: contain !important; margin: 0 auto .35em !important;
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,.9)) !important;
+  display: block !important; flex: 0 1 auto !important; width: auto !important;
+  max-width: 88% !important; max-height: 30% !important; object-fit: contain !important;
+  margin: 0 auto .35em !important; filter: drop-shadow(0 2px 5px rgba(0,0,0,.9)) !important;
 }
 .items-line .card.luno-card-enhanced .luno-card-promo__title {
-  max-width: 96% !important; margin: 0 auto .25em !important;
-  color: #fff !important; font-family: Arial, "Helvetica Neue", sans-serif !important;
-  font-size: clamp(1em, 2.2vw, 1.65em) !important;
+  max-width: 96% !important; margin: 0 auto .25em !important; color: #fff !important;
+  font-family: Arial, "Helvetica Neue", sans-serif !important; font-size: clamp(1em, 2.2vw, 1.65em) !important;
   font-weight: 800 !important; letter-spacing: -.03em !important; line-height: 1.08 !important;
   text-align: center !important; overflow-wrap: anywhere !important;
   text-shadow: 0 2px 10px rgba(0,0,0,1), 0 0 3px rgba(0,0,0,.95) !important;
@@ -17327,9 +16690,8 @@ body.glass--style.platform--android .player-chat__body {
   overflow: hidden !important; overflow-wrap: anywhere !important;
 }
 .items-line .card.luno-card-enhanced .luno-card-meta {
-  position: relative !important; inset: auto !important; z-index: 6 !important;
-  flex: 0 0 auto !important; width: 100% !important; min-width: 0 !important;
-  min-height: 2.35em !important; box-sizing: border-box !important;
+  position: relative !important; inset: auto !important; z-index: 6 !important; flex: 0 0 auto !important;
+  width: 100% !important; min-width: 0 !important; min-height: 2.35em !important; box-sizing: border-box !important;
   display: flex !important; align-items: center !important; justify-content: center !important;
   gap: .3em !important; margin: 0 !important; padding: .25em .4em !important;
   border-top: 1px solid rgba(255,255,255,.18) !important; border-radius: 0 0 .7em .7em !important;
@@ -17344,18 +16706,17 @@ body.glass--style.platform--android .player-chat__body {
 .items-line .card.luno-card-enhanced .luno-card-meta__year { color: rgba(255,255,255,.85) !important; }
 .items-line .card.luno-card-enhanced .luno-card-meta__type { color: rgba(255,255,255,.66) !important; }
 
-/* Large TV and desktop */
+/* Responsive card widths */
+.items-line .items-cards .card, .items-line .card { width: 25vw !important; flex: 0 0 25vw !important; max-width: none !important; }
 @media screen and (min-width: 1600px) {
   .items-line .items-cards .card, .items-line .card { width: 24vw !important; flex-basis: 24vw !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo__title { font-size: 1.3em !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo__overview { font-size: .88em !important; }
 }
-/* Standard laptops and desktops */
 @media screen and (min-width: 1101px) and (max-width: 1599px) {
   .items-line .items-cards .card, .items-line .card { width: 27vw !important; flex-basis: 27vw !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo__title { font-size: 1.12em !important; }
 }
-/* Tablets and compact windows */
 @media screen and (min-width: 768px) and (max-width: 1100px) {
   .items-line .items-cards .card, .items-line .card { width: 38vw !important; flex-basis: 38vw !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo { padding: .5em .2em .1em !important; }
@@ -17363,17 +16724,15 @@ body.glass--style.platform--android .player-chat__body {
   .items-line .card.luno-card-enhanced .luno-card-promo__overview { font-size: .72em !important; line-height: 1.18 !important; max-height: 2.36em !important; margin-bottom: .25em !important; padding: 0 .4em !important; }
   .items-line .card.luno-card-enhanced .luno-card-meta { min-height: 2.1em !important; font-size: .72em !important; }
 }
-/* Phones */
 @media screen and (max-width: 767px) {
   .items-line .items-cards .card, .items-line .card { width: 84vw !important; flex-basis: 84vw !important; }
-  .items-line .card.luno-card-enhanced .card__view { aspect-ratio: 16 / 9 !important; }
+  .items-line .card.luno-card-enhanced .card__view { aspect-ratio: 16 / 9 !important; border-radius: .55em .55em 0 0 !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo { padding: 2.8em .15em 0 !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo__logo { max-width: 80% !important; max-height: 25% !important; margin-bottom: .18em !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo__title { max-width: 94% !important; font-size: .9em !important; line-height: 1.05 !important; margin-bottom: .16em !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo__overview { max-height: 2.25em !important; font-size: .68em !important; line-height: 1.12 !important; margin-bottom: .2em !important; padding: 0 .35em !important; }
   .items-line .card.luno-card-enhanced .luno-card-meta { min-height: 2em !important; gap: .22em !important; padding: .2em .25em !important; font-size: .67em !important; }
 }
-/* Very narrow phones */
 @media screen and (max-width: 380px) {
   .items-line .items-cards .card, .items-line .card { width: 88vw !important; flex-basis: 88vw !important; }
   .items-line .card.luno-card-enhanced .luno-card-promo__overview { font-size: .63em !important; }
