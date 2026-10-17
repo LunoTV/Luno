@@ -173,19 +173,6 @@
         if (meta.children.length) view.appendChild(meta);
     }
 
-    function hideTrendingSection(root) {
-        if (!root || !root.querySelectorAll) return;
-        var headings = root.querySelectorAll('.items-line__title, .items-line__head, .items-line__title span, h1, h2, h3');
-        for (var i = 0; i < headings.length; i++) {
-            var heading = headings[i];
-            var label = String(heading.textContent || '').replace(/\\s+/g, ' ').trim().toLowerCase();
-            if (label !== 'сегодня в тренде') continue;
-            var section = heading.closest ? heading.closest('.items-line') : null;
-            if (!section && heading.closest) section = heading.closest('.items-line__body');
-            if (section) section.style.display = 'none';
-        }
-    }
-
     function scan(node) {
         if (!node || node.nodeType !== 1) return;
         if (node.matches && node.matches('.card')) enhance(node);
@@ -209,11 +196,9 @@
                 }
             });
         }
-        hideTrendingSection(document.body);
         scan(document.body);
         if (!window.MutationObserver) return;
         var observer = new MutationObserver(function (changes) {
-            hideTrendingSection(document.body);
             changes.forEach(function (change) {
                 for (var i = 0; i < change.addedNodes.length; i++) scan(change.addedNodes[i]);
             });
