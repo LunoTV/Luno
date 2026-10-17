@@ -163,7 +163,7 @@
                             var logoUrl = data.logo || data.logo_path || data.images && data.images.logo;
                             if (typeof logoUrl === 'string' && logoUrl) {
                                 if (logoUrl.charAt(0) === '/') logoUrl = 'https://image.tmdb.org/t/p/w500' + logoUrl;
-                                if (/^https?:\\/\\//i.test(logoUrl)) {
+                                if (/^https?:\/\//i.test(logoUrl)) {
                                     var logo = document.createElement('img');
                                     logo.className = 'luno-card-promo__logo';
                                     logo.alt = data.title || data.name || '';
