@@ -16670,3 +16670,19 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
   }
 }
 
+
+
+/* Final TV sizing pass: match the wide cards from the reference video */
+.items-line .items-cards .card {
+  width: clamp(25rem, 25vw, 46rem) !important;
+  flex: 0 0 clamp(25rem, 25vw, 46rem) !important;
+}
+.items-line .card__view {
+  padding-bottom: 48% !important;
+}
+@media screen and (max-width: 767px) {
+  .items-line .items-cards .card {
+    width: 88vw !important;
+    flex-basis: 88vw !important;
+  }
+}
