@@ -233,7 +233,7 @@
                         ? lunoTmdbImage(backdropPath, 'w780')
                         : (posterPath ? lunoTmdbImage(posterPath, 'w500') : '');
                     var posterSrc = posterPath ? lunoTmdbImage(posterPath, 'w500') : '';
-                    var imageKey = itemKey + '|' + backdropPath + '|' + posterPath;
+                    var imageKey = itemKey + '|' + backdropPath + '|' + posterPath + '|' + (window.__lunoTmdbProxyLoaded ? 'proxy' : 'direct');
 
                     if (img.getAttribute('data-luno-image-key') !== imageKey) {
                         img.setAttribute('data-luno-image-key', imageKey);
