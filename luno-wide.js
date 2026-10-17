@@ -186,6 +186,10 @@
             window.Lampa.Listener.follow('activity', function (event) {
                 if (event && event.type === 'start') {
                     activeActivity = activityName(event);
+                    var existingCards = document.querySelectorAll('.card[data-luno-wide-ready="1"]');
+                    for (var i = 0; i < existingCards.length; i++) {
+                        existingCards[i].removeAttribute('data-luno-wide-ready');
+                    }
                     scan(document.body);
                 }
             });
