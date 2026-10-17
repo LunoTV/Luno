@@ -226,3 +226,67 @@
     text-align: center;
     white-space: normal;
 }
+
+
+/* Luno navigation restyle inspired by Prizma: compact horizontal pill at the top. */
+.navigation-tabs {
+    position: fixed !important;
+    z-index: 50 !important;
+    top: 1.2em !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100vw - 3em);
+    margin: 0 !important;
+    padding: .35em !important;
+    display: flex !important;
+    align-items: center;
+    gap: .2em;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 2em !important;
+    background: rgba(45, 49, 52, .94) !important;
+    box-shadow: 0 .4em 1.4em rgba(0,0,0,.22);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+.navigation-tabs__button {
+    flex: 0 0 auto !important;
+    min-height: 2.7em;
+    padding: .55em 1em !important;
+    gap: .5em;
+    border-radius: 1.6em !important;
+    white-space: nowrap;
+    font-size: .96em;
+    transition: background-color .15s ease;
+}
+.navigation-tabs__button.active {
+    background: rgba(255,255,255,.34) !important;
+    color: #fff;
+}
+.navigation-tabs__button.focus,
+.navigation-tabs__button.hover {
+    background: rgba(255,255,255,.22) !important;
+    color: #fff;
+}
+.navigation-tabs__button svg,
+.navigation-tabs__button img {
+    width: 1.05em;
+    height: 1.05em;
+    flex-shrink: 0;
+}
+.navigation-tabs__split {
+    padding: 0 .15em !important;
+    opacity: .18;
+}
+@media screen and (max-width: 900px) {
+    .navigation-tabs {
+        top: .6em !important;
+        max-width: calc(100vw - 1.2em);
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+    .navigation-tabs__button {
+        padding: .5em .75em !important;
+        font-size: .88em;
+    }
+}
