@@ -110,6 +110,17 @@
                         logos.find(function (item) { return item.iso_639_1 === 'en'; }) ||
                         logos.find(function (item) { return !item.iso_639_1; }) || logos[0];
                     if (preferred && preferred.file_path) setLogo(preferred.file_path);
+
+                    // TMDB sometimes has localized wide artwork with the title already embedded.
+                    var backdrops = result && result.backdrops || [];
+                    var russianBackdrop = backdrops.filter(function (item) {
+                        return item.iso_639_1 === 'ru' && item.file_path && item.width >= item.height * 1.6;
+                    }).sort(function (a, b) {
+                        return (b.vote_average || 0) - (a.vote_average || 0);
+                    })[0];
+                    if (russianBackdrop && img) {
+                        img.src = 'https://image.tmdb.org/t/p/w780' + russianBackdrop.file_path;
+                    }
                 }).catch(function () { /* Text title remains as a safe fallback. */ });
             }
         }
