@@ -35,3 +35,48 @@
 .card.luno-wide-card .card__meta {
     display: none !important;
 }
+
+/* Centered cinematic logo overlay. */
+.card.luno-wide-card .card__view { position: relative; }
+.card.luno-wide-card .luno-wide-logo {
+    position: absolute;
+    z-index: 5;
+    left: 8%;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    text-align: center;
+}
+.card.luno-wide-card .luno-wide-logo__image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 84%;
+    max-height: 4.5em;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 7px rgba(0, 0, 0, .9));
+}
+.card.luno-wide-card .luno-wide-logo--text {
+    color: #fff;
+    font-size: clamp(1.1em, 2.2vw, 2.1em);
+    font-weight: 800;
+    letter-spacing: .035em;
+    line-height: 1.05;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px #000, 0 0 12px rgba(0, 0, 0, .95);
+    overflow-wrap: anywhere;
+}
+.card.luno-wide-card .card__title,
+.card.luno-wide-card .card__vote,
+.card.luno-wide-card .card__year,
+.card.luno-wide-card .card__age,
+.card.luno-wide-card .card__quality,
+.card.luno-wide-card .card__category,
+.card.luno-wide-card .card__details,
+.card.luno-wide-card .card__meta {
+    display: none !important;
+}
