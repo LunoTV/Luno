@@ -17145,3 +17145,178 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
     gap: .3em !important;
   }
 }
+
+
+/* Cross-device layout pass: TV, desktop, tablet and phone */
+.items-line .items-cards .card,
+.items-line .card {
+  min-width: 0 !important;
+}
+.items-line .card.luno-card-enhanced .card__view {
+  aspect-ratio: 16 / 9 !important;
+  padding-bottom: 0 !important;
+}
+.items-line .card.luno-card-enhanced .card__img {
+  position: absolute !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo {
+  min-width: 0 !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo__logo {
+  flex: 0 1 auto !important;
+  max-width: 88% !important;
+  max-height: 30% !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo__title {
+  overflow-wrap: anywhere !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-meta {
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Large TV and desktop */
+@media screen and (min-width: 1600px) {
+  .items-line .items-cards .card,
+  .items-line .card {
+    width: 24vw !important;
+    flex: 0 0 24vw !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title {
+    font-size: 1.3em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
+    font-size: .88em !important;
+  }
+}
+
+/* Standard laptops and desktops */
+@media screen and (min-width: 1101px) and (max-width: 1599px) {
+  .items-line .items-cards .card,
+  .items-line .card {
+    width: 27vw !important;
+    flex: 0 0 27vw !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title {
+    font-size: 1.12em !important;
+  }
+}
+
+/* Tablets and compact windows */
+@media screen and (min-width: 768px) and (max-width: 1100px) {
+  .items-line .items-cards .card,
+  .items-line .card {
+    width: 38vw !important;
+    flex: 0 0 38vw !important;
+  }
+  .head__body {
+    min-height: 3em !important;
+    padding: .25em .8em !important;
+  }
+  .head__title {
+    max-width: 38vw !important;
+    font-size: .9em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo {
+    padding: .5em .2em 0 !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title {
+    font-size: .95em !important;
+    margin-bottom: .18em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
+    font-size: .72em !important;
+    line-height: 1.18 !important;
+    max-height: 2.36em !important;
+    margin-bottom: .25em !important;
+    padding: 0 .4em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-meta {
+    min-height: 2.1em !important;
+    font-size: .72em !important;
+  }
+}
+
+/* Phones */
+@media screen and (max-width: 767px) {
+  .items-line .items-cards .card,
+  .items-line .card {
+    width: 84vw !important;
+    flex: 0 0 84vw !important;
+  }
+  .head__body {
+    min-height: 2.8em !important;
+    padding: .2em .55em !important;
+    gap: .4em !important;
+  }
+  .head__title {
+    max-width: 42vw !important;
+    font-size: .82em !important;
+  }
+  .head__actions {
+    gap: .2em !important;
+  }
+  .head__action svg {
+    width: 1.2em !important;
+    height: 1.2em !important;
+  }
+  .items-line .card.luno-card-enhanced .card__view {
+    border-radius: .55em .55em 0 0 !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo {
+    padding: .45em .15em 0 !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__logo {
+    max-width: 80% !important;
+    max-height: 25% !important;
+    margin-bottom: .18em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title {
+    max-width: 94% !important;
+    font-size: .9em !important;
+    line-height: 1.05 !important;
+    margin-bottom: .16em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
+    max-height: 2.25em !important;
+    font-size: .68em !important;
+    line-height: 1.12 !important;
+    margin-bottom: .2em !important;
+    padding: 0 .35em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-meta {
+    min-height: 2em !important;
+    gap: .22em !important;
+    padding: .2em .25em !important;
+    font-size: .67em !important;
+  }
+}
+
+/* Very narrow phones */
+@media screen and (max-width: 380px) {
+  .items-line .items-cards .card,
+  .items-line .card {
+    width: 88vw !important;
+    flex-basis: 88vw !important;
+  }
+  .head__title {
+    max-width: 38vw !important;
+    font-size: .76em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview {
+    font-size: .63em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-meta {
+    font-size: .61em !important;
+  }
+}
+
+/* Respect reduced-motion accessibility settings */
+@media (prefers-reduced-motion: reduce) {
+  .items-line .card,
+  .head__action,
+  .menu__item {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
