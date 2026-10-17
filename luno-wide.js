@@ -68,6 +68,17 @@
         return /categor|catalog|movie|film|serial|series|tv|anime|cartoon|search|person|collection|favorite|bookmarks/.test(name);
     }
 
+    function addFallbackTitle(view, data) {
+        if (view.querySelector('.luno-wide-title-fallback')) return;
+        var titleText = data.title || data.name || '';
+        if (!titleText) return;
+        var title = document.createElement('div');
+        title.className = 'luno-wide-title-fallback';
+        title.textContent = titleText;
+        title.setAttribute('aria-hidden', 'true');
+        view.appendChild(title);
+    }
+
     function makePortrait(card, data, img, view) {
         card.classList.remove('luno-wide-card');
         card.classList.add('luno-portrait-card');
@@ -107,11 +118,6 @@
                 return;
             }
 
-            if (!logoUrl) {
-                makePortrait(card, data, img, view);
-                return;
-            }
-
             card.classList.add('luno-wide-card');
             card.classList.remove('luno-portrait-card');
             if (data.backdrop_path) {
@@ -127,18 +133,14 @@
                 logo.className = 'luno-wide-logo__image';
                 logo.alt = '';
                 logo.src = logoUrl;
-                logo.onerror = function () { logo.remove(); };
+                logo.onerror = function () {
+                    logo.remove();
+                    addFallbackTitle(view, data);
+                };
                 overlay.appendChild(logo);
                 view.appendChild(overlay);
             } else {
-                var titleText = data.title || data.name || '';
-                if (titleText) {
-                    var title = document.createElement('div');
-                    title.className = 'luno-wide-title-fallback';
-                    title.textContent = titleText;
-                    title.setAttribute('aria-hidden', 'true');
-                    view.appendChild(title);
-                }
+                addFallbackTitle(view, data);
             }
         });
 
