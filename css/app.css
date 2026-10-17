@@ -16624,8 +16624,8 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
 }
 .items-line .items-cards { gap: .85em; }
 .items-line .items-cards .card {
-  width: 27.2em !important;
-  flex: 0 0 27.2em;
+  width: 46em !important;
+  flex: 0 0 46em;
 }
 .items-line .card__view {
   padding-bottom: 48% !important;
@@ -16665,8 +16665,8 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
     padding-right: .8em;
   }
   .items-line .items-cards .card {
-    width: min(78vw, 27.2em) !important;
-    flex-basis: min(78vw, 27.2em);
+    width: min(90vw, 46em) !important;
+    flex-basis: min(90vw, 46em);
   }
 }
 
