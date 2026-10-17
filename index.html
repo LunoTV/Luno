@@ -108,8 +108,51 @@
             add(scripts)
         }
 
+        // Use TMDB landscape backdrops when a card has them; keep Lampa's own card data and navigation.
+        function installLunoBackdrops() {
+            var root = document.getElementById('app');
+            if (!root || root.__lunoBackdropObserver) return;
+
+            function updateBackdrops(scope) {
+                var cards = [];
+                if (scope && scope.matches && scope.matches('.card')) cards.push(scope);
+                if (scope && scope.querySelectorAll) {
+                    cards = cards.concat(Array.prototype.slice.call(scope.querySelectorAll('.card')));
+                }
+
+                cards.forEach(function(card) {
+                    var data = card.card_data;
+                    var img = card.querySelector('.card__img');
+                    if (!data || !img || !data.backdrop_path || typeof data.backdrop_path !== 'string') return;
+                    if (data.backdrop_path.charAt(0) !== '/') return;
+
+                    var src = 'https://image.tmdb.org/t/p/w780' + data.backdrop_path;
+                    if (img.getAttribute('data-luno-backdrop') === src) return;
+
+                    img.setAttribute('data-luno-backdrop', src);
+                    img.onerror = function() {
+                        img.onerror = null;
+                        img.removeAttribute('data-luno-backdrop');
+                    };
+                    img.src = src;
+                });
+            }
+
+            updateBackdrops(root);
+            root.__lunoBackdropObserver = new MutationObserver(function(records) {
+                records.forEach(function(record) {
+                    Array.prototype.forEach.call(record.addedNodes, function(node) {
+                        if (node && node.nodeType === 1) updateBackdrops(node);
+                    });
+                });
+            });
+            root.__lunoBackdropObserver.observe(root, { childList: true, subtree: true });
+        }
+
         function loadCurrentLampa() {
-            putScript('app.min.js?v=' + cache_version, function () {})
+            putScript('app.min.js?v=' + cache_version, function () {
+                installLunoBackdrops();
+            })
         }
 
         function loadLocalLampa(){
