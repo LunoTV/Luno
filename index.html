@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="./vender/scrollbar/jquery.scrollbar.css">
     <link rel="stylesheet" href="./vender/keypad/style.css">
 
-    <link rel="stylesheet" href="css/app.css?v=4.79">
+    <link rel="stylesheet" href="css/app.css?v=4.80">
 </head>
 <body style="background: #1d1f20;">
     <script>
@@ -110,56 +110,63 @@
 
         // Fetch official title logos through Lampa's existing TMDB API source (no extra API key).
         var lunoLogoCache = Object.create(null);
-        function loadLunoLogo(data, callback, attempt) {
-            attempt = attempt || 0;
+        var lunoLogoPending = Object.create(null);
+        function loadLunoLogo(data, callback) {
             var id = data && data.id;
             var type = data && (data.media_type || data.mediaType);
             if (!type) type = data && data.first_air_date ? 'tv' : 'movie';
             if (!id || (type !== 'movie' && type !== 'tv')) return;
             var key = type + ':' + id;
             if (Object.prototype.hasOwnProperty.call(lunoLogoCache, key)) {
-                if (lunoLogoCache[key]) setTimeout(function () { callback(lunoLogoCache[key]); }, 0);
-                else if (attempt === 0) {
-                    // A first request can race Lampa's proxy/plugin initialization. Retry once.
-                    setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
-                }
+                if (lunoLogoCache[key]) callback(lunoLogoCache[key]);
+                return;
+            }
+            if (lunoLogoPending[key]) {
+                lunoLogoPending[key].push(callback);
                 return;
             }
             var api = window.Lampa && Lampa.Api && Lampa.Api.sources && Lampa.Api.sources.tmdb;
-            if (!api || typeof api.get !== 'function') {
-                if (attempt === 0) setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
-                return;
+            if (!api || typeof api.get !== 'function') return;
+            lunoLogoPending[key] = [callback];
+            var finished = false;
+            function finish(url) {
+                if (finished) return;
+                finished = true;
+                lunoLogoCache[key] = url || '';
+                var callbacks = lunoLogoPending[key] || [];
+                delete lunoLogoPending[key];
+                callbacks.forEach(function (fn) {
+                    if (url) {
+                        try { fn(url); } catch (e) {}
+                    }
+                });
             }
-            lunoLogoCache[key] = '';
+            // A slow TMDB response must not hold up the card's title fallback.
+            var timeout = setTimeout(function () { finish(''); }, 6500);
             try {
                 api.get(type + '/' + encodeURIComponent(id) + '/images', {
                     language: 'ru-RU',
                     include_image_language: 'ru,en,null'
                 }, function (result) {
-                    var logos = result && Array.isArray(result.logos) ? result.logos : [];
+                    clearTimeout(timeout);
+                    var logos = result && Array.isArray(result.logos) ? result.logos.slice() : [];
                     logos.sort(function (a, b) {
                         function score(item) {
                             var lang = item && item.iso_639_1;
-                            return (lang === 'ru' ? 30 : (lang === 'en' ? 20 : (lang === null ? 10 : 0))) +
-                                (Number(item && item.vote_average) || 0) / 100;
+                            return (lang === 'ru' ? 300 : (lang === 'en' ? 200 : (lang === null ? 100 : 0))) +
+                                (Number(item && item.vote_average) || 0);
                         }
                         return score(b) - score(a);
                     });
                     var path = logos.length && logos[0].file_path;
-                    var url = path ? 'https://image.tmdb.org/t/p/original' + path : '';
-                    lunoLogoCache[key] = url;
-                    if (url) callback(url);
-                    else if (attempt === 0) {
-                        delete lunoLogoCache[key];
-                        setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
-                    }
+                    finish(path ? 'https://image.tmdb.org/t/p/w500' + path : '');
                 }, function () {
-                    delete lunoLogoCache[key];
-                    if (attempt === 0) setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
+                    clearTimeout(timeout);
+                    finish('');
                 });
             } catch (e) {
-                delete lunoLogoCache[key];
-                if (attempt === 0) setTimeout(function () { loadLunoLogo(data, callback, 1); }, 1400);
+                clearTimeout(timeout);
+                finish('');
             }
         }
 
@@ -208,11 +215,25 @@
                     var src = backdropPath
                         ? 'https://image.tmdb.org/t/p/w780' + backdropPath
                         : (posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '');
+                    var imageKey = itemKey + '|' + backdropPath + '|' + posterPath;
 
-                    if (src && (img.getAttribute('data-luno-item-key') !== itemKey || img.getAttribute('data-luno-image-path') !== src)) {
-                        img.setAttribute('data-luno-item-key', itemKey);
+                    if (img.getAttribute('data-luno-image-key') !== imageKey) {
+                        img.setAttribute('data-luno-image-key', imageKey);
                         img.setAttribute('data-luno-image-path', src);
-                        img.src = src;
+                        img.setAttribute('data-luno-image-fallback', posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '');
+                        img.onerror = function () {
+                            var fallback = img.getAttribute('data-luno-image-fallback') || '';
+                            if (fallback && img.src !== fallback && img.getAttribute('data-luno-fallback-tried') !== '1') {
+                                img.setAttribute('data-luno-fallback-tried', '1');
+                                img.src = fallback;
+                            }
+                        };
+                        img.onload = function () {
+                            img.removeAttribute('data-luno-fallback-tried');
+                        };
+                        img.removeAttribute('data-luno-fallback-tried');
+                        if (src) img.src = src;
+                        else if (posterPath) img.src = 'https://image.tmdb.org/t/p/w500' + posterPath;
                     }
 
                     // Keep the text overlay in sync if Lampa recycles a card for another item.
@@ -258,6 +279,8 @@
                                 if (suppliedLogo.charAt(0) === '/') suppliedLogo = 'https://image.tmdb.org/t/p/original' + suppliedLogo;
                                 if (/^https?:\/\//i.test(suppliedLogo)) applyLunoLogo(suppliedLogo);
                             } else {
+                                // Keep the readable title visible immediately; replace it only after logo loads.
+                                title.classList.remove('luno-card-promo__title--fallback');
                                 loadLunoLogo(data, applyLunoLogo);
                             }
 
