@@ -29,6 +29,45 @@
         var title = data.title || data.name || data.original_title || data.original_name || '';
         var view = card.querySelector('.card__view');
         var label = card.querySelector('.luno-card__title');
+        var overview = data.overview || data.description || '';
+        var release = data.release_date || data.first_air_date || '';
+        var year = release ? String(release).slice(0, 4) : (data.year || '');
+        var rating = data.vote_average || data.rating || '';
+        var quality = data.release_quality || data.quality || '';
+
+        if (view && overview && !card.querySelector('.luno-card__overview')) {
+            var synopsis = document.createElement('div');
+            synopsis.className = 'luno-card__overview';
+            synopsis.textContent = overview;
+            view.appendChild(synopsis);
+        }
+        if (view && rating && !card.querySelector('.luno-card__rating')) {
+            var score = document.createElement('div');
+            score.className = 'luno-card__rating';
+            score.textContent = Number(rating).toFixed(1);
+            view.appendChild(score);
+        }
+        if (view && (year || quality || rating) && !card.querySelector('.luno-card__meta')) {
+            var meta = document.createElement('div');
+            meta.className = 'luno-card__meta';
+            if (quality) {
+                var q = document.createElement('span');
+                q.className = 'luno-card__quality';
+                q.textContent = String(quality).toUpperCase();
+                meta.appendChild(q);
+            }
+            if (rating) {
+                var r = document.createElement('span');
+                r.textContent = '★ ' + Number(rating).toFixed(1);
+                meta.appendChild(r);
+            }
+            if (year) {
+                var y = document.createElement('span');
+                y.textContent = year;
+                meta.appendChild(y);
+            }
+            card.appendChild(meta);
+        }
         if (!label && title && view) {
             label = document.createElement('div');
             label.className = 'luno-card__title';
