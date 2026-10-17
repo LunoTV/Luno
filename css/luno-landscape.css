@@ -28,11 +28,11 @@
 .card.luno-landscape-card .luno-card__logo {
     position: absolute;
     z-index: 3;
-    left: 10%;
-    bottom: 10%;
-    width: 58%;
-    max-width: 58%;
-    max-height: 42%;
+    left: 7%;
+    bottom: 14%;
+    width: 62%;
+    max-width: 62%;
+    max-height: 40%;
     object-fit: contain;
     object-position: left bottom;
     filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .7));
