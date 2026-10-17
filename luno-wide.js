@@ -8,15 +8,38 @@
         return /^https?:\/\//i.test(path) ? path : 'https://image.tmdb.org/t/p/w500' + (path.charAt(0) === '/' ? path : '/' + path);
     }
 
-    function findLogo(data) {
-        if (!data) return '';
-        if (data.logo_path) return imageUrl(data.logo_path);
-        if (data.images && data.images.logos && data.images.logos.length) {
-            var logo = data.images.logos[0];
-            if (logo && logo.file_path) return imageUrl(logo.file_path);
+    function requestLogo(data, callback) {
+        if (!data || !data.id || !window.Lampa || !window.Lampa.Api || !window.Lampa.Api.sources || !window.Lampa.Api.sources.tmdb) {
+            callback('');
+            return;
         }
-        if (data.logo && typeof data.logo === 'string') return imageUrl(data.logo);
-        return '';
+
+        var kind = data.media_type || data.source || (data.name ? 'tv' : 'movie');
+        if (kind !== 'movie' && kind !== 'tv') kind = 'movie';
+
+        window.Lampa.Api.sources.tmdb.get(kind + '/' + data.id + '/images', {
+            include_image_language: 'ru,en,null'
+        }, function (result) {
+            var logos = result && result.logos ? result.logos : [];
+            if (!logos.length) {
+                callback('');
+                return;
+            }
+
+            logos.sort(function (a, b) {
+                function rank(item) {
+                    if (item.iso_639_1 === 'ru') return 0;
+                    if (item.iso_639_1 === 'en') return 1;
+                    if (item.iso_639_1 === null) return 2;
+                    return 3;
+                }
+                return rank(a) - rank(b);
+            });
+
+            callback(logos[0] && logos[0].file_path ? 'https://image.tmdb.org/t/p/original' + logos[0].file_path : '');
+        }, function () {
+            callback('');
+        }, { life: 60 * 24 * 7 });
     }
 
     function enhance(card) {
@@ -40,18 +63,16 @@
         overlay.className = 'luno-wide-logo';
         overlay.setAttribute('aria-hidden', 'true');
 
-        var logoUrl = findLogo(data);
-        if (!logoUrl) return;
-
-        var logo = document.createElement('img');
-        logo.className = 'luno-wide-logo__image';
-        logo.alt = '';
-        logo.src = logoUrl;
-        logo.onerror = function () {
-            overlay.remove();
-        };
-        overlay.appendChild(logo);
-        view.appendChild(overlay);
+        requestLogo(data, function (logoUrl) {
+            if (!logoUrl || !card.isConnected) return;
+            var logo = document.createElement('img');
+            logo.className = 'luno-wide-logo__image';
+            logo.alt = '';
+            logo.src = logoUrl;
+            logo.onerror = function () { overlay.remove(); };
+            overlay.appendChild(logo);
+            view.appendChild(overlay);
+        });
     }
 
     function scan(node) {
