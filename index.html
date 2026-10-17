@@ -108,6 +108,47 @@
             add(scripts)
         }
 
+        // Fetch official title logos through Lampa's existing TMDB API source (no extra API key).
+        var lunoLogoCache = Object.create(null);
+        function loadLunoLogo(data, callback) {
+            var id = data && data.id;
+            var type = data && (data.media_type || data.mediaType);
+            if (!type) type = data && data.first_air_date ? 'tv' : 'movie';
+            if (!id || (type !== 'movie' && type !== 'tv')) return;
+            var key = type + ':' + id;
+            if (Object.prototype.hasOwnProperty.call(lunoLogoCache, key)) {
+                if (lunoLogoCache[key]) callback(lunoLogoCache[key]);
+                return;
+            }
+            var api = window.Lampa && Lampa.Api && Lampa.Api.sources && Lampa.Api.sources.tmdb;
+            if (!api || typeof api.get !== 'function') return;
+            lunoLogoCache[key] = '';
+            try {
+                api.get(type + '/' + encodeURIComponent(id) + '/images', {
+                    language: 'ru-RU',
+                    include_image_language: 'ru,en,null'
+                }, function (result) {
+                    var logos = result && Array.isArray(result.logos) ? result.logos : [];
+                    logos.sort(function (a, b) {
+                        function score(item) {
+                            var lang = item && item.iso_639_1;
+                            return (lang === 'ru' ? 30 : (lang === 'en' ? 20 : (lang === null ? 10 : 0))) +
+                                (Number(item && item.vote_average) || 0) / 100;
+                        }
+                        return score(b) - score(a);
+                    });
+                    var path = logos.length && logos[0].file_path;
+                    var url = path ? 'https://image.tmdb.org/t/p/original' + path : '';
+                    lunoLogoCache[key] = url;
+                    if (url) callback(url);
+                }, function () {
+                    lunoLogoCache[key] = '';
+                });
+            } catch (e) {
+                lunoLogoCache[key] = '';
+            }
+        }
+
         // Use TMDB landscape backdrops when a card has them; keep Lampa's own card data and navigation.
         function installLunoBackdrops() {
             var root = document.getElementById('app');
@@ -159,20 +200,30 @@
                             title.textContent = data.title || data.name || '';
                             promo.appendChild(title);
 
-                            // If the TMDB record already carries a real logo URL, use it rather than recreating the logo with text.
-                            var logoUrl = data.logo || data.logo_path || data.images && data.images.logo;
-                            if (typeof logoUrl === 'string' && logoUrl) {
-                                if (logoUrl.charAt(0) === '/') logoUrl = 'https://image.tmdb.org/t/p/w500' + logoUrl;
-                                if (/^https?:\/\//i.test(logoUrl)) {
-                                    var logo = document.createElement('img');
+                            // Prefer an official TMDB title logo; retain the text title as a fallback.
+                            function applyLunoLogo(logoUrl) {
+                                if (!logoUrl || !promo.isConnected || card.getAttribute('data-luno-promo-key') !== itemKey) return;
+                                var logo = promo.querySelector('.luno-card-promo__logo');
+                                if (!logo) {
+                                    logo = document.createElement('img');
                                     logo.className = 'luno-card-promo__logo';
                                     logo.alt = data.title || data.name || '';
                                     logo.loading = 'lazy';
-                                    logo.src = logoUrl;
-                                    logo.onerror = function() { logo.remove(); title.classList.remove('luno-card-promo__title--fallback'); };
+                                    logo.onerror = function() {
+                                        logo.remove();
+                                        title.classList.remove('luno-card-promo__title--fallback');
+                                    };
                                     promo.insertBefore(logo, title);
-                                    title.classList.add('luno-card-promo__title--fallback');
                                 }
+                                logo.src = logoUrl;
+                                title.classList.add('luno-card-promo__title--fallback');
+                            }
+                            var suppliedLogo = data.logo || data.logo_path || data.images && data.images.logo;
+                            if (typeof suppliedLogo === 'string' && suppliedLogo) {
+                                if (suppliedLogo.charAt(0) === '/') suppliedLogo = 'https://image.tmdb.org/t/p/original' + suppliedLogo;
+                                if (/^https?:\/\//i.test(suppliedLogo)) applyLunoLogo(suppliedLogo);
+                            } else {
+                                loadLunoLogo(data, applyLunoLogo);
                             }
 
                             if (data.overview && typeof data.overview === 'string') {
