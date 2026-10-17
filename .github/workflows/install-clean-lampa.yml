@@ -1,4 +1,4 @@
-name: Install clean Lampa source
+name: Install and publish clean Lampa
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  install:
+  install-build-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Luno repository
@@ -18,22 +18,33 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Import upstream Lampa source
+      - name: Import clean upstream Lampa source
         run: |
           set -euo pipefail
           tmp="$(mktemp -d)"
           git clone --depth 1 https://github.com/yumata/lampa-source.git "$tmp/lampa"
           rsync -a --delete --exclude='.git' --exclude='.github/workflows/install-clean-lampa.yml' "$tmp/lampa/" ./
           rm -rf "$tmp"
-      - name: Commit clean Lampa source to main
+      - name: Build web application
+        run: |
+          set -euo pipefail
+          npm install
+          npx gulp pack_github
+      - name: Publish built app at the repository website root
+        run: |
+          set -euo pipefail
+          test -f build/github/lampa/index.html
+          test -f build/github/lampa/app.min.js
+          rsync -a build/github/lampa/ ./
+      - name: Commit source and working website
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
-            echo "No source changes to commit."
+            echo "No source or website changes to commit."
             exit 0
           fi
-          git commit -m "Install clean Lampa source"
+          git commit -m "Install clean Lampa and publish working website"
           git push origin HEAD:main
