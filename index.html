@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="./vender/scrollbar/jquery.scrollbar.css">
     <link rel="stylesheet" href="./vender/keypad/style.css">
 
-    <link rel="stylesheet" href="css/app.css?v=4.81">
+    <link rel="stylesheet" href="css/app.css?v=4.82">
 </head>
 <body style="background: #1d1f20;">
     <script>
@@ -109,6 +109,23 @@
         }
 
         // Fetch official title logos through Lampa's existing TMDB API source (no extra API key).
+        // Route TMDB artwork through Lampa's image resolver so the TMDB proxy/mirrors work on mobile and TV.
+        function lunoTmdbImage(path, size) {
+            if (!path || typeof path !== 'string') return '';
+            if (path.indexOf('http://') === 0 || path.indexOf('https://') === 0) {
+                var match = path.match(/^https?:\/\/image\.tmdb\.org\/t\/p\/(?:original|w\d+)(\/.*)$/i);
+                if (!match) return path;
+                path = match[1];
+            }
+            if (path.charAt(0) !== '/') path = '/' + path;
+            try {
+                if (window.Lampa && Lampa.TMDB && typeof Lampa.TMDB.image === 'function') {
+                    return Lampa.TMDB.image('t/p/' + (size || 'w500') + path);
+                }
+            } catch (e) {}
+            return 'https://image.tmdb.org/t/p/' + (size || 'w500') + path;
+        }
+
         var lunoLogoCache = Object.create(null);
         var lunoLogoPending = Object.create(null);
         function loadLunoLogo(data, callback) {
@@ -159,7 +176,7 @@
                         return score(b) - score(a);
                     });
                     var path = logos.length && logos[0].file_path;
-                    finish(path ? 'https://image.tmdb.org/t/p/w500' + path : '');
+                    finish(path ? lunoTmdbImage(path, 'w500') : '');
                 }, function () {
                     clearTimeout(timeout);
                     finish('');
@@ -213,8 +230,8 @@
                     var backdropPath = typeof data.backdrop_path === 'string' && data.backdrop_path.charAt(0) === '/' ? data.backdrop_path : '';
                     var posterPath = typeof data.poster_path === 'string' && data.poster_path.charAt(0) === '/' ? data.poster_path : '';
                     var src = backdropPath
-                        ? 'https://image.tmdb.org/t/p/w1280' + backdropPath
-                        : (posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '');
+                        ? lunoTmdbImage(backdropPath, 'w780')
+                        : (posterPath ? lunoTmdbImage(posterPath, 'w500') : '');
                     var posterSrc = posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '';
                     var imageKey = itemKey + '|' + backdropPath + '|' + posterPath;
 
@@ -287,7 +304,7 @@
                             }
                             var suppliedLogo = data.logo || data.logo_path || data.images && data.images.logo;
                             if (typeof suppliedLogo === 'string' && suppliedLogo) {
-                                if (suppliedLogo.charAt(0) === '/') suppliedLogo = 'https://image.tmdb.org/t/p/original' + suppliedLogo;
+                                if (suppliedLogo.charAt(0) === '/') suppliedLogo = lunoTmdbImage(suppliedLogo, 'original');
                                 if (/^https?:\/\//i.test(suppliedLogo)) applyLunoLogo(suppliedLogo);
                             } else {
                                 // Keep the readable title visible immediately; replace it only after logo loads.
