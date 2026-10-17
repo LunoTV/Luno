@@ -17320,3 +17320,34 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Luno logo/title visibility fix: make the title read like key art even when TMDB has no logo. */
+.items-line .card.luno-card-enhanced .luno-card-promo {
+  padding-top: 3.4em !important;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.16) 28%, rgba(0,0,0,.78) 66%, rgba(0,0,0,.98) 100%) !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo__logo {
+  display: block !important;
+  width: auto !important;
+  max-width: 88% !important;
+  max-height: 34% !important;
+  object-fit: contain !important;
+  margin: 0 auto .45em !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo__title:not(.luno-card-promo__title--fallback) {
+  font-size: clamp(1em, 2.2vw, 1.65em) !important;
+  line-height: 1.08 !important;
+  font-weight: 800 !important;
+  letter-spacing: -.025em !important;
+  text-shadow: 0 2px 10px rgba(0,0,0,1), 0 0 3px rgba(0,0,0,.95) !important;
+}
+@media screen and (max-width: 767px) {
+  .items-line .card.luno-card-enhanced .luno-card-promo {
+    padding-top: 2.8em !important;
+  }
+  .items-line .card.luno-card-enhanced .luno-card-promo__title:not(.luno-card-promo__title--fallback) {
+    font-size: 1.05em !important;
+    line-height: 1.08 !important;
+  }
+}
