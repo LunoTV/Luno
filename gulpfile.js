@@ -421,3 +421,5 @@ exports.default = parallel(watch, browser_sync);
 exports.debug = series(enable_debug_mode, this.default)
 exports.doc = series(sync_doc, buildDoc)
 exports.write_manifest = series(write_manifest)
+
+exports.merge = merge;
