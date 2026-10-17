@@ -14,7 +14,7 @@
             return;
         }
 
-        var kind = data.media_type || data.source || (data.name ? 'tv' : 'movie');
+        var kind = data.media_type || data.type || (data.name && !data.title ? 'tv' : 'movie');
         if (kind !== 'movie' && kind !== 'tv') kind = 'movie';
 
         window.Lampa.Api.sources.tmdb.get(kind + '/' + data.id + '/images', {
