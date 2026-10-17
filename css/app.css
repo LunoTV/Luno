@@ -17351,3 +17351,20 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
     line-height: 1.08 !important;
   }
 }
+
+
+/* Keep Luno's selected TMDB artwork stable when Lampa re-renders card images. */
+.items-line .card.luno-card-enhanced .card__view {
+  position: relative !important;
+  overflow: hidden !important;
+}
+.items-line .card.luno-card-enhanced .card__img {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+}
