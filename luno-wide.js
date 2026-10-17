@@ -3,21 +3,60 @@
     if (window.luno_wide_cards_loaded) return;
     window.luno_wide_cards_loaded = true;
 
+    function imageUrl(path) {
+        if (!path || typeof path !== 'string') return '';
+        return /^https?:\/\//i.test(path) ? path : 'https://image.tmdb.org/t/p/w500' + (path.charAt(0) === '/' ? path : '/' + path);
+    }
+
+    function findLogo(data) {
+        if (!data) return '';
+        if (data.logo_path) return imageUrl(data.logo_path);
+        if (data.images && data.images.logos && data.images.logos.length) {
+            var logo = data.images.logos[0];
+            if (logo && logo.file_path) return imageUrl(logo.file_path);
+        }
+        if (data.logo && typeof data.logo === 'string') return imageUrl(data.logo);
+        return '';
+    }
+
     function enhance(card) {
         if (!card || !card.classList || !card.classList.contains('card')) return;
-        if (card.getAttribute('data-luno-wide-ready') === '1') return;
         var data = card.card_data;
         var img = card.querySelector('.card__img');
         if (!data || !img || !data.backdrop_path) return;
 
-        card.setAttribute('data-luno-wide-ready', '1');
         card.classList.add('luno-wide-card');
-        var path = data.backdrop_path;
-        var url = /^https?:\/\//i.test(path) ? path : 'https://image.tmdb.org/t/p/w780' + (path.charAt(0) === '/' ? path : '/' + path);
+        if (card.getAttribute('data-luno-wide-ready') === '1') return;
+        card.setAttribute('data-luno-wide-ready', '1');
+
+        var url = imageUrl(data.backdrop_path);
         img.src = url;
         card.addEventListener('visible', function () {
             if (img.src !== url) img.src = url;
         });
+
+        var view = card.querySelector('.card__view') || card;
+        var overlay = document.createElement('div');
+        overlay.className = 'luno-wide-logo';
+        overlay.setAttribute('aria-hidden', 'true');
+
+        function showText() {
+            overlay.classList.add('luno-wide-logo--text');
+            overlay.textContent = data.title || data.name || '';
+        }
+
+        var logoUrl = findLogo(data);
+        if (logoUrl) {
+            var logo = document.createElement('img');
+            logo.className = 'luno-wide-logo__image';
+            logo.alt = '';
+            logo.src = logoUrl;
+            logo.onerror = showText;
+            overlay.appendChild(logo);
+        } else {
+            showText();
+        }
+        view.appendChild(overlay);
     }
 
     function scan(node) {
