@@ -117,7 +117,7 @@
             if (!id || (type !== 'movie' && type !== 'tv')) return;
             var key = type + ':' + id;
             if (Object.prototype.hasOwnProperty.call(lunoLogoCache, key)) {
-                if (lunoLogoCache[key]) callback(lunoLogoCache[key]);
+                if (lunoLogoCache[key]) setTimeout(function () { callback(lunoLogoCache[key]); }, 0);
                 return;
             }
             var api = window.Lampa && Lampa.Api && Lampa.Api.sources && Lampa.Api.sources.tmdb;
