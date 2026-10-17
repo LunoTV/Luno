@@ -16943,3 +16943,110 @@ html, body, #app, .wrap, .wrap__content { background-color: #000 !important; }
   font-weight: 700 !important;
   letter-spacing: .01em !important;
 }
+
+
+/* Corrected unified overlay: artwork, title, synopsis and metadata share one card surface */
+.items-line .card.luno-card-enhanced .card__view {
+  position: relative !important;
+  overflow: hidden !important;
+  padding-bottom: 56% !important;
+  border-radius: .7em !important;
+  background: #050505 !important;
+}
+.items-line .card.luno-card-enhanced .card__img {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 5 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  padding: 1em 0 0 !important;
+  color: #fff !important;
+  text-align: center !important;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,.12) 42%, rgba(0,0,0,.82) 76%, rgba(0,0,0,.98) 100%) !important;
+  pointer-events: none !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo__logo {
+  display: block !important;
+  width: auto !important;
+  max-width: 84% !important;
+  max-height: 30% !important;
+  object-fit: contain !important;
+  margin: 0 auto .35em !important;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,.9)) !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo__title {
+  max-width: 96% !important;
+  margin: 0 auto .25em !important;
+  color: #fff !important;
+  font-family: "Arial", "Helvetica Neue", sans-serif !important;
+  font-size: 1.22em !important;
+  font-weight: 800 !important;
+  letter-spacing: -.03em !important;
+  line-height: 1.08 !important;
+  text-align: center !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,.95) !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-promo__title--fallback { display: none !important; }
+.items-line .card.luno-card-enhanced .luno-card-promo__overview {
+  width: 100% !important;
+  max-height: 2.46em !important;
+  margin: 0 auto .5em !important;
+  padding: 0 .75em !important;
+  box-sizing: border-box !important;
+  color: rgba(255,255,255,.95) !important;
+  font-size: .82em !important;
+  font-weight: 500 !important;
+  line-height: 1.23 !important;
+  text-align: center !important;
+  text-shadow: 0 1px 5px rgba(0,0,0,.95) !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-meta {
+  position: relative !important;
+  inset: auto !important;
+  z-index: 6 !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  min-height: 2.35em !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: .35em !important;
+  margin: 0 !important;
+  padding: .25em .5em !important;
+  border-top: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 0 !important;
+  background: rgba(0,0,0,.78) !important;
+  color: rgba(255,255,255,.82) !important;
+  font-size: .82em !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+.items-line .card.luno-card-enhanced .luno-card-meta__quality { color: #38c981 !important; }
+.items-line .card.luno-card-enhanced .luno-card-meta__rating { color: #a4d7bc !important; }
+.items-line .card.luno-card-enhanced .luno-card-meta__year { color: rgba(255,255,255,.85) !important; }
+.items-line .card.luno-card-enhanced .luno-card-meta__type { color: rgba(255,255,255,.66) !important; }
+@media screen and (max-width: 767px) {
+  .items-line .card.luno-card-enhanced .luno-card-promo__title { font-size: 1em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-promo__overview { font-size: .75em !important; }
+  .items-line .card.luno-card-enhanced .luno-card-meta { font-size: .75em !important; }
+}
