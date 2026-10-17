@@ -232,7 +232,7 @@
                     var src = backdropPath
                         ? lunoTmdbImage(backdropPath, 'w780')
                         : (posterPath ? lunoTmdbImage(posterPath, 'w500') : '');
-                    var posterSrc = posterPath ? 'https://image.tmdb.org/t/p/w500' + posterPath : '';
+                    var posterSrc = posterPath ? lunoTmdbImage(posterPath, 'w500') : '';
                     var imageKey = itemKey + '|' + backdropPath + '|' + posterPath;
 
                     if (img.getAttribute('data-luno-image-key') !== imageKey) {
