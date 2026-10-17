@@ -60,16 +60,6 @@
     object-fit: contain;
     filter: drop-shadow(0 2px 7px rgba(0, 0, 0, .9));
 }
-.card.luno-wide-card .luno-wide-logo--text {
-    color: #fff;
-    font-size: clamp(1.1em, 2.2vw, 2.1em);
-    font-weight: 800;
-    letter-spacing: .035em;
-    line-height: 1.05;
-    text-transform: uppercase;
-    text-shadow: 0 2px 4px #000, 0 0 12px rgba(0, 0, 0, .95);
-    overflow-wrap: anywhere;
-}
 .card.luno-wide-card .card__title,
 .card.luno-wide-card .card__vote,
 .card.luno-wide-card .card__year,
@@ -80,3 +70,5 @@
 .card.luno-wide-card .card__meta {
     display: none !important;
 }
+
+/* No generated text title: show only actual logo artwork when available. */
