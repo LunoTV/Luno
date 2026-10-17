@@ -19,6 +19,11 @@
     display: none;
 }
 
+/* Keep the rating only in the metadata row below the image. */
+.card.luno-landscape-card .card__vote {
+    display: none !important;
+}
+
 .card.luno-landscape-card .luno-card__logo {
     position: absolute;
     z-index: 3;
