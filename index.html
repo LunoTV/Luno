@@ -131,6 +131,59 @@
 
                     img.setAttribute('data-luno-backdrop', src);
                     img.src = src;
+
+                    // Add native-data promo overlay and metadata strip to every landscape card.
+                    if (!card.classList.contains('luno-card-enhanced')) {
+                        var view = card.querySelector('.card__view');
+                        if (view) {
+                            var promo = document.createElement('div');
+                            promo.className = 'luno-card-promo';
+                            var title = document.createElement('div');
+                            title.className = 'luno-card-promo__title';
+                            title.textContent = data.title || data.name || '';
+                            promo.appendChild(title);
+
+                            if (data.overview && typeof data.overview === 'string') {
+                                var overview = document.createElement('div');
+                                overview.className = 'luno-card-promo__overview';
+                                overview.textContent = data.overview;
+                                promo.appendChild(overview);
+                            }
+                            view.appendChild(promo);
+
+                            var meta = document.createElement('div');
+                            meta.className = 'luno-card-meta';
+                            var quality = data.quality || data.video_quality || data.resolution || '';
+                            if (quality) {
+                                var q = document.createElement('span');
+                                q.className = 'luno-card-meta__quality';
+                                q.textContent = String(quality).toUpperCase();
+                                meta.appendChild(q);
+                                meta.appendChild(document.createTextNode(' • '));
+                            }
+
+                            var rating = data.vote_average || data.vote || data.rating;
+                            if (rating !== undefined && rating !== null && rating !== '') {
+                                var star = document.createElement('span');
+                                star.className = 'luno-card-meta__rating';
+                                star.textContent = '★ ' + (Number(rating).toFixed(1));
+                                meta.appendChild(star);
+                            }
+
+                            var yearSource = data.release_date || data.first_air_date || data.year || '';
+                            var year = String(yearSource).match(/(19|20)\\d{2}/);
+                            if (year) {
+                                if (meta.childNodes.length) meta.appendChild(document.createTextNode(' • '));
+                                var yearEl = document.createElement('span');
+                                yearEl.className = 'luno-card-meta__year';
+                                yearEl.textContent = year[0];
+                                meta.appendChild(yearEl);
+                            }
+
+                            if (meta.childNodes.length) card.appendChild(meta);
+                            card.classList.add('luno-card-enhanced');
+                        }
+                    }
                 });
             }
 
