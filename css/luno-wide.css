@@ -19,3 +19,9 @@
 @media screen and (max-width: 700px) {
     .card.luno-wide-card { width: 14em; }
 }
+
+/* Hide card title and rating; keep the 16:9 artwork clean. */
+.card.luno-wide-card .card__title,
+.card.luno-wide-card .card__vote {
+    display: none !important;
+}
